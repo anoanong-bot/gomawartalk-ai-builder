@@ -411,6 +411,21 @@
     });
   }
 
+  // 캠페인 주제 맞춤형 에디토리얼 스마트 컬러 테마 자동 매칭
+  function detectSmartEditorialTheme(text) {
+    var hay = String(text || '').toLowerCase();
+    // 1) 식품·농산물·유기농·자연·라이프스타일 → Deep Forest Green & Warm Ivory
+    if (/상추|무농약|유기농|농산물|채소|야채|샐러드|과일|농장|산지|직송|새벽배송|식품|식탁|반찬|도시락|베이커리|건강식|자연|플라워|꽃|식물|원두|차|티|다이어트|로컬푸드/i.test(hay)) {
+      return { key: 'forest', label: '딥 포레스트 그린 & 웜 아이보리', primary: '#1B3B2B', secondary: '#FAF8F5' };
+    }
+    // 2) 뷰티·클래스·감성 모임·패션·공방 → Warm Espresso & Soft Sand
+    if (/뷰티|화장품|스킨케어|에스테틱|네일|헤어|향수|캔들|도예|공방|요가|필라테스|감성|모임|독서|와인|아트|드로잉|웨딩|패션|코디|쇼핑몰|카페|디저트|브런치/i.test(hay)) {
+      return { key: 'espresso', label: '웜 에스프레소 & 소프트 샌드', primary: '#2C221E', secondary: '#FBF9F6' };
+    }
+    // 3) 강의·지식·비즈니스·금융·교육·의료 → Editorial Charcoal Navy & Pure Cool Gray
+    return { key: 'charcoal', label: '에디토리얼 차콜 네이비 & 퓨어 쿨 그레이', primary: '#182232', secondary: '#F6F7F9' };
+  }
+
   // 캠페인 초기 로드시 기본 영문 프롬프트 생성기 (초기 기본값 세팅 전용)
   function buildEnglishImagePrompt(ctx) {
     ctx = ctx || {};
@@ -418,32 +433,44 @@
     var slotRole = String(ctx.slotRole || 'hero');
     var hay = (raw + ' ' + (ctx.channelName || '') + ' ' + (ctx.title || '')).toLowerCase();
 
-    var subject = 'Modern professional Korean lifestyle and business studio photography, bright welcoming atmosphere';
-    if (/k-pop|kpop|한국어|외국인|가사|korean/i.test(hay)) {
+    var subject = 'Modern editorial Korean lifestyle photography, warm natural sunlight, clean composition';
+    if (/상추|무농약|유기농|샐러드|채소|야채|농산물|농장|산지|직송/i.test(hay)) {
+      if (slotRole === 'slot2' || slotRole === 'solution') {
+        subject = 'Fresh gourmet green lettuce salad bowl and crisp organic farm vegetables arranged on a warm sunlit linen dining table, editorial food photography';
+      } else if (slotRole === 'slot3' || slotRole === 'trust') {
+        subject = 'Warm authentic scene of freshly harvested dewy organic green lettuce in a clean wooden harvest basket at a bright Korean eco-friendly farm at sunrise';
+      } else {
+        subject = 'Freshly harvested dewy organic green lettuce leaves with natural morning water droplets on a warm wooden kitchen table in soft morning sunlight, Market Kurly editorial food photography';
+      }
+    } else if (/식품|과일|반찬|도시락|베이커리|건강식|빵|디저트/i.test(hay)) {
+      subject = 'Artisan fresh Korean gourmet food plated beautifully on ceramic dishware over a warm linen table in soft natural daylight, editorial food photography';
+    } else if (/k-pop|kpop|한국어|외국인|가사|korean/i.test(hay)) {
       subject = 'Diverse young international students smiling together in a bright modern studio while listening to K-pop music with headphones and holding a sleek study workbook';
     } else if (/수학|학원|오답노트|공부|성적|내신|입시|교육|학생/i.test(hay)) {
-      subject = 'Bright modern private academy classroom desk with a neatly organized study planner, tablet showing upward achievement graph, warm encouraging lighting';
+      subject = 'Bright modern private academy classroom desk with a neatly organized study planner and textbook in warm natural daylight';
     } else if (/유튜브|지식창업|웨비나|강의|크리에이터|코칭/i.test(hay)) {
-      subject = 'Confident content creator and online instructor in a sleek home studio with laptop, condenser microphone, and soft key lighting';
+      subject = 'Confident content creator and online instructor in a sleek home studio with laptop, condenser microphone, and soft editorial lighting';
     } else if (/세무|절세|법인|세법|회계|노무|법무|컨설팅/i.test(hay)) {
-      subject = 'Professional financial consultant in a modern executive office with a tablet showing clean financial growth charts and warm sunlight';
+      subject = 'Professional financial consultant in a minimalist executive office with warm sunlight and clean architectural lines';
     } else if (/병원|건강검진|클리닉|의원|치과|한의원|진료/i.test(hay)) {
-      subject = 'Friendly doctor in a bright premium medical clinic consulting room with modern diagnostic tablet and reassuring warm atmosphere';
-    } else if (/카페|매장|식당|음료|쿠폰|멤버십|뷰티|네일|피트니스/i.test(hay)) {
-      subject = 'Cozy specialty coffee shop counter with artisan latte art, warm ambient pendant lights, and happy customer holding a smartphone';
+      subject = 'Friendly doctor in a bright minimalist medical clinic consulting room with warm reassuring natural lighting';
+    } else if (/뷰티|화장품|스킨케어|향수|캔들|도예|공방|요가|필라테스/i.test(hay)) {
+      subject = 'Minimalist luxury beauty and wellness editorial still life with natural stone textures, warm linen, and soft golden hour shadows';
+    } else if (/카페|매장|식당|음료|쿠폰|멤버십|원두/i.test(hay)) {
+      subject = 'Cozy specialty coffee shop counter with artisan latte art, warm ambient pendant lights, and natural wooden textures';
     } else if (/쇼핑몰|패션|신상|코디|옷장|라이프스타일|화보|커머스/i.test(hay)) {
       subject = 'Minimalist luxury fashion showroom with curated seasonal outfits on a sleek rack, soft studio lighting, editorial lookbook aesthetic';
     }
 
     var roleDesc = '';
     if (slotRole === 'thumb') {
-      roleDesc = 'hero thumbnail key visual, strong focal point, vibrant contrast';
+      roleDesc = 'hero thumbnail key visual, strong focal point, rich editorial contrast';
     } else if (slotRole === 'slot1' || slotRole === 'hero') {
       roleDesc = 'wide hero banner photography, inspiring main subject';
     } else if (slotRole === 'slot2' || slotRole === 'solution') {
-      roleDesc = 'premium product and digital guidebook mockup presentation on a clean desk, tangible service value';
+      roleDesc = 'tangible product and service editorial presentation, refined styling';
     } else if (slotRole === 'slot3' || slotRole === 'trust') {
-      roleDesc = 'authentic positive transformation and customer satisfaction scene, trustworthy professional environment';
+      roleDesc = 'authentic positive lifestyle and trustworthy atmosphere';
     }
 
     if (raw && !/[\uAC00-\uD7A3]/.test(raw) && raw.length >= 15) {
@@ -1259,17 +1286,19 @@
     var useWebzine = (typeof g.use_webzine === 'boolean') ? g.use_webzine : fb.use_webzine;
     var wz = (g.webzine_studio && Array.isArray(g.webzine_studio.sections) && g.webzine_studio.sections.length >= 2) ? g.webzine_studio : fb.webzine_studio;
     var gBa = g.brand_assets || {};
+    var themeSeed = [A && A[1], A && A[2], A && A[5], channel, th.headline].filter(Boolean).join(' ');
+    var smartTheme = detectSmartEditorialTheme(themeSeed);
 
     return sanitizeObject({
-      meta: { schema_version: '2.0', campaign_id: ymd + '_' + String(channel).replace(/\s+/g, '') + '_01', created_at: now.toISOString(), mode: 'FULL_SET', use_webzine: !!useWebzine, webzine_base_url: baseUrl, source: 'partner_bot_toss8' },
+      meta: { schema_version: '2.0', campaign_id: ymd + '_' + String(channel).replace(/\s+/g, '') + '_01', created_at: now.toISOString(), mode: 'FULL_SET', use_webzine: !!useWebzine, webzine_base_url: baseUrl, source: 'partner_bot_toss8', auto_generate_visuals: true },
       partner_info: { owner_name: partner.ownerName || '', phone: partner.phone || '', email: partner.email || '', channel_name: channel, channel_id_num: '', current_plan: 'STARTER', pro_upgrade_requested: false, industry_code: 'custom_ai', track_id: '' },
-      brand_assets: { primary_color: gBa.primary_color || '#4F46E5', secondary_color: gBa.secondary_color || '#EEF2FF', font_theme: gBa.font_theme || 'modern', logo_base64: null, block_images_base64: { block_1: null, block_2: null, block_3: null, block_4: null, block_5: null } },
+      brand_assets: { primary_color: gBa.primary_color || smartTheme.primary, secondary_color: gBa.secondary_color || smartTheme.secondary, font_theme: gBa.font_theme || 'modern', logo_base64: null, block_images_base64: { block_1: null, block_2: null, block_3: null, block_4: null, block_5: null } },
       tab1_basic_settings: {
         thumbnail_500x280: th, title_30chars: tFirst(gT1.title_30chars || fT1.title_30chars, 30), description: gT1.description || fT1.description,
         apply_btn_text: gT1.apply_btn_text || fT1.apply_btn_text, cancel_btn_text: gT1.cancel_btn_text || fT1.cancel_btn_text,
         show_apply_btn: true, show_top_bar: true, form_only_mode: false, failure_notice_alimtalk: true, friendtalk_rescue_2times: true, marketing_consent_popup: true
       },
-      tab2_landing_content: { output_mode: 'FULL', bg_color: '#F8FAFC', use_shorts_landing: false, shorts_youtube_url: '', blocks_1000px: blocks, branch_links: ['', '', '', '', ''] },
+      tab2_landing_content: { output_mode: 'FULL', bg_color: smartTheme.secondary, use_shorts_landing: false, shorts_youtube_url: '', blocks_1000px: blocks, branch_links: ['', '', '', '', ''] },
       tab3_application_form: {
         is_active: true,
         form_title: (g.tab3_application_form && g.tab3_application_form.form_title) || fb.tab3_application_form.form_title,
@@ -1307,6 +1336,7 @@
   RagInterviewEngine.saveBridgeCampaign = saveBridgeCampaign;
   RagInterviewEngine.getBridgeCampaign = getBridgeCampaign;
   RagInterviewEngine.discoverActiveModels = discoverActiveModels;
+  RagInterviewEngine.detectSmartEditorialTheme = detectSmartEditorialTheme;
   RagInterviewEngine.callGemini = callGemini;
   RagInterviewEngine.generateImage = generateImage;
   RagInterviewEngine.translateKoreanToImagePrompt = translateKoreanToImagePrompt;

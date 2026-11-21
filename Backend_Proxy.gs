@@ -4,7 +4,9 @@
  *
  * 주요 기능:
  *   1) doPost(e)
- *      - action === "chat"           : 파트너 챗봇 AI 대화 프록시 (API 키 100% 서버 은닉, gemini-2.5 제외 정식 모델 자동 탐색)
+ *      - action === "verifyPartner"  : 카카오 로그인 파트너 선인증 ([승인파트너명단] 시트 대조 및 비인증자 AI 토큰 차단)
+ *      - action === "chat"           : 파트너 챗봇 AI 대화 프록시 (API 키 100% 서버 은닉, gemini-3.8-flash 기본 + 실시간 동적 모델 탐색 폴백)
+ *      - action === "generate_image" : 비주얼 슬롯 AI 이미지 생성 프록시 (imagen-4 / imagen-3 / 이미지 지원 gemini 동적 폴백)
  *      - action === "pinpoint_edit"  : 대표님 조종석(LandingBuilder.html) 탭별 핀셋 AI 수정 프록시
  *      - action === "submit_campaign": 구글 드라이브 [파트너접수함] JSON 저장 + 구글 시트 관제탑 기록 + 구글 챗 즉시 알림 (침묵형 회로 차단기 적용)
  *      - action === "lookup_partner" : 파트너 시트 매칭 (성함 + 휴대폰 번호 → 채널명/채널ID/플랜 조회)
@@ -26,7 +28,9 @@
 
 var FOLDER_NAME_DEFAULT = '파트너접수함';
 var SHEET_NAME_CONTROL = '파트너캠페인관제탑';
+var SHEET_NAME_APPROVED_PARTNERS = '승인파트너명단';
 var SHEET_NAME_PARTNERS = '파트너목록';
+var DEFAULT_GEMINI_MODEL = 'models/gemini-3.8-flash';
 
 function getProp_(key, fallback) {
   var val = PropertiesService.getScriptProperties().getProperty(key);
@@ -37,6 +41,20 @@ function jsonResponse_(obj) {
   return ContentService
     .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// 카카오 전화번호(+82 10-1234-5678 / +82 1012345678 / 010-1234-5678) → 01012345678 정규화
+function normalizePhone_(raw) {
+  var s = String(raw === null || raw === undefined ? '' : raw).trim();
+  var digits = s.replace(/[^0-9]/g, '');
+  if (!digits) return '';
+  if (/^\+?\s*82/.test(s) || digits.indexOf('8210') === 0) {
+    digits = digits.replace(/^82/, '');
+  }
+  if (digits.charAt(0) !== '0') {
+    digits = '0' + digits;
+  }
+  return digits;
 }
 
 /* =========================================================================
@@ -51,6 +69,7 @@ function doGet(e) {
       return jsonResponse_({
         ok: true,
         service: 'Gomawartalk Backend_Proxy',
+        defaultModel: DEFAULT_GEMINI_MODEL,
         timestamp: new Date().toISOString()
       });
     }
@@ -77,7 +96,7 @@ function doGet(e) {
 }
 
 /* =========================================================================
- * doPost(e) — AI 프록시 / 핀셋 수정 / 캠페인 접수 & 구글 챗 즉시 알림
+ * doPost(e) — 파트너 선인증 / AI 프록시 / 핀셋 수정 / 캠페인 접수 & 구글 챗 알림
  * ========================================================================= */
 function doPost(e) {
   try {
@@ -85,8 +104,16 @@ function doPost(e) {
     var body = JSON.parse(rawBody);
     var action = body.action || '';
 
+    if (action === 'verifyPartner') {
+      return jsonResponse_(handleVerifyPartner_(body));
+    }
+
     if (action === 'chat') {
       return jsonResponse_(handleChatProxy_(body));
+    }
+
+    if (action === 'generate_image') {
+      return jsonResponse_(handleGenerateImageProxy_(body));
     }
 
     if (action === 'pinpoint_edit') {
@@ -109,12 +136,75 @@ function doPost(e) {
 }
 
 /* =========================================================================
+ * 0. 선(先) 파트너 인증 게이트: [승인파트너명단] 시트 대조 (비인증자 AI 토큰 차단)
+ *    컬럼 규격: [상호명, 대표자명, 전화번호, 이메일, 승인상태]
+ * ========================================================================= */
+function handleVerifyPartner_(body) {
+  var normPhone = normalizePhone_(body.phone || '');
+  var normEmail = String(body.email || '').trim().toLowerCase();
+  var nickname = String(body.nickname || '').trim();
+
+  var ss = getControlSpreadsheet_();
+  if (!ss) {
+    return {
+      verified: false,
+      message: '관제탑 구글 시트가 연결되지 않았습니다. 관리자에게 SPREADSHEET_ID 설정을 요청해 주세요.'
+    };
+  }
+
+  var sheet = ss.getSheetByName(SHEET_NAME_APPROVED_PARTNERS);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME_APPROVED_PARTNERS);
+    sheet.appendRow(['상호명', '대표자명', '전화번호', '이메일', '승인상태']);
+  }
+
+  var rows = sheet.getDataRange().getValues();
+  for (var i = 1; i < rows.length; i++) {
+    var rBizName = String(rows[i][0] || '').trim();
+    var rOwnerName = String(rows[i][1] || '').trim();
+    var rPhone = normalizePhone_(rows[i][2] || '');
+    var rEmail = String(rows[i][3] || '').trim().toLowerCase();
+    var rStatus = String(rows[i][4] || '').trim().toUpperCase();
+
+    var isApproved = (rStatus === 'Y' || rStatus === '승인' || rStatus === 'APPROVED' || rStatus === 'O');
+    if (!isApproved) continue;
+
+    var phoneMatch = (normPhone !== '' && rPhone !== '' && normPhone === rPhone);
+    var emailMatch = (normEmail !== '' && rEmail !== '' && normEmail === rEmail);
+
+    if (phoneMatch || emailMatch) {
+      var tokenRaw = (rPhone || rEmail) + '|' + rBizName + '|' + Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyyMMdd');
+      var token = Utilities.base64EncodeWebSafe(tokenRaw);
+      return {
+        verified: true,
+        partnerToken: token,
+        partnerInfo: {
+          businessName: rBizName || (nickname ? nickname + ' 채널' : '고마워톡 파트너'),
+          ownerName: rOwnerName || nickname || '대표님',
+          phone: rPhone || normPhone,
+          email: rEmail || normEmail
+        }
+      };
+    }
+  }
+
+  return {
+    verified: false,
+    message: '사전 승인된 고마워톡 파트너 전용 서비스입니다. 담당자에게 파트너 등록을 요청해 주세요.'
+  };
+}
+
+/* =========================================================================
  * 1. 드라이브 [파트너접수함] 폴더 확보 & 파일 목록 조회
  * ========================================================================= */
 function getOrCreateIntakeFolder_() {
   var folderId = getProp_('DRIVE_FOLDER_ID', '');
   if (folderId) {
-    return DriveApp.getFolderById(folderId);
+    try {
+      return DriveApp.getFolderById(folderId);
+    } catch (e) {
+      Logger.log('[DRIVE_FOLDER_ID 조회 실패, 기본 폴더 탐색] ' + e);
+    }
   }
   var iter = DriveApp.getFoldersByName(FOLDER_NAME_DEFAULT);
   if (iter.hasNext()) {
@@ -125,20 +215,27 @@ function getOrCreateIntakeFolder_() {
 
 function listCampaignFiles_() {
   var folder = getOrCreateIntakeFolder_();
-  var iter = folder.getFiles();
+  var files = folder.getFiles();
   var list = [];
-  while (iter.hasNext()) {
-    var f = iter.next();
-    if (f.getName().toLowerCase().indexOf('.json') === -1) continue;
+  while (files.hasNext()) {
+    var f = files.next();
+    var name = f.getName();
+    if (name.slice(-5).toLowerCase() !== '.json') continue;
+    var created = f.getDateCreated();
     list.push({
       id: f.getId(),
-      name: f.getName(),
-      createdTime: Utilities.formatDate(f.getDateCreated(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm'),
-      ts: f.getDateCreated().getTime()
+      fileId: f.getId(),
+      name: name,
+      createdTime: Utilities.formatDate(created, 'Asia/Seoul', 'yyyy-MM-dd HH:mm'),
+      ts: created.getTime()
     });
   }
   list.sort(function (a, b) { return b.ts - a.ts; });
-  return { ok: true, files: list.slice(0, 50) };
+  return {
+    ok: true,
+    folderName: folder.getName(),
+    files: list.slice(0, 50)
+  };
 }
 
 /* =========================================================================
@@ -155,7 +252,7 @@ function handleSubmitCampaign_(payload) {
   var owner = String(partner.owner_name || '대표님').replace(/[\\\/:*?"<>|\s]+/g, '_');
   var fileName = tsFile + '_' + chName + '_' + owner + '.json';
 
-  // (1) 구글 드라이브 [파트너접수함]에 .json 파일 저장 (시트 50,000자 한계 극복)
+  // (1) 구글 드라이브 [파트너접수함]에 .json 파일 저장
   var folder = getOrCreateIntakeFolder_();
   var jsonStr = JSON.stringify(payload, null, 2);
   var savedFile = folder.createFile(fileName, jsonStr, MimeType.PLAIN_TEXT);
@@ -247,27 +344,27 @@ function sendGoogleChatAlert_(partner, meta, fileName, fileId) {
 }
 
 /* =========================================================================
- * 3. 파트너 시트 간편 조회 (Step 0 식별용)
+ * 3. 파트너 시트 간편 조회
  * ========================================================================= */
 function handleLookupPartner_(body) {
   var name = String(body.owner_name || '').trim();
-  var phone = String(body.phone || '').replace(/[^0-9]/g, '');
+  var phone = normalizePhone_(body.phone || '');
   try {
     var ss = getControlSpreadsheet_();
-    var sheet = ss ? ss.getSheetByName(SHEET_NAME_PARTNERS) : null;
+    var sheet = ss ? (ss.getSheetByName(SHEET_NAME_APPROVED_PARTNERS) || ss.getSheetByName(SHEET_NAME_PARTNERS)) : null;
     if (sheet) {
       var rows = sheet.getDataRange().getValues();
       for (var i = 1; i < rows.length; i++) {
-        var rPhone = String(rows[i][1] || '').replace(/[^0-9]/g, '');
-        if ((phone && rPhone === phone) || (name && String(rows[i][0]).trim() === name)) {
+        var rPhone = normalizePhone_(rows[i][2] || rows[i][1] || '');
+        if ((phone && rPhone === phone) || (name && String(rows[i][1] || rows[i][0]).trim() === name)) {
           return {
             ok: true,
             found: true,
-            owner_name: rows[i][0],
-            phone: rows[i][1],
-            channel_name: rows[i][2],
+            owner_name: rows[i][1] || rows[i][0],
+            phone: rPhone,
+            channel_name: rows[i][0] || rows[i][2],
             channel_id_num: String(rows[i][3] || ''),
-            current_plan: String(rows[i][4] || 'STARTER').toUpperCase()
+            current_plan: 'STARTER'
           };
         }
       }
@@ -287,59 +384,74 @@ function handleLookupPartner_(body) {
 }
 
 /* =========================================================================
- * 4. Gemini API 프록시 (gemini-2.5 제외 정식 모델 자동 탐색 + { ~ } 안전 추출)
+ * 4. Gemini API 프록시 (gemini-3.8-flash 기본 + 실시간 /v1beta/models 동적 탐색 폴백)
  * ========================================================================= */
 function fetchAvailableGeminiModel_(apiKey) {
   var url = 'https://generativelanguage.googleapis.com/v1beta/models?key=' + encodeURIComponent(apiKey);
   var res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
   if (res.getResponseCode() !== 200) {
-    return 'models/gemini-2.0-flash';
+    return DEFAULT_GEMINI_MODEL;
   }
   var data = JSON.parse(res.getContentText());
   var models = data.models || [];
-  var preferred = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+  var candidates = [];
 
-  for (var p = 0; p < preferred.length; p++) {
-    for (var i = 0; i < models.length; i++) {
-      var mName = String(models[i].name || '');
-      if (mName.indexOf('gemini-2.5') !== -1) continue;
-      if (mName.indexOf(preferred[p]) !== -1) {
-        return mName;
-      }
-    }
+  for (var i = 0; i < models.length; i++) {
+    var mName = String(models[i].name || '');
+    var methods = models[i].supportedGenerationMethods || [];
+    if (mName.indexOf('gemini') === -1 || methods.indexOf('generateContent') === -1) continue;
+    if (/embedding|aqa|tts|audio|robotics|image-generation/i.test(mName)) continue;
+    candidates.push(mName);
   }
-  for (var j = 0; j < models.length; j++) {
-    var nm = String(models[j].name || '');
-    var methods = models[j].supportedGenerationMethods || [];
-    if (nm.indexOf('gemini-2.5') === -1 && nm.indexOf('gemini') !== -1 && methods.indexOf('generateContent') !== -1) {
-      return nm;
-    }
-  }
-  return 'models/gemini-2.0-flash';
+
+  candidates.sort(function (a, b) {
+    var score = function (s) {
+      var v = 0;
+      if (s === DEFAULT_GEMINI_MODEL) v += 1000;
+      if (/flash/i.test(s) && !/lite/i.test(s)) v += 100;
+      if (/pro/i.test(s)) v += 60;
+      var m = s.match(/gemini-(\d+(?:\.\d+)?)/i);
+      if (m) v += parseFloat(m[1]) * 20;
+      return v;
+    };
+    return score(b) - score(a);
+  });
+
+  return candidates.length ? candidates[0] : DEFAULT_GEMINI_MODEL;
 }
 
-function callGemini_(promptText, systemPrompt) {
-  var apiKey = getProp_('GEMINI_API_KEY', '');
-  if (!apiKey) {
-    throw new Error('스크립트 속성에 GEMINI_API_KEY가 설정되지 않았습니다.');
-  }
-  var modelName = fetchAvailableGeminiModel_(apiKey);
-  var endpoint = 'https://generativelanguage.googleapis.com/v1beta/' + modelName + ':generateContent?key=' + encodeURIComponent(apiKey);
-
+function invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, maxTokens) {
+  var cleanName = modelName.indexOf('models/') === 0 ? modelName : ('models/' + modelName);
+  var endpoint = 'https://generativelanguage.googleapis.com/v1beta/' + cleanName + ':generateContent?key=' + encodeURIComponent(apiKey);
   var payload = {
     contents: [{ role: 'user', parts: [{ text: promptText }] }],
-    generationConfig: { temperature: 0.4, maxOutputTokens: 2048 }
+    generationConfig: {
+      temperature: temperature !== undefined ? temperature : 0.4,
+      maxOutputTokens: maxTokens || 2048
+    }
   };
   if (systemPrompt) {
     payload.systemInstruction = { parts: [{ text: systemPrompt }] };
   }
-
-  var res = UrlFetchApp.fetch(endpoint, {
+  return UrlFetchApp.fetch(endpoint, {
     method: 'post',
     contentType: 'application/json; charset=UTF-8',
     payload: JSON.stringify(payload),
     muteHttpExceptions: true
   });
+}
+
+function callGemini_(promptText, systemPrompt, temperature, maxTokens) {
+  var apiKey = getProp_('GEMINI_API_KEY', '');
+  if (!apiKey) {
+    throw new Error('스크립트 속성에 GEMINI_API_KEY가 설정되지 않았습니다.');
+  }
+  // 1차: gemini-3.8-flash 기본 호출 -> 404/미지원 시 실시간 /v1beta/models 조회로 활성 모델 자동 폴백
+  var res = invokeGeminiEndpoint_(apiKey, DEFAULT_GEMINI_MODEL, promptText, systemPrompt, temperature, maxTokens);
+  if (res.getResponseCode() !== 200) {
+    var fallbackModel = fetchAvailableGeminiModel_(apiKey);
+    res = invokeGeminiEndpoint_(apiKey, fallbackModel, promptText, systemPrompt, temperature, maxTokens);
+  }
   var code = res.getResponseCode();
   var text = res.getContentText();
   if (code !== 200) {
@@ -349,6 +461,38 @@ function callGemini_(promptText, systemPrompt) {
   var cand = parsed.candidates && parsed.candidates[0];
   var part = cand && cand.content && cand.content.parts && cand.content.parts[0];
   return part ? String(part.text || '') : '';
+}
+
+function handleGenerateImageProxy_(body) {
+  var apiKey = getProp_('GEMINI_API_KEY', '');
+  if (!apiKey) {
+    return { ok: false, error: '스크립트 속성에 GEMINI_API_KEY가 설정되지 않았습니다.' };
+  }
+  var promptText = String(body.prompt || '');
+  var aspectRatio = String(body.aspectRatio || '16:9');
+  var imagenModels = ['models/imagen-4.0-generate-001', 'models/imagen-3.0-generate-002'];
+
+  for (var i = 0; i < imagenModels.length; i++) {
+    var ep = 'https://generativelanguage.googleapis.com/v1beta/' + imagenModels[i] + ':predict?key=' + encodeURIComponent(apiKey);
+    var res = UrlFetchApp.fetch(ep, {
+      method: 'post',
+      contentType: 'application/json; charset=UTF-8',
+      payload: JSON.stringify({
+        instances: [{ prompt: promptText }],
+        parameters: { sampleCount: 1, aspectRatio: aspectRatio }
+      }),
+      muteHttpExceptions: true
+    });
+    if (res.getResponseCode() === 200) {
+      var d = JSON.parse(res.getContentText());
+      var pred = (d.predictions && d.predictions[0]) || (d.generatedImages && d.generatedImages[0]);
+      var b64 = pred && (pred.bytesBase64Encoded || (pred.image && (pred.image.bytesBase64Encoded || pred.image.imageBytes)));
+      if (b64) {
+        return { ok: true, dataUrl: 'data:image/png;base64,' + b64, engine: imagenModels[i] };
+      }
+    }
+  }
+  return { ok: false, error: '사용 가능한 이미지 생성 모델을 찾을 수 없습니다.' };
 }
 
 function extractJsonSafe_(rawText) {
@@ -366,7 +510,7 @@ function extractJsonSafe_(rawText) {
 function handleChatProxy_(body) {
   var userText = String(body.userText || '');
   var sys = String(body.systemPrompt || '당신은 고마워톡 전문 컨설턴트입니다. 카카오 알림톡 규정을 준수하여 친절하게 답변하세요.');
-  var reply = callGemini_(userText, sys);
+  var reply = callGemini_(userText, sys, body.temperature, body.maxOutputTokens);
   return { ok: true, reply: reply };
 }
 
@@ -376,10 +520,10 @@ function handlePinpointEdit_(body) {
   var currentTabJson = JSON.stringify(body.currentData || {});
   var sys = '당신은 고마워톡 캠페인 카피라이터입니다. 사용자의 수정 지시를 반영해 입력된 JSON과 동일한 구조의 JSON만 반환하세요. 알림톡 금지어(할인, 특가, 이벤트, 무료증정)는 알림톡 영역에 절대 넣지 마세요.';
   var prompt = '현재 탭(' + tabId + ') 데이터:\n' + currentTabJson + '\n\n수정 지시:\n' + instruction + '\n\n수정된 JSON만 중괄호로 감싸서 출력하세요.';
-  var raw = callGemini_(prompt, sys);
+  var raw = callGemini_(prompt, sys, 0.4, 4096);
   var updated = extractJsonSafe_(raw);
   if (!updated) {
     return { ok: false, error: 'AI 응답에서 JSON을 추출하지 못했습니다.', raw: raw };
   }
-  return { ok: true, tabId: tabId, updatedData: updated };
+  return { ok: true, updatedData: updated };
 }

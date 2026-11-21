@@ -1,0 +1,13 @@
+# Cursor / AI Agent Permanent Rules — Gomawartalk AI Builder
+
+1. Auto-Sync Handoff on Every Commit:
+   - Before every `git commit`, always update `HANDOFF_NEXT_SESSION.md` with completed items and the next session checklist, and stage it in the same commit.
+2. Pinpoint PRD Sync on Spec Changes:
+   - Whenever UI specs, JSON schemas, auth gates, or AI model/prompt architectures change, immediately update the matching section in `PRD.md`.
+3. Daily Wrap-up Trigger ("마감"):
+   - When the user says "마감", automatically run: (a) full QA scan (0 syntax errors, 0 banned words, 0 legacy gemini-1.5/2.0/2.5 references), (b) full `PRD.md` reverse sync, (c) `HANDOFF_NEXT_SESSION.md` update, and (d) final Git commit.
+4. Core Invariants:
+   - Keep 100% `file://` local execution compatibility via `window.*` globals.
+   - Default AI model is `gemini-3.8-flash` with real-time `GET /v1beta/models` dynamic discovery fallback for both text and image generation.
+   - Never break `LandingBuilder.html` Tab 2 single-column 888px width, 44px+ body / 36px+ floor, or no-fake-header/button rules.
+   - Keep `InterviewBot.html` mobile-first (max-width 480px, 100dvh), Kakao auth gate first, and hide admin buttons outside `file://`, `localhost`, or `?admin=1`.

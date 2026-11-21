@@ -1068,7 +1068,22 @@ function stateFromData(d, keep) {
     s.t5.items = buildTab5FromPreset(d, s.t1.title);
   }
 
-  if (d.webzine_studio !== undefined) s.passthrough.webzine_studio = d.webzine_studio;
+  if (d.webzine_studio !== undefined) {
+    s.passthrough.webzine_studio = d.webzine_studio;
+  } else {
+    // 업종 프리셋 전환 시 모바일 웹진 스튜디오 데이터도 업종 맞춤으로 자동 생성·동기화
+    const b3 = s.t2.blocks[2] || {}, b4 = s.t2.blocks[3] || {};
+    const optLabels = (s.t3.questions[0] && s.t3.questions[0].options ? s.t3.questions[0].options.map(o => o.text.split('(')[0].trim()).filter(Boolean) : ['유형 A', '유형 B', '유형 C']);
+    s.passthrough.webzine_studio = {
+      webzine_title: (s.t1.title || '모바일 매거진').replace(/^\[신청\]\s*/, '') + ' 매거진',
+      sections: [
+        { anchor_id: 'sec-1', type: 'ARTICLE_CARD', badge: 'PART 01', title: '1. ' + (b3.title || s.t1.title || '핵심 가이드').split('\n')[0], body: (b3.points && b3.points.length ? b3.points.join('\n') : s.t1.desc), image: null },
+        { anchor_id: 'sec-2', type: 'MULTI_CATEGORY_TABS', badge: 'PART 02', title: '2. 맞춤 유형별 핵심 처방', activeTab: 0, tabs: optLabels.map(lbl => ({ label: lbl, content: lbl + ' 고객님을 위한 맞춤 핵심 요약 가이드입니다.' })) },
+        { anchor_id: 'sec-3', type: 'STAT_AND_FAQ', badge: 'PART 03', title: '3. 검증된 성과 & FAQ', stat_label: (b4.title || '고객 만족도').split('\n')[0], stat_value: 98, stat_unit: '%', q: '신청 후 자료는 언제 받아볼 수 있나요?', a: '카카오 신청 즉시 1편 핵심 안내가 알림톡으로 발송됩니다.' },
+        { anchor_id: 'sec-cta', type: 'FLOATING_CTA', button_text: s.t1.apply || '지금 바로 신청하기', link: 'https://gomawartalk.com' }
+      ]
+    };
+  }
   return s;
 }
 

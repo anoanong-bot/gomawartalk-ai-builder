@@ -27,8 +27,9 @@
   });
 
   await step('금지어', async () => {
+    const banned = '\uB274\uC2A4\uB808\uD130';
     const hay = document.documentElement.outerHTML + JSON.stringify(window.IndustryPresets) + JSON.stringify(window.GomawartalkManual) + JSON.stringify(window.AlimtalkTemplates);
-    ok("'뉴스레터' 단어 미사용", hay.indexOf('뉴스레터') === -1);
+    ok('금지어 단어 미사용', hay.indexOf(banned) === -1);
   });
 
   await step('URL 보정', async () => {

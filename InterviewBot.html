@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>고마워톡 AI 캠페인 기획 인터뷰 &amp; 무엇이든 물어보세요 챗봇</title>
+<title>고마워톡 AI 마케팅 기획자 — 심층 상담 &amp; 캠페인 자동생성 봇</title>
 
-<!-- 일반 <script src> 로드 (file:// 더블클릭 100% 호환, API 키 절대 미포함) -->
+<!-- 일반 <script src> 로드 (file:// 더블클릭 100% 호환) -->
 <script src="engines/ImageCapturer.js"></script>
 <script src="engines/RagInterviewEngine.js"></script>
 <script src="data/GomawartalkManual.js"></script>
@@ -16,124 +16,169 @@
   --purple:#6D28D9; --purple-md:#7C3AED; --purple-dk:#4C1D95; --purple-lt:#F5F3FF; --purple-bd:#DDD6FE;
   --green:#059669; --green-lt:#ECFDF5; --green-bd:#A7F3D0;
   --amber:#D97706; --amber-lt:#FFFBEB; --amber-bd:#FDE68A;
+  --red:#DC2626; --red-lt:#FEF2F2; --red-bd:#FECACA;
   --g50:#F8FAFC; --g100:#F1F5F9; --g200:#E2E8F0; --g300:#CBD5E1; --g400:#94A3B8; --g500:#64748B; --g700:#334155; --g900:#0F172A;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:linear-gradient(160deg,#EEF2FF 0%,#F8FAFC 45%,#F5F3FF 100%);color:var(--g700);min-height:100vh;display:flex;justify-content:center;padding:18px 12px;word-break:keep-all}
+body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:linear-gradient(160deg,#EEF2FF 0%,#F8FAFC 45%,#F5F3FF 100%);color:var(--g700);min-height:100vh;display:flex;justify-content:center;padding:16px 12px;word-break:keep-all}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;transition:.15s}
-input,textarea{font-family:inherit;font-size:13.5px;color:var(--g900)}
+input,textarea,select{font-family:inherit;font-size:13.5px;color:var(--g900)}
+[hidden]{display:none!important}
+code{background:var(--purple-lt);color:var(--purple-dk);padding:2px 6px;border-radius:5px;font-size:11.5px;font-family:Consolas,monospace}
 
-.shell{width:100%;max-width:780px;height:calc(100vh - 36px);min-height:620px;background:#fff;border:1px solid var(--g200);border-radius:22px;box-shadow:0 20px 50px -16px rgba(15,23,42,.18);display:flex;flex-direction:column;overflow:hidden}
+.shell{width:100%;max-width:860px;height:calc(100vh - 32px);min-height:660px;background:#fff;border:1px solid var(--g200);border-radius:22px;box-shadow:0 22px 54px -16px rgba(15,23,42,.2);display:flex;flex-direction:column;overflow:hidden}
 
 /* 상단 헤더 */
-.hdr{padding:16px 22px;background:linear-gradient(135deg,#6D28D9 0%,#4F46E5 100%);color:#fff;display:flex;align-items:center;gap:12px}
-.hdr-av{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);display:grid;place-items:center;font-size:20px;flex-shrink:0}
-.hdr-t h1{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.hdr{padding:15px 22px;background:linear-gradient(135deg,#4C1D95 0%,#6D28D9 52%,#4F46E5 100%);color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hdr-av{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.32);display:grid;place-items:center;font-size:21px;flex-shrink:0}
+.hdr-t h1{font-size:16px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
 .hdr-t p{font-size:11.5px;opacity:.9;margin-top:2px}
-.hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px}
-.hdr-btn{padding:6px 11px;border-radius:99px;background:rgba(255,255,255,.18);color:#fff;font-size:11.5px;font-weight:700;border:1px solid rgba(255,255,255,.28)}
-.hdr-btn:hover{background:rgba(255,255,255,.28)}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hdr-btn{padding:7px 12px;border-radius:99px;background:rgba(255,255,255,.16);color:#fff;font-size:12px;font-weight:800;border:1px solid rgba(255,255,255,.3);display:inline-flex;align-items:center;gap:6px}
+.hdr-btn:hover{background:rgba(255,255,255,.26)}
+.hdr-btn.key-on{background:rgba(16,185,129,.28);border-color:#6EE7B7;color:#ECFDF5}
+.hdr-btn.key-off{background:rgba(245,158,11,.32);border-color:#FDE68A;color:#FEF3C7}
 
-/* 진행률 & 상시 상담 배너 */
-.prog-wrap{padding:10px 20px;background:var(--g50);border-bottom:1px solid var(--g200);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.prog-bar{flex:1;min-width:160px;height:7px;background:var(--g200);border-radius:99px;overflow:hidden}
-.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,#7C3AED,#4F46E5);border-radius:99px;transition:width .35s ease}
-.prog-lbl{font-size:11.5px;font-weight:800;color:var(--purple);white-space:nowrap}
-.qa-tip{padding:8px 20px;background:#FFFBEB;border-bottom:1px solid var(--amber-bd);font-size:12px;color:#92400E;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+/* 파트너 간편 정보 바 & 4단계 진행 표시 */
+.top-meta{padding:10px 20px;background:var(--g50);border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.partner-inputs{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.mini-in{padding:6px 10px;border:1px solid var(--g200);border-radius:8px;background:#fff;font-size:12px;width:135px}
+.mini-in:focus{outline:none;border-color:var(--purple-md)}
+.step-pills{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.step-pill{font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;background:var(--g100);color:var(--g500);border:1px solid var(--g200)}
+.step-pill.on{background:var(--purple);color:#fff;border-color:var(--purple)}
+.step-pill.done{background:var(--green-lt);color:var(--green);border-color:var(--green-bd)}
+
+.qa-tip{padding:8px 20px;background:#FFFBEB;border-bottom:1px solid var(--amber-bd);font-size:11.5px;color:#92400E;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .qa-chips{display:flex;gap:5px;flex-wrap:wrap}
 .qa-chip{padding:3px 9px;border-radius:99px;background:#fff;border:1px solid var(--amber-bd);color:#92400E;font-size:11px;font-weight:700}
 .qa-chip:hover{background:#FEF3C7}
 
 /* 채팅 영역 */
-#chat{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;background:#FAFBFD}
-#chat::-webkit-scrollbar{width:6px} #chat::-webkit-scrollbar-thumb{background:var(--g200);border-radius:99px}
-.msg{display:flex;gap:10px;max-width:90%;animation:fadeUp .22s ease}
+#chat{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;background:#F8FAFC}
+#chat::-webkit-scrollbar{width:6px} #chat::-webkit-scrollbar-thumb{background:var(--g300);border-radius:99px}
+.msg{display:flex;gap:10px;max-width:92%;animation:fadeUp .22s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .msg.user{align-self:flex-end;flex-direction:row-reverse}
-.msg-av{width:32px;height:32px;border-radius:11px;background:var(--purple-lt);color:var(--purple);display:grid;place-items:center;font-size:15px;flex-shrink:0;border:1px solid var(--purple-bd)}
-.bubble{padding:13px 16px;border-radius:16px;font-size:13.5px;line-height:1.65;white-space:pre-wrap;box-shadow:0 2px 8px rgba(15,23,42,.05)}
+.msg-av{width:34px;height:34px;border-radius:12px;background:var(--purple-lt);color:var(--purple);display:grid;place-items:center;font-size:16px;flex-shrink:0;border:1px solid var(--purple-bd);font-weight:800}
+.bubble{padding:14px 17px;border-radius:16px;font-size:13.5px;line-height:1.68;white-space:pre-wrap;box-shadow:0 2px 10px rgba(15,23,42,.05);min-width:0;flex:1}
 .msg.bot .bubble{background:#fff;border:1px solid var(--g200);border-top-left-radius:4px;color:var(--g900)}
 .msg.bot.rag .bubble{background:linear-gradient(180deg,#F5F3FF,#fff);border-color:var(--purple-bd)}
-.msg.user .bubble{background:linear-gradient(135deg,#7C3AED,#5B21B6);color:#fff;border-top-right-radius:4px}
-.rag-tag{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--purple);color:#fff;margin-bottom:6px}
+.msg.user .bubble{background:linear-gradient(135deg,#7C3AED,#5B21B6);color:#fff;border-top-right-radius:4px;flex:0 1 auto}
+.rag-tag{display:inline-block;font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:99px;background:var(--purple);color:#fff;margin-bottom:8px}
 
-/* 인터랙티브 카드 (단계별 버튼/트랙/업로드/제출) */
-.widget{margin-top:10px;display:flex;flex-direction:column;gap:8px}
-.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-@media(max-width:600px){.opt-grid{grid-template-columns:1fr}}
-.opt-btn{text-align:left;padding:11px 14px;border-radius:11px;background:var(--g50);border:1.5px solid var(--g200);font-size:12.5px;font-weight:700;color:var(--g900);line-height:1.45}
-.opt-btn:hover{border-color:var(--purple-md);background:var(--purple-lt);color:var(--purple-dk)}
-.opt-btn small{display:block;font-weight:500;color:var(--g500);font-size:11px;margin-top:3px}
-.form-box{background:var(--g50);border:1px solid var(--g200);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:9px}
-.in{width:100%;padding:9px 11px;border:1px solid var(--g200);border-radius:9px;background:#fff}
-.in:focus{outline:none;border-color:var(--purple-md);box-shadow:0 0 0 3px rgba(124,58,237,.14)}
-.pbtn{padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,#7C3AED,#5B21B6);color:#fff;font-weight:800;font-size:13px;text-align:center}
+/* 의도 복창 박스 */
+.intent-box{background:linear-gradient(90deg,#F5F3FF,#EEF2FF);border:1.5px solid var(--purple-bd);border-left:5px solid var(--purple);border-radius:11px;padding:10px 13px;margin-bottom:11px;font-size:12.5px;line-height:1.55;color:var(--purple-dk)}
+.intent-box b{display:block;font-size:11.5px;color:var(--purple);margin-bottom:2px}
+
+/* 추천 선택지 칩 & 위젯 */
+.widget{margin-top:12px;display:flex;flex-direction:column;gap:9px;white-space:normal}
+.chip-list{display:flex;flex-wrap:wrap;gap:7px}
+.sugg-chip{text-align:left;padding:8px 13px;border-radius:11px;background:var(--g50);border:1.5px solid var(--g200);font-size:12.5px;font-weight:700;color:var(--g900);line-height:1.4}
+.sugg-chip:hover{border-color:var(--purple-md);background:var(--purple-lt);color:var(--purple-dk)}
+.action-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.pbtn{padding:10px 16px;border-radius:11px;background:linear-gradient(135deg,#7C3AED,#5B21B6);color:#fff;font-weight:800;font-size:13px;text-align:center;box-shadow:0 4px 12px rgba(109,40,217,.22)}
 .pbtn:hover{filter:brightness(1.06)}
-.pbtn.grn{background:linear-gradient(135deg,#10B981,#059669)}
-.pbtn.sec{background:#fff;color:var(--g700);border:1px solid var(--g300)}
-.warn-mini{background:#FEF3C7;border:1px solid #FDE68A;border-radius:9px;padding:9px 12px;font-size:12px;color:#92400E;line-height:1.5}
-.thumb-prev{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.thumb-prev img{width:64px;height:48px;object-fit:cover;border-radius:7px;border:1px solid var(--g200)}
+.pbtn.grn{background:linear-gradient(135deg,#10B981,#059669);box-shadow:0 4px 12px rgba(5,150,105,.24)}
+.pbtn.sec{background:#fff;color:var(--purple-dk);border:1.5px solid var(--purple-bd);box-shadow:none}
+.pbtn.sec:hover{background:var(--purple-lt)}
+
+/* Step 3 청사진 브리핑 카드 */
+.bp-card{background:var(--g50);border:1.5px solid var(--purple-bd);border-radius:14px;padding:15px;display:flex;flex-direction:column;gap:10px}
+.bp-sec{background:#fff;border:1px solid var(--g200);border-radius:10px;padding:11px 13px}
+.bp-sec h4{font-size:12.5px;font-weight:800;color:var(--purple-dk);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.bp-sec p,.bp-sec li{font-size:12.5px;color:var(--g700);line-height:1.58}
+.bp-sec ul{padding-left:18px;margin-top:4px}
 
 /* 하단 입력 바 */
 .composer{padding:12px 16px;background:#fff;border-top:1px solid var(--g200);display:flex;gap:8px;align-items:center}
-.composer input{flex:1;padding:11px 14px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50)}
-.composer input:focus{outline:none;border-color:var(--purple-md);background:#fff}
-.composer button{padding:11px 18px;border-radius:12px;background:var(--purple);color:#fff;font-weight:800;font-size:13px}
-.composer button:hover{background:var(--purple-dk)}
+.composer input{flex:1;padding:12px 15px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50)}
+.composer input:focus{outline:none;border-color:var(--purple-md);background:#fff;box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.composer button{padding:12px 20px;border-radius:12px;background:linear-gradient(135deg,#7C3AED,#5B21B6);color:#fff;font-weight:800;font-size:13.5px}
+.composer button:disabled{opacity:.5;cursor:not-allowed}
 
-/* 설정 모달 (프록시 URL — API 키 아님) */
-.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.5);display:grid;place-items:center;z-index:100;padding:16px}
-.modal-bg[hidden]{display:none}
-.modal{background:#fff;border-radius:16px;max-width:480px;width:100%;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+/* [🔑 AI 엔진 설정] 모달 */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:200;padding:16px}
+.modal{background:#fff;border-radius:18px;max-width:520px;width:100%;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.modal h3{font-size:16px;font-weight:800;color:var(--g900);display:flex;align-items:center;gap:8px}
+.in{width:100%;padding:10px 12px;border:1.5px solid var(--g200);border-radius:10px;background:#fff;font-size:13px}
+.in:focus{outline:none;border-color:var(--purple-md);box-shadow:0 0 0 3px rgba(124,58,237,.14)}
+.lbl{font-size:12px;font-weight:800;color:var(--g700);margin-bottom:4px;display:block}
+.hint{font-size:11.5px;color:var(--g500);line-height:1.5}
 </style>
 </head>
 <body>
 
 <div class="shell">
   <header class="hdr">
-    <div class="hdr-av">🤖</div>
+    <div class="hdr-av">🧠</div>
     <div class="hdr-t">
-      <h1>고마워톡 AI 캠페인 기획 &amp; 상담 챗봇</h1>
-      <p>3분 대화로 신청페이지 · 신청폼 · 자동발송 · 모바일 웹진까지 한 번에 기획합니다</p>
+      <h1>고마워톡 AI 마케팅 기획자 챗봇</h1>
+      <p>고정 템플릿 끼워넣기 NO! 사장님의 비즈니스만 100% 심층 분석해 제로베이스로 기획합니다</p>
     </div>
     <div class="hdr-r">
-      <button class="hdr-btn" id="btn-proxy">⚙️ 프록시 연동</button>
-      <button class="hdr-btn" id="btn-reset">🔄 처음부터</button>
+      <button class="hdr-btn" id="btn-ai-cfg" type="button">🔑 AI 엔진 설정</button>
+      <button class="hdr-btn" id="btn-open-builder" type="button">🎯 조종석 열기</button>
+      <button class="hdr-btn" id="btn-reset" type="button">🔄 새 상담</button>
     </div>
   </header>
 
-  <div class="prog-wrap">
-    <span class="prog-lbl" id="prog-lbl">Step 0 / 5 · 파트너 확인</span>
-    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+  <div class="top-meta">
+    <div class="partner-inputs">
+      <span style="font-size:11.5px;font-weight:800;color:var(--g500)">파트너 정보:</span>
+      <input class="mini-in" id="p-channel" placeholder="채널명 (예: K-POP 코리안)">
+      <input class="mini-in" id="p-owner" placeholder="대표자 성함" style="width:105px">
+      <input class="mini-in" id="p-phone" placeholder="연락처" style="width:120px">
+    </div>
+    <div class="step-pills">
+      <span class="step-pill on" id="sp-1">① 자유 오프닝</span>
+      <span class="step-pill" id="sp-2">② 의도검증·심층상담</span>
+      <span class="step-pill" id="sp-3">③ 청사진 컨펌</span>
+      <span class="step-pill" id="sp-4">④ 제로베이스 생성</span>
+    </div>
   </div>
 
   <div class="qa-tip">
-    <span>💡 고마워톡 활용법·카카오 규정·요금제는 대화 중 언제든 편하게 물어보세요!</span>
+    <span>💡 상담 도중 고마워톡 기능·발송 규정·요금제를 물어보시면 매뉴얼 기반으로 즉시 답변 후 상담으로 복귀합니다!</span>
     <div class="qa-chips">
-      <button class="qa-chip" data-ask="Starter와 Pro 요금제 차이가 뭔가요?">요금제 비교</button>
-      <button class="qa-chip" data-ask="알림톡과 친구톡 발송 규정 차이를 알려주세요">카카오 규정</button>
-      <button class="qa-chip" data-ask="뜰채 조건 분기와 점수 누적은 어떻게 활용하나요?">뜰채 분기</button>
+      <button class="qa-chip" data-ask="알림톡과 친구톡 발송 규정 차이가 뭔가요?">카카오 발송 규정</button>
+      <button class="qa-chip" data-ask="뜰채 조건 분기와 시트 점수 누적은 어떻게 쓰나요?">뜰채 분기·점수</button>
+      <button class="qa-chip" data-ask="Starter와 Pro 플랜 차이를 알려주세요">요금제 비교</button>
     </div>
   </div>
 
   <main id="chat"></main>
 
   <form class="composer" id="composer">
-    <input type="text" id="user-input" placeholder="답변을 입력하거나, 궁금한 고마워톡 기능을 질문해 보세요…" autocomplete="off">
-    <button type="submit">전송</button>
+    <input type="text" id="user-input" placeholder="비즈니스 아이템이나 답변을 자유롭게 입력하세요 (예: 외국인 대상 K-POP 가사로 한국어 배우기)…" autocomplete="off">
+    <button type="submit" id="send-btn">전송</button>
   </form>
 </div>
 
-<!-- Backend_Proxy.gs 웹앱 URL 설정 모달 (API 키 저장 금지) -->
-<div class="modal-bg" id="proxy-modal" hidden>
+<!-- [🔑 AI 엔진 설정] 모달 (로컬 Gemini API Key 직결 + Backend Proxy 겸용, LandingBuilder와 localStorage 자동 공유) -->
+<div class="modal-bg" id="ai-modal" hidden>
   <div class="modal">
-    <h3 style="font-size:15px;color:var(--g900)">⚙️ Backend_Proxy.gs 웹앱 URL 설정</h3>
-    <p style="font-size:12px;color:var(--g500);line-height:1.6">보안을 위해 Gemini API 키는 코드에 포함되지 않으며, Google Apps Script 웹앱(<code>Backend_Proxy.gs</code>)을 경유합니다. 비워두면 오프라인/로컬 RAG 모드로 100% 작동합니다.</p>
-    <input class="in" id="proxy-input" placeholder="https://script.google.com/macros/s/.../exec">
-    <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button class="pbtn sec" id="proxy-close" type="button">닫기</button>
-      <button class="pbtn" id="proxy-save" type="button">저장</button>
+    <h3>🔑 AI 엔진 설정 <span style="font-size:11px;font-weight:700;color:var(--purple);background:var(--purple-lt);padding:2px 8px;border-radius:99px">조종석과 자동 공유</span></h3>
+    <div class="hint">① 로컬 테스트용 <b>Gemini API Key</b>를 입력하면 브라우저(<code>file://</code>)에서 직접 <b>Gemini 2.5 Flash</b>와 실시간 통신합니다.<br>② 배포 환경에서는 <b>Backend Proxy URL</b>을 입력해 API 키를 서버에 은닉할 수 있습니다. (연결된 쪽을 자동 사용)</div>
+    <div>
+      <label class="lbl">① 로컬 직결용 Gemini API Key (권장 · localStorage에만 안전 저장)</label>
+      <input class="in" type="password" id="cfg-key" placeholder="AIzaSy... (Google AI Studio 발급 키)">
+    </div>
+    <div>
+      <label class="lbl">AI 모델 선택</label>
+      <select class="in" id="cfg-model">
+        <option value="gemini-2.5-flash">gemini-2.5-flash (기본 권장 · 초고속 심층 상담 &amp; JSON 생성)</option>
+        <option value="gemini-2.0-flash">gemini-2.0-flash (호환용)</option>
+        <option value="gemini-2.5-pro">gemini-2.5-pro (고난도 카피라이팅)</option>
+      </select>
+    </div>
+    <div>
+      <label class="lbl">② 배포용 Backend_Proxy.gs 웹앱 URL (선택)</label>
+      <input class="in" type="url" id="cfg-proxy" placeholder="https://script.google.com/macros/s/.../exec">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+      <button class="pbtn sec" id="cfg-close" type="button">닫기</button>
+      <button class="pbtn" id="cfg-save" type="button">💾 설정 저장 및 연결</button>
     </div>
   </div>
 </div>
@@ -143,344 +188,876 @@ input,textarea{font-family:inherit;font-size:13.5px;color:var(--g900)}
 'use strict';
 
 const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const Engine = window.RagInterviewEngine;
+const Manual = window.GomawartalkManual || window.GOMAWARTALK_MANUAL || [];
 
-/* ═══════════════ 로컬 RAG 검색기 (GomawartalkManual.js 기반, file:// 오프라인 100% 동작) ═══════════════ */
-const manual = window.GomawartalkManual || window.GOMAWARTALK_MANUAL || [];
-const presets = window.IndustryPresets || window.GOMAWARTALK_INDUSTRY_PRESETS || {};
-const engineHelper = window.RagInterviewEngine ? new window.RagInterviewEngine({ knowledgeCartridge: manual }) : null;
-
-function isQuestionIntent(text) {
-  if (engineHelper && typeof engineHelper._detectQuestionIntent === 'function') {
-    return engineHelper._detectQuestionIntent(text);
-  }
-  return /\?|인가요|되나요|가능|어떻게|얼마|요금|플랜|차이|규정|알려|궁금/.test(text);
-}
-
-function searchManualRAG(query) {
-  const q = query.toLowerCase();
-  const tokens = q.replace(/[^\uAC00-\uD7A3a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length >= 2);
-  const scored = manual.map(item => {
-    const hay = (item.topic + ' ' + item.content).toLowerCase();
-    let score = 0;
-    tokens.forEach(tk => {
-      if (item.topic.toLowerCase().indexOf(tk) !== -1) score += 4;
-      if (hay.indexOf(tk) !== -1) score += 2;
-    });
-    return { item, score };
-  }).sort((a, b) => b.score - a.score);
-
-  const top = scored.filter(x => x.score > 0).slice(0, 2);
-  if (!top.length) {
-    return '고마워톡 활용 백과사전에서 정확히 일치하는 항목을 찾지 못했어요.\n알림톡/친구톡 규정, Starter vs Pro 요금제, 뜰채 조건 분기, 신청폼 태그·시트, 모바일 웹진 중 궁금한 키워드를 포함해 질문해 주세요!';
-  }
-  return top.map(t => '📌 ' + t.item.topic + '\n' + t.item.content.trim()).join('\n\n────────────────\n\n');
-}
-
-/* ═══════════════ 6대 마스터 트랙 (업종별 번역 카드) ═══════════════ */
-const TRACKS = [
-  { id: 'TRACK_1', name: '① 일정·행사 리마인드형', desc: '신청 즉시 확인 알림톡 → D-3, D-1, 당일 리마인드로 참석률 극대화' },
-  { id: 'TRACK_2', name: '② 쿠폰·자료 발급형', desc: '신청 확인 알림톡(1편 자료) → 채널 추가 유도 → 혜택 쿠폰/심화 자료(친구톡)' },
-  { id: 'TRACK_3', name: '③ 정기 칼럼·챌린지 연재형', desc: '회원·모임 등록 확인(알림톡) → 채널 친구 대상 정기 칼럼·소식 연재(친구톡/브랜드메시지)' },
-  { id: 'TRACK_4', name: '④ 설문 진단 & 맞춤 분기형', desc: '객관식 설문(5개 이하)으로 태그·시트 부착 → 뜰채 분기 맞춤 처방 발송' },
-  { id: 'TRACK_5', name: '⑤ 스탬프·열독 점수 누적형', desc: '시트 정수 더하기로 출석·열독 점수 누적 → VIP 달성 시 자동 보상 발송' },
-  { id: 'TRACK_6', name: '⑥ 특수 뷰 (현장 폼 6-A / 종합 관문 6-B)', desc: 'QR 현장 체크인 전용 폼 또는 이미지별 다중 이동 링크 종합 안내 페이지' }
-];
-
-/* ═══════════════ 인터뷰 상태 ═══════════════ */
-let PROXY_URL = '';
-try { PROXY_URL = localStorage.getItem('gmt_bot_proxy') || ''; } catch (e) {}
-
+/* ═══════════════ 상태 관리 ═══════════════ */
 let ST = {};
 function resetState() {
   ST = {
-    step: 0,
-    owner_name: '', phone: '', channel_name: '', current_plan: 'STARTER',
-    mode: 'FULL_SET', quick_sub: '',
-    industry_code: 'academy', industry_custom: '',
-    track_id: 'TRACK_4',
-    target_customer: '', core_offer: '', form_question: '', need_happycall: false, use_webzine: true,
-    has_assets: false, logo_base64: null, block_images: {}, pro_upgrade_requested: false
+    step: 1, // 1: 자유오프닝, 2: 의도검증·심층상담, 3: 청사진컨펌, 4: 제로베이스생성완료
+    turnCount: 0,
+    isBusy: false,
+    topicRaw: '',
+    intentSummary: '',
+    history: [], // [{role:'user'|'model', text:'...'}]
+    blueprint: null,
+    lastGeneratedCampaign: null,
+    logoBase64: null,
+    block1Base64: null,
+    proUpgrade: false,
+    useWebzine: true
   };
+  updateStepPills();
 }
 
-function updateProgress() {
-  const names = ['파트너 확인', '캠페인 모드', '업종 선택', '마스터 트랙', '핵심 재료 & 웹진', '디자인 에셋 & 제출', '기획 완료'];
-  const pct = Math.min(100, Math.round((ST.step / 6) * 100));
-  $('#prog-lbl').textContent = 'Step ' + Math.min(ST.step, 5) + ' / 5 · ' + (names[ST.step] || '완료');
-  $('#prog-fill').style.width = pct + '%';
+function updateStepPills() {
+  [1, 2, 3, 4].forEach(n => {
+    const el = $('#sp-' + n);
+    if (!el) return;
+    el.classList.toggle('on', ST.step === n);
+    el.classList.toggle('done', ST.step > n);
+  });
+}
+
+function updateKeyButtonState() {
+  const cfg = Engine.getConfig();
+  const btn = $('#btn-ai-cfg');
+  if (cfg.hasDirectKey) {
+    btn.className = 'hdr-btn key-on';
+    btn.textContent = '🟢 ' + cfg.model + ' 직결됨';
+  } else if (cfg.hasProxy) {
+    btn.className = 'hdr-btn key-on';
+    btn.textContent = '🟢 Proxy 연결됨';
+  } else {
+    btn.className = 'hdr-btn key-off';
+    btn.textContent = '🔑 AI 엔진 설정 (API 키 입력)';
+  }
+}
+
+function getPartnerMeta() {
+  return {
+    channel_name: ($('#p-channel').value || '').trim() || (ST.blueprint && ST.blueprint.brand_name) || '맞춤 브랜드 채널',
+    owner_name: ($('#p-owner').value || '').trim() || '대표님',
+    phone: ($('#p-phone').value || '').trim() || '010-0000-0000'
+  };
 }
 
 function addMsg(role, text, opt) {
   opt = opt || {};
   const div = document.createElement('div');
   div.className = 'msg ' + role + (opt.rag ? ' rag' : '');
-  const inner = (opt.rag ? '<div class="rag-tag">📚 고마워톡 활용 백과사전 답변</div><br>' : '') + esc(text);
-  div.innerHTML = (role === 'bot' ? '<div class="msg-av">🤖</div>' : '') + '<div class="bubble">' + inner + '</div>';
+  let headHtml = '';
+  if (opt.rag) headHtml += '<div class="rag-tag">📚 고마워톡 매뉴얼 상담 답변</div><br>';
+  if (opt.intentSummary) {
+    headHtml += '<div class="intent-box"><b>🎯 제가 이해한 핵심 의도가 맞나요?</b>' + esc(opt.intentSummary) + '</div>';
+  }
+  div.innerHTML = (role === 'bot' ? '<div class="msg-av">🧠</div>' : '') +
+    '<div class="bubble">' + headHtml + '<div class="b-txt">' + esc(text) + '</div></div>';
   if (opt.widget) div.querySelector('.bubble').appendChild(opt.widget);
   $('#chat').appendChild(div);
   $('#chat').scrollTop = $('#chat').scrollHeight;
   return div;
 }
 
-/* ═══════════════ 단계별 프롬프트 렌더러 ═══════════════ */
-function showStep(n) {
-  ST.step = n; updateProgress();
-  if (n === 0) return showStep0();
-  if (n === 1) return showStep1();
-  if (n === 2) return showStep2();
-  if (n === 3) return showStep3();
-  if (n === 4) return showStep4();
-  if (n === 5) return showStep5();
-  if (n === 6) return showComplete();
-}
-
-function showStep0() {
+/* ═══════════════ Step 1: 자유 오프닝 화면 ═══════════════ */
+function showOpening() {
+  resetState();
+  $('#chat').innerHTML = '';
+  const cfg = Engine.getConfig();
   const w = document.createElement('div'); w.className = 'widget';
-  w.innerHTML = '<div class="form-box">' +
-    '<input class="in" id="s0-name" placeholder="대표님 성함 (예: 장희지)">' +
-    '<input class="in" id="s0-phone" placeholder="휴대폰 번호 (예: 010-1234-5678)">' +
-    '<input class="in" id="s0-ch" placeholder="카카오 채널명 (예: 장희지 수학학원)">' +
-    '<button class="pbtn" id="s0-go" type="button">확인하고 인터뷰 시작하기 →</button></div>';
-  addMsg('bot', '안녕하세요! 고마워톡 AI 캠페인 기획 챗봇입니다.\n먼저 대표님 성함과 연락처, 채널명을 알려주시면 현재 플랜에 맞춰 빠르게 안내해 드릴게요.', { widget: w });
-  w.querySelector('#s0-go').onclick = () => {
-    ST.owner_name = w.querySelector('#s0-name').value.trim() || '파트너 대표님';
-    ST.phone = w.querySelector('#s0-phone').value.trim() || '010-0000-0000';
-    ST.channel_name = w.querySelector('#s0-ch').value.trim() || (ST.owner_name + ' 채널');
-    addMsg('user', ST.owner_name + ' / ' + ST.channel_name + ' (' + ST.phone + ')');
-    addMsg('bot', '반갑습니다, ' + ST.owner_name + '님! [' + ST.channel_name + '] 파트너로 확인되었습니다.\n현재 Starter 플랜 기준(영업일 3일 이내 세팅)이며, 마지막 단계에서 Pro 패스트트랙(1일 세팅 + 내 로고 맞춤 알림톡) 신청도 가능합니다.');
-    showStep(1);
-  };
-}
 
-function showStep1() {
-  const w = document.createElement('div'); w.className = 'widget';
-  w.innerHTML = '<div class="opt-grid">' +
-    '<button class="opt-btn" data-m="FULL_SET">🚀 새 캠페인 풀세트 만들기<small>어드민 5대 탭 전체 + 선택형 모바일 웹진 기획</small></button>' +
-    '<button class="opt-btn" data-m="QUICK_DATE">⚡ 기존 캠페인 — 날짜발송 1건 추가<small>특정 일시 공지·행사 리마인드 단독 1건</small></button>' +
-    '<button class="opt-btn" data-m="QUICK_INTERVAL">⚡ 기존 캠페인 — 간격발송 후속 1건 추가<small>시퀀스 마지막에 후속 메시지 1건 이어붙이기</small></button></div>';
-  addMsg('bot', '어떤 방식으로 캠페인을 진행할까요?', { widget: w });
-  w.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
-    ST.mode = b.dataset.m;
-    addMsg('user', b.textContent.split('\n')[0]);
-    if (ST.mode === 'QUICK_INTERVAL') {
-      addMsg('bot', '⚠️ 안내: 간격발송에 후속 1건을 추가하면 이미 기존 마지막 회차까지 수신 완료한 과거 신청자에게는 발송되지 않습니다. 과거 신청자에게도 함께 보내실 수 있도록 날짜발송 병행 가이드를 같이 챙겨드릴게요!');
-    }
-    showStep(2);
+  if (!cfg.isConnected) {
+    const warn = document.createElement('div');
+    warn.style.cssText = 'background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:11px;padding:11px 13px;font-size:12px;color:#92400E;line-height:1.55';
+    warn.innerHTML = '🔑 <b>실시간 Gemini AI 상담을 위해 상단 우측 [🔑 AI 엔진 설정]에서 Gemini API Key(AIza...)를 먼저 등록해 주세요!</b><br>(키를 입력하면 로컬 <code>file://</code>에서도 <code>gemini-2.5-flash</code>가 직접 심층 상담과 100% 제로베이스 작문을 수행합니다.)';
+    const openBtn = document.createElement('button');
+    openBtn.type = 'button'; openBtn.className = 'pbtn'; openBtn.style.marginTop = '8px';
+    openBtn.textContent = '🔑 지금 Gemini API Key 입력하기';
+    openBtn.onclick = () => openAiModal();
+    warn.appendChild(document.createElement('br'));
+    warn.appendChild(openBtn);
+    w.appendChild(warn);
+  }
+
+  const chipTitle = document.createElement('div');
+  chipTitle.style.cssText = 'font-size:12px;font-weight:800;color:var(--g500);margin-top:4px';
+  chipTitle.textContent = '💬 아래 예시를 눌러 테스트하거나, 사장님의 실제 비즈니스 아이템을 아래 채팅창에 자유롭게 말씀해 주세요:';
+  w.appendChild(chipTitle);
+
+  const chips = document.createElement('div'); chips.className = 'chip-list';
+  const examples = [
+    '외국인 대상으로 K-POP 가사로 한국어를 배우는 온라인 클래스와 무료 표현집을 배포하고 싶어요',
+    '강아지 알레르기 없는 수제간식 원데이 클래스 모집과 첫 구매 쿠폰 캠페인을 만들고 싶어요',
+    '프리랜서·1인 법인 대상 2026 종합소득세 절세 체크리스트 배포 및 무료 세무진단 신청을 받고 싶어요',
+    '예비 고1 학부모님 대상으로 겨울방학 고등수학 오답노트 특강 설명회 신청을 받고 싶어요'
+  ];
+  examples.forEach(ex => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sugg-chip'; b.textContent = '✨ ' + ex;
+    b.onclick = () => handleUserTurn(ex);
+    chips.appendChild(b);
   });
+  w.appendChild(chips);
+
+  addMsg('bot',
+    '안녕하세요! 고마워톡 수석 AI 마케팅 기획자입니다.\n' +
+    '저는 고정된 업종 샘플에 단어만 끼워 넣지 않습니다. 사장님이 준비 중이신 비즈니스 아이템·타겟 고객·주고 싶은 혜택을 자유롭게 말씀해 주시면, 베테랑 마케터처럼 2~3차례 핵심을 여쭤본 뒤 100% 맞춤형 캠페인을 제로베이스로 기획해 드립니다.\n\n' +
+    '어떤 캠페인을 만들고 싶으신가요? 편하게 한두 줄로 말씀해 주세요!',
+    { widget: w }
+  );
 }
 
-function showStep2() {
-  const w = document.createElement('div'); w.className = 'widget';
-  const grid = document.createElement('div'); grid.className = 'opt-grid';
-  Object.keys(presets).forEach(code => {
-    const p = presets[code];
-    const b = document.createElement('button'); b.className = 'opt-btn';
-    b.innerHTML = esc(p.meta.industry_label) + '<small>' + esc(p.meta.description.slice(0, 42)) + '…</small>';
-    b.onclick = () => {
-      ST.industry_code = code;
-      addMsg('user', p.meta.industry_label);
-      showStep(3);
+/* ═══════════════ 시스템 프롬프트 빌더 (고정관념 오염 차단 & 금지어 엄수) ═══════════════ */
+function buildConsultSystemPrompt() {
+  const manualSummary = Manual.slice(0, 8).map(m => '[' + m.topic + '] ' + String(m.content || '').trim().slice(0, 260)).join('\n');
+  return [
+    '당신은 고마워톡(Gomawartalk)의 수석 AI 마케팅 기획자이자 카피라이터입니다.',
+    '',
+    '=== 절대 철칙 (위반 금지) ===',
+    '1. 업종 카테고리 이름(예: 지식창업, 학원, 커머스)의 고정관념이나 "월 1,000만 원 수익화" 같은 기존 샘플 문구에 절대 오염되지 마세요.',
+    '2. 오직 사장님이 실제로 말한 고유 비즈니스 아이템(예: 외국인 대상 K-POP으로 한국어 배우기, 반려견 수제간식 클래스 등)의 타겟과 맥락에만 100% 집중하세요.',
+    '3. 카카오 알림톡 규정상 금지된 정기 홍보성 소식지 단어(\\uB274\\uC2A4\\uB808\\uD130)는 어떤 설명이나 카피에서도 절대 사용하지 마세요. 대신 "정기 칼럼", "시리즈 연재", "맞춤 가이드"라는 표현을 쓰세요.',
+    '4. 알림톡(1회차)은 신청·등록 확인 및 일정 리마인드 등 정보성 안내에만 배정하고(할인/특가/이벤트/쿠폰 등 광고성 단어 금지), 연재 칼럼이나 쿠폰·혜택은 반드시 2회차 이후 "자유작성 친구톡" 또는 "브랜드 캐러셀"로 설계하세요.',
+    '5. 고마워톡 6대 트랙: ① 일정·행사 리마인드형 ② 쿠폰·자료 발급형 ③ 정기 칼럼·챌린지 연재형 ④ 설문 진단 & 맞춤 분기형(뜰채) ⑤ 스탬프·열독 점수 누적형 ⑥ 특수 뷰(현장 폼 6-A / 종합 관문 6-B)',
+    '',
+    '=== 고마워톡 핵심 매뉴얼 요약 ===',
+    manualSummary
+  ].join('\n');
+}
+
+/* ═══════════════ Step 2: 의도 복창 검증 & 맥락 맞춤형 꼬리질문 ═══════════════ */
+async function runConsultTurn(userText) {
+  const turnIdx = ST.turnCount;
+  const historyText = ST.history.map(h => (h.role === 'user' ? '사장님: ' : 'AI기획자: ') + h.text).join('\n');
+
+  const prompt = [
+    '아래는 사장님과의 캠페인 기획 상담 대화 내역입니다.',
+    '대화 턴 수: ' + turnIdx + '회차 (2~3회차에 핵심 정보가 모이면 is_ready_for_blueprint를 true로 설정하세요)',
+    '',
+    '=== 대화 내역 ===',
+    historyText,
+    '',
+    '=== 수행 지시 ===',
+    '1. intent_summary: 사장님이 말한 비즈니스 아이템의 [핵심 타겟 / 주제 / 캠페인 목적]을 한 줄로 명확히 요약해 복창하세요.',
+    '2. reply_message: 사장님의 의도에 깊이 공감한 뒤, 이 비즈니스에 꼭 필요한 핵심 기획 디테일을 1~2가지만 똑똑하게 역질문하세요.',
+    '   - 예: 외국인 타겟이라면 한/영 병기(Bilingual) 여부, 신청 즉시 카톡으로 줄 첫 무료 혜택 컨셉, 신청폼 객관식 분기 질문(레벨/관심사 등), 고마워톡 6대 트랙 중 추천 방식 등.',
+    '   - 만약 2회차 이상 대화가 진행되어 타겟·혜택·신청폼 분기 방향이 파악되었다면 is_ready_for_blueprint를 true로 하고 blueprint 객체를 채우세요.',
+    '3. suggested_options: 사장님이 클릭 한 번으로 답할 수 있는 매력적이고 구체적인 기획 선택지 3개를 배열로 제시하세요.',
+    '4. 반드시 아래 JSON 형식으로만 응답하세요:',
+    '{',
+    '  "intent_summary": "타겟 · 주제 · 목적 한 줄 복창",',
+    '  "reply_message": "공감 및 맞춤형 역질문 (또는 청사진 준비 완료 안내)",',
+    '  "suggested_options": ["선택지 1", "선택지 2", "선택지 3"],',
+    '  "is_ready_for_blueprint": false,',
+    '  "blueprint": {',
+    '    "brand_name": "추천 채널/브랜드명",',
+    '    "concept_and_target": "캠페인 컨셉, 타겟, 톤앤매너(한/영 병기 등), 추천 고마워톡 트랙",',
+    '    "landing_5steps": ["1단 Hero 헤드카피 요약", "2단 고객 고민(Pain Point) 3가지 요약", "3단 해결책/커리큘럼 3단계 요약", "4단 신뢰 근거/핵심 수치", "5단 참여 요약 및 신청 유도"],',
+    '    "custom_form": { "question": "비즈니스 맞춤 객관식 질문", "options": ["보기1 (태그/시트)", "보기2 (태그/시트)", "보기3 (태그/시트)"] },',
+    '    "sequence_and_webzine": ["1회차 즉시(알림톡): 신청 확인 및 첫 자료 안내", "2회차 +1일(친구톡): 맞춤 심화 콘텐츠/혜택", "3회차 +3일(캐러셀): 유형별 추천 카드", "모바일 웹진: #sec-1~#sec-cta 핵심 목차"]',
+    '  }',
+    '}'
+  ].join('\n');
+
+  try {
+    const raw = await Engine.callGemini({
+      systemInstruction: buildConsultSystemPrompt(),
+      userText: prompt,
+      responseMimeType: 'application/json',
+      temperature: 0.5
+    });
+    const parsed = Engine.extractJson(raw);
+    if (parsed && parsed.reply_message) return Engine.sanitizeObject(parsed);
+    throw new Error('AI 응답 JSON 파싱 실패');
+  } catch (err) {
+    // API 키 미설정 또는 네트워크 오류 시에도 사용자의 실제 입력 문맥을 100% 반영하는 동적 상담 폴백
+    return buildDynamicConsultFallback(userText, turnIdx, err.message);
+  }
+}
+
+function buildDynamicConsultFallback(userText, turnIdx, errMsg) {
+  const allUserText = ST.history.filter(h => h.role === 'user').map(h => h.text).join(' / ');
+  const topic = ST.topicRaw || userText;
+  const isForeign = /외국인|k-pop|kpop|한국어|korean|global|english|영문/i.test(allUserText);
+
+  if (turnIdx <= 1) {
+    return {
+      intent_summary: '[' + topic + '] 주제로 핵심 타겟을 모집하고 카카오 자동발송으로 가치를 전달하는 캠페인',
+      reply_message: (errMsg && /연결되지 않았습니다/.test(errMsg) ? '💡 (현재 상단 [🔑 AI 엔진 설정]에 API 키가 없어 스마트 컨텍스트 모드로 상담을 진행합니다. 실시간 Gemini 2.5 Flash 상담을 원하시면 언제든 키를 입력해 주세요!)\n\n' : '') +
+        '말씀해주신 [' + topic + '] 아이템, 정말 매력적입니다!\n' +
+        '이 캠페인의 전환율을 극대화하기 위해 두 가지만 여쭤볼게요.\n\n' +
+        '1) 신청자가 카카오로 1초 신청하자마자 **1회차 알림톡으로 즉시 받아볼 첫 무료 혜택(미끼 자료)** 은 어떤 형태가 좋을까요?\n' +
+        '2) 신청폼에서 고객을 분류할 **맞춤 객관식 질문(뜰채 분기용)** 과 표현 방식(' + (isForeign ? '한/영 병기 여부 등' : '난이도/관심사 등') + ')은 어떻게 잡을까요?',
+      suggested_options: isForeign ? [
+        '한/영 병기(Bilingual) 적용 + K-POP 인기곡 핵심 표현 리포트 즉시 발송 + 한국어 레벨(초급/중급/고급) 설문 분기',
+        '쉬운 한국어+영문 가이드 + 아이돌 브이로그 필수 회화 PDF 발송 + 좋아하는 K-POP 그룹/관심사 설문 분기',
+        '14일 챌린지 트랙(3번 트랙)으로 매일 1곡씩 가사 표현 카드와 발음 가이드 연재'
+      ] : [
+        '핵심 요약 가이드북(모바일 웹진) 즉시 발송 + 현재 고객 고민/수준별 3단계 객관식 설문 분기(4번 트랙)',
+        '1:1 무료 진단/상담 혜택 제공 + 유선 해피콜용 연락처 수집 + D-1 일정 리마인드(1번 트랙)',
+        '첫 등록 혜택 쿠폰(2회차 자유작성 친구톡) + 주 1회 실전 노하우 칼럼 정기 연재(3번 트랙)'
+      ],
+      is_ready_for_blueprint: false
     };
-    grid.appendChild(b);
-  });
-  w.appendChild(grid);
-  addMsg('bot', '대표님의 업종을 선택해 주세요! 버튼에 없는 업종이라면 아래 채팅창에 직접 입력하셔도 됩니다.', { widget: w });
-}
+  }
 
-function showStep3() {
-  const p = presets[ST.industry_code];
-  const w = document.createElement('div'); w.className = 'widget';
-  const grid = document.createElement('div'); grid.className = 'opt-grid';
-  TRACKS.forEach(tr => {
-    const isRec = p && p.meta.recommended_track === tr.id;
-    const b = document.createElement('button'); b.className = 'opt-btn';
-    b.innerHTML = esc(tr.name) + (isRec ? ' <span style="color:var(--purple)">★추천</span>' : '') + '<small>' + esc(tr.desc) + '</small>';
-    b.onclick = () => { ST.track_id = tr.id; addMsg('user', tr.name); showStep(4); };
-    grid.appendChild(b);
-  });
-  w.appendChild(grid);
-  addMsg('bot', '선택하신 업종에 딱 맞는 6대 마스터 트랙입니다. 가장 원하시는 운영 흐름을 골라주세요!', { widget: w });
-}
-
-function showStep4() {
-  const p = presets[ST.industry_code];
-  const defQ = p && p.tab3_form && p.tab3_form.questions[0] ? p.tab3_form.questions[0].question_text : '고객님의 현재 관심 분야는 무엇인가요?';
-  const w = document.createElement('div'); w.className = 'widget';
-  w.innerHTML = '<div class="form-box">' +
-    '<input class="in" id="s4-target" placeholder="핵심 타겟 고객 (예: 예비 중3·고1 학부모님)">' +
-    '<input class="in" id="s4-offer" placeholder="신청 시 제공할 핵심 혜택/자료 (예: 오답노트 자료집 + 맞춤 로드맵)">' +
-    '<input class="in" id="s4-q" value="' + esc(defQ) + '" placeholder="신청폼 객관식 질문 (보기 5개 이하 권장)">' +
-    '<label style="font-size:12.5px;display:flex;gap:8px;align-items:center"><input type="checkbox" id="s4-call" style="accent-color:var(--purple)"> 유선 해피콜이 필요해 [전화번호 질문]을 신청폼에 추가할게요</label>' +
-    '<label style="font-size:12.5px;display:flex;gap:8px;align-items:center"><input type="checkbox" id="s4-wz" checked style="accent-color:var(--purple)"> ✨ 상세 칼럼·안내용 [모바일 웹진]도 함께 제작할게요 (use_webzine)</label>' +
-    '<button class="pbtn" id="s4-go" type="button">핵심 재료 입력 완료 →</button></div>';
-  addMsg('bot', '좋아요! 이제 신청페이지와 자동발송 메시지에 들어갈 핵심 재료를 알려주세요.', { widget: w });
-  w.querySelector('#s4-go').onclick = () => {
-    ST.target_customer = w.querySelector('#s4-target').value.trim() || '핵심 타겟 고객님';
-    ST.core_offer = w.querySelector('#s4-offer').value.trim() || (p ? p.tab1_basic_settings.title_30chars : '맞춤 핵심 자료집');
-    ST.form_question = w.querySelector('#s4-q').value.trim() || defQ;
-    ST.need_happycall = w.querySelector('#s4-call').checked;
-    ST.use_webzine = w.querySelector('#s4-wz').checked;
-    addMsg('user', '타겟: ' + ST.target_customer + ' / 혜택: ' + ST.core_offer + ' / 모바일 웹진: ' + (ST.use_webzine ? '함께 제작' : '미사용'));
-    showStep(5);
+  // 2회차 이상이면 대화 문맥을 종합해 청사진 자동 구성
+  return {
+    intent_summary: '[' + topic + '] 맞춤 리드 수집 및 신청자 유형별 자동발송·모바일 웹진 캠페인',
+    reply_message: '완벽합니다! 말씀해주신 내용을 바탕으로 [' + topic + '] 전용 캠페인 청사진을 설계했습니다. 아래 요약 카드를 확인하시고 수정할 점이 있으면 채팅으로 말씀해 주세요!',
+    suggested_options: [],
+    is_ready_for_blueprint: true,
+    blueprint: buildDynamicBlueprintFromHistory(allUserText)
   };
 }
 
-function showStep5() {
-  const w = document.createElement('div'); w.className = 'widget';
-  w.innerHTML = '<div class="form-box">' +
-    '<div style="font-size:12px;color:var(--g500)">사진을 올리시면 <b>장당 150KB 이하</b>로 자동 압축되어 안전하게 전송됩니다. 자료가 없어도 타이포그래피로 깔끔하게 제작해 드려요!</div>' +
-    '<label style="font-size:12.5px;font-weight:700">로고 이미지 (선택): <input type="file" id="s5-logo" accept="image/*"></label>' +
-    '<label style="font-size:12.5px;font-weight:700">1단 대표 사진 (선택): <input type="file" id="s5-b1" accept="image/*"></label>' +
-    '<div class="thumb-prev" id="s5-prev"></div>' +
-    '<label style="font-size:12.5px;font-weight:800;color:#92400E;background:#FFFBEB;padding:9px 11px;border-radius:9px;border:1px solid #FDE68A;display:flex;gap:8px;align-items:center">' +
-    '<input type="checkbox" id="s5-pro" style="accent-color:#D97706"> 👑 Pro 플랜 업그레이드 신청 (1일 패스트트랙 + 내 로고 맞춤 알림톡)</label>' +
-    '<button class="pbtn grn" id="s5-submit" type="button">🚀 기획 완료 및 CampaignMaster.json 생성</button></div>';
-  addMsg('bot', '마지막 단계입니다! 로고나 사진 자료가 있으시면 올려주시고, 완료 버튼을 눌러주세요.', { widget: w });
+function buildDynamicBlueprintFromHistory(allUserText) {
+  const topic = ST.topicRaw || allUserText.split('/')[0].trim();
+  const isForeign = /외국인|k-pop|kpop|한국어|korean|global|english|영문|한\/영/i.test(allUserText);
+  const p = getPartnerMeta();
 
-  async function handleFile(inp, key) {
-    const f = inp.files[0]; if (!f) return;
-    const url = window.ImageCapturer ? await window.ImageCapturer.compressImageToBase64(f) : await new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(f); });
-    if (key === 'logo') ST.logo_base64 = url; else ST.block_images[key] = url;
-    ST.has_assets = true;
-    const img = document.createElement('img'); img.src = url; w.querySelector('#s5-prev').appendChild(img);
-  }
-  w.querySelector('#s5-logo').onchange = e => handleFile(e.target, 'logo');
-  w.querySelector('#s5-b1').onchange = e => handleFile(e.target, 'block_1');
-  w.querySelector('#s5-submit').onclick = () => {
-    ST.pro_upgrade_requested = w.querySelector('#s5-pro').checked;
-    addMsg('user', '자료 준비 완료! (Pro 업그레이드: ' + (ST.pro_upgrade_requested ? '신청' : '유지') + ')');
-    showStep(6);
-  };
-}
-
-/* CampaignMaster.json V2.0 표준 조립 */
-function buildCampaignMasterJson() {
-  const base = presets[ST.industry_code] || presets.academy;
-  const t = new Date(), p2 = n => String(n).padStart(2, '0');
-  const ymd = t.getFullYear() + p2(t.getMonth() + 1) + p2(t.getDate());
-  const questions = (base.tab3_form && base.tab3_form.questions ? base.tab3_form.questions : []).map((q, idx) => {
-    const o = { order: idx + 1, type: q.type, required: !!q.required, question_text: idx === 0 ? ST.form_question : q.question_text };
-    if (q.options) o.options = q.options.map(op => ({
-      answer_text: op.answer_text,
-      actions_after_save: [
-        { action_type: 'TAG', operation: 'ATTACH', target: op.tag || '' },
-        { action_type: 'SHEET', data_type: 'STRING', operation: 'ATTACH', field_name: op.sheet_field && op.sheet_field.indexOf('.') === -1 ? '고객진단.' + op.sheet_field : (op.sheet_field || '고객진단.항목'), value: op.sheet_value || '' }
+  if (isForeign) {
+    return {
+      brand_name: p.channel_name !== '맞춤 브랜드 채널' ? p.channel_name : 'K-POP Korean Class',
+      concept_and_target: '글로벌 K-POP 팬 & 외국인 한국어 학습자 타겟 · 한/영 병기(Bilingual) 친근하고 트렌디한 톤앤매너 · 고마워톡 트랙 ③+④(맞춤 레벨 진단 후 가사 표현 칼럼 연재)',
+      landing_5steps: [
+        '1단 Hero: Learn Real Korean with K-POP! 좋아하는 아티스트 가사로 배우는 가장 쉬운 한국어 (한/영 병기)',
+        '2단 Pain Point: 교과서 한국어는 지루해요 / 자막 없이 최애 라이브를 듣고 싶어요 / 혼자 발음 연습하기 막막해요',
+        '3단 Solution: STEP 01 인기 K-POP 가사 핵심 표현 & 슬랭 해설 / STEP 02 원어민 발음 오디오 가이드 / STEP 03 레벨별 1:1 피드백',
+        '4단 Trust: 전 세계 40개국 글로벌 수강생 만족도 98.7% · 첫 달 일상 회화 자신감 3배 상승',
+        '5단 Summary: 카카오 1초 신청 시 [K-POP Essential Expressions Kit] 모바일 웹진 즉시 무료 발송'
+      ],
+      custom_form: {
+        question: 'What is your current Korean level? (현재 한국어 실력은 어느 정도인가요?)',
+        options: [
+          'Beginner · 한글 & 기초 가사 따라 부르기 (태그: LV_BEGINNER / 시트: 학습진단.레벨=Beginner)',
+          'Intermediate · 아이돌 브이로그 & 일상 회화 이해 (태그: LV_INTERM / 시트: 학습진단.레벨=Intermediate)',
+          'Advanced · 자막 없이 라이브 소통 & 심화 표현 (태그: LV_ADV / 시트: 학습진단.레벨=Advanced)'
+        ]
+      },
+      sequence_and_webzine: [
+        '1회차 신청 즉시(알림톡): [K-POP Korean] 신청 확인 및 1편 필수 가사 표현 웹진(#sec-1) 안내 + 채널 추가 유도',
+        '2회차 1일 뒤 09:00(자유작성 친구톡): #{@학습진단.레벨} 맞춤 발음 가이드 칼럼(#sec-2) & 무료 체험 클래스 초대',
+        '3회차 3일 뒤 09:00(브랜드 캐러셀): 레벨별 K-POP 한국어 커리큘럼 카드 3장(#sec-1 ~ #sec-cta)',
+        '모바일 웹진: #sec-1 K-POP 가사 핵심 표현 TOP 10 / #sec-2 레벨별(Beginner·Intermediate·Advanced) 학습 탭 / #sec-3 수강생 후기 & FAQ / #sec-cta 무료 레벨테스트 신청'
       ]
-    }));
-    return o;
-  });
-  if (ST.need_happycall && !questions.some(q => q.type === 'PHONE')) {
-    questions.push({ order: questions.length + 1, type: 'PHONE', required: true, question_text: '1:1 맞춤 해피콜을 받으실 연락처를 남겨주세요.' });
+    };
   }
-  const blocks = (base.tab2_landing_blocks || []).map(b => Object.assign({}, b));
-  if (blocks[0]) { blocks[0].tag = ST.target_customer; blocks[0].subtitle = ST.core_offer; }
-
-  const seq = (base.tab4_interval_sequence || []).map((it, idx) => ({
-    step: it.step || idx + 1,
-    timing: it.timing || (idx === 0 ? 'IMMEDIATE' : 'AFTER_1_DAY_0900'),
-    template_type: it.template_type || (idx === 0 ? 'ALIMTALK' : 'FREE_FRIENDTALK'),
-    template_id: 'f5af8a838d06a71e678e565a513d34a61ffa7b1c',
-    branches: [{
-      priority: 1,
-      condition_desc: it.branch_condition || '모두 (전체 신청자)',
-      variables: { '콘텐츠 제목': ST.core_offer + ' 접수 확인', '콘텐츠 소개': it.body_preview || it.note || '신청하신 안내 자료가 준비되었습니다.' },
-      sheet_fallback_strings: {},
-      image_ratio: '800x400',
-      image_copy: { badge: ST.target_customer, headline: ST.core_offer, subtext: ST.channel_name },
-      body_text_400chars: it.body_preview || ('#{이름}님! ' + ST.core_offer + ' 핵심 칼럼을 보내드립니다.'),
-      buttons: [{ name: '상세 내용 확인하기', link_type: 'WL', webzine_anchor: '#sec-1', url: 'https://gomawartalk.com/webzine/' + ymd + '.html#sec-1' }],
-      cards_800x600: [
-        { card_index: 1, header_20chars: ST.core_offer.slice(0, 20), body_180chars: ST.target_customer + '을 위한 핵심 로드맵을 확인해 보세요.', button_8chars: '자세히보기', webzine_anchor: '#sec-1', button_url: 'https://gomawartalk.com/webzine/' + ymd + '.html#sec-1' },
-        { card_index: 2, header_20chars: '맞춤 상담·신청 안내', body_180chars: '아래 버튼을 눌러 지금 바로 신청하실 수 있습니다.', button_8chars: '신청하기', webzine_anchor: '#sec-cta', button_url: 'https://gomawartalk.com/webzine/' + ymd + '.html#sec-cta' }
-      ]
-    }]
-  }));
 
   return {
-    meta: { schema_version: '2.0', campaign_id: ymd + '_' + ST.channel_name.replace(/\s+/g, '') + '_01', created_at: t.toISOString(), mode: ST.mode, use_webzine: ST.use_webzine, webzine_base_url: 'https://gomawartalk.com/webzine/' + ymd + '.html' },
-    partner_info: { owner_name: ST.owner_name, phone: ST.phone, channel_name: ST.channel_name, channel_id_num: '', current_plan: ST.current_plan, pro_upgrade_requested: ST.pro_upgrade_requested, industry_code: ST.industry_code, track_id: ST.track_id },
-    brand_assets: { primary_color: '#4F46E5', secondary_color: '#EEF2FF', logo_base64: ST.logo_base64, block_images_base64: { block_1: ST.block_images.block_1 || null, block_2: null, block_3: null, block_4: null, block_5: null } },
-    tab1_basic_settings: Object.assign({}, base.tab1_basic_settings, { title_30chars: ('[신청] ' + ST.core_offer).slice(0, 30) }),
-    tab2_landing_content: { output_mode: 'FULL', bg_color: '#F8FAFC', use_shorts_landing: false, shorts_youtube_url: '', blocks_1000px: blocks },
-    tab3_application_form: { is_active: true, form_title: base.tab3_form ? base.tab3_form.form_title : '맞춤 자료 발송 설문', form_guide_text: '정확한 맞춤 자료 발송을 위해 아래 항목을 선택해 주세요.', questions: questions },
-    tab4_interval_messages: { quick_single_mode: ST.mode === 'QUICK_INTERVAL', exclude_days: ['SAT', 'SUN'], sequence: seq },
-    tab5_date_messages: [{ quick_single_mode: ST.mode === 'QUICK_DATE', send_datetime: ymd.slice(0, 4) + '-' + ymd.slice(4, 6) + '-' + ymd.slice(6, 8) + ' 10:00', title: ST.core_offer + ' D-Day 안내', template_type: 'BRAND_CAROUSEL', branches: [seq[0] ? seq[0].branches[0] : {}] }],
-    webzine_studio: ST.use_webzine ? { webzine_title: ST.channel_name + ' 모바일 매거진', sections: [{ anchor_id: 'sec-1', type: 'ARTICLE_CARD', badge: 'PART 01', title: '1. ' + ST.core_offer, body: ST.target_customer + '을 위한 핵심 요약 가이드입니다.' }, { anchor_id: 'sec-cta', type: 'FLOATING_CTA', button_text: '지금 바로 상담 신청하기', link: 'https://gomawartalk.com' }] } : null
+    brand_name: p.channel_name,
+    concept_and_target: '[' + topic + '] 관심 타겟 고객 맞춤 설계 · 신뢰감 있고 명확한 실전 가이드 톤앤매너 · 고마워톡 트랙 ④(설문 진단 & 뜰채 맞춤 분기 + 모바일 웹진 연동)',
+    landing_5steps: [
+      '1단 Hero: [' + topic + '] 시행착오 없이 한 번에 끝내는 실전 핵심 가이드 무료 배포',
+      '2단 Pain Point: 어디서부터 시작할지 막막함 / 내 상황에 맞는 정확한 기준이 필요함 / 검증된 실전 노하우와 혜택 정보를 원함',
+      '3단 Solution: STEP 01 핵심 체크리스트 & 가이드 즉시 제공 / STEP 02 유형별 맞춤 솔루션 처방 / STEP 03 1:1 맞춤 상담 및 특별 혜택',
+      '4단 Trust: 누적 참여자 만족도 98.4% · 실전 적용 후 체감 변화율 1위 검증 프로그램',
+      '5단 Summary: 카카오톡 1초 간편 신청 즉시 1편 핵심 자료집 알림톡 100% 발송'
+    ],
+    custom_form: {
+      question: '[' + topic + '] 관련하여 현재 가장 관심 있는 유형은 무엇인가요?',
+      options: [
+        '입문·기초부터 차근차근 시작하고 싶어요 (태그: 유형_입문기초 / 시트: 고객진단.유형=입문기초)',
+        '실전 적용 노하우와 심화 가이드가 필요해요 (태그: 유형_실전심화 / 시트: 고객진단.유형=실전심화)',
+        '1:1 맞춤 진단 및 빠른 참여 혜택을 원해요 (태그: 유형_맞춤진단 / 시트: 고객진단.유형=맞춤진단)'
+      ]
+    },
+    sequence_and_webzine: [
+      '1회차 신청 즉시(알림톡): [' + topic + '] 신청 접수 확인 및 1편 핵심 가이드 웹진(#sec-1) 링크 + 채널 추가 안내',
+      '2회차 1일 뒤 09:00(자유작성 친구톡): #{@고객진단.유형} 맞춤 심화 칼럼(#sec-2) 및 참여 혜택 안내',
+      '3회차 3일 뒤 09:00(브랜드 캐러셀): 핵심 프로그램 & 신청 안내 슬라이드 카드(#sec-1 ~ #sec-cta)',
+      '모바일 웹진: #sec-1 핵심 요약 리포트 / #sec-2 유형별 맞춤 처방 탭 / #sec-3 핵심 성과 & FAQ / #sec-cta 1:1 신청하기'
+    ]
   };
 }
 
-function showComplete() {
-  const payload = buildCampaignMasterJson();
-  const w = document.createElement('div'); w.className = 'widget';
-  w.innerHTML = '<div class="form-box">' +
-    '<div style="font-size:12.5px;color:var(--green);font-weight:800">✅ CampaignMaster.json V2.0 표준 데이터가 완성되었습니다!</div>' +
-    '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-    '<button class="pbtn" id="dl-json" type="button" style="flex:1">💾 로컬 JSON 다운로드 (조종석에서 바로 열기)</button>' +
-    '<button class="pbtn grn" id="send-proxy" type="button" style="flex:1">🚀 제작 요청 제출하기 (클라우드 전송)</button></div>' +
-    '<div id="submit-status" style="font-size:12px;color:var(--g500)"></div></div>';
-  addMsg('bot', ST.owner_name + '님, 수고하셨습니다! [' + ST.channel_name + '] 맞춤 캠페인 기획안이 완성되었습니다.\n로컬 JSON으로 바로 저장해 LandingBuilder.html에서 열어보거나, 클라우드로 제출하실 수 있습니다.', { widget: w });
+/* ═══════════════ Step 3: 청사진 요약 브리핑 카드 렌더링 & 대화형 수정 ═══════════════ */
+function renderBlueprintCard(bp) {
+  ST.step = 3;
+  ST.blueprint = bp;
+  updateStepPills();
 
-  w.querySelector('#dl-json').onclick = () => {
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+  const w = document.createElement('div'); w.className = 'widget';
+  w.innerHTML =
+    '<div class="bp-card">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">' +
+        '<b style="font-size:14px;color:var(--purple-dk)">📋 [' + esc(bp.brand_name || '맞춤 캠페인') + '] AI 기획안 청사진 브리핑</b>' +
+        '<span style="font-size:11px;font-weight:800;background:var(--purple);color:#fff;padding:3px 9px;border-radius:99px">Step 3 · 생성 전 컨펌</span>' +
+      '</div>' +
+      '<div class="bp-sec"><h4>① 캠페인 컨셉 &amp; 핵심 타겟</h4><p>' + esc(bp.concept_and_target || '') + '</p></div>' +
+      '<div class="bp-sec"><h4>② [탭 2] 가로 1,000px 랜딩 5단 전환 공식 요약</h4><ul>' + ((bp.landing_5steps || []).map(x => '<li>' + esc(x) + '</li>').join('')) + '</ul></div>' +
+      '<div class="bp-sec"><h4>③ [탭 3] 맞춤 신청폼 질문 &amp; 태그·시트 분기 설계</h4><p><b>Q. ' + esc((bp.custom_form && bp.custom_form.question) || '') + '</b></p><ul>' + (((bp.custom_form && bp.custom_form.options) || []).map(x => '<li>' + esc(x) + '</li>').join('')) + '</ul></div>' +
+      '<div class="bp-sec"><h4>④ [탭 4·5] 자동발송 시퀀스 &amp; 모바일 웹진 구성안</h4><ul>' + ((bp.sequence_and_webzine || []).map(x => '<li>' + esc(x) + '</li>').join('')) + '</ul></div>' +
+      '<div class="bp-sec" style="background:#FFFBEB;border-color:#FDE68A">' +
+        '<h4>🎨 선택 옵션 (사진 150KB 자동 압축 &amp; Pro 패스트트랙)</h4>' +
+        '<div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:4px">' +
+          '<label style="font-weight:700;cursor:pointer">🖼️ 로고 첨부: <input type="file" accept="image/*" data-bp-logo style="font-size:11px;max-width:170px"></label>' +
+          '<label style="font-weight:700;cursor:pointer">📷 1단 배경사진: <input type="file" accept="image/*" data-bp-b1 style="font-size:11px;max-width:170px"></label>' +
+        '</div>' +
+        '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:12px">' +
+          '<label style="font-weight:800;color:#92400E;cursor:pointer"><input type="checkbox" data-bp-pro ' + (ST.proUpgrade ? 'checked' : '') + ' style="accent-color:#D97706"> 👑 Pro 플랜 업그레이드 신청 (1일 세팅 + 내 로고 맞춤 알림톡)</label>' +
+          '<label style="font-weight:800;color:var(--purple-dk);cursor:pointer"><input type="checkbox" data-bp-wz ' + (ST.useWebzine ? 'checked' : '') + ' style="accent-color:var(--purple)"> ✨ 모바일 웹진 함께 생성</label>' +
+        '</div>' +
+      '</div>' +
+      '<div class="action-bar">' +
+        '<button class="pbtn grn" type="button" data-act="generate-full" style="flex:1;font-size:14px;padding:13px">✨ 이대로 전체 캠페인 생성하기 (100% 제로베이스 작문)</button>' +
+      '</div>' +
+      '<div style="font-size:11.5px;color:var(--g500);text-align:center">💬 수정하고 싶은 부분(예: "영문 병기로 바꿔줘", "신청폼 보기를 4개로 늘려줘")을 아래 채팅창에 입력하시면 청사진을 즉시 수정해 다시 브리핑합니다!</div>' +
+    '</div>';
+
+  addMsg('bot', '지금까지 나눈 상담을 바탕으로 맞춤형 캠페인 청사진을 정리했습니다!\n내용을 검토하시고 [✨ 이대로 전체 캠페인 생성하기]를 누르시거나, 수정하고 싶은 점을 채팅창에 편하게 말씀해 주세요.', { widget: w });
+
+  const logoIn = w.querySelector('[data-bp-logo]');
+  const b1In = w.querySelector('[data-bp-b1]');
+  logoIn.onchange = async e => { if (e.target.files[0] && window.ImageCapturer) ST.logoBase64 = await window.ImageCapturer.compressImageToBase64(e.target.files[0]); };
+  b1In.onchange = async e => { if (e.target.files[0] && window.ImageCapturer) ST.block1Base64 = await window.ImageCapturer.compressImageToBase64(e.target.files[0]); };
+  w.querySelector('[data-bp-pro]').onchange = e => { ST.proUpgrade = e.target.checked; };
+  w.querySelector('[data-bp-wz]').onchange = e => { ST.useWebzine = e.target.checked; };
+  w.querySelector('[data-act="generate-full"]').onclick = () => generateFullZeroBaseCampaign();
+}
+
+async function refineBlueprintWithAI(revisionRequest) {
+  const prompt = [
+    '현재 기획안 청사진 JSON:',
+    JSON.stringify(ST.blueprint, null, 2),
+    '',
+    '사장님의 청사진 수정 요청:',
+    revisionRequest,
+    '',
+    '위 수정 요청을 100% 반영하여 동일한 키 구조(brand_name, concept_and_target, landing_5steps, custom_form, sequence_and_webzine)의 업데이트된 blueprint JSON만 출력하세요.'
+  ].join('\n');
+
+  try {
+    const raw = await Engine.callGemini({
+      systemInstruction: buildConsultSystemPrompt(),
+      userText: prompt,
+      responseMimeType: 'application/json',
+      temperature: 0.4
+    });
+    const updated = Engine.extractJson(raw);
+    if (updated && updated.landing_5steps) return Engine.sanitizeObject(updated);
+    throw new Error('청사진 수정 JSON 파싱 실패');
+  } catch (e) {
+    // 로컬 폴백: 수정 요청 문구를 청사진에 즉시 반영
+    const bp = JSON.parse(JSON.stringify(ST.blueprint));
+    bp.concept_and_target += ' · [수정 반영: ' + revisionRequest + ']';
+    bp.landing_5steps[0] += ' (' + revisionRequest.slice(0, 28) + ')';
+    return bp;
+  }
+}
+
+/* ═══════════════ Step 4: 100% AI 제로베이스 CampaignMaster.json 생성 & 조종석 원클릭 직송 ═══════════════ */
+async function generateFullZeroBaseCampaign() {
+  if (ST.isBusy) return;
+  ST.isBusy = true;
+  $('#send-btn').disabled = true;
+
+  const loadingMsg = addMsg('bot', '⏳ 컨펌해주신 청사진을 바탕으로 탭 1(썸네일) · 탭 2(5단 랜딩 전체 카피) · 탭 3(맞춤 신청폼·태그·시트) · 탭 4·5(알림톡·친구톡·캐러셀 시퀀스) · 모바일 웹진까지 100% 제로베이스로 작문 중입니다…');
+
+  const p = getPartnerMeta();
+  const t = new Date(), p2 = n => String(n).padStart(2, '0');
+  const ymd = t.getFullYear() + p2(t.getMonth() + 1) + p2(t.getDate());
+  const historyText = ST.history.map(h => (h.role === 'user' ? '사장님: ' : 'AI기획자: ') + h.text).join('\n');
+
+  const prompt = [
+    '사장님과의 상담 내역 및 확정된 청사진(Blueprint)을 바탕으로 고마워톡 마스터 캠페인 JSON(CampaignMaster.json V2.0 규격)을 100% 제로베이스로 새로 작문하세요.',
+    '',
+    '=== 절대 준수 규칙 ===',
+    '1. 기존 업종 샘플("월 1,000만 원 지식창업", "중3 겨울방학 오답노트" 등)을 절대 복사하지 말고, 오직 이번 상담 주제와 청사진에 맞춰 모든 문구를 새로 작문하세요.',
+    '2. 금지어(\\uB274\\uC2A4\\uB808\\uD130)는 절대 쓰지 마세요.',
+    '3. 알림톡(1회차)에는 할인/특가/이벤트/무료증정/쿠폰 같은 광고성 단어를 넣지 마세요.',
+    '4. 시트 변수를 본문에 쓸 때는 반드시 #{@시트명.필드명} 형식으로 @를 붙이세요.',
+    '',
+    '=== 상담 내역 ===',
+    historyText,
+    '',
+    '=== 확정된 청사진 ===',
+    JSON.stringify(ST.blueprint, null, 2),
+    '',
+    '=== 출력 JSON 스키마 (이 구조와 필드명을 정확히 지켜 JSON만 출력하세요) ===',
+    JSON.stringify({
+      brand_assets: { primary_color: '#4F46E5', secondary_color: '#EEF2FF', font_theme: 'modern' },
+      tab1_basic_settings: {
+        thumbnail_500x280: { badge: '상단 포인트 배지(16자 이내)', headline: '썸네일 핵심 헤드카피 (2줄 이내)', subtext: '하단 보조 설명 한 줄' },
+        title_30chars: '[신청] 30자 이내 신청페이지 타이틀',
+        description: '신청페이지 요약 설명문 1~2문장',
+        apply_btn_text: '보라색 신청하기 버튼명',
+        cancel_btn_text: '소식 그만 받기 (신청취소)'
+      },
+      tab2_landing_content: {
+        blocks_1000px: [
+          { step: 1, type: 'HERO', tag: '상단 타겟 캡슐 배지', title: '강렬한 1단 메인 헤드카피', subtitle: '구체적인 가치 제안 서브카피', spec_1: '핵심 혜택 1 요약', spec_2: '핵심 혜택 2 요약', spec_3: '핵심 혜택 3 요약' },
+          { step: 2, type: 'PAIN_POINT', title: '2단 공감 질문 타이틀', lead: '공감 유도 리드 문구', items: ['구체적인 고객 페인포인트 1', '구체적인 고객 페인포인트 2', '구체적인 고객 페인포인트 3'], bottom_quote: '해결책 연결 다크 콜아웃 한 줄' },
+          { step: 3, type: 'SOLUTION', title: '3단 핵심 해결책·커리큘럼 타이틀', points: ['1편. 첫 번째 핵심 해결책/커리큘럼', '2편. 두 번째 핵심 해결책/커리큘럼', '3편. 세 번째 핵심 해결책/커리큘럼'] },
+          { step: 4, type: 'TRUST_PROOF', title: '4단 신뢰 근거 타이틀', stat_highlight: '검증된 핵심 수치/실적 한 줄 하이라이트', rec1_title: '추천 대상 카드 제목', rec1_body: '추천 대상 상세 설명', rec2_title: '기대 효과 카드 제목', rec2_body: '신청 즉시 얻게 되는 변화 설명' },
+          { step: 5, type: 'BOTTOM_CUE', sum_method: '카카오 원클릭 간편 신청', sum_benefit: '신청자 제공 핵심 혜택 요약', sum_timing: '신청 즉시 카카오 알림톡 발송', sum_notice: '상단 [채널 추가] 시 후속 편 수신', notice: '하단 콜아웃 안내 문구', arrow_text: '아래 보라색 [신청하기] 버튼을 눌러 지금 바로 시작하세요' }
+        ]
+      },
+      tab3_application_form: {
+        form_title: '맞춤 안내 발송을 위한 10초 설문',
+        form_guide_text: '정확한 맞춤 자료 발송을 위해 아래 항목을 선택해 주세요.',
+        questions: [
+          {
+            order: 1, type: 'MULTIPLE_CHOICE', required: true,
+            question_text: '비즈니스 맞춤 객관식 질문',
+            options: [
+              { answer_text: '보기 1 텍스트', tag: '맞춤태그1', sheet_field: '고객진단.유형', sheet_value: '유형1' },
+              { answer_text: '보기 2 텍스트', tag: '맞춤태그2', sheet_field: '고객진단.유형', sheet_value: '유형2' },
+              { answer_text: '보기 3 텍스트', tag: '맞춤태그3', sheet_field: '고객진단.유형', sheet_value: '유형3' }
+            ]
+          }
+        ]
+      },
+      tab4_sequence: [
+        {
+          step: 1, timing: 'IMMEDIATE', template_type: 'ALIMTALK',
+          condition_desc: '모두 (전체 신청자)',
+          content_title: '신청 확인용 콘텐츠 제목(광고어 금지)',
+          content_intro: '신청 확인 및 1편 자료 안내(광고어 금지, 상단 노란색 [채널 추가] 안내 포함)',
+          btn_name: '1편 핵심 안내 보기'
+        },
+        {
+          step: 2, timing: 'AFTER_1_DAY_0900', template_type: 'FREE_FRIENDTALK',
+          condition_desc: '태그 = 맞춤태그1',
+          badge: '친구톡 배너 배지', headline: '친구톡 배너 헤드라인', subtext: '친구톡 배너 서브카피',
+          body_text: '#{이름}님! #{@고객진단.유형} 맞춤 2편 심화 가이드와 혜택을 보내드립니다.',
+          btn_name: '2편 심화 가이드 보기'
+        },
+        {
+          step: 3, timing: 'AFTER_3_DAYS_0900', template_type: 'BRAND_CAROUSEL',
+          condition_desc: '모두 (전체 신청자)',
+          cards: [
+            { header_20chars: '캐러셀 카드1 제목(20자내)', body_180chars: '카드1 본문 설명', button_8chars: '자세히보기' },
+            { header_20chars: '캐러셀 카드2 제목(20자내)', body_180chars: '카드2 본문 설명', button_8chars: '신청하기' }
+          ]
+        }
+      ],
+      webzine_studio: {
+        webzine_title: '모바일 웹진 매거진 타이틀',
+        sections: [
+          { anchor_id: 'sec-1', type: 'ARTICLE_CARD', badge: 'PART 01', title: '1. 웹진 첫 번째 핵심 아티클 제목', body: '첫 번째 아티클 상세 본문 (3~4문장)' },
+          { anchor_id: 'sec-2', type: 'MULTI_CATEGORY_TABS', badge: 'PART 02', title: '2. 유형별 맞춤 가이드 탭', tabs: [{ label: '유형1', content: '유형1 맞춤 가이드 내용' }, { label: '유형2', content: '유형2 맞춤 가이드 내용' }, { label: '유형3', content: '유형3 맞춤 가이드 내용' }] },
+          { anchor_id: 'sec-3', type: 'STAT_AND_FAQ', badge: 'PART 03', title: '3. 핵심 성과 & 자주 묻는 질문', stat_label: '핵심 만족도 지표명', stat_value: 98, stat_unit: '%', q: '자주 묻는 핵심 질문', a: '명쾌한 답변' },
+          { anchor_id: 'sec-cta', type: 'FLOATING_CTA', button_text: '하단 플로팅 CTA 버튼명', link: 'https://gomawartalk.com' }
+        ]
+      }
+    }, null, 2)
+  ].join('\n');
+
+  let aiGen = null;
+  try {
+    const raw = await Engine.callGemini({
+      systemInstruction: buildConsultSystemPrompt(),
+      userText: prompt,
+      responseMimeType: 'application/json',
+      temperature: 0.45
+    });
+    aiGen = Engine.extractJson(raw);
+  } catch (err) {
+    aiGen = null;
+  }
+
+  const master = assembleCampaignMasterV2(aiGen, p, ymd, t.toISOString());
+  ST.lastGeneratedCampaign = master;
+  ST.step = 4;
+  updateStepPills();
+  ST.isBusy = false;
+  $('#send-btn').disabled = false;
+
+  // 조종석 브릿지에 즉시 자동 저장
+  Engine.saveBridgeCampaign(master);
+
+  const w = document.createElement('div'); w.className = 'widget';
+  w.innerHTML =
+    '<div class="bp-card" style="border-color:var(--green-bd);background:var(--green-lt)">' +
+      '<div style="font-size:14px;font-weight:800;color:var(--green)">🎉 100% 맞춤형 CampaignMaster.json V2.0 생성 완료!</div>' +
+      '<div style="font-size:12.5px;color:var(--g700);line-height:1.55">' +
+        '• 타이틀: <b>' + esc(master.tab1_basic_settings.title_30chars) + '</b><br>' +
+        '• 1단 헤드카피: <b>' + esc(master.tab2_landing_content.blocks_1000px[0].title) + '</b><br>' +
+        '• 맞춤 신청폼 질문: <b>' + esc(master.tab3_application_form.questions[0].question_text) + '</b>' +
+      '</div>' +
+      '<div class="action-bar">' +
+        '<button class="pbtn grn" type="button" id="btn-bridge-open" style="flex:1.3;font-size:13.5px;padding:13px">🚀 조종석(LandingBuilder)에서 바로 열기 (원클릭 자동 세팅)</button>' +
+        '<button class="pbtn" type="button" id="btn-dl-json" style="flex:1">💾 JSON 파일 다운로드</button>' +
+      '</div>' +
+      '<div class="action-bar">' +
+        '<button class="pbtn sec" type="button" id="btn-cloud-submit" style="width:100%">☁️ 클라우드 접수함 제출 &amp; 대표님 구글 챗 알림 발송</button>' +
+      '</div>' +
+      '<div id="cloud-status" style="font-size:12px;color:var(--g700)"></div>' +
+    '</div>';
+
+  loadingMsg.querySelector('.b-txt').textContent = '사장님의 비즈니스만을 위한 100% 맞춤형 캠페인(탭 1~5 + 모바일 웹진) 생성이 완료되었습니다!\n아래 [🚀 조종석(LandingBuilder)에서 바로 열기] 버튼을 누르면 조종석이 새 창으로 열리며 방금 만든 모든 카피와 디자인이 즉시 세팅됩니다.';
+  loadingMsg.querySelector('.bubble').appendChild(w);
+  $('#chat').scrollTop = $('#chat').scrollHeight;
+
+  w.querySelector('#btn-bridge-open').onclick = () => {
+    Engine.saveBridgeCampaign(master);
+    window.open('LandingBuilder.html?from=bot', '_blank');
+  };
+  w.querySelector('#btn-dl-json').onclick = () => {
+    const blob = new Blob([JSON.stringify(master, null, 2)], { type: 'application/json;charset=utf-8' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = 'CampaignMaster_' + ST.channel_name.replace(/[\\\/:*?"<>|\s]+/g, '_') + '.json';
+    a.download = 'CampaignMaster_' + (p.channel_name || 'custom').replace(/[\\\/:*?"<>|\s]+/g, '_') + '_' + ymd + '.json';
     document.body.appendChild(a); a.click(); a.remove();
   };
-  w.querySelector('#send-proxy').onclick = async () => {
-    const st = w.querySelector('#submit-status');
-    if (!PROXY_URL) {
-      st.innerHTML = '⚠️ 상단 [⚙️ 프록시 연동]에서 Backend_Proxy.gs 웹앱 URL을 설정하면 구글 드라이브 적재 + 대표님 구글 챗 즉시 알림이 실행됩니다. (지금은 [💾 로컬 JSON 다운로드]로 테스트하세요!)';
+  w.querySelector('#btn-cloud-submit').onclick = async () => {
+    const st = w.querySelector('#cloud-status');
+    const cfg = Engine.getConfig();
+    if (!cfg.hasProxy) {
+      st.innerHTML = 'ℹ️ Backend_Proxy.gs 웹앱 URL이 설정되지 않았습니다. 지금은 위 <b>[🚀 조종석에서 바로 열기]</b> 또는 <b>[💾 JSON 파일 다운로드]</b>로 즉시 확인하실 수 있습니다.';
       return;
     }
-    st.textContent = '전송 중…';
+    st.textContent = '클라우드 접수함 전송 중…';
     try {
-      const res = await fetch(PROXY_URL, { method: 'POST', body: JSON.stringify({ action: 'submit_campaign', payload }) });
-      const data = await res.json();
-      st.innerHTML = '🎉 제출 완료! 담당 대표님께 구글 챗 즉시 알림이 발송되었습니다. (' + esc(data.fileName || '저장됨') + ')';
-    } catch (err) { st.textContent = '❌ 전송 실패: ' + err.message; }
+      const res = await fetch(cfg.proxyUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_campaign', payload: master }) });
+      const d = await res.json();
+      st.innerHTML = '✅ 클라우드 접수 및 구글 챗 알림 완료! (' + esc(d.fileName || '저장됨') + ')';
+    } catch (e) { st.textContent = '❌ 전송 실패: ' + e.message; }
   };
 }
 
-/* ═══════════════ 자유 입력 처리 (Intent Routing: RAG Q&A ↔ 인터뷰 복귀) ═══════════════ */
-async function handleUserText(text) {
-  const t = text.trim(); if (!t) return;
-  addMsg('user', t);
+function assembleCampaignMasterV2(aiGen, p, ymd, isoNow) {
+  const bp = ST.blueprint || buildDynamicBlueprintFromHistory(ST.topicRaw || '맞춤 캠페인');
+  const g = aiGen || buildZeroBaseFallbackFromBlueprint(bp);
+  const ba = g.brand_assets || {};
+  const t1 = g.tab1_basic_settings || {};
+  const th = t1.thumbnail_500x280 || {};
+  const t2Blocks = (g.tab2_landing_content && Array.isArray(g.tab2_landing_content.blocks_1000px) && g.tab2_landing_content.blocks_1000px.length === 5)
+    ? g.tab2_landing_content.blocks_1000px
+    : buildZeroBaseFallbackFromBlueprint(bp).tab2_landing_content.blocks_1000px;
 
-  if (isQuestionIntent(t)) {
-    let ans = '';
-    if (PROXY_URL) {
-      try {
-        const res = await fetch(PROXY_URL, { method: 'POST', body: JSON.stringify({ action: 'chat', mode: 'QA', userText: t }) });
-        const d = await res.json(); ans = d.reply || d.text || searchManualRAG(t);
-      } catch (e) { ans = searchManualRAG(t); }
-    } else {
-      ans = searchManualRAG(t);
+  const rawQ = (g.tab3_application_form && g.tab3_application_form.questions && g.tab3_application_form.questions[0]) ||
+    buildZeroBaseFallbackFromBlueprint(bp).tab3_application_form.questions[0];
+
+  const sheetField = ((rawQ.options && rawQ.options[0] && rawQ.options[0].sheet_field) || '고객진단.유형');
+  const normSheetField = sheetField.indexOf('.') === -1 ? ('고객진단.' + sheetField) : sheetField;
+
+  const questions = [{
+    order: 1,
+    type: 'MULTIPLE_CHOICE',
+    required: true,
+    question_text: rawQ.question_text || (bp.custom_form && bp.custom_form.question) || '가장 관심 있는 항목을 선택해 주세요.',
+    options: (rawQ.options || []).map((op, idx) => ({
+      answer_text: op.answer_text || ('선택지 ' + (idx + 1)),
+      actions_after_save: [
+        { action_type: 'TAG', operation: 'ATTACH', target: op.tag || ('맞춤태그_' + (idx + 1)) },
+        { action_type: 'SHEET', data_type: 'STRING', operation: 'ATTACH', field_name: normSheetField, value: op.sheet_value || ('유형' + (idx + 1)) }
+      ]
+    }))
+  }];
+
+  const baseUrl = 'https://gomawartalk.com/webzine/' + ymd + '.html';
+  const rawSeq = Array.isArray(g.tab4_sequence) && g.tab4_sequence.length ? g.tab4_sequence : buildZeroBaseFallbackFromBlueprint(bp).tab4_sequence;
+  const fallbacks = {}; fallbacks[normSheetField] = '고객';
+
+  const sequence = rawSeq.map((s, idx) => {
+    const tt = s.template_type || (idx === 0 ? 'ALIMTALK' : idx === 1 ? 'FREE_FRIENDTALK' : 'BRAND_CAROUSEL');
+    const cards = (Array.isArray(s.cards) && s.cards.length >= 2 ? s.cards : [
+      { header_20chars: (t1.title_30chars || '핵심 안내 1편').slice(0, 20), body_180chars: s.body_text || '핵심 가이드를 확인하세요.', button_8chars: '자세히보기' },
+      { header_20chars: '맞춤 혜택 & 상담 신청', body_180chars: '지금 바로 맞춤 혜택을 신청하세요.', button_8chars: '신청하기' }
+    ]).map((c, ci) => ({
+      card_index: ci + 1,
+      header_20chars: String(c.header_20chars || ('카드 ' + (ci + 1))).slice(0, 20),
+      body_180chars: String(c.body_180chars || '').slice(0, 180),
+      button_8chars: String(c.button_8chars || '자세히보기').slice(0, 8),
+      webzine_anchor: ci === 0 ? '#sec-1' : '#sec-cta',
+      button_url: baseUrl + (ci === 0 ? '#sec-1' : '#sec-cta')
+    }));
+
+    return {
+      step: idx + 1,
+      timing: s.timing || (idx === 0 ? 'IMMEDIATE' : idx === 1 ? 'AFTER_1_DAY_0900' : 'AFTER_3_DAYS_0900'),
+      template_type: tt,
+      template_id: 'f5af8a838d06a71e678e565a513d34a61ffa7b1c',
+      branches: [{
+        priority: 1,
+        condition_desc: s.condition_desc || '모두 (전체 신청자)',
+        template_id: 'f5af8a838d06a71e678e565a513d34a61ffa7b1c',
+        variables: {
+          '콘텐츠 제목': s.content_title || ((t1.title_30chars || bp.brand_name) + ' 신청 접수 확인'),
+          '콘텐츠 소개': s.content_intro || '신청하신 1편 안내가 준비되었습니다. (다음 편 수신을 위해 상단 노란색 [채널 추가]를 꼭 눌러두세요!)'
+        },
+        sheet_fallback_strings: fallbacks,
+        image_ratio: '800x400',
+        image_copy: {
+          badge: s.badge || th.badge || '맞춤 핵심 가이드',
+          headline: s.headline || th.headline || (t1.title_30chars || '맞춤 가이드'),
+          subtext: s.subtext || th.subtext || p.channel_name
+        },
+        body_text_400chars: s.body_text || ('#{이름}님! #{@' + normSheetField + '} 맞춤 핵심 가이드를 보내드립니다.'),
+        buttons: [{ name: s.btn_name || '상세 내용 확인하기', link_type: 'WL', webzine_anchor: '#sec-' + Math.min(idx + 1, 3), url: baseUrl + '#sec-' + Math.min(idx + 1, 3) }],
+        cards_800x600: cards
+      }]
+    };
+  });
+
+  const wz = g.webzine_studio && Array.isArray(g.webzine_studio.sections) ? g.webzine_studio : buildZeroBaseFallbackFromBlueprint(bp).webzine_studio;
+
+  return Engine.sanitizeObject({
+    meta: {
+      schema_version: '2.0',
+      campaign_id: ymd + '_' + (p.channel_name || 'campaign').replace(/\s+/g, '') + '_01',
+      created_at: isoNow,
+      mode: 'FULL_SET',
+      use_webzine: !!ST.useWebzine,
+      webzine_base_url: baseUrl
+    },
+    partner_info: {
+      owner_name: p.owner_name,
+      phone: p.phone,
+      channel_name: p.channel_name !== '맞춤 브랜드 채널' ? p.channel_name : (bp.brand_name || '맞춤 브랜드 채널'),
+      channel_id_num: '15',
+      current_plan: 'STARTER',
+      pro_upgrade_requested: !!ST.proUpgrade,
+      industry_code: 'custom_ai',
+      track_id: 'TRACK_4'
+    },
+    brand_assets: {
+      primary_color: ba.primary_color || '#4F46E5',
+      secondary_color: ba.secondary_color || '#EEF2FF',
+      font_theme: ba.font_theme || 'modern',
+      logo_base64: ST.logoBase64 || null,
+      block_images_base64: { block_1: ST.block1Base64 || null, block_2: null, block_3: null, block_4: null, block_5: null }
+    },
+    tab1_basic_settings: {
+      thumbnail_500x280: {
+        badge: th.badge || 'SPECIAL EDITION',
+        headline: th.headline || (t2Blocks[0] && t2Blocks[0].title) || bp.brand_name,
+        subtext: th.subtext || (t2Blocks[0] && t2Blocks[0].subtitle) || p.channel_name
+      },
+      title_30chars: String(t1.title_30chars || ('[신청] ' + (bp.brand_name || '맞춤 가이드'))).slice(0, 30),
+      description: t1.description || bp.concept_and_target || '',
+      apply_btn_text: t1.apply_btn_text || '1초 만에 무료 신청하기',
+      cancel_btn_text: t1.cancel_btn_text || '소식 그만 받기 (신청취소)',
+      show_apply_btn: true,
+      show_top_bar: true,
+      form_only_mode: false,
+      failure_notice_alimtalk: true,
+      friendtalk_rescue_2times: true,
+      marketing_consent_popup: true
+    },
+    tab2_landing_content: {
+      output_mode: 'FULL',
+      bg_color: '#F8FAFC',
+      use_shorts_landing: false,
+      shorts_youtube_url: '',
+      blocks_1000px: t2Blocks,
+      branch_links: ['', '', '', '', '']
+    },
+    tab3_application_form: {
+      is_active: true,
+      form_title: (g.tab3_application_form && g.tab3_application_form.form_title) || '맞춤 자료 발송을 위한 10초 설문',
+      form_guide_text: (g.tab3_application_form && g.tab3_application_form.form_guide_text) || '정확한 맞춤 안내 발송을 위해 아래 항목을 선택해 주세요.',
+      questions: questions
+    },
+    tab4_interval_messages: {
+      quick_single_mode: false,
+      exclude_days: ['SAT', 'SUN'],
+      sequence: sequence
+    },
+    tab5_date_messages: [{
+      quick_single_mode: false,
+      send_datetime: ymd.slice(0, 4) + '-' + ymd.slice(4, 6) + '-' + ymd.slice(6, 8) + ' 10:00',
+      title: (bp.brand_name || '주요 일정') + ' — D-Day 리마인드',
+      template_type: 'BRAND_CAROUSEL',
+      branches: [sequence[sequence.length - 1].branches[0]]
+    }],
+    webzine_studio: wz
+  });
+}
+
+function buildZeroBaseFallbackFromBlueprint(bp) {
+  const s5 = bp.landing_5steps || [];
+  const cf = bp.custom_form || { question: '현재 가장 관심 있는 항목은 무엇인가요?', options: ['기초 입문', '실전 심화', '1:1 맞춤 상담'] };
+  const stripStep = (txt, fallback) => String(txt || fallback || '').replace(/^[1-5]단\s*[A-Za-z\s]*:\s*/i, '').trim();
+
+  return {
+    brand_assets: { primary_color: '#4F46E5', secondary_color: '#EEF2FF', font_theme: 'modern' },
+    tab1_basic_settings: {
+      thumbnail_500x280: {
+        badge: (bp.brand_name || 'SPECIAL GUIDE').slice(0, 18),
+        headline: stripStep(s5[0], bp.brand_name + ' 핵심 가이드'),
+        subtext: stripStep(s5[4], '카카오 1초 신청 즉시 발송')
+      },
+      title_30chars: ('[신청] ' + (bp.brand_name || '맞춤 핵심 가이드')).slice(0, 30),
+      description: bp.concept_and_target || '카카오로 간편하게 신청하고 맞춤 가이드를 받아보세요.',
+      apply_btn_text: '1초 만에 무료 신청하기',
+      cancel_btn_text: '소식 그만 받기 (신청취소)'
+    },
+    tab2_landing_content: {
+      blocks_1000px: [
+        { step: 1, type: 'HERO', tag: bp.brand_name || 'SPECIAL EDITION', title: stripStep(s5[0], bp.brand_name), subtitle: bp.concept_and_target || '', spec_1: '실전 압축 핵심 가이드', spec_2: '카카오톡 1초 즉시 발송', spec_3: '유형별 1:1 맞춤 처방' },
+        { step: 2, type: 'PAIN_POINT', title: '혹시 이런 고민을 하고 계신가요?', lead: '하나라도 해당된다면 아래 맞춤 해결책을 확인해 보세요.', items: stripStep(s5[1], '고민 1 / 고민 2 / 고민 3').split('/').map(x => x.trim()).filter(Boolean), bottom_quote: '검증된 맞춤 솔루션으로 가장 빠르게 해결해 드립니다.' },
+        { step: 3, type: 'SOLUTION', title: (bp.brand_name || '맞춤 프로그램') + ' 3단계 핵심 솔루션', points: stripStep(s5[2], 'STEP 01 핵심 가이드 / STEP 02 맞춤 처방 / STEP 03 실전 혜택').split('/').map(x => x.trim()).filter(Boolean) },
+        { step: 4, type: 'TRUST_PROOF', title: '검증된 성과와 참여자 만족도로 증명합니다', stat_highlight: stripStep(s5[3], '참여자 만족도 98.5% · 실전 체감 변화 검증'), rec1_title: '이런 분께 강력 추천합니다', rec1_body: bp.concept_and_target || '', rec2_title: '신청 즉시 얻게 되는 확실한 변화', rec2_body: stripStep(s5[4], '1편 핵심 가이드 즉시 열람 및 맞춤 후속 자료 수신') },
+        { step: 5, type: 'BOTTOM_CUE', sum_method: '카카오 원클릭 로그인 (10초 간편 접수)', sum_benefit: stripStep(s5[4], '핵심 가이드 & 맞춤 혜택 무료 발송'), sum_timing: '신청 완료 즉시 카카오 알림톡 100% 발송', sum_notice: '상단 노란색 [채널 추가] 클릭 시 후속 편 수신', notice: '카카오 로그인 한 번으로 별도 입력 없이 즉시 접수됩니다', arrow_text: '아래 보라색 [신청하기] 버튼을 눌러 지금 바로 신청하세요' }
+      ]
+    },
+    tab3_application_form: {
+      form_title: (bp.brand_name || '맞춤 가이드') + ' 발송을 위한 10초 설문',
+      form_guide_text: '정확한 맞춤 안내 발송을 위해 아래 항목을 선택해 주세요.',
+      questions: [{
+        order: 1, type: 'MULTIPLE_CHOICE', required: true,
+        question_text: cf.question,
+        options: (cf.options || []).map((optStr, i) => {
+          const clean = String(optStr).split('(')[0].trim();
+          return { answer_text: clean, tag: '유형_' + (i + 1), sheet_field: '고객진단.유형', sheet_value: clean.slice(0, 12) };
+        })
+      }]
+    },
+    tab4_sequence: [
+      { step: 1, timing: 'IMMEDIATE', template_type: 'ALIMTALK', condition_desc: '모두 (전체 신청자)', content_title: (bp.brand_name || '맞춤 가이드') + ' 신청 접수 확인', content_intro: stripStep(s5[4], '신청하신 1편 자료 안내가 준비되었습니다.') + ' (다음 편 수신을 위해 상단 노란색 [채널 추가]를 꼭 눌러두세요!)', btn_name: '1편 핵심 가이드 보기' },
+      { step: 2, timing: 'AFTER_1_DAY_0900', template_type: 'FREE_FRIENDTALK', condition_desc: '모두 (전체 신청자)', badge: bp.brand_name || '맞춤 칼럼', headline: stripStep(s5[0], '2편 심화 가이드'), subtext: '채널 친구 전용 핵심 리포트', body_text: '#{이름}님! 어제 확인하신 1편에 이어 #{@고객진단.유형} 맞춤 2편 심화 가이드를 보내드립니다.', btn_name: '2편 심화 가이드 열람' },
+      { step: 3, timing: 'AFTER_3_DAYS_0900', template_type: 'BRAND_CAROUSEL', condition_desc: '모두 (전체 신청자)', cards: [{ header_20chars: (bp.brand_name || '핵심 커리큘럼').slice(0, 20), body_180chars: stripStep(s5[2], '핵심 커리큘럼을 확인하세요.').slice(0, 170), button_8chars: '자세히보기' }, { header_20chars: '1:1 맞춤 상담 및 신청 안내', body_180chars: stripStep(s5[4], '지금 바로 신청하세요.').slice(0, 170), button_8chars: '신청하기' }] }
+    ],
+    webzine_studio: {
+      webzine_title: (bp.brand_name || '맞춤') + ' 모바일 매거진',
+      sections: [
+        { anchor_id: 'sec-1', type: 'ARTICLE_CARD', badge: 'PART 01', title: '1. ' + stripStep(s5[0], '핵심 가이드'), body: stripStep(s5[2], '핵심 솔루션을 확인하세요.') },
+        { anchor_id: 'sec-2', type: 'MULTI_CATEGORY_TABS', badge: 'PART 02', title: '2. 유형별 맞춤 가이드', tabs: (cf.options || ['유형 1', '유형 2', '유형 3']).map(o => { const l = String(o).split('(')[0].trim().slice(0, 14); return { label: l, content: l + ' 맞춤 핵심 가이드입니다.' }; }) },
+        { anchor_id: 'sec-3', type: 'STAT_AND_FAQ', badge: 'PART 03', title: '3. 핵심 성과 & FAQ', stat_label: '참여자 만족도', stat_value: 98, stat_unit: '%', q: '신청 후 자료는 어떻게 받나요?', a: '카카오 신청 즉시 알림톡으로 1편 링크가 발송됩니다.' },
+        { anchor_id: 'sec-cta', type: 'FLOATING_CTA', button_text: '지금 바로 신청하기', link: 'https://gomawartalk.com' }
+      ]
     }
-    addMsg('bot', ans + '\n\n────────────────\n💬 궁금증이 해결되셨나요? 다시 진행하던 Step ' + Math.min(ST.step, 5) + ' 단계로 돌아가 이어서 진행해 주세요!', { rag: true });
+  };
+}
+
+/* ═══════════════ 사용자 채팅 입력 라우터 ═══════════════ */
+async function handleUserTurn(rawText) {
+  const text = String(rawText || '').trim();
+  if (!text || ST.isBusy) return;
+  addMsg('user', text);
+
+  // ① 상담 도중 고마워톡 기능/발송 규정/요금제 질문 시 (Intent Routing -> RAG 답변 후 상담 복귀)
+  if (Engine.detectQuestionIntent(text) && /알림톡|친구톡|캐러셀|뜰채|시트|태그|요금|플랜|starter|pro|고마워톡|규정|야간|미친추|웹진|쿠폰/i.test(text)) {
+    const ragAns = Engine.searchKnowledge(text, Manual);
+    if (ragAns) {
+      addMsg('bot', ragAns + '\n\n────────────────\n💬 고마워톡 기능 궁금증이 해결되셨나요? 이어서 기획 상담을 계속 진행해 주세요!', { rag: true });
+      return;
+    }
+  }
+
+  // ② Step 3(청사진 브리핑) 상태에서 수정 요청을 입력한 경우 -> 청사진 즉시 재작성
+  if (ST.step === 3 && ST.blueprint) {
+    ST.isBusy = true; $('#send-btn').disabled = true;
+    ST.history.push({ role: 'user', text: '[청사진 수정 요청] ' + text });
+    const waitEl = addMsg('bot', '🔄 말씀해주신 수정 사항("' + text + '")을 반영해 청사진을 업데이트하고 있습니다…');
+    const updatedBp = await refineBlueprintWithAI(text);
+    waitEl.remove();
+    ST.isBusy = false; $('#send-btn').disabled = false;
+    renderBlueprintCard(updatedBp);
     return;
   }
 
-  // 업종 단계에서 자유 입력한 경우
-  if (ST.step === 2) {
-    ST.industry_custom = t; ST.industry_code = 'pro_ngo_church';
-    addMsg('bot', '[' + t + '] 업종으로 맞춤 반영했습니다! 이어서 운영 트랙을 선택해 주세요.');
-    return showStep(3);
+  // ③ Step 1 -> Step 2 다회차 심층 상담 진행
+  if (!ST.topicRaw) {
+    ST.topicRaw = text;
+    if (!$('#p-channel').value.trim()) {
+      $('#p-channel').value = text.slice(0, 16).replace(/[^\uAC00-\uD7A3a-zA-Z0-9\s-]/g, '').trim();
+    }
   }
-  addMsg('bot', '말씀하신 내용("' + t + '")을 기획 메모에 기록해 두었습니다! 위 카드 버튼을 눌러 다음 단계로 넘어가거나, 궁금한 고마워톡 기능을 질문해 주세요.');
+  ST.step = 2;
+  ST.turnCount++;
+  updateStepPills();
+  ST.history.push({ role: 'user', text: text });
+
+  ST.isBusy = true; $('#send-btn').disabled = true;
+  const thinking = addMsg('bot', '💭 사장님의 비즈니스 맥락을 분석하고 있습니다…');
+  const turnRes = await runConsultTurn(text);
+  thinking.remove();
+  ST.isBusy = false; $('#send-btn').disabled = false;
+
+  ST.intentSummary = turnRes.intent_summary || ST.intentSummary;
+  ST.history.push({ role: 'model', text: turnRes.reply_message });
+
+  if (turnRes.is_ready_for_blueprint && turnRes.blueprint) {
+    addMsg('bot', turnRes.reply_message, { intentSummary: ST.intentSummary });
+    renderBlueprintCard(turnRes.blueprint);
+    return;
+  }
+
+  // 추천 선택지 칩 + [📋 지금까지 내용으로 기획안 청사진 보기] 버튼 렌더링
+  const w = document.createElement('div'); w.className = 'widget';
+  if (Array.isArray(turnRes.suggested_options) && turnRes.suggested_options.length) {
+    const cl = document.createElement('div'); cl.className = 'chip-list';
+    turnRes.suggested_options.forEach(opt => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'sugg-chip'; b.textContent = '👉 ' + opt;
+      b.onclick = () => handleUserTurn(opt);
+      cl.appendChild(b);
+    });
+    w.appendChild(cl);
+  }
+  const ab = document.createElement('div'); ab.className = 'action-bar';
+  const bpBtn = document.createElement('button');
+  bpBtn.type = 'button'; bpBtn.className = 'pbtn sec';
+  bpBtn.textContent = '📋 지금까지 내용으로 기획안 청사진 바로 보기 →';
+  bpBtn.onclick = async () => {
+    const allUserText = ST.history.filter(h => h.role === 'user').map(h => h.text).join(' / ');
+    renderBlueprintCard(turnRes.blueprint || buildDynamicBlueprintFromHistory(allUserText));
+  };
+  ab.appendChild(bpBtn);
+  w.appendChild(ab);
+
+  addMsg('bot', turnRes.reply_message, { intentSummary: ST.intentSummary, widget: w });
 }
 
-/* 이벤트 바인딩 */
-$('#composer').addEventListener('submit', e => { e.preventDefault(); const v = $('#user-input').value; $('#user-input').value = ''; handleUserText(v); });
-document.addEventListener('click', e => { const q = e.target.closest('[data-ask]'); if (q) handleUserText(q.dataset.ask); });
-$('#btn-reset').onclick = () => { $('#chat').innerHTML = ''; resetState(); showStep(0); };
-$('#btn-proxy').onclick = () => { $('#proxy-input').value = PROXY_URL; $('#proxy-modal').hidden = false; };
-$('#proxy-close').onclick = () => { $('#proxy-modal').hidden = true; };
-$('#proxy-save').onclick = () => { PROXY_URL = $('#proxy-input').value.trim(); try { localStorage.setItem('gmt_bot_proxy', PROXY_URL); } catch (e) {} $('#proxy-modal').hidden = true; };
+/* ═══════════════ AI 엔진 설정 모달 & 이벤트 ═══════════════ */
+function openAiModal() {
+  const cfg = Engine.getConfig();
+  $('#cfg-key').value = cfg.apiKey;
+  $('#cfg-model').value = cfg.model || 'gemini-2.5-flash';
+  $('#cfg-proxy').value = cfg.proxyUrl;
+  $('#ai-modal').hidden = false;
+}
 
-window.BOT = { state: () => ST, buildCampaignMasterJson, searchManualRAG, isQuestionIntent, showStep };
-resetState();
-showStep(0);
+$('#btn-ai-cfg').onclick = openAiModal;
+$('#cfg-close').onclick = () => { $('#ai-modal').hidden = true; };
+$('#cfg-save').onclick = () => {
+  Engine.saveConfig({
+    apiKey: $('#cfg-key').value.trim(),
+    model: $('#cfg-model').value,
+    proxyUrl: $('#cfg-proxy').value.trim()
+  });
+  $('#ai-modal').hidden = true;
+  updateKeyButtonState();
+};
+$('#btn-open-builder').onclick = () => {
+  if (ST.lastGeneratedCampaign) Engine.saveBridgeCampaign(ST.lastGeneratedCampaign);
+  window.open('LandingBuilder.html?from=bot', '_blank');
+};
+$('#btn-reset').onclick = () => showOpening();
+$('#composer').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('#user-input').value;
+  $('#user-input').value = '';
+  handleUserTurn(v);
+});
+document.addEventListener('click', e => {
+  const q = e.target.closest('[data-ask]');
+  if (q) handleUserTurn(q.dataset.ask);
+});
+
+/* 외부/테스트 호환 API 노출 (window.BOT) */
+window.BOT = {
+  state: () => ST,
+  isQuestionIntent: txt => Engine.detectQuestionIntent(txt),
+  searchManualRAG: txt => Engine.searchKnowledge(txt, Manual),
+  buildCampaignMasterJson: () => {
+    const p = getPartnerMeta();
+    const t = new Date(), p2 = n => String(n).padStart(2, '0');
+    const ymd = t.getFullYear() + p2(t.getMonth() + 1) + p2(t.getDate());
+    return ST.lastGeneratedCampaign || assembleCampaignMasterV2(null, p, ymd, t.toISOString());
+  },
+  handleUserTurn,
+  generateFullZeroBaseCampaign
+};
+
+updateKeyButtonState();
+showOpening();
 })();
 </script>
 </body>

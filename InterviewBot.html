@@ -584,7 +584,7 @@ async function generateFullZeroBaseCampaign() {
         thumbnail_500x280: { badge: '상단 포인트 배지(16자 이내)', headline: '썸네일 핵심 헤드카피 (2줄 이내)', subtext: '하단 보조 설명 한 줄' },
         title_30chars: '[신청] 30자 이내 신청페이지 타이틀',
         description: '신청페이지 요약 설명문 1~2문장',
-        apply_btn_text: '보라색 신청하기 버튼명',
+        apply_btn_text: '신청하기 버튼명',
         cancel_btn_text: '소식 그만 받기 (신청취소)'
       },
       tab2_landing_content: {
@@ -593,7 +593,7 @@ async function generateFullZeroBaseCampaign() {
           { step: 2, type: 'PAIN_POINT', title: '2단 공감 질문 타이틀', lead: '공감 유도 리드 문구', items: ['구체적인 고객 페인포인트 1', '구체적인 고객 페인포인트 2', '구체적인 고객 페인포인트 3'], bottom_quote: '해결책 연결 다크 콜아웃 한 줄' },
           { step: 3, type: 'SOLUTION', title: '3단 핵심 해결책·커리큘럼 타이틀', points: ['1편. 첫 번째 핵심 해결책/커리큘럼', '2편. 두 번째 핵심 해결책/커리큘럼', '3편. 세 번째 핵심 해결책/커리큘럼'] },
           { step: 4, type: 'TRUST_PROOF', title: '4단 신뢰 근거 타이틀', stat_highlight: '검증된 핵심 수치/실적 한 줄 하이라이트', rec1_title: '추천 대상 카드 제목', rec1_body: '추천 대상 상세 설명', rec2_title: '기대 효과 카드 제목', rec2_body: '신청 즉시 얻게 되는 변화 설명' },
-          { step: 5, type: 'BOTTOM_CUE', sum_method: '카카오 원클릭 간편 신청', sum_benefit: '신청자 제공 핵심 혜택 요약', sum_timing: '신청 즉시 카카오 알림톡 발송', sum_notice: '상단 [채널 추가] 시 후속 편 수신', notice: '하단 콜아웃 안내 문구', arrow_text: '아래 보라색 [신청하기] 버튼을 눌러 지금 바로 시작하세요' }
+          { step: 5, type: 'BOTTOM_CUE', sum_method: '카카오 원클릭 간편 신청', sum_benefit: '신청자 제공 핵심 혜택 요약', sum_timing: '신청 즉시 카카오 알림톡 발송', sum_notice: '상단 [채널 추가] 시 후속 편 수신', notice: '하단 콜아웃 안내 문구', arrow_text: '아래 [신청하기] 버튼을 눌러 지금 바로 신청하세요' }
         ]
       },
       tab3_application_form: {
@@ -824,7 +824,7 @@ function assembleCampaignMasterV2(aiGen, p, ymd, isoNow) {
     },
     tab1_basic_settings: {
       thumbnail_500x280: {
-        badge: th.badge || 'SPECIAL EDITION',
+        badge: th.badge || '맞춤 핵심 가이드',
         headline: th.headline || (t2Blocks[0] && t2Blocks[0].title) || bp.brand_name,
         subtext: th.subtext || (t2Blocks[0] && t2Blocks[0].subtitle) || p.channel_name
       },
@@ -878,7 +878,7 @@ function buildZeroBaseFallbackFromBlueprint(bp) {
     brand_assets: { primary_color: '#4F46E5', secondary_color: '#EEF2FF', font_theme: 'modern' },
     tab1_basic_settings: {
       thumbnail_500x280: {
-        badge: (bp.brand_name || 'SPECIAL GUIDE').slice(0, 18),
+        badge: (bp.brand_name || '맞춤 핵심 가이드').slice(0, 18),
         headline: stripStep(s5[0], bp.brand_name + ' 핵심 가이드'),
         subtext: stripStep(s5[4], '카카오 1초 신청 즉시 발송')
       },
@@ -889,11 +889,11 @@ function buildZeroBaseFallbackFromBlueprint(bp) {
     },
     tab2_landing_content: {
       blocks_1000px: [
-        { step: 1, type: 'HERO', tag: bp.brand_name || 'SPECIAL EDITION', title: stripStep(s5[0], bp.brand_name), subtitle: bp.concept_and_target || '', spec_1: '실전 압축 핵심 가이드', spec_2: '카카오톡 1초 즉시 발송', spec_3: '유형별 1:1 맞춤 처방' },
+        { step: 1, type: 'HERO', tag: bp.brand_name || '맞춤 핵심 가이드', title: stripStep(s5[0], bp.brand_name), subtitle: bp.concept_and_target || '', spec_1: '실전 압축 핵심 가이드', spec_2: '카카오톡 1초 즉시 발송', spec_3: '유형별 1:1 맞춤 처방' },
         { step: 2, type: 'PAIN_POINT', title: '혹시 이런 고민을 하고 계신가요?', lead: '하나라도 해당된다면 아래 맞춤 해결책을 확인해 보세요.', items: stripStep(s5[1], '고민 1 / 고민 2 / 고민 3').split('/').map(x => x.trim()).filter(Boolean), bottom_quote: '검증된 맞춤 솔루션으로 가장 빠르게 해결해 드립니다.' },
-        { step: 3, type: 'SOLUTION', title: (bp.brand_name || '맞춤 프로그램') + ' 3단계 핵심 솔루션', points: stripStep(s5[2], 'STEP 01 핵심 가이드 / STEP 02 맞춤 처방 / STEP 03 실전 혜택').split('/').map(x => x.trim()).filter(Boolean) },
+        { step: 3, type: 'SOLUTION', title: (bp.brand_name || '맞춤 프로그램') + ' 3단계 핵심 솔루션', points: stripStep(s5[2], '1편 핵심 가이드 / 2편 맞춤 처방 / 3편 실전 혜택').split('/').map(x => x.trim()).filter(Boolean) },
         { step: 4, type: 'TRUST_PROOF', title: '검증된 성과와 참여자 만족도로 증명합니다', stat_highlight: stripStep(s5[3], '참여자 만족도 98.5% · 실전 체감 변화 검증'), rec1_title: '이런 분께 강력 추천합니다', rec1_body: bp.concept_and_target || '', rec2_title: '신청 즉시 얻게 되는 확실한 변화', rec2_body: stripStep(s5[4], '1편 핵심 가이드 즉시 열람 및 맞춤 후속 자료 수신') },
-        { step: 5, type: 'BOTTOM_CUE', sum_method: '카카오 원클릭 로그인 (10초 간편 접수)', sum_benefit: stripStep(s5[4], '핵심 가이드 & 맞춤 혜택 무료 발송'), sum_timing: '신청 완료 즉시 카카오 알림톡 100% 발송', sum_notice: '상단 노란색 [채널 추가] 클릭 시 후속 편 수신', notice: '카카오 로그인 한 번으로 별도 입력 없이 즉시 접수됩니다', arrow_text: '아래 보라색 [신청하기] 버튼을 눌러 지금 바로 신청하세요' }
+        { step: 5, type: 'BOTTOM_CUE', sum_method: '카카오 원클릭 로그인 (10초 간편 접수)', sum_benefit: stripStep(s5[4], '핵심 가이드 & 맞춤 혜택 무료 발송'), sum_timing: '신청 완료 즉시 카카오 알림톡 100% 발송', sum_notice: '상단 노란색 [채널 추가] 클릭 시 후속 편 수신', notice: '카카오 로그인 한 번으로 별도 입력 없이 즉시 접수됩니다', arrow_text: '아래 [신청하기] 버튼을 눌러 지금 바로 신청하세요' }
       ]
     },
     tab3_application_form: {

@@ -234,89 +234,85 @@ body.capturing .ed:hover,body.capturing .ed:focus{background:none;box-shadow:non
 
 #lz{position:relative;overflow:hidden;background:#fff;border:1px solid var(--g300);border-radius:12px;box-shadow:0 16px 40px -12px rgba(15,23,42,.22);margin:0 auto 0 0}
 #lc{width:1000px;transform-origin:0 0;background:#F8FAFC;font-family:var(--font-body);word-break:keep-all;letter-spacing:-0.03em}
-.lb{position:relative;width:1000px;padding:96px 60px;display:flex;flex-direction:column;justify-content:center;background-size:cover;background-position:center;overflow:hidden;word-break:keep-all}
+.lb{position:relative;width:1000px;padding:96px 56px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:stretch;background-size:cover;background-position:center;overflow:hidden;word-break:keep-all}
 .lb.has-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,13,22,.58),rgba(9,13,22,.84));z-index:1}
 .lb>*{position:relative;z-index:2}
 
-/* 섹션 1: HERO (모바일 역산 규격: 좌우 패딩 60px, 헤드카피 76px, 본문 38px) */
-.lb.hero{min-height:760px;padding:104px 60px 92px;background-color:#080C14;background-image:radial-gradient(circle at 86% 18%,var(--brand) 0%,transparent 48%),radial-gradient(circle at 12% 88%,var(--brand-dk) 0%,transparent 52%),linear-gradient(145deg,#080C14 0%,var(--brand-dkr) 54%,var(--brand-dk) 100%);color:#fff}
+/* 각 섹션 상단 한글 포인트 캡슐 배지 (단 1개만 깔끔하게: 36px~38px, 패딩 14px 28px) */
+.sec-badge{display:inline-flex;align-items:center;align-self:flex-start;font-family:var(--font-body);font-size:38px;font-weight:700;line-height:1.3;padding:14px 28px;border-radius:99px;margin-bottom:32px;letter-spacing:-0.02em}
+
+/* 섹션 1: HERO (좌우 패딩 56px / 내부 폭 888px 1열 풀와이드 / 타이틀 88px / 서브 48px / 요약 46px) */
+.lb.hero{min-height:820px;padding:104px 56px 96px;background-color:#080C14;background-image:radial-gradient(circle at 86% 18%,var(--brand) 0%,transparent 48%),radial-gradient(circle at 12% 88%,var(--brand-dk) 0%,transparent 52%),linear-gradient(145deg,#080C14 0%,var(--brand-dkr) 54%,var(--brand-dk) 100%);color:#fff}
 .lb.hero .hero-grid-pattern{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:1}
 .lb.hero .hero-glow{position:absolute;right:-80px;top:-80px;width:380px;height:380px;border-radius:50%;border:42px solid rgba(255,255,255,.04);pointer-events:none;z-index:1}
-.hero-pill-row{display:inline-flex;align-items:center;gap:14px;align-self:flex-start;background:rgba(255,255,255,.11);border:1.5px solid rgba(253,224,71,.52);padding:11px 28px 11px 14px;border-radius:99px;margin-bottom:34px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
-.hero-pill-chip{background:linear-gradient(135deg,#FDE047,#FACC15);color:#0F172A;font-size:20px;font-weight:900;padding:6px 16px;border-radius:99px;letter-spacing:.4px}
-.lb-tag{color:#FEF08A;font-family:var(--font-body);font-size:28px;font-weight:800;letter-spacing:-0.03em}
-.lb-title{font-family:var(--font-head);font-size:76px;font-weight:800;line-height:1.25;letter-spacing:-0.035em;word-break:keep-all}
-.lb.hero .lb-title{color:#FFFFFF;text-shadow:0 8px 28px rgba(0,0,0,.38)}
-.hero-accent-line{width:128px;height:8px;border-radius:99px;background:linear-gradient(90deg,#FDE047,var(--brand));margin:34px 0 30px}
-.lb-sub{font-family:var(--font-body);font-size:38px;line-height:1.55;letter-spacing:-0.03em;color:rgba(255,255,255,.92);font-weight:600}
-.hero-spec-bar{margin-top:48px;display:flex;flex-direction:column;gap:18px;background:rgba(15,23,42,.68);border:1.5px solid rgba(255,255,255,.18);border-radius:24px;padding:28px 34px;box-shadow:0 16px 36px rgba(0,0,0,.28)}
-.hero-spec-item{display:flex;align-items:center;gap:18px;padding-left:18px;border-left:5px solid #FDE047}
-.hero-spec-k{font-size:20px;font-weight:900;color:#FDE047;letter-spacing:.5px;min-width:210px;flex-shrink:0}
-.hero-spec-v{font-family:var(--font-body);font-size:38px;font-weight:700;color:#fff;letter-spacing:-0.03em;line-height:1.42}
+.hero-badge{background:rgba(253,224,71,.16);border:2px solid rgba(253,224,71,.65);color:#FEF08A;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.lb-title{font-family:var(--font-head);font-size:70px;font-weight:800;line-height:1.28;letter-spacing:-0.03em;word-break:keep-all;width:100%}
+.lb.hero .lb-title{font-size:88px;line-height:1.25;letter-spacing:-0.03em;color:#FFFFFF;text-shadow:0 8px 28px rgba(0,0,0,.38)}
+.hero-accent-line{width:140px;height:10px;border-radius:99px;background:linear-gradient(90deg,#FDE047,var(--brand));margin:36px 0 32px}
+.lb-sub{font-family:var(--font-body);font-size:48px;line-height:1.45;letter-spacing:-0.03em;color:rgba(255,255,255,.94);font-weight:600;width:100%}
+.hero-spec-bar{width:100%;box-sizing:border-box;margin-top:48px;display:flex;flex-direction:column;gap:22px;background:rgba(15,23,42,.74);border:2px solid rgba(255,255,255,.2);border-radius:28px;padding:36px 38px;box-shadow:0 18px 38px rgba(0,0,0,.3)}
+.hero-spec-item{width:100%;box-sizing:border-box;display:flex;flex-direction:row;align-items:center;gap:24px}
+.hero-check-icon{width:64px;height:64px;min-width:64px;border-radius:18px;background:#FDE047;color:#0F172A;font-size:38px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hero-spec-v{font-family:var(--font-body);font-size:46px;font-weight:700;color:#FFFFFF;letter-spacing:-0.03em;line-height:1.45;flex:1}
 
-/* 섹션 2: 공감·문제제기 (연회색/웜톤 배경 + 대형 말풍선 체크 카드, 본문 38px) */
-.lb.pain{background-color:#F3F4F6;background-image:linear-gradient(180deg,#F4F3EF 0%,#ECEEF2 100%);color:#0F172A;padding:96px 60px}
-.sec-eyebrow{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;padding:9px 22px;border-radius:99px;font-size:22px;font-weight:800;letter-spacing:.3px;margin-bottom:24px}
-.lb.pain .sec-eyebrow{background:#FEE2E2;color:#B91C1C;border:1.5px solid #FECACA}
-.lb.pain .lb-title{font-size:58px;color:#0F172A;line-height:1.28}
-.lb.pain .sec-lead{margin-top:18px;font-size:38px;color:#475569;font-weight:600;line-height:1.52}
-.lb.pain .lb-list{list-style:none;margin-top:38px;display:flex;flex-direction:column;gap:22px;counter-reset:pain}
-.lb.pain .lb-list li{counter-increment:pain;position:relative;display:flex;flex-direction:column;align-items:flex-start;padding:34px 36px;background:#FFFFFF;border:1.5px solid #E2E8F0;border-left:10px solid #EF4444;border-radius:24px;box-shadow:0 14px 32px -12px rgba(15,23,42,.12);font-size:38px;line-height:1.55;color:#1E293B;font-weight:700}
-.lb.pain .lb-list li::before{content:'CHECK 0' counter(pain) ' · 단골 고민';display:inline-block;padding:6px 16px;border-radius:99px;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;font-size:20px;font-weight:900;letter-spacing:.4px;margin-bottom:16px}
-.pain-bottom-quote{margin-top:34px;padding:28px 34px;border-radius:22px;background:#1E293B;color:#fff;display:flex;flex-direction:column;align-items:flex-start;gap:12px;font-size:38px;line-height:1.52;font-weight:700;box-shadow:0 12px 28px -8px rgba(15,23,42,.28)}
-.pain-bottom-quote span.q-badge{background:#FDE047;color:#0F172A;font-size:20px;font-weight:900;padding:6px 16px;border-radius:99px}
+/* 섹션 2: 공감·문제제기 (가로 888px 1열 와이드 카드 3개 세로 적층, 좌측 64x64 아이콘 + 우측 46px 본문) */
+.lb.pain{background-color:#F3F4F6;background-image:linear-gradient(180deg,#F4F3EF 0%,#ECEEF2 100%);color:#0F172A;padding:96px 56px}
+.pain-badge{background:#FEE2E2;color:#B91C1C;border:2px solid #FECACA}
+.lb.pain .lb-title{font-size:70px;color:#0F172A;line-height:1.28}
+.lb.pain .sec-lead{width:100%;margin-top:20px;font-size:46px;color:#334155;font-weight:600;line-height:1.45}
+.lb.pain .lb-list{width:100%;list-style:none;margin-top:40px;display:flex;flex-direction:column;gap:24px}
+.lb.pain .lb-list li{width:100%;box-sizing:border-box;position:relative;display:flex;flex-direction:row;align-items:center;gap:28px;padding:38px 40px;background:#FFFFFF;border:2px solid #E2E8F0;border-left:12px solid #EF4444;border-radius:26px;box-shadow:0 14px 32px -12px rgba(15,23,42,.12);font-size:46px;line-height:1.45;color:#0F172A;font-weight:700}
+.pain-icon{width:64px;height:64px;min-width:64px;border-radius:18px;background:#FEE2E2;color:#DC2626;font-size:38px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pain-bottom-quote{width:100%;box-sizing:border-box;margin-top:36px;padding:36px 40px;border-radius:26px;background:#1E293B;color:#FFFFFF;font-size:46px;line-height:1.45;font-weight:700;box-shadow:0 14px 30px -8px rgba(15,23,42,.28)}
+.pain-bottom-quote .ed{font-size:46px;line-height:1.45;font-weight:700;color:#FFFFFF}
 
-/* 섹션 3: 핵심 해결책·커리큘럼 (번호 배지 01·02·03 + 벤토 카드, 본문 38px) */
-.lb.solution{background-color:#FFFFFF;background-image:radial-gradient(circle at 95% 8%,var(--brand-lt) 0%,transparent 42%);color:#0F172A;padding:96px 60px}
-.lb.solution .sec-eyebrow{background:var(--brand-lt);color:var(--brand-dk);border:1.5px solid rgba(79,70,229,.22)}
-.lb.solution .lb-title{font-size:58px;color:#0F172A;line-height:1.28}
-.lb.solution .lb-list{list-style:none;margin-top:38px;display:flex;flex-direction:column;gap:22px;counter-reset:sol}
-.lb.solution .lb-list li{counter-increment:sol;position:relative;display:flex;flex-direction:column;align-items:flex-start;padding:36px 38px;background:linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%);border:2px solid #E2E8F0;border-left:10px solid var(--brand);border-radius:24px;font-size:38px;line-height:1.55;font-weight:700;color:#0F172A;box-shadow:0 12px 28px -10px rgba(15,23,42,.1)}
-.lb.solution .lb-list li:first-child{background:linear-gradient(135deg,var(--brand-dkr) 0%,var(--brand-dk) 65%,var(--brand) 100%);color:#FFFFFF;border:none;padding:40px 42px;box-shadow:0 18px 38px -12px rgba(15,23,42,.28)}
-.lb.solution .lb-list li::before{content:'STEP 0' counter(sol);display:inline-flex;align-items:center;justify-content:center;padding:7px 18px;border-radius:99px;background:var(--brand);color:#fff;font-family:var(--font-head);font-weight:800;font-size:21px;letter-spacing:.5px;margin-bottom:16px}
-.lb.solution .lb-list li:first-child::before{content:'STEP 01 · CORE CURRICULUM';background:#FDE047;color:#0F172A}
+/* 섹션 3: 핵심 해결책·커리큘럼 (가로 888px 1열 와이드 카드 3개 세로 적층, 좌측 68x68 번호 배지 + 우측 46px 본문) */
+.lb.solution{background-color:#FFFFFF;background-image:radial-gradient(circle at 95% 8%,var(--brand-lt) 0%,transparent 42%);color:#0F172A;padding:96px 56px}
+.sol-badge{background:var(--brand-lt);color:var(--brand-dk);border:2px solid rgba(79,70,229,.25)}
+.lb.solution .lb-title{font-size:70px;color:#0F172A;line-height:1.28}
+.lb.solution .lb-list{width:100%;list-style:none;margin-top:40px;display:flex;flex-direction:column;gap:24px}
+.lb.solution .lb-list li{width:100%;box-sizing:border-box;position:relative;display:flex;flex-direction:row;align-items:center;gap:28px;padding:40px 42px;background:linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%);border:2px solid #E2E8F0;border-left:12px solid var(--brand);border-radius:26px;font-size:46px;line-height:1.45;font-weight:700;color:#0F172A;box-shadow:0 14px 30px -10px rgba(15,23,42,.1)}
+.lb.solution .lb-list li:first-child{background:linear-gradient(135deg,var(--brand-dkr) 0%,var(--brand-dk) 65%,var(--brand) 100%);color:#FFFFFF;border:none;padding:42px 44px;box-shadow:0 18px 38px -12px rgba(15,23,42,.28)}
+.sol-num{width:68px;height:68px;min-width:68px;border-radius:20px;background:var(--brand);color:#FFFFFF;font-family:var(--font-head);font-size:38px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lb.solution .lb-list li:first-child .sol-num{background:#FDE047;color:#0F172A}
 
-/* 섹션 4: 신뢰 증거·강점 (대형 숫자 지표 하이라이트 대시보드 + 추천 대상 체크 카드, 본문 38px) */
-.lb.trust{background-color:var(--brand-lt);background-image:linear-gradient(180deg,var(--brand-lt) 0%,#F1F5F9 100%);color:#0F172A;padding:96px 60px}
-.lb.trust .sec-eyebrow{background:#0F172A;color:#FDE047}
-.lb.trust .lb-title{font-size:58px;color:#0F172A;line-height:1.28}
-.stat-card-wrap{margin-top:36px;background:linear-gradient(135deg,#0F172A 0%,var(--brand-dkr) 100%);border-radius:26px;padding:40px 42px;color:#fff;box-shadow:0 20px 44px -14px rgba(15,23,42,.32);border:1.5px solid rgba(255,255,255,.14);position:relative;overflow:hidden}
-.stat-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.stat-chip{display:inline-block;padding:7px 18px;border-radius:99px;background:rgba(253,224,71,.18);border:1.5px solid rgba(253,224,71,.55);color:#FDE047;font-size:20px;font-weight:900;letter-spacing:.5px}
-.stat-verified{font-size:18px;font-weight:800;color:rgba(255,255,255,.78)}
-.lb-stat{font-family:var(--font-head);font-size:52px;font-weight:800;color:#FDE047;line-height:1.36;letter-spacing:-0.03em}
-.trust-check-grid{margin-top:26px;display:flex;flex-direction:column;gap:20px}
-.trust-check-card{background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:22px;padding:32px 36px;box-shadow:0 10px 26px -10px rgba(15,23,42,.08)}
-.trust-check-h{font-family:var(--font-head);font-size:32px;font-weight:800;color:var(--brand-dk);margin-bottom:14px;display:flex;align-items:center;gap:12px}
-.trust-check-h i{width:38px;height:38px;border-radius:50%;background:var(--brand-lt);color:var(--brand);display:inline-grid;place-items:center;font-style:normal;font-size:20px;font-weight:900;flex-shrink:0}
-.trust-check-b{font-size:38px;color:#1E293B;line-height:1.55;font-weight:600}
+/* 섹션 4: 신뢰 증거·강점 (성과 강조 배너 56px + 추천 대상 1열 와이드 카드 적층 46px~48px) */
+.lb.trust{background-color:var(--brand-lt);background-image:linear-gradient(180deg,var(--brand-lt) 0%,#F1F5F9 100%);color:#0F172A;padding:96px 56px}
+.trust-badge{background:#0F172A;color:#FDE047}
+.lb.trust .lb-title{font-size:70px;color:#0F172A;line-height:1.28}
+.stat-card-wrap{width:100%;box-sizing:border-box;margin-top:40px;background:linear-gradient(135deg,#0F172A 0%,var(--brand-dkr) 100%);border-radius:28px;padding:44px 44px;color:#fff;box-shadow:0 20px 44px -14px rgba(15,23,42,.32);border:2px solid rgba(253,224,71,.35);position:relative;overflow:hidden}
+.lb-stat{font-family:var(--font-head);font-size:56px;font-weight:800;color:#FDE047;line-height:1.38;letter-spacing:-0.03em}
+.trust-check-grid{width:100%;margin-top:28px;display:flex;flex-direction:column;gap:24px}
+.trust-check-card{width:100%;box-sizing:border-box;background:#FFFFFF;border:2px solid #E2E8F0;border-radius:26px;padding:38px 42px;box-shadow:0 12px 28px -10px rgba(15,23,42,.09)}
+.trust-check-h{font-family:var(--font-head);font-size:48px;font-weight:800;color:var(--brand-dk);margin-bottom:18px;display:flex;align-items:center;gap:18px;line-height:1.35}
+.trust-check-h i{width:60px;height:60px;min-width:60px;border-radius:18px;background:var(--brand-lt);color:var(--brand);display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:38px;font-weight:900;flex-shrink:0}
+.trust-check-title{font-family:var(--font-head);font-size:48px;font-weight:800;color:var(--brand-dk);line-height:1.35;flex:1}
+.trust-check-b{font-size:46px;color:#1E293B;line-height:1.45;font-weight:600}
 
-/* 섹션 5: 참여 혜택·일정 안내 요약 (표 형태 안내 박스 + 강조 보더 콜아웃, 본문 38px, 가짜 신청버튼 절대 없음) */
-.lb.cue{min-height:520px;padding:96px 60px 88px;background-color:#FFFFFF;background-image:linear-gradient(180deg,#FFFFFF 0%,var(--brand-lt) 100%);color:#0F172A;align-items:stretch;text-align:left}
-.lb.cue .sec-eyebrow{background:var(--brand-lt);color:var(--brand-dk);border:1.5px solid rgba(79,70,229,.22)}
-.cue-summary-table{width:100%;display:flex;flex-direction:column;border:2px solid #CBD5E1;border-radius:22px;overflow:hidden;background:#fff;margin-bottom:32px;box-shadow:0 10px 28px -10px rgba(15,23,42,.09)}
-.cue-cell{display:flex;align-items:center;border-bottom:1.5px solid #E2E8F0}
+/* 섹션 5: 참여 혜택·일정 안내 요약 (1열 리스트형 안내 표: 좌측 220px / 우측 668px, 본문 44px~46px, 유도 문구 52px) */
+.lb.cue{min-height:560px;padding:96px 56px 92px;background-color:#FFFFFF;background-image:linear-gradient(180deg,#FFFFFF 0%,var(--brand-lt) 100%);color:#0F172A;align-items:stretch;text-align:left}
+.cue-badge{background:var(--brand-lt);color:var(--brand-dk);border:2px solid rgba(79,70,229,.25)}
+.cue-summary-table{width:888px;max-width:100%;box-sizing:border-box;display:flex;flex-direction:column;border:2px solid #CBD5E1;border-radius:26px;overflow:hidden;background:#fff;margin-bottom:36px;box-shadow:0 12px 28px -10px rgba(15,23,42,.09)}
+.cue-cell{width:100%;box-sizing:border-box;display:flex;flex-direction:row;align-items:stretch;border-bottom:2px solid #E2E8F0}
 .cue-cell:last-child{border-bottom:none}
-.cue-th{width:190px;flex-shrink:0;padding:24px 26px;background:#F8FAFC;font-size:28px;font-weight:800;color:#334155;border-right:1.5px solid #E2E8F0}
-.cue-td{flex:1;padding:24px 28px;font-size:38px;font-weight:700;color:#0F172A;line-height:1.48}
-.cue-callout-box{border:3px solid var(--brand);border-radius:26px;background:#FFFFFF;padding:42px 40px;text-align:center;box-shadow:0 18px 40px -12px rgba(79,70,229,.2);position:relative}
-.lb-notice{font-family:var(--font-body);font-size:38px;color:#475569;margin-bottom:20px;font-weight:700;line-height:1.52}
-.lb-arrowtext{font-family:var(--font-head);font-size:50px;font-weight:800;color:var(--brand-dk);line-height:1.34;letter-spacing:-0.03em}
-.lb-chev{margin-top:26px;display:flex;gap:16px;justify-content:center}
-.lb-chev span{width:54px;height:54px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:26px;font-weight:900;box-shadow:0 8px 18px rgba(79,70,229,.32)}
+.cue-th{width:220px;flex:0 0 220px;box-sizing:border-box;padding:28px 24px;background:#F8FAFC;font-size:44px;font-weight:800;line-height:1.45;color:#334155;border-right:2px solid #E2E8F0;display:flex;align-items:center}
+.cue-td{width:668px;flex:1 1 668px;box-sizing:border-box;padding:28px 32px;font-size:46px;font-weight:700;color:#0F172A;line-height:1.45;display:flex;align-items:center}
+.cue-callout-box{width:100%;box-sizing:border-box;border:3px solid var(--brand);border-radius:28px;background:#FFFFFF;padding:46px 42px;text-align:center;box-shadow:0 18px 40px -12px rgba(79,70,229,.2);position:relative}
+.lb-notice{font-family:var(--font-body);font-size:42px;color:#475569;margin-bottom:22px;font-weight:700;line-height:1.45}
+.lb-arrowtext{font-family:var(--font-head);font-size:52px;font-weight:800;color:var(--brand-dk);line-height:1.35;letter-spacing:-0.03em}
+.lb-chev{margin-top:28px;display:flex;gap:20px;justify-content:center}
+.lb-chev span{width:68px;height:68px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:38px;font-weight:900;box-shadow:0 8px 18px rgba(79,70,229,.32)}
 .lb.has-img.pain,.lb.has-img.solution,.lb.has-img.trust,.lb.has-img.cue{color:#fff}
 .lb.has-img .lb-title{color:#fff}
-.li-text{flex:1;outline:none;cursor:text;border-radius:4px;white-space:pre-line;width:100%}
+.li-text{flex:1;outline:none;cursor:text;border-radius:6px;white-space:pre-line;width:100%;font-size:46px;line-height:1.45;font-weight:700}
 .li-text:hover{background:rgba(124,58,237,.1)} .li-text:focus{box-shadow:0 0 0 2px rgba(124,58,237,.4)}
 body.capturing .li-text:hover,body.capturing .li-text:focus{background:none;box-shadow:none}
-.li-del{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;background:rgba(15,23,42,.45);color:#fff;font-size:14px;line-height:1;opacity:0}
+.li-del{position:absolute;top:14px;right:14px;width:52px;height:52px;border-radius:50%;background:rgba(15,23,42,.65);color:#fff;font-size:36px;font-weight:800;line-height:1;opacity:0}
 .lb-list li:hover .li-del{opacity:1}
-.block-tools{position:absolute;top:12px;right:12px;display:flex;gap:6px;z-index:6;opacity:0;transition:.15s}
+.block-tools{position:absolute;top:16px;right:16px;display:flex;gap:10px;z-index:6;opacity:0;transition:.15s}
 .lb:hover .block-tools{opacity:1}
-.bt{padding:6px 11px;border-radius:7px;background:rgba(15,23,42,.86);color:#fff;font-size:12px;font-weight:700;cursor:pointer}
+.bt{padding:12px 22px;border-radius:12px;background:rgba(15,23,42,.88);color:#fff;font-size:36px;font-weight:700;cursor:pointer;line-height:1.2}
 .bt:hover{background:var(--purple)}
-.step-tag{position:absolute;left:12px;top:12px;z-index:6;font-size:11px;font-weight:800;background:rgba(15,23,42,.78);color:#fff;padding:4px 10px;border-radius:6px}
-.cue-note{position:absolute;left:0;right:0;bottom:10px;text-align:center;font-size:11px;color:var(--g400);z-index:6}
 
 /* ── 탭3 ── */
 .warn{display:flex;gap:10px;align-items:flex-start;background:var(--amber-lt);border:1px solid var(--amber-bd);border-radius:11px;padding:13px 15px;font-size:12.5px;color:#78350F;line-height:1.6;margin-bottom:16px}
@@ -579,7 +575,7 @@ body:not(.wz-on) .wz-only{display:none}
           </div>
           <div class="grid2">
             <div class="field">
-              <div class="lbl" style="color:var(--purple)">🟣 보라색 [신청하기] 버튼명</div>
+              <div class="lbl" style="color:var(--purple)">🟣 [신청하기] 버튼명</div>
               <div class="copy-row"><div class="kbtn purple ed" id="f-apply" contenteditable="true" data-single style="flex:1"></div><button class="copy" data-copy="#f-apply">복사</button></div>
             </div>
             <div class="field">
@@ -649,8 +645,9 @@ body:not(.wz-on) .wz-only{display:none}
     <div class="card">
       <div class="card-h"><h3>🏗️ 가로 1,000px 5단 전환 공식 랜딩 캔버스</h3><span class="badge g">글자 클릭 → 직접 수정</span><span class="badge r">가짜 상단 헤더 · 하단 신청 버튼 없음</span></div>
       <div class="card-b" style="background:var(--g100)">
-        <div class="hint" style="margin-bottom:10px">상단바와 하단 보라색 [신청하기] 버튼은 고마워톡이 자동으로 붙여 줍니다. 블록 위에 마우스를 올리면 [사진 교체]·[항목 추가] 도구가 나타납니다. (도구는 캡처 PNG에 포함되지 않습니다)</div>
+        <div class="hint" style="margin-bottom:10px">상단바와 하단 [신청하기] 버튼은 고마워톡이 자동으로 붙여 줍니다. 블록 위에 마우스를 올리면 [사진 교체]·[항목 추가] 도구가 나타납니다. (도구는 캡처 PNG에 포함되지 않습니다)</div>
         <div id="lz"><div id="lc"></div></div>
+        <div class="hint" style="margin-top:10px;text-align:center">↓ 이 아래에 고마워톡 자체 [신청하기] 버튼이 붙습니다 (가짜 버튼 생성 금지)</div>
       </div>
     </div>
 
@@ -1109,7 +1106,8 @@ function normalizeBlocks(arr) {
       if (b.rec2_title) t.rec2_title = b.rec2_title; if (b.rec2_body) t.rec2_body = b.rec2_body;
     }
     if (step === 5) {
-      t.notice = b.notice || ''; t.arrow_text = b.arrow_text || '';
+      t.notice = b.notice || '카카오 로그인 한 번으로 별도 입력 없이 즉시 접수됩니다';
+      t.arrow_text = (b.arrow_text || '아래 [신청하기] 버튼을 눌러 지금 바로 신청하세요').replace(/\uBCF4\uB77C\uC0C9\s*/g, '');
       if (b.sum_method) t.sum_method = b.sum_method; if (b.sum_benefit) t.sum_benefit = b.sum_benefit;
       if (b.sum_timing) t.sum_timing = b.sum_timing; if (b.sum_notice) t.sum_notice = b.sum_notice;
     }
@@ -1437,11 +1435,13 @@ function updateTitleCounter() {
 function blockTools(b, extra) {
   return '<div class="block-tools" data-html2canvas-ignore="true">' +
     '<label class="bt" title="사진 교체 (장당 150KB 이하로 자동 압축)">📷 사진 교체<input type="file" accept="image/*" hidden data-act="block-img" data-step="' + b.step + '"></label>' +
-    (b.image ? '<button class="bt" data-act="block-img-clear" data-step="' + b.step + '">🗑 사진 제거</button>' : '') + (extra || '') + '</div>' +
-    '<div class="step-tag" data-html2canvas-ignore="true">' + b.step + '단 · ' + STEP_NAME[b.step] + '</div>';
+    (b.image ? '<button class="bt" data-act="block-img-clear" data-step="' + b.step + '">🗑 사진 제거</button>' : '') + (extra || '') + '</div>';
 }
-function listHTML(items) {
-  return '<ul class="lb-list">' + items.map(t => '<li><span class="li-text" contenteditable="true">' + esc(t) + '</span><button class="li-del" data-act="item-del" data-html2canvas-ignore="true" title="이 항목 삭제">×</button></li>').join('') + '</ul>';
+function painListHTML(items) {
+  return '<ul class="lb-list">' + items.map(t => '<li><span class="pain-icon">✔</span><span class="li-text" contenteditable="true">' + esc(t) + '</span><button class="li-del" data-act="item-del" data-html2canvas-ignore="true" title="이 항목 삭제">×</button></li>').join('') + '</ul>';
+}
+function solListHTML(items) {
+  return '<ul class="lb-list">' + items.map((t, i) => '<li><span class="sol-num">0' + (i + 1) + '</span><span class="li-text" contenteditable="true">' + esc(t) + '</span><button class="li-del" data-act="item-del" data-html2canvas-ignore="true" title="이 항목 삭제">×</button></li>').join('') + '</ul>';
 }
 const E = (f, v, cls, single) => '<div class="' + cls + ' ed" contenteditable="true" data-f="' + f + '"' + (single ? ' data-single' : '') + '>' + esc(v) + '</div>';
 function blockHTML(b) {
@@ -1450,53 +1450,52 @@ function blockHTML(b) {
   if (b.step === 1) {
     return wrap('hero',
       '<div class="hero-grid-pattern"></div><div class="hero-glow"></div>' +
-      '<div class="hero-pill-row"><span class="hero-pill-chip">SPECIAL EDITION</span>' + E('tag', b.tag, 'lb-tag', true) + '</div>' +
+      E('tag', b.tag || '핵심 혜택 안내', 'sec-badge hero-badge', true) +
       E('title', b.title, 'lb-title') +
       '<div class="hero-accent-line"></div>' +
       E('subtitle', b.subtitle, 'lb-sub') +
       '<div class="hero-spec-bar">' +
-        '<div class="hero-spec-item"><span class="hero-spec-k">01 · CORE BENEFIT</span>' + E('spec_1', b.spec_1 || '실전 압축 핵심 가이드 제공', 'hero-spec-v', true) + '</div>' +
-        '<div class="hero-spec-item"><span class="hero-spec-k">02 · INSTANT DELIVERY</span>' + E('spec_2', b.spec_2 || '카카오톡 1초 신청 · 즉시 발송', 'hero-spec-v', true) + '</div>' +
-        '<div class="hero-spec-item"><span class="hero-spec-k">03 · CUSTOM ROADMAP</span>' + E('spec_3', b.spec_3 || '유형별 1:1 맞춤 처방 연동', 'hero-spec-v', true) + '</div>' +
+        '<div class="hero-spec-item"><span class="hero-check-icon">✔</span>' + E('spec_1', b.spec_1 || '실전 압축 핵심 가이드 제공', 'hero-spec-v', true) + '</div>' +
+        '<div class="hero-spec-item"><span class="hero-check-icon">✔</span>' + E('spec_2', b.spec_2 || '카카오톡 1초 신청 · 즉시 발송', 'hero-spec-v', true) + '</div>' +
+        '<div class="hero-spec-item"><span class="hero-check-icon">✔</span>' + E('spec_3', b.spec_3 || '유형별 1:1 맞춤 처방 연동', 'hero-spec-v', true) + '</div>' +
       '</div>',
       blockTools(b)
     );
   }
   if (b.step === 2) {
     return wrap('pain',
-      '<div class="sec-eyebrow"><span>●</span> VOICE OF CUSTOMER · 고객 페인포인트 진단</div>' +
+      '<div class="sec-badge pain-badge">핵심 고민 체크</div>' +
       E('title', b.title, 'lb-title') +
       E('lead', b.lead || '하나라도 해당된다면 지금 아래의 맞춤 해결책을 반드시 확인해 보세요.', 'sec-lead', true) +
-      listHTML(b.items) +
-      '<div class="pain-bottom-quote"><span class="q-badge">SOLUTION READY</span>' + E('bottom_quote', b.bottom_quote || '혼자 고민하지 마세요. 검증된 실전 공식으로 가장 빠르게 해결해 드립니다.', '', true) + '</div>',
+      painListHTML(b.items) +
+      '<div class="pain-bottom-quote">' + E('bottom_quote', b.bottom_quote || '혼자 고민하지 마세요. 검증된 실전 공식으로 가장 빠르게 해결해 드립니다.', '', true) + '</div>',
       blockTools(b, add)
     );
   }
   if (b.step === 3) {
     return wrap('solution',
-      '<div class="sec-eyebrow"><span>★</span> CORE CURRICULUM &amp; SOLUTION</div>' +
+      '<div class="sec-badge sol-badge">맞춤 해결 솔루션</div>' +
       E('title', b.title, 'lb-title') +
-      listHTML(b.points),
+      solListHTML(b.points),
       blockTools(b, add)
     );
   }
   if (b.step === 4) {
     return wrap('trust',
-      '<div class="sec-eyebrow"><span>✔</span> PROVEN TRACK RECORD · 신뢰 증거 및 핵심 지표</div>' +
+      '<div class="sec-badge trust-badge">검증된 핵심 성과</div>' +
       E('title', b.title, 'lb-title') +
       '<div class="stat-card-wrap">' +
-        '<div class="stat-card-top"><span class="stat-chip">VERIFIED METRIC · 검증된 핵심 성과</span><span class="stat-verified">ACTUAL PERFORMANCE DATA</span></div>' +
         E('stat_highlight', b.stat_highlight, 'lb-stat') +
       '</div>' +
       '<div class="trust-check-grid">' +
-        '<div class="trust-check-card"><div class="trust-check-h"><i>✔</i>' + E('rec1_title', b.rec1_title || '이런 분께 강력 추천합니다', '', true) + '</div>' + E('rec1_body', b.rec1_body || '시행착오 없이 검증된 핵심 노하우와 맞춤 가이드를 한 번에 받아보고 싶은 분', 'trust-check-b') + '</div>' +
-        '<div class="trust-check-card"><div class="trust-check-h"><i>★</i>' + E('rec2_title', b.rec2_title || '신청 즉시 얻게 되는 확실한 변화', '', true) + '</div>' + E('rec2_body', b.rec2_body || '1편 핵심 요약 즉시 열람 및 채널 친구 전용 후속 심화 칼럼·혜택 순차 수신', 'trust-check-b') + '</div>' +
+        '<div class="trust-check-card"><div class="trust-check-h"><i>✔</i>' + E('rec1_title', b.rec1_title || '이런 분께 강력 추천합니다', 'trust-check-title', true) + '</div>' + E('rec1_body', b.rec1_body || '시행착오 없이 검증된 핵심 노하우와 맞춤 가이드를 한 번에 받아보고 싶은 분', 'trust-check-b') + '</div>' +
+        '<div class="trust-check-card"><div class="trust-check-h"><i>★</i>' + E('rec2_title', b.rec2_title || '신청 즉시 얻게 되는 확실한 변화', 'trust-check-title', true) + '</div>' + E('rec2_body', b.rec2_body || '1편 핵심 요약 즉시 열람 및 채널 친구 전용 후속 심화 칼럼·혜택 순차 수신', 'trust-check-b') + '</div>' +
       '</div>',
       blockTools(b)
     );
   }
   return wrap('cue',
-    '<div class="sec-eyebrow"><span>📋</span> PROGRAM SUMMARY &amp; GUIDE · 참여 혜택 및 신청 안내</div>' +
+    '<div class="sec-badge cue-badge">참여 혜택 및 신청 안내</div>' +
     '<div class="cue-summary-table">' +
       '<div class="cue-cell"><div class="cue-th">신청 방식</div>' + E('sum_method', b.sum_method || '카카오 원클릭 로그인 (10초 간편 접수)', 'cue-td', true) + '</div>' +
       '<div class="cue-cell"><div class="cue-th">제공 혜택</div>' + E('sum_benefit', b.sum_benefit || '신청자 전원 핵심 자료집 & 맞춤 가이드 발송', 'cue-td', true) + '</div>' +
@@ -1504,11 +1503,10 @@ function blockHTML(b) {
       '<div class="cue-cell"><div class="cue-th">안내 사항</div>' + E('sum_notice', b.sum_notice || '상단 노란색 [채널 추가] 클릭 시 후속 혜택 수신', 'cue-td', true) + '</div>' +
     '</div>' +
     '<div class="cue-callout-box">' +
-      E('notice', b.notice, 'lb-notice') +
-      E('arrow_text', b.arrow_text, 'lb-arrowtext') +
+      E('notice', b.notice || '카카오 로그인 한 번으로 별도 입력 없이 즉시 접수됩니다', 'lb-notice') +
+      E('arrow_text', (b.arrow_text || '아래 [신청하기] 버튼을 눌러 지금 바로 신청하세요').replace(/\uBCF4\uB77C\uC0C9\s*/g, ''), 'lb-arrowtext') +
       '<div class="lb-chev"><span>↓</span><span>↓</span><span>↓</span></div>' +
-    '</div>' +
-    '<div class="cue-note" data-html2canvas-ignore="true">↓ 이 아래에 고마워톡 자체 보라색 [신청하기] 버튼이 붙습니다 (가짜 버튼 생성 금지)</div>',
+    '</div>',
     blockTools(b)
   );
 }

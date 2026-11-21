@@ -6,7 +6,7 @@
  * ✅ CampaignMaster.json V2.0 스키마 완벽 준수
  * ✅ '비영리·교회' 통합 단일 프리셋 (pro_ngo_church)
  *
- * ⚠️  전체 파일에서 '뉴스레터'라는 단어는 절대 사용하지 않음 (카카오 알림톡 규정 준수)
+ * ⚠️  카카오 알림톡 규정 준수: 정기 홍보성 소식지 용어는 사용하지 않고 "정기 칼럼/소식" 표현만 사용
  * ⚠️  카카오 알림톡 광고성 금지어(할인, 특가, 이벤트, 무료증정) 본문에 미사용
  */
 
@@ -359,3 +359,6 @@ window.GOMAWARTALK_INDUSTRY_PRESETS = {
     ],
   },
 };
+
+// 짧은 별칭 (일반 <script src> 로드 호환)
+window.IndustryPresets = window.GOMAWARTALK_INDUSTRY_PRESETS;

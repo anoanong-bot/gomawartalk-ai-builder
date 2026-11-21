@@ -1,346 +1,242 @@
 /**
  * engines/ImageCapturer.js
- * [범용 엔진 1] 150KB 이미지 압축 + 해상도 고정 캡처(통이미지/5단 분할 선택) + 전체 ZIP 다운로드
+ * [범용 엔진 1] 150KB 이미지 압축 + 해상도 고정 캡처(통이미지/5단 분할 선택 등) + 전체 ZIP 다운로드
  *
- * ✅ 타 프로젝트에도 100% 재활용 가능한 순수 기술 엔진 — 고마워톡 전용 로직 없음
- * ✅ 의존 라이브러리: html2canvas (CDN), JSZip (CDN)
- * ✅ 본체 HTML에서 <script src="engines/ImageCapturer.js"></script>로 호출하여 사용
+ * - 타 프로젝트에서도 그대로 재활용 가능한 순수 기술 엔진 (고마워톡 전용 로직 없음)
+ * - 일반 <script src> 로 로드 (ES Module 아님) → file:// 더블클릭 실행 호환, window.ImageCapturer 로 노출
+ * - 의존 라이브러리: html2canvas, JSZip (둘 다 전역 객체로 사전 로드 필요)
+ * - 캡처 고정값: windowWidth 1400 / scale 2 / useCORS true  (해상도 독립형)
+ * - 모든 capture* 함수는 마지막 인자 options({download:true}) 로 '다운로드 없이 dataUrl만 반환' 가능
+ *   (ZIP 일괄 패키징 시 개별 다운로드가 연쇄 발생하지 않도록)
  */
-
 (function (global) {
   'use strict';
 
-  // ─────────────────────────────────────────────────────────────
-  // 1. compressImageToBase64
-  //    로컬 이미지 파일을 <canvas>로 리사이징하여 150KB 이하 Data URL 반환
-  //    localStorage 폭발 및 Tainted Canvas CORS 에러 원천 방지
-  // ─────────────────────────────────────────────────────────────
-  function compressImageToBase64(file, maxWidth = 1200, quality = 0.8) {
-    return new Promise((resolve, reject) => {
-      if (!file || !file.type.startsWith('image/')) {
-        reject(new Error('유효한 이미지 파일이 아닙니다.'));
-        return;
-      }
+  var H2C = { windowWidth: 1400, scale: 2, useCORS: true, allowTaint: false, logging: false };
+  var MAX_IMG_BYTES = 150 * 1024;        // 업로드 이미지 1장 상한 (150KB)
+  var MAX_FRIENDTALK_BYTES = 500 * 1024; // 자유작성 친구톡 JPG 상한 (500KB)
 
-      const reader = new FileReader();
+  // ───────────── 내부 유틸 ─────────────
+  function dataUrlBytes(dataUrl) {
+    var b64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
+    var pad = (b64.match(/=+$/) || [''])[0].length;
+    return Math.floor(b64.length * 3 / 4) - pad;
+  }
+
+  function needH2C() {
+    if (typeof global.html2canvas !== 'function') {
+      throw new Error('html2canvas 라이브러리가 로드되지 않았습니다.');
+    }
+  }
+
+  function getEl(id, fn) {
+    var el = typeof id === 'string' ? document.getElementById(id) : id;
+    if (!el) throw new Error('[' + fn + '] 요소를 찾을 수 없습니다: ' + id);
+    return el;
+  }
+
+  function render(el, extra) {
+    needH2C();
+    var opt = {};
+    Object.keys(H2C).forEach(function (k) { opt[k] = H2C[k]; });
+    if (extra) Object.keys(extra).forEach(function (k) { opt[k] = extra[k]; });
+    return global.html2canvas(el, opt);
+  }
+
+  // 캔버스를 정확히 w x h 로 리샘플링
+  function resample(src, w, h, bg) {
+    var out = document.createElement('canvas');
+    out.width = w; out.height = h;
+    var ctx = out.getContext('2d');
+    if (bg) { ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h); }
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(src, 0, 0, w, h);
+    return out;
+  }
+
+  function downloadDataUrl(dataUrl, filename) {
+    var a = document.createElement('a');
+    a.href = dataUrl; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+
+  function downloadBlob(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    downloadDataUrl(url, filename);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+
+  function dataUrlToBlob(dataUrl) {
+    var parts = dataUrl.split(',');
+    var mime = parts[0].match(/:(.*?);/)[1];
+    var bin = atob(parts[1]);
+    var arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr], { type: mime });
+  }
+
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  function shouldDownload(options) { return !options || options.download !== false; }
+
+  // ───────────── 1. 이미지 압축 (150KB 이하 보장) ─────────────
+  function compressImageToBase64(file, maxWidth, quality) {
+    maxWidth = maxWidth || 1200;
+    quality = quality || 0.8;
+    return new Promise(function (resolve, reject) {
+      if (!file || !/^image\//.test(file.type)) { reject(new Error('유효한 이미지 파일이 아닙니다.')); return; }
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error('파일 읽기에 실패했습니다.')); };
       reader.onload = function (e) {
-        const img = new Image();
+        var img = new Image();
+        img.onerror = function () { reject(new Error('이미지 로드에 실패했습니다.')); };
         img.onload = function () {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
+          var w = img.naturalWidth, h = img.naturalHeight;
+          if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
 
-          // 가로 최대 1200px 리사이징
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
+          function encode(width, height, q) {
+            var c = document.createElement('canvas');
+            c.width = width; c.height = height;
+            var ctx = c.getContext('2d');
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, width, height); // 투명 PNG → 흰 배경
+            ctx.drawImage(img, 0, 0, width, height);
+            var url = c.toDataURL('image/webp', q);
+            if (url.indexOf('data:image/webp') !== 0) url = c.toDataURL('image/jpeg', q); // WebP 미지원 폴백
+            return url;
           }
 
-          canvas.width = width;
-          canvas.height = height;
-
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // WebP 우선 시도, 미지원 시 JPEG 폴백
-          let dataUrl = canvas.toDataURL('image/webp', quality);
-          if (!dataUrl.startsWith('data:image/webp')) {
-            dataUrl = canvas.toDataURL('image/jpeg', quality);
+          var q = quality, url = encode(w, h, q);
+          // 1단계: 품질을 단계적으로 낮춤 → 2단계: 해상도를 줄임 (반드시 150KB 이하로 수렴)
+          var guard = 0;
+          while (dataUrlBytes(url) > MAX_IMG_BYTES && guard++ < 30) {
+            if (q > 0.35) { q = Math.max(0.35, q - 0.1); }
+            else { w = Math.round(w * 0.85); h = Math.round(h * 0.85); if (w < 200) break; }
+            url = encode(w, h, q);
           }
-
-          // 150KB(= 약 204800 Base64 문자) 초과 시 품질 단계적 감소
-          let currentQuality = quality;
-          while (dataUrl.length > 204800 && currentQuality > 0.3) {
-            currentQuality -= 0.1;
-            dataUrl = canvas.toDataURL('image/jpeg', currentQuality);
-          }
-
-          resolve(dataUrl);
+          resolve(url);
         };
-        img.onerror = () => reject(new Error('이미지 로드에 실패했습니다.'));
         img.src = e.target.result;
       };
-      reader.onerror = () => reject(new Error('파일 읽기에 실패했습니다.'));
       reader.readAsDataURL(file);
     });
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // 2. captureThumbnail500x280
-  //    탭 1 대표 썸네일을 정확히 500x280px (16:9 비율) PNG로 캡처·다운로드
-  //    고정: windowWidth: 1400, scale: 2, useCORS: true
-  // ─────────────────────────────────────────────────────────────
-  function captureThumbnail500x280(elementId, filename = 'thumbnail_500x280.png') {
-    const el = document.getElementById(elementId);
-    if (!el) return Promise.reject(new Error('[captureThumbnail500x280] 요소를 찾을 수 없습니다: ' + elementId));
-
-    return html2canvas(el, {
-      width: 500,
-      height: 280,
-      windowWidth: 1400,
-      scale: 2,
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: '#ffffff',
-    }).then((canvas) => {
-      // 출력 캔버스를 정확히 500x280으로 클리핑
-      const output = document.createElement('canvas');
-      output.width = 500;
-      output.height = 280;
-      const ctx = output.getContext('2d');
-      ctx.drawImage(canvas, 0, 0, 500, 280);
-
-      _downloadCanvas(output, filename, 'image/png');
-      return output.toDataURL('image/png');
-    });
+  // ───────────── 2. 탭1 썸네일 500x280 PNG ─────────────
+  function captureThumbnail500x280(elementId, filename, options) {
+    filename = filename || 'thumbnail_500x280.png';
+    return new Promise(function (resolve) { resolve(getEl(elementId, 'captureThumbnail500x280')); })
+      .then(function (el) { return render(el); })
+      .then(function (canvas) {
+        var out = resample(canvas, 500, 280, '#ffffff');
+        var url = out.toDataURL('image/png');
+        if (shouldDownload(options)) downloadDataUrl(url, filename);
+        return url;
+      });
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // 3. captureLanding1000px
-  //    탭 2의 가로 1000px 세로형 5단 랜딩 캔버스를
-  //    outputMode "FULL" (통이미지 1장) 또는 "SPLIT" (1단~5단 5개 개별 이미지)로 출력
-  //    고정: windowWidth: 1400, scale: 2, useCORS: true
-  // ─────────────────────────────────────────────────────────────
-  function captureLanding1000px(containerId, outputMode = 'FULL', filenamePrefix = 'landing') {
-    const container = document.getElementById(containerId);
-    if (!container) return Promise.reject(new Error('[captureLanding1000px] 요소를 찾을 수 없습니다: ' + containerId));
+  // ───────────── 3. 탭2 1000px 랜딩 (FULL 통이미지 / SPLIT 5분할) ─────────────
+  function captureLanding1000px(containerId, outputMode, filenamePrefix, options) {
+    outputMode = outputMode || 'FULL';
+    filenamePrefix = filenamePrefix || 'landing';
+    var dl = shouldDownload(options);
 
-    return html2canvas(container, {
-      windowWidth: 1400,
-      scale: 2,
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: '#ffffff',
-    }).then((canvas) => {
-      const results = [];
-
-      if (outputMode === 'FULL') {
-        // 통이미지 1장 출력
-        const filename = filenamePrefix + '_full_1000px.png';
-        _downloadCanvas(canvas, filename, 'image/png');
-        results.push({ mode: 'FULL', filename, dataUrl: canvas.toDataURL('image/png') });
-      } else if (outputMode === 'SPLIT') {
-        // 5단 블록 각각 캡처 (블록 요소 선택자 기반)
-        const blocks = container.querySelectorAll('[data-block-step]');
-        if (blocks.length === 0) {
-          // data-block-step 속성이 없는 경우 균등 분할 폴백
-          const blockHeight = Math.floor(canvas.height / 5);
-          for (let i = 0; i < 5; i++) {
-            const slice = document.createElement('canvas');
-            slice.width = canvas.width;
-            slice.height = blockHeight;
-            const ctx = slice.getContext('2d');
-            ctx.drawImage(canvas, 0, i * blockHeight, canvas.width, blockHeight, 0, 0, canvas.width, blockHeight);
-            const filename = filenamePrefix + '_block' + (i + 1) + '.png';
-            _downloadCanvas(slice, filename, 'image/png');
-            results.push({ mode: 'SPLIT', step: i + 1, filename, dataUrl: slice.toDataURL('image/png') });
-          }
-        } else {
-          // 각 블록 요소별 개별 캡처
-          const promises = Array.from(blocks).map((block, idx) =>
-            html2canvas(block, {
-              windowWidth: 1400,
-              scale: 2,
-              useCORS: true,
-              allowTaint: false,
-              backgroundColor: '#ffffff',
-            }).then((blockCanvas) => {
-              const step = block.getAttribute('data-block-step') || idx + 1;
-              const filename = filenamePrefix + '_block' + step + '.png';
-              _downloadCanvas(blockCanvas, filename, 'image/png');
-              return { mode: 'SPLIT', step: Number(step), filename, dataUrl: blockCanvas.toDataURL('image/png') };
-            })
-          );
-          return Promise.all(promises);
+    return new Promise(function (resolve) { resolve(getEl(containerId, 'captureLanding1000px')); })
+      .then(function (container) {
+        if (outputMode !== 'SPLIT') {
+          return render(container).then(function (canvas) {
+            var name = filenamePrefix + '_full_1000px.png';
+            var url = canvas.toDataURL('image/png');
+            if (dl) downloadDataUrl(url, name);
+            return [{ mode: 'FULL', step: 0, filename: name, dataUrl: url }];
+          });
         }
-      }
-
-      return results;
-    });
+        var blocks = Array.prototype.slice.call(container.querySelectorAll('[data-block-step]'));
+        if (!blocks.length) throw new Error('[captureLanding1000px] 분할할 [data-block-step] 블록이 없습니다.');
+        var results = [];
+        // 순차 캡처·순차 다운로드 (브라우저의 다중 다운로드 차단 완화)
+        return blocks.reduce(function (chain, block, idx) {
+          return chain.then(function () {
+            return render(block).then(function (canvas) {
+              var step = Number(block.getAttribute('data-block-step')) || (idx + 1);
+              var name = filenamePrefix + '_block' + step + '.png';
+              var url = canvas.toDataURL('image/png');
+              results.push({ mode: 'SPLIT', step: step, filename: name, dataUrl: url });
+              if (dl) { downloadDataUrl(url, name); return sleep(350); }
+            });
+          });
+        }, Promise.resolve()).then(function () { return results; });
+      });
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // 4. captureFriendtalkJPG
-  //    탭 4·5의 자유작성 친구톡 이미지를
-  //    800x400px(2:1) 또는 800x533px(1.5:1) 규격으로 캡처 후
-  //    반드시 500KB 이하 JPG로 출력
-  // ─────────────────────────────────────────────────────────────
-  function captureFriendtalkJPG(elementId, ratio = '2:1', filename = 'friendtalk.jpg') {
-    const el = document.getElementById(elementId);
-    if (!el) return Promise.reject(new Error('[captureFriendtalkJPG] 요소를 찾을 수 없습니다: ' + elementId));
-
-    const dimensions = ratio === '1.5:1' ? { w: 800, h: 533 } : { w: 800, h: 400 };
-
-    return html2canvas(el, {
-      width: dimensions.w,
-      height: dimensions.h,
-      windowWidth: 1400,
-      scale: 2,
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: '#ffffff',
-    }).then((canvas) => {
-      const output = document.createElement('canvas');
-      output.width = dimensions.w;
-      output.height = dimensions.h;
-      const ctx = output.getContext('2d');
-      ctx.drawImage(canvas, 0, 0, dimensions.w, dimensions.h);
-
-      // 500KB(= 약 683000 Base64 문자) 이하가 될 때까지 품질 감소
-      let quality = 0.9;
-      let dataUrl = output.toDataURL('image/jpeg', quality);
-      while (dataUrl.length > 683000 && quality > 0.4) {
-        quality -= 0.1;
-        dataUrl = output.toDataURL('image/jpeg', quality);
-      }
-
-      _downloadDataUrl(dataUrl, filename);
-      return dataUrl;
-    });
+  // ───────────── 4. 자유작성 친구톡 JPG (800x400 / 800x533, 500KB 이하) ─────────────
+  function captureFriendtalkJPG(elementId, ratio, filename, options) {
+    filename = filename || 'friendtalk.jpg';
+    var r = String(ratio || '2:1');
+    var dim = (r === '1.5:1' || r === '800x533' || r === '3:2') ? { w: 800, h: 533 } : { w: 800, h: 400 };
+    return new Promise(function (resolve) { resolve(getEl(elementId, 'captureFriendtalkJPG')); })
+      .then(function (el) { return render(el); })
+      .then(function (canvas) {
+        var out = resample(canvas, dim.w, dim.h, '#ffffff');
+        var q = 0.92, url = out.toDataURL('image/jpeg', q);
+        while (dataUrlBytes(url) > MAX_FRIENDTALK_BYTES && q > 0.3) { q -= 0.07; url = out.toDataURL('image/jpeg', q); }
+        if (shouldDownload(options)) downloadDataUrl(url, filename);
+        return url;
+      });
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // 5. captureCarouselCards
-  //    탭 4·5의 브랜드 캐러셀 카드(2~6장)를
-  //    각각 800x600px (4:3 비율) 이미지로 개별/일괄 출력
-  // ─────────────────────────────────────────────────────────────
-  function captureCarouselCards(cardElements, filenamePrefix = 'carousel_card') {
-    if (!cardElements || cardElements.length === 0) {
-      return Promise.reject(new Error('[captureCarouselCards] 카드 요소가 없습니다.'));
-    }
-
-    const cards = Array.isArray(cardElements) ? cardElements : Array.from(cardElements);
-
+  // ───────────── 5. 브랜드 캐러셀 카드 800x600 (2~6장) ─────────────
+  function captureCarouselCards(cardElements, filenamePrefix, options) {
+    filenamePrefix = filenamePrefix || 'carousel_card';
+    var cards = cardElements ? Array.prototype.slice.call(cardElements) : [];
+    if (!cards.length) return Promise.reject(new Error('[captureCarouselCards] 카드 요소가 없습니다.'));
     if (cards.length < 2 || cards.length > 6) {
-      console.warn('[captureCarouselCards] 카카오 캐러셀 규정: 카드는 2~6장이어야 합니다. 현재: ' + cards.length + '장');
+      console.warn('[captureCarouselCards] 카카오 캐러셀은 카드 2~6장 규정입니다. 현재 ' + cards.length + '장');
     }
-
-    const promises = cards.map((card, idx) =>
-      html2canvas(card, {
-        width: 800,
-        height: 600,
-        windowWidth: 1400,
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-      }).then((canvas) => {
-        const output = document.createElement('canvas');
-        output.width = 800;
-        output.height = 600;
-        const ctx = output.getContext('2d');
-        ctx.drawImage(canvas, 0, 0, 800, 600);
-
-        const filename = filenamePrefix + '_' + (idx + 1) + '.png';
-        _downloadCanvas(output, filename, 'image/png');
-        return { cardIndex: idx + 1, filename, dataUrl: output.toDataURL('image/png') };
-      })
-    );
-
-    return Promise.all(promises);
+    var dl = shouldDownload(options), results = [];
+    return cards.reduce(function (chain, card, idx) {
+      return chain.then(function () {
+        return render(card).then(function (canvas) {
+          var out = resample(canvas, 800, 600, '#ffffff');
+          var name = filenamePrefix + '_' + (idx + 1) + '.png';
+          var url = out.toDataURL('image/png');
+          results.push({ cardIndex: idx + 1, filename: name, dataUrl: url });
+          if (dl) { downloadDataUrl(url, name); return sleep(350); }
+        });
+      });
+    }, Promise.resolve()).then(function () { return results; });
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // 6. downloadAllAsZip
-  //    JSZip을 이용해 현재 캠페인의 모든 에셋을 폴더별로 정리하여
-  //    [고마워톡_에셋]_채널명_날짜.zip으로 묶음 다운로드
-  //    campaignData 구조: { channelName, thumbnail, landingImages, messageImages }
-  // ─────────────────────────────────────────────────────────────
+  // ───────────── 6. ZIP 일괄 패키징 ─────────────
+  // campaignData: { channelName, thumbnail(dataUrl), landingImages:[{filename,dataUrl}], messageImages:[{filename,dataUrl}] }
   function downloadAllAsZip(campaignData) {
-    if (typeof JSZip === 'undefined') {
-      return Promise.reject(new Error('[downloadAllAsZip] JSZip 라이브러리가 로드되지 않았습니다. CDN을 확인해 주세요.'));
-    }
+    if (typeof global.JSZip === 'undefined') return Promise.reject(new Error('JSZip 라이브러리가 로드되지 않았습니다.'));
+    campaignData = campaignData || {};
+    var d = new Date();
+    var ds = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+    var ch = String(campaignData.channelName || '채널명').replace(/[\\\/:*?"<>|]/g, '_');
+    var zipName = '[고마워톡_에셋]_' + ch + '_' + ds + '.zip';
 
-    const zip = new JSZip();
-    const today = new Date();
-    const dateStr =
-      today.getFullYear().toString() +
-      String(today.getMonth() + 1).padStart(2, '0') +
-      String(today.getDate()).padStart(2, '0');
+    var zip = new global.JSZip();
+    var fThumb = zip.folder('01_썸네일'), fLand = zip.folder('02_신청페이지'), fMsg = zip.folder('03_메시지배너');
+    if (campaignData.thumbnail) fThumb.file('thumbnail_500x280.png', dataUrlToBlob(campaignData.thumbnail));
+    (campaignData.landingImages || []).forEach(function (it) { fLand.file(it.filename, dataUrlToBlob(it.dataUrl)); });
+    (campaignData.messageImages || []).forEach(function (it) { fMsg.file(it.filename, dataUrlToBlob(it.dataUrl)); });
 
-    const channelName = (campaignData.channelName || '채널명').replace(/[\\/:*?"<>|]/g, '_');
-    const zipFilename = '[고마워톡_에셋]_' + channelName + '_' + dateStr + '.zip';
-
-    // 폴더 구조: 01_썸네일 / 02_신청페이지 / 03_메시지배너
-    const folderThumb = zip.folder('01_썸네일');
-    const folderLanding = zip.folder('02_신청페이지');
-    const folderMessage = zip.folder('03_메시지배너');
-
-    // 썸네일 추가
-    if (campaignData.thumbnail) {
-      const thumbBlob = _dataUrlToBlob(campaignData.thumbnail);
-      folderThumb.file('thumbnail_500x280.png', thumbBlob);
-    }
-
-    // 신청페이지 이미지 추가 (통이미지 또는 5분할)
-    if (campaignData.landingImages && campaignData.landingImages.length > 0) {
-      campaignData.landingImages.forEach((item) => {
-        const blob = _dataUrlToBlob(item.dataUrl);
-        folderLanding.file(item.filename, blob);
-      });
-    }
-
-    // 메시지 배너 이미지 추가
-    if (campaignData.messageImages && campaignData.messageImages.length > 0) {
-      campaignData.messageImages.forEach((item) => {
-        const blob = _dataUrlToBlob(item.dataUrl);
-        folderMessage.file(item.filename, blob);
-      });
-    }
-
-    return zip.generateAsync({ type: 'blob' }).then((content) => {
-      _downloadBlob(content, zipFilename);
-      return zipFilename;
+    return zip.generateAsync({ type: 'blob' }).then(function (blob) {
+      downloadBlob(blob, zipName);
+      return zipName;
     });
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // Private Helpers
-  // ─────────────────────────────────────────────────────────────
-
-  function _downloadCanvas(canvas, filename, mimeType) {
-    const dataUrl = canvas.toDataURL(mimeType);
-    _downloadDataUrl(dataUrl, filename);
-  }
-
-  function _downloadDataUrl(dataUrl, filename) {
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-
-  function _downloadBlob(blob, filename) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-
-  function _dataUrlToBlob(dataUrl) {
-    const parts = dataUrl.split(',');
-    const mime = parts[0].match(/:(.*?);/)[1];
-    const binary = atob(parts[1]);
-    const arr = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
-    return new Blob([arr], { type: mime });
-  }
-
-  // ─────────────────────────────────────────────────────────────
-  // Public API 노출 (window.ImageCapturer)
-  // ─────────────────────────────────────────────────────────────
   global.ImageCapturer = {
-    compressImageToBase64,
-    captureThumbnail500x280,
-    captureLanding1000px,
-    captureFriendtalkJPG,
-    captureCarouselCards,
-    downloadAllAsZip,
+    compressImageToBase64: compressImageToBase64,
+    captureThumbnail500x280: captureThumbnail500x280,
+    captureLanding1000px: captureLanding1000px,
+    captureFriendtalkJPG: captureFriendtalkJPG,
+    captureCarouselCards: captureCarouselCards,
+    downloadAllAsZip: downloadAllAsZip,
+    // 보조 유틸 (외부 재사용 가능)
+    utils: { dataUrlBytes: dataUrlBytes, dataUrlToBlob: dataUrlToBlob, downloadDataUrl: downloadDataUrl }
   };
-})(window);
+})(typeof window !== 'undefined' ? window : this);

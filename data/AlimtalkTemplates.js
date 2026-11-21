@@ -215,3 +215,6 @@ window.GOMAWARTALK_ALIMTALK_TEMPLATES = [
     ]
   }
 ];
+
+// 짧은 별칭 (일반 <script src> 로드 호환)
+window.AlimtalkTemplates = window.GOMAWARTALK_ALIMTALK_TEMPLATES;

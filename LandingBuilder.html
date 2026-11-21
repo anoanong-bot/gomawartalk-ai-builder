@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>고마워톡 AI 캠페인 조종석 — LandingBuilder (Phase 2)</title>
 
+<!-- 명품 한글 웹폰트 5종 CDN 로드 (crossorigin="anonymous" — html2canvas 캡처 시 폰트 유지) -->
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUITE@2/fonts/static/woff2/SUITE.css">
+
 <!-- 외부 라이브러리: vendor/ 로컬 번들 (file:// 더블클릭 + 오프라인에서도 100% 동작, CORS 없음) -->
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jszip.min.js"></script>
@@ -19,6 +23,43 @@
 <script src="data/IndustryPresets.js"></script>
 
 <style>
+/* 한글 웹폰트 @font-face 정의 (GmarketSans, S-Core Dream, MaruBuri) */
+@font-face{
+  font-family:'GmarketSans';
+  src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+  font-weight:500;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'GmarketSans';
+  src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+  font-weight:700;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'SCoreDream';
+  src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff') format('woff');
+  font-weight:500;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'SCoreDream';
+  src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-6Bold.woff') format('woff');
+  font-weight:700;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'SCoreDream';
+  src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-8Heavy.woff') format('woff');
+  font-weight:800;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'MaruBuri';
+  src:url('https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Regular.woff2') format('woff2');
+  font-weight:400;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'MaruBuri';
+  src:url('https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Bold.woff2') format('woff2');
+  font-weight:700;font-style:normal;font-display:swap;
+}
+
 :root{
   --purple:#6D28D9; --purple-md:#7C3AED; --purple-dk:#4C1D95; --purple-lt:#F5F3FF; --purple-bd:#DDD6FE;
   --yellow:#FACC15; --yellow-dk:#A16207; --yellow-lt:#FEF9C3;
@@ -32,6 +73,9 @@
   --shadow-pop:0 12px 32px -8px rgba(15,23,42,.18);
   /* 브랜드 컬러 (썸네일·랜딩·배너 캔버스 전용 — JS가 hex로 직접 계산해 주입, html2canvas 100% 호환) */
   --brand:#4F46E5; --brand-dk:#3730A3; --brand-dkr:#1E1B4B; --brand-lt:#EEF2FF;
+  /* 4종 한글 웹폰트 테마 변수 (기본: ① 모던 임팩트 GmarketSans + Pretendard) */
+  --font-head:'GmarketSans','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-body:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
@@ -157,71 +201,118 @@ body.capturing .ed:hover,body.capturing .ed:focus{background:none;box-shadow:non
 .seg input{display:none}
 .seg label:has(input:checked){background:var(--purple);color:#fff}
 
-/* ── 탭1 썸네일 캔버스 500x280 (상용 SaaS 프리미엄) ── */
-#thumb{position:relative;width:500px;height:280px;overflow:hidden;background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dk) 62%,var(--brand-dkr) 100%);background-size:cover;background-position:center;color:#fff;flex-shrink:0}
-#thumb.has-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.38) 0%,rgba(15,23,42,.68) 100%)}
-#thumb .t-in{position:relative;padding:24px 28px;height:100%;display:flex;flex-direction:column}
+/* ── 탭1 썸네일 캔버스 500x280 (클래스101·와디즈급 고밀도 프리미엄) ── */
+#thumb{position:relative;width:500px;height:280px;overflow:hidden;font-family:var(--font-body);word-break:keep-all;background-color:#0B0F19;background-image:radial-gradient(circle at 88% 18%,var(--brand) 0%,transparent 52%),radial-gradient(circle at 12% 92%,var(--brand-dk) 0%,transparent 55%),linear-gradient(135deg,#0B0F19 0%,var(--brand-dkr) 52%,var(--brand-dk) 100%);background-size:cover;background-position:center;color:#fff;flex-shrink:0}
+#thumb.has-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,13,22,.48) 0%,rgba(9,13,22,.82) 100%)}
+#thumb .t-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+#thumb .t-accent-bar{position:absolute;left:0;top:0;bottom:0;width:7px;background:linear-gradient(180deg,#FDE047 0%,var(--brand) 100%)}
+#thumb .t-in{position:relative;padding:24px 28px 20px 32px;height:100%;display:flex;flex-direction:column;z-index:2}
 #thumb .t-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
-#thumb .t-badge{display:inline-block;background:rgba(255,255,255,.96);color:var(--brand-dk);font-weight:800;font-size:11.5px;padding:5px 12px;border-radius:99px;letter-spacing:-.2px;box-shadow:0 4px 12px rgba(0,0,0,.14)}
-#thumb .t-logo{max-width:96px;max-height:34px;object-fit:contain;background:rgba(255,255,255,.94);padding:3px 8px;border-radius:7px}
-#thumb .t-head{margin-top:18px;font-size:25px;font-weight:900;line-height:1.28;letter-spacing:-.6px;text-shadow:0 2px 10px rgba(0,0,0,.18)}
-#thumb .t-foot{margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,.22);display:flex;align-items:center;gap:8px}
-#thumb .t-dot{width:7px;height:7px;border-radius:50%;background:#FDE047;flex-shrink:0}
-#thumb .t-sub{font-size:13px;font-weight:600;opacity:.95;line-height:1.35}
-#thumb .deco1{position:absolute;right:-42px;top:-42px;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.09)}
-#thumb .deco2{position:absolute;right:52px;bottom:-64px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.06)}
-#thumb .deco3{position:absolute;left:-30px;bottom:-50px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.05)}
-.thumb-frame{border-radius:14px;overflow:hidden;box-shadow:0 12px 28px -8px rgba(15,23,42,.28);width:500px;max-width:100%;border:1px solid rgba(15,23,42,.08)}
+#thumb .t-badge-wrap{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:1px solid rgba(253,224,71,.45);padding:5px 13px 5px 9px;border-radius:99px;box-shadow:0 6px 18px rgba(0,0,0,.22)}
+#thumb .t-badge-dot{width:8px;height:8px;border-radius:50%;background:#FDE047;box-shadow:0 0 8px #FDE047;flex-shrink:0}
+#thumb .t-badge{color:#FEF08A;font-family:var(--font-body);font-weight:800;font-size:12px;letter-spacing:-0.03em;line-height:1.2}
+#thumb .t-logo{max-width:100px;max-height:34px;object-fit:contain;background:rgba(255,255,255,.95);padding:4px 9px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+#thumb .t-head{margin-top:18px;font-family:var(--font-head);font-size:27px;font-weight:800;line-height:1.34;letter-spacing:-0.03em;color:#FFFFFF;text-shadow:0 4px 18px rgba(0,0,0,.35)}
+#thumb .t-foot{margin-top:auto;padding:10px 14px;background:rgba(15,23,42,.58);border:1px solid rgba(255,255,255,.16);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+#thumb .t-foot-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+#thumb .t-dot{padding:2px 7px;border-radius:5px;background:#FDE047;color:#0F172A;font-size:10px;font-weight:900;letter-spacing:.3px;flex-shrink:0}
+#thumb .t-sub{font-family:var(--font-body);font-size:12.5px;font-weight:700;color:rgba(255,255,255,.94);letter-spacing:-0.03em;line-height:1.35}
+#thumb .deco1{position:absolute;right:-48px;top:-48px;width:210px;height:210px;border-radius:50%;border:24px solid rgba(255,255,255,.05);pointer-events:none}
+#thumb .deco2{position:absolute;right:24px;bottom:54px;width:76px;height:76px;border-radius:18px;transform:rotate(18deg);background:linear-gradient(135deg,rgba(253,224,71,.16),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);pointer-events:none}
+.thumb-frame{border-radius:14px;overflow:hidden;box-shadow:0 16px 36px -10px rgba(15,23,42,.35);width:500px;max-width:100%;border:1px solid rgba(15,23,42,.12)}
 
-/* ── 탭2 랜딩 캔버스 1000px (상용 SaaS 프리미엄 5단 전환 공식 — 가짜 헤더/하단 신청버튼 절대 없음) ── */
+/* ── 탭2 랜딩 캔버스 1000px (클래스101·와디즈·토스 수준 5단 전환 공식 — 가짜 헤더/하단 신청버튼 절대 없음) ── */
 .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .mode{display:flex;gap:11px;align-items:flex-start;padding:14px 16px;border:2px solid var(--g200);border-radius:11px;cursor:pointer;background:#fff;transition:.15s}
 .mode:hover{border-color:var(--g300)}
 .mode:has(input:checked){border-color:var(--purple);background:var(--purple-lt);box-shadow:0 4px 14px -6px rgba(109,40,217,.25)}
 .mode input{accent-color:var(--purple);margin-top:3px}.mode b{display:block;font-size:13.5px;color:var(--g900)}.mode span{font-size:11.5px;color:var(--g500)}
-#lz{position:relative;overflow:hidden;background:#fff;border:1px solid var(--g300);border-radius:10px;box-shadow:0 12px 32px -12px rgba(15,23,42,.2);margin:0 auto 0 0}
-#lc{width:1000px;transform-origin:0 0;background:#F8FAFC}
-.lb{position:relative;width:1000px;min-height:400px;padding:84px 88px;display:flex;flex-direction:column;justify-content:center;background-size:cover;background-position:center;overflow:hidden}
-.lb.has-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.52),rgba(15,23,42,.72))}
-.lb>*{position:relative}
-.lb.hero{min-height:500px;background-image:linear-gradient(135deg,var(--brand) 0%,var(--brand-dk) 62%,var(--brand-dkr) 100%);color:#fff}
-.lb.hero::after{content:'';position:absolute;right:-90px;top:-90px;width:360px;height:360px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none}
-.lb.pain{background-image:linear-gradient(165deg,var(--brand-dkr) 0%,#0F172A 100%);color:#fff}
-.lb.solution{background-color:#fff;color:var(--g900)}
-.lb.trust{background-color:var(--brand-lt);color:var(--g900)}
-.lb.cue{min-height:360px;background-color:#fff;background-image:linear-gradient(180deg,var(--brand-lt) 0%,#fff 100%);color:var(--g900);align-items:center;text-align:center}
-.lb.has-img.solution,.lb.has-img.trust,.lb.has-img.cue{color:#fff}
-.lb-kicker{display:inline-block;align-self:flex-start;font-size:13px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;padding:5px 14px;border-radius:99px;margin-bottom:16px}
-.lb.hero .lb-kicker{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.28)}
-.lb.pain .lb-kicker{background:rgba(248,113,113,.15);color:#FCA5A5;border:1px solid rgba(248,113,113,.28)}
-.lb.solution .lb-kicker{background:var(--brand-lt);color:var(--brand-dk)}
-.lb.trust .lb-kicker{background:#fff;color:var(--brand-dk);box-shadow:0 2px 8px rgba(15,23,42,.06)}
-.lb-tag{display:inline-block;align-self:flex-start;background:rgba(255,255,255,.95);color:var(--brand-dk);font-size:16px;font-weight:800;padding:7px 18px;border-radius:99px;margin-bottom:22px;box-shadow:0 6px 16px rgba(0,0,0,.14)}
-.lb-title{font-size:44px;font-weight:900;line-height:1.28;letter-spacing:-1px}
-.lb.pain .lb-title,.lb.trust .lb-title,.lb.solution .lb-title{font-size:35px;letter-spacing:-.7px}
-.lb-sub{font-size:21px;line-height:1.65;margin-top:22px;opacity:.92;font-weight:500}
-.lb-bar{width:64px;height:5px;border-radius:99px;background:#FDE047;margin-top:28px}
-.lb-list{list-style:none;margin-top:30px;display:flex;flex-direction:column;gap:14px}
-.lb-list li{position:relative;display:flex;gap:16px;align-items:center;font-size:20px;line-height:1.5}
-.lb.pain .lb-list li{padding:20px 24px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px}
-.lb.pain .lb-list li::before{content:'✕';width:30px;height:30px;border-radius:50%;background:rgba(248,113,113,.2);color:#FCA5A5;font-weight:900;font-size:15px;display:grid;place-items:center;flex-shrink:0}
-.lb.solution .lb-list{counter-reset:sol}
-.lb.solution .lb-list li{counter-increment:sol;padding:20px 24px;background:#F8FAFC;border:1px solid #E2E8F0;border-left:5px solid var(--brand);border-radius:14px;font-weight:700;color:var(--g900);box-shadow:0 4px 14px -8px rgba(15,23,42,.1)}
-.lb.solution .lb-list li::before{content:'0' counter(sol);width:36px;height:36px;border-radius:10px;background:var(--brand);color:#fff;font-weight:900;font-size:14px;display:grid;place-items:center;flex-shrink:0}
-.li-text{flex:1;outline:none;cursor:text;border-radius:4px;white-space:pre-line}
+.font-toolbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(90deg,#F5F3FF,#EEF2FF);border:1px solid var(--purple-bd);border-radius:10px;flex-wrap:wrap}
+.font-toolbar b{font-size:12.5px;color:var(--purple-dk);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.font-select{padding:7px 11px;border:1.5px solid var(--purple-bd);border-radius:8px;background:#fff;font-weight:700;font-size:12.5px;color:var(--g900);cursor:pointer;min-width:255px}
+.font-select:focus{outline:none;border-color:var(--purple)}
+
+#lz{position:relative;overflow:hidden;background:#fff;border:1px solid var(--g300);border-radius:12px;box-shadow:0 16px 40px -12px rgba(15,23,42,.22);margin:0 auto 0 0}
+#lc{width:1000px;transform-origin:0 0;background:#F8FAFC;font-family:var(--font-body);word-break:keep-all;letter-spacing:-0.03em}
+.lb{position:relative;width:1000px;padding:88px 84px;display:flex;flex-direction:column;justify-content:center;background-size:cover;background-position:center;overflow:hidden;word-break:keep-all}
+.lb.has-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,13,22,.58),rgba(9,13,22,.84));z-index:1}
+.lb>*{position:relative;z-index:2}
+
+/* 섹션 1: HERO (다크/딥톤 프리미엄 그라데이션 + 캡슐 배지 + 대형 헤드카피 + 3열 핵심 스펙 바) */
+.lb.hero{min-height:580px;padding:96px 84px 82px;background-color:#080C14;background-image:radial-gradient(circle at 86% 18%,var(--brand) 0%,transparent 48%),radial-gradient(circle at 12% 88%,var(--brand-dk) 0%,transparent 52%),linear-gradient(145deg,#080C14 0%,var(--brand-dkr) 54%,var(--brand-dk) 100%);color:#fff}
+.lb.hero .hero-grid-pattern{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:1}
+.lb.hero .hero-glow{position:absolute;right:-80px;top:-80px;width:380px;height:380px;border-radius:50%;border:42px solid rgba(255,255,255,.04);pointer-events:none;z-index:1}
+.hero-pill-row{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;background:rgba(255,255,255,.1);border:1px solid rgba(253,224,71,.48);padding:7px 20px 7px 10px;border-radius:99px;margin-bottom:26px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.hero-pill-chip{background:linear-gradient(135deg,#FDE047,#FACC15);color:#0F172A;font-size:12px;font-weight:900;padding:4px 11px;border-radius:99px;letter-spacing:.4px}
+.lb-tag{color:#FEF08A;font-family:var(--font-body);font-size:17px;font-weight:800;letter-spacing:-0.03em}
+.lb-title{font-family:var(--font-head);font-size:48px;font-weight:800;line-height:1.32;letter-spacing:-0.03em;word-break:keep-all}
+.lb.hero .lb-title{color:#FFFFFF;text-shadow:0 8px 28px rgba(0,0,0,.38)}
+.hero-accent-line{width:96px;height:6px;border-radius:99px;background:linear-gradient(90deg,#FDE047,var(--brand));margin:26px 0 22px}
+.lb-sub{font-family:var(--font-body);font-size:21px;line-height:1.65;letter-spacing:-0.03em;color:rgba(255,255,255,.88);font-weight:500;max-width:820px}
+.hero-spec-bar{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;background:rgba(15,23,42,.62);border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:20px 24px;box-shadow:0 16px 36px rgba(0,0,0,.28)}
+.hero-spec-item{display:flex;flex-direction:column;gap:4px;padding-left:14px;border-left:3px solid #FDE047}
+.hero-spec-k{font-size:12px;font-weight:800;color:#FDE047;letter-spacing:.6px}
+.hero-spec-v{font-family:var(--font-body);font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.03em;line-height:1.4}
+
+/* 섹션 2: 공감·문제제기 (연회색/웜톤 배경 + 3열 체크리스트·말풍선 카드) */
+.lb.pain{background-color:#F3F4F6;background-image:linear-gradient(180deg,#F4F3EF 0%,#ECEEF2 100%);color:#0F172A;padding:88px 76px}
+.sec-eyebrow{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:6px 16px;border-radius:99px;font-size:13px;font-weight:800;letter-spacing:.4px;margin-bottom:18px}
+.lb.pain .sec-eyebrow{background:#FEE2E2;color:#B91C1C;border:1px solid #FECACA}
+.lb.pain .lb-title{font-size:38px;color:#0F172A;line-height:1.34}
+.lb.pain .sec-lead{margin-top:10px;font-size:18px;color:#475569;font-weight:500;line-height:1.6}
+.lb.pain .lb-list{list-style:none;margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:pain}
+.lb.pain .lb-list li{counter-increment:pain;position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:28px 24px 26px;background:#FFFFFF;border:1px solid #E2E8F0;border-top:5px solid #EF4444;border-radius:20px;box-shadow:0 14px 32px -12px rgba(15,23,42,.12);font-size:18.5px;line-height:1.62;color:#1E293B;font-weight:700;min-height:210px}
+.lb.pain .lb-list li::before{content:'CHECK 0' counter(pain);display:inline-block;padding:4px 11px;border-radius:99px;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;font-size:12px;font-weight:900;letter-spacing:.5px;margin-bottom:16px}
+.lb.pain .lb-list li::after{content:'“ 공감 100% 단골 고민 ”';margin-top:18px;padding-top:12px;border-top:1px dashed #E2E8F0;width:100%;font-size:13px;font-weight:700;color:#64748B}
+.pain-bottom-quote{margin-top:28px;padding:18px 26px;border-radius:14px;background:#1E293B;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:17px;font-weight:700;box-shadow:0 10px 24px -8px rgba(15,23,42,.25)}
+.pain-bottom-quote span.q-badge{background:#FDE047;color:#0F172A;font-size:12.5px;font-weight:900;padding:4px 12px;border-radius:99px;flex-shrink:0}
+
+/* 섹션 3: 핵심 해결책·커리큘럼 (번호 배지 01·02·03 + 벤토 그리드 비대칭 카드) */
+.lb.solution{background-color:#FFFFFF;background-image:radial-gradient(circle at 95% 8%,var(--brand-lt) 0%,transparent 42%);color:#0F172A;padding:92px 76px}
+.lb.solution .sec-eyebrow{background:var(--brand-lt);color:var(--brand-dk);border:1px solid rgba(79,70,229,.2)}
+.lb.solution .lb-title{font-size:38px;color:#0F172A;line-height:1.34}
+.lb.solution .lb-list{list-style:none;margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:20px;counter-reset:sol}
+.lb.solution .lb-list li{counter-increment:sol;position:relative;display:flex;flex-direction:column;align-items:flex-start;padding:30px 30px 28px;background:linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%);border:1.5px solid #E2E8F0;border-left:7px solid var(--brand);border-radius:20px;font-size:20px;line-height:1.6;font-weight:700;color:#0F172A;box-shadow:0 12px 28px -10px rgba(15,23,42,.1)}
+.lb.solution .lb-list li:first-child{grid-column:1 / -1;background:linear-gradient(135deg,var(--brand-dkr) 0%,var(--brand-dk) 65%,var(--brand) 100%);color:#FFFFFF;border:none;padding:34px 36px;box-shadow:0 18px 38px -12px rgba(15,23,42,.28)}
+.lb.solution .lb-list li::before{content:'STEP 0' counter(sol);display:inline-flex;align-items:center;justify-content:center;padding:5px 14px;border-radius:99px;background:var(--brand);color:#fff;font-family:var(--font-head);font-weight:800;font-size:13px;letter-spacing:.5px;margin-bottom:16px}
+.lb.solution .lb-list li:first-child::before{content:'STEP 01 · CORE CURRICULUM';background:#FDE047;color:#0F172A}
+
+/* 섹션 4: 신뢰 증거·강점 (대형 숫자 지표 하이라이트 대시보드 + 추천 대상 2열 체크 카드) */
+.lb.trust{background-color:var(--brand-lt);background-image:linear-gradient(180deg,var(--brand-lt) 0%,#F1F5F9 100%);color:#0F172A;padding:90px 76px}
+.lb.trust .sec-eyebrow{background:#0F172A;color:#FDE047}
+.lb.trust .lb-title{font-size:38px;color:#0F172A;line-height:1.34}
+.stat-card-wrap{margin-top:32px;background:linear-gradient(135deg,#0F172A 0%,var(--brand-dkr) 100%);border-radius:22px;padding:34px 38px;color:#fff;box-shadow:0 20px 44px -14px rgba(15,23,42,.32);border:1px solid rgba(255,255,255,.12);position:relative;overflow:hidden}
+.stat-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.stat-chip{display:inline-block;padding:5px 13px;border-radius:99px;background:rgba(253,224,71,.18);border:1px solid rgba(253,224,71,.5);color:#FDE047;font-size:12px;font-weight:900;letter-spacing:.6px}
+.stat-verified{font-size:13px;font-weight:700;color:rgba(255,255,255,.75)}
+.lb-stat{font-family:var(--font-head);font-size:32px;font-weight:800;color:#FDE047;line-height:1.42;letter-spacing:-0.03em}
+.trust-check-grid{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.trust-check-card{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:18px;padding:24px 26px;box-shadow:0 8px 22px -10px rgba(15,23,42,.08)}
+.trust-check-h{font-family:var(--font-head);font-size:17px;font-weight:800;color:var(--brand-dk);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.trust-check-h i{width:24px;height:24px;border-radius:50%;background:var(--brand-lt);color:var(--brand);display:inline-grid;place-items:center;font-style:normal;font-size:13px;font-weight:900}
+.trust-check-b{font-size:16px;color:#334155;line-height:1.6;font-weight:600}
+
+/* 섹션 5: 참여 혜택·일정 안내 요약 (표 형태 안내 박스 + 강조 보더 콜아웃, 가짜 신청버튼 절대 없음) */
+.lb.cue{min-height:420px;padding:84px 76px 76px;background-color:#FFFFFF;background-image:linear-gradient(180deg,#FFFFFF 0%,var(--brand-lt) 100%);color:#0F172A;align-items:stretch;text-align:left}
+.lb.cue .sec-eyebrow{background:var(--brand-lt);color:var(--brand-dk);border:1px solid rgba(79,70,229,.22)}
+.cue-summary-table{width:100%;display:grid;grid-template-columns:1fr 1fr;border:1.5px solid #CBD5E1;border-radius:16px;overflow:hidden;background:#fff;margin-bottom:26px;box-shadow:0 8px 24px -10px rgba(15,23,42,.08)}
+.cue-cell{display:flex;align-items:center;border-bottom:1px solid #E2E8F0;border-right:1px solid #E2E8F0}
+.cue-cell:nth-child(2n){border-right:none}
+.cue-cell:nth-last-child(-n+2){border-bottom:none}
+.cue-th{width:130px;flex-shrink:0;padding:16px 18px;background:#F8FAFC;font-size:14.5px;font-weight:800;color:#334155;border-right:1px solid #E2E8F0}
+.cue-td{flex:1;padding:16px 20px;font-size:15.5px;font-weight:700;color:#0F172A;line-height:1.45}
+.cue-callout-box{border:2.5px solid var(--brand);border-radius:22px;background:#FFFFFF;padding:34px 36px;text-align:center;box-shadow:0 16px 36px -12px rgba(79,70,229,.18);position:relative}
+.lb-notice{font-family:var(--font-body);font-size:19px;color:#475569;margin-bottom:14px;font-weight:700;line-height:1.55}
+.lb-arrowtext{font-family:var(--font-head);font-size:30px;font-weight:800;color:var(--brand-dk);line-height:1.4;letter-spacing:-0.03em}
+.lb-chev{margin-top:20px;display:flex;gap:12px;justify-content:center}
+.lb-chev span{width:42px;height:42px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:19px;font-weight:900;box-shadow:0 6px 14px rgba(79,70,229,.3)}
+.lb.has-img.pain,.lb.has-img.solution,.lb.has-img.trust,.lb.has-img.cue{color:#fff}
+.lb.has-img .lb-title{color:#fff}
+.li-text{flex:1;outline:none;cursor:text;border-radius:4px;white-space:pre-line;width:100%}
 .li-text:hover{background:rgba(124,58,237,.1)} .li-text:focus{box-shadow:0 0 0 2px rgba(124,58,237,.4)}
 body.capturing .li-text:hover,body.capturing .li-text:focus{background:none;box-shadow:none}
-.li-del{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(15,23,42,.35);color:#fff;font-size:14px;line-height:1;opacity:0}
+.li-del{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;background:rgba(15,23,42,.45);color:#fff;font-size:14px;line-height:1;opacity:0}
 .lb-list li:hover .li-del{opacity:1}
-.lb-stat{margin-top:28px;padding:30px 34px;border-radius:18px;background:#fff;border:1px solid rgba(15,23,42,.06);border-left:8px solid var(--brand);font-size:28px;font-weight:900;color:var(--brand-dk);line-height:1.4;box-shadow:0 12px 30px -12px rgba(15,23,42,.16)}
-.lb.has-img .lb-stat{background:rgba(255,255,255,.96)}
-.lb-notice{font-size:19px;color:var(--g500);margin-bottom:18px;font-weight:600}
-.lb.has-img .lb-notice{color:rgba(255,255,255,.9)}
-.lb-arrowtext{font-size:32px;font-weight:900;color:var(--brand-dk);line-height:1.38;letter-spacing:-.6px}
-.lb.has-img .lb-arrowtext{color:#fff}
-.lb-chev{margin-top:24px;display:flex;gap:14px;justify-content:center}
-.lb-chev span{width:44px;height:44px;border-radius:50%;background:var(--brand-lt);color:var(--brand);display:grid;place-items:center;font-size:20px;font-weight:900}
-.lb.has-img .lb-chev span{background:rgba(255,255,255,.22);color:#fff}
 .block-tools{position:absolute;top:12px;right:12px;display:flex;gap:6px;z-index:6;opacity:0;transition:.15s}
 .lb:hover .block-tools{opacity:1}
 .bt{padding:6px 11px;border-radius:7px;background:rgba(15,23,42,.86);color:#fff;font-size:12px;font-weight:700;cursor:pointer}
@@ -433,22 +524,40 @@ body:not(.wz-on) .wz-only{display:none}
   <div class="panel on" id="tab1">
     <div class="flexwrap">
       <div class="card" style="flex:0 0 auto">
-        <div class="card-h"><h3>🖼️ 대표 썸네일 캡처기</h3><span class="badge">500×280px · 16:9</span></div>
+        <div class="card-h">
+          <h3>🖼️ 대표 썸네일 캡처기</h3><span class="badge">500×280px · 16:9</span>
+          <select class="font-select" data-font-theme style="margin-left:auto;min-width:230px;padding:5px 9px;font-size:12px" title="썸네일·랜딩 한글 웹폰트 테마 실시간 전환">
+            <option value="modern">① 모던 임팩트 (GmarketSans + Pretendard)</option>
+            <option value="edu">② 교육·특강 정석 (S-Core Dream + Pretendard)</option>
+            <option value="serif">③ 전문가·품격 명조 (MaruBuri + Pretendard)</option>
+            <option value="round">④ 소프트 라운드 (SUITE)</option>
+          </select>
+        </div>
         <div class="card-b">
           <div class="thumb-frame">
             <div id="thumb">
-              <div class="deco1"></div><div class="deco2"></div><div class="deco3"></div>
+              <div class="t-grid-bg"></div>
+              <div class="t-accent-bar"></div>
+              <div class="deco1"></div><div class="deco2"></div>
               <div class="t-in">
                 <div class="t-top">
-                  <div class="t-badge ed" id="t-badge" contenteditable="true" data-single></div>
+                  <div class="t-badge-wrap">
+                    <span class="t-badge-dot"></span>
+                    <div class="t-badge ed" id="t-badge" contenteditable="true" data-single></div>
+                  </div>
                   <img class="t-logo" id="t-logo" alt="" hidden>
                 </div>
                 <div class="t-head ed" id="t-head" contenteditable="true"></div>
-                <div class="t-foot"><span class="t-dot"></span><div class="t-sub ed" id="t-sub" contenteditable="true"></div></div>
+                <div class="t-foot">
+                  <div class="t-foot-left">
+                    <span class="t-dot">OFFICIAL</span>
+                    <div class="t-sub ed" id="t-sub" contenteditable="true"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="hint" style="margin-top:8px">글자를 클릭해 바로 수정하세요 · 출력은 정확히 500×280 PNG</div>
+          <div class="hint" style="margin-top:8px">글자를 클릭해 바로 수정하세요 · 선택한 한글 웹폰트가 500×280 PNG에 그대로 선명하게 찍힙니다</div>
           <div class="row" style="margin-top:10px;flex-wrap:wrap">
             <button class="act pri" data-act="thumb-png">📸 썸네일 PNG 다운로드</button>
             <label class="act" style="cursor:pointer">🖼️ 배경 사진 교체<input type="file" accept="image/*" id="thumb-bg-file" hidden></label>
@@ -507,7 +616,18 @@ body:not(.wz-on) .wz-only{display:none}
   <!-- ───── 탭 2: 신청페이지 내용 ───── -->
   <div class="panel" id="tab2">
     <div class="card">
-      <div class="card-h"><h3>📐 출력 방식 선택 &amp; PNG 다운로드</h3><span class="badge">가로 1,000px 고정</span></div>
+      <div class="card-h">
+        <h3>📐 출력 방식 선택 &amp; 명품 한글 웹폰트 테마</h3><span class="badge">가로 1,000px 고정</span>
+        <div class="font-toolbar" style="margin-left:auto;padding:5px 10px">
+          <b>🔤 폰트 테마 선택:</b>
+          <select class="font-select" data-font-theme>
+            <option value="modern">① 모던 임팩트 (GmarketSans + Pretendard)</option>
+            <option value="edu">② 교육·특강 정석 (S-Core Dream + Pretendard)</option>
+            <option value="serif">③ 전문가·품격 명조 (MaruBuri + Pretendard)</option>
+            <option value="round">④ 소프트 라운드 (SUITE)</option>
+          </select>
+        </div>
+      </div>
       <div class="card-b">
         <div class="mode-grid">
           <label class="mode"><input type="radio" name="outmode" value="FULL" checked><div><b>통이미지 1장으로 한번에 출력 (PNG)</b><span>1단~5단을 이어 붙인 세로형 1장</span></div></label>
@@ -517,7 +637,7 @@ body:not(.wz-on) .wz-only{display:none}
           <button class="act pri" data-act="landing-png">📸 선택한 방식으로 PNG 다운로드</button>
           <span class="hint" style="margin-left:8px">보기 배율</span>
           <div class="seg" id="zoom-seg"><label><input type="radio" name="zoom" value="0.5">50%</label><label><input type="radio" name="zoom" value="0.75" checked>75%</label><label><input type="radio" name="zoom" value="1">100%</label></div>
-          <span class="hint">(배율은 화면 표시용 — 다운로드는 항상 1000px 기준 고화질)</span>
+          <span class="hint">(배율은 화면 표시용 — 다운로드는 항상 1000px×scale 2 고화질 + 웹폰트 100% 보존)</span>
         </div>
       </div>
     </div>
@@ -908,7 +1028,7 @@ function blankState() {
   return {
     meta: { use_webzine: false, webzine_base_url: 'https://gomawartalk.com/webzine/sample.html', industry_code: '' },
     partner: { owner_name: '', channel_name: '장희지 수학학원', channel_id_num: '15', current_plan: 'STARTER', pro_upgrade_requested: false },
-    brand: { primary: '#4F46E5', secondary: '#EEF2FF', logo: null },
+    brand: { primary: '#4F46E5', secondary: '#EEF2FF', logo: null, font_theme: 'modern' },
     t1: { badge: '', headline: '', subtext: '', title: '', desc: '', apply: '', cancel: '', bg_image: null, form_only_mode: false },
     t2: { output_mode: 'FULL', bg_color: '#F8FAFC', use_shorts: false, shorts_url: '', blocks: blankBlocks(), branch_links: ['', '', '', '', ''] },
     t3: { is_active: true, form_title: '', guide_text: GUIDE_DEFAULT, questions: [] },
@@ -1027,13 +1147,14 @@ function stateFromData(d, keep) {
   const s = blankState();
   const m = d.meta || {}, pi = d.partner_info || {}, ba = d.brand_assets || {};
   s.meta.use_webzine = !!m.use_webzine; s.meta.webzine_base_url = m.webzine_base_url || s.meta.webzine_base_url; s.meta.industry_code = (d.industry_code || pi.industry_code || m.industry_code || '');
-  if (keep) { s.partner = clone(keep.partner); s.brand.primary = keep.brand.primary; s.brand.secondary = keep.brand.secondary; s.brand.logo = keep.brand.logo; s.meta.use_webzine = keep.meta.use_webzine; s.meta.webzine_base_url = keep.meta.webzine_base_url; s.passthrough = clone(keep.passthrough); s.t2.bg_color = keep.t2.bg_color; }
+  if (keep) { s.partner = clone(keep.partner); s.brand.primary = keep.brand.primary; s.brand.secondary = keep.brand.secondary; s.brand.logo = keep.brand.logo; s.brand.font_theme = keep.brand.font_theme || 'modern'; s.meta.use_webzine = keep.meta.use_webzine; s.meta.webzine_base_url = keep.meta.webzine_base_url; s.passthrough = clone(keep.passthrough); s.t2.bg_color = keep.t2.bg_color; }
   if (d.partner_info) {
     s.partner.owner_name = pi.owner_name || ''; s.partner.channel_name = pi.channel_name || ''; s.partner.channel_id_num = pi.channel_id_num || '';
     s.partner.current_plan = pi.current_plan || 'STARTER'; s.partner.pro_upgrade_requested = !!pi.pro_upgrade_requested;
   }
   if (ba.primary_color) s.brand.primary = ba.primary_color; if (ba.secondary_color) s.brand.secondary = ba.secondary_color;
   if (ba.logo_base64) s.brand.logo = ba.logo_base64;
+  if (ba.font_theme) s.brand.font_theme = ba.font_theme;
 
   const t1 = d.tab1_basic_settings || {}, th = t1.thumbnail_500x280 || {};
   s.t1 = { badge: th.badge || '', headline: th.headline || '', subtext: th.subtext || '', title: t1.title_30chars || '', desc: t1.description || '',
@@ -1135,7 +1256,7 @@ function toCampaignMaster() {
             created_at: ts.toISOString(), mode: 'FULL_SET', use_webzine: !!S.meta.use_webzine, webzine_base_url: S.meta.webzine_base_url || '' },
     partner_info: { owner_name: S.partner.owner_name, phone: '', channel_name: S.partner.channel_name, channel_id_num: S.partner.channel_id_num,
                     current_plan: S.partner.current_plan, pro_upgrade_requested: S.partner.pro_upgrade_requested, industry_code: S.meta.industry_code || '', track_id: '' },
-    brand_assets: { primary_color: S.brand.primary, secondary_color: S.brand.secondary, logo_base64: S.brand.logo, block_images_base64: images },
+    brand_assets: { primary_color: S.brand.primary, secondary_color: S.brand.secondary, font_theme: S.brand.font_theme || 'modern', logo_base64: S.brand.logo, block_images_base64: images },
     tab1_basic_settings: {
       thumbnail_500x280: { badge: S.t1.badge, headline: S.t1.headline, subtext: S.t1.subtext },
       title_30chars: S.t1.title, description: S.t1.desc, apply_btn_text: S.t1.apply, cancel_btn_text: S.t1.cancel,
@@ -1180,10 +1301,38 @@ function toCampaignMaster() {
 }
 
 /* ═══════════════ 렌더링: 공통 / 탭 1~3 ═══════════════ */
+const FONT_THEMES = {
+  modern: {
+    label: '① 모던 임팩트 (GmarketSans + Pretendard)',
+    head: "'GmarketSans','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif",
+    body: "'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif"
+  },
+  edu: {
+    label: '② 교육·특강 정석 (S-Core Dream + Pretendard)',
+    head: "'SCoreDream','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif",
+    body: "'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif"
+  },
+  serif: {
+    label: '③ 전문가·품격 명조 (MaruBuri + Pretendard)',
+    head: "'MaruBuri','Nanum Myeongjo','Batang',serif",
+    body: "'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif"
+  },
+  round: {
+    label: '④ 소프트 라운드 (SUITE)',
+    head: "'SUITE','Pretendard','Apple SD Gothic Neo',sans-serif",
+    body: "'SUITE','Pretendard','Apple SD Gothic Neo',sans-serif"
+  }
+};
+
 function renderBrand() {
   const p = isHex(S.brand.primary) ? S.brand.primary : '#4F46E5', sc = isHex(S.brand.secondary) ? S.brand.secondary : '#EEF2FF';
+  const ftKey = (S.brand && FONT_THEMES[S.brand.font_theme]) ? S.brand.font_theme : 'modern';
+  const ft = FONT_THEMES[ftKey];
   const r = document.documentElement.style;
   r.setProperty('--brand', p); r.setProperty('--brand-dk', shade(p, -0.3)); r.setProperty('--brand-dkr', shade(p, -0.74)); r.setProperty('--brand-lt', sc);
+  r.setProperty('--font-head', ft.head);
+  r.setProperty('--font-body', ft.body);
+  $$('[data-font-theme]').forEach(sel => { sel.value = ftKey; });
   $('#c-primary').value = p; $('#c-primary-hex').value = p; $('#c-secondary').value = sc; $('#c-secondary-hex').value = sc;
   const logo = $('#t-logo');
   if (S.brand.logo) { logo.src = S.brand.logo; logo.hidden = false; } else { logo.removeAttribute('src'); logo.hidden = true; }
@@ -1219,12 +1368,70 @@ const E = (f, v, cls, single) => '<div class="' + cls + ' ed" contenteditable="t
 function blockHTML(b) {
   const add = '<button class="bt" data-act="item-add" data-step="' + b.step + '">＋ 항목 추가</button>';
   const wrap = (cls, inner, tools) => '<section class="lb ' + cls + (b.image ? ' has-img' : '') + '" data-block-step="' + b.step + '" data-block-type="' + b.type + '">' + tools + inner + '</section>';
-  if (b.step === 1) return wrap('hero', E('tag', b.tag, 'lb-tag', true) + E('title', b.title, 'lb-title') + E('subtitle', b.subtitle, 'lb-sub') + '<div class="lb-bar"></div>', blockTools(b));
-  if (b.step === 2) return wrap('pain', '<div class="lb-kicker">CHECK POINT</div>' + E('title', b.title, 'lb-title') + listHTML(b.items), blockTools(b, add));
-  if (b.step === 3) return wrap('solution', '<div class="lb-kicker">SOLUTION</div>' + E('title', b.title, 'lb-title') + listHTML(b.points), blockTools(b, add));
-  if (b.step === 4) return wrap('trust', '<div class="lb-kicker">VERIFIED RESULT</div>' + E('title', b.title, 'lb-title') + E('stat_highlight', b.stat_highlight, 'lb-stat'), blockTools(b));
-  return wrap('cue', E('notice', b.notice, 'lb-notice') + E('arrow_text', b.arrow_text, 'lb-arrowtext') + '<div class="lb-chev"><span>↓</span><span>↓</span><span>↓</span></div>' +
-    '<div class="cue-note" data-html2canvas-ignore="true">↓ 이 아래에 고마워톡 자체 보라색 [신청하기] 버튼이 붙습니다 (가짜 버튼 생성 금지)</div>', blockTools(b));
+  if (b.step === 1) {
+    return wrap('hero',
+      '<div class="hero-grid-pattern"></div><div class="hero-glow"></div>' +
+      '<div class="hero-pill-row"><span class="hero-pill-chip">SPECIAL EDITION</span>' + E('tag', b.tag, 'lb-tag', true) + '</div>' +
+      E('title', b.title, 'lb-title') +
+      '<div class="hero-accent-line"></div>' +
+      E('subtitle', b.subtitle, 'lb-sub') +
+      '<div class="hero-spec-bar">' +
+        '<div class="hero-spec-item"><span class="hero-spec-k">01 · CORE BENEFIT</span><div class="hero-spec-v ed" contenteditable="true" data-single>실전 압축 핵심 가이드 제공</div></div>' +
+        '<div class="hero-spec-item"><span class="hero-spec-k">02 · INSTANT DELIVERY</span><div class="hero-spec-v ed" contenteditable="true" data-single>카카오톡 1초 신청 · 즉시 발송</div></div>' +
+        '<div class="hero-spec-item"><span class="hero-spec-k">03 · CUSTOM ROADMAP</span><div class="hero-spec-v ed" contenteditable="true" data-single>유형별 1:1 맞춤 처방 연동</div></div>' +
+      '</div>',
+      blockTools(b)
+    );
+  }
+  if (b.step === 2) {
+    return wrap('pain',
+      '<div class="sec-eyebrow"><span>●</span> VOICE OF CUSTOMER · 고객 페인포인트 진단</div>' +
+      E('title', b.title, 'lb-title') +
+      '<div class="sec-lead ed" contenteditable="true" data-single>하나라도 해당된다면 지금 아래의 맞춤 해결책을 반드시 확인해 보세요.</div>' +
+      listHTML(b.items) +
+      '<div class="pain-bottom-quote"><span class="q-badge">SOLUTION READY</span><div class="ed" contenteditable="true" data-single style="flex:1">혼자 고민하지 마세요. 검증된 실전 공식으로 가장 빠르게 해결해 드립니다.</div></div>',
+      blockTools(b, add)
+    );
+  }
+  if (b.step === 3) {
+    return wrap('solution',
+      '<div class="sec-eyebrow"><span>★</span> CORE CURRICULUM &amp; SOLUTION</div>' +
+      E('title', b.title, 'lb-title') +
+      listHTML(b.points),
+      blockTools(b, add)
+    );
+  }
+  if (b.step === 4) {
+    return wrap('trust',
+      '<div class="sec-eyebrow"><span>✔</span> PROVEN TRACK RECORD · 신뢰 증거 및 핵심 지표</div>' +
+      E('title', b.title, 'lb-title') +
+      '<div class="stat-card-wrap">' +
+        '<div class="stat-card-top"><span class="stat-chip">VERIFIED METRIC · 검증된 핵심 성과</span><span class="stat-verified">ACTUAL PERFORMANCE DATA</span></div>' +
+        E('stat_highlight', b.stat_highlight, 'lb-stat') +
+      '</div>' +
+      '<div class="trust-check-grid">' +
+        '<div class="trust-check-card"><div class="trust-check-h"><i>✔</i><span class="ed" contenteditable="true" data-single>이런 분께 강력 추천합니다</span></div><div class="trust-check-b ed" contenteditable="true">시행착오 없이 검증된 핵심 노하우와 맞춤 가이드를 한 번에 받아보고 싶은 분</div></div>' +
+        '<div class="trust-check-card"><div class="trust-check-h"><i>★</i><span class="ed" contenteditable="true" data-single>신청 즉시 얻게 되는 확실한 변화</span></div><div class="trust-check-b ed" contenteditable="true">1편 핵심 요약 즉시 열람 및 채널 친구 전용 후속 심화 칼럼·혜택 순차 수신</div></div>' +
+      '</div>',
+      blockTools(b)
+    );
+  }
+  return wrap('cue',
+    '<div class="sec-eyebrow"><span>📋</span> PROGRAM SUMMARY &amp; GUIDE · 참여 혜택 및 신청 안내</div>' +
+    '<div class="cue-summary-table">' +
+      '<div class="cue-cell"><div class="cue-th">신청 방식</div><div class="cue-td ed" contenteditable="true" data-single>카카오 원클릭 로그인 (10초 간편 접수)</div></div>' +
+      '<div class="cue-cell"><div class="cue-th">제공 혜택</div><div class="cue-td ed" contenteditable="true" data-single>신청자 전원 핵심 자료집 &amp; 맞춤 가이드 발송</div></div>' +
+      '<div class="cue-cell"><div class="cue-th">발송 시점</div><div class="cue-td ed" contenteditable="true" data-single>신청 완료 즉시 카카오톡 알림톡 100% 발송</div></div>' +
+      '<div class="cue-cell"><div class="cue-th">안내 사항</div><div class="cue-td ed" contenteditable="true" data-single>상단 노란색 [채널 추가] 클릭 시 후속 혜택 수신</div></div>' +
+    '</div>' +
+    '<div class="cue-callout-box">' +
+      E('notice', b.notice, 'lb-notice') +
+      E('arrow_text', b.arrow_text, 'lb-arrowtext') +
+      '<div class="lb-chev"><span>↓</span><span>↓</span><span>↓</span></div>' +
+    '</div>' +
+    '<div class="cue-note" data-html2canvas-ignore="true">↓ 이 아래에 고마워톡 자체 보라색 [신청하기] 버튼이 붙습니다 (가짜 버튼 생성 금지)</div>',
+    blockTools(b)
+  );
 }
 function renderT2() {
   $('#lc').innerHTML = S.t2.blocks.map(blockHTML).join('');
@@ -1533,6 +1740,7 @@ function applyZoom() {
 }
 async function withCapture(fn) {
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
   const prev = viewZoom; viewZoom = 1; applyZoom();
   document.body.classList.add('capturing');
   await nextFrames(2);
@@ -1546,6 +1754,7 @@ function needEngine() {
 function fileTag() { return (S.partner.channel_name || '캠페인').replace(/[\\\/:*?"<>|\s]+/g, '_'); }
 
 async function captureUnscaled(el, fn) {
+  if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
   const prev = el.style.transform;
   el.style.transform = 'none';
   document.body.classList.add('capturing');
@@ -1872,6 +2081,13 @@ function bind() {
       const i = +t.dataset.branchAnchor, base = (S.meta.webzine_base_url || '').replace(/#.*$/, '');
       if (!base) { toast('웹진 기본 URL을 먼저 입력하세요.', { type: 'warn' }); t.value = ''; return; }
       S.t2.branch_links[i] = base + t.value; renderBranch(); t.value = '';
+    }
+    if (t.hasAttribute && t.hasAttribute('data-font-theme')) {
+      S.brand.font_theme = t.value;
+      renderBrand();
+      if (currentTab === 'tab2') applyZoom();
+      toast('🔤 한글 웹폰트 테마가 [' + (FONT_THEMES[t.value] ? FONT_THEMES[t.value].label : t.value) + ']로 적용되었습니다.', { type: 'ok' });
+      return;
     }
     if (t.name === 'outmode') S.t2.output_mode = t.value;
     if (t.name === 'zoom') { viewZoom = parseFloat(t.value); applyZoom(); }

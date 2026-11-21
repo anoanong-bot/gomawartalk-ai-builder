@@ -35,12 +35,29 @@
     return el;
   }
 
+  function waitForFonts() {
+    if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+      return document.fonts.ready.catch(function () {});
+    }
+    return Promise.resolve();
+  }
+
   function render(el, extra) {
     needH2C();
-    var opt = {};
+    var opt = {
+      onclone: function (clonedDoc) {
+        try {
+          var srcStyle = document.documentElement.getAttribute('style');
+          if (srcStyle) clonedDoc.documentElement.setAttribute('style', srcStyle);
+          clonedDoc.body.className = document.body.className;
+        } catch (e) {}
+      }
+    };
     Object.keys(H2C).forEach(function (k) { opt[k] = H2C[k]; });
     if (extra) Object.keys(extra).forEach(function (k) { opt[k] = extra[k]; });
-    return global.html2canvas(el, opt);
+    return waitForFonts().then(function () {
+      return global.html2canvas(el, opt);
+    });
   }
 
   // 캔버스를 정확히 w x h 로 리샘플링

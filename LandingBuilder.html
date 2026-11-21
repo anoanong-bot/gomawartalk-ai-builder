@@ -890,14 +890,14 @@ body:not(.wz-on) .wz-only{display:none}
       <div>
         <div class="lbl" style="margin-bottom:5px">① 한글로 원하는 장면 수정 지시 (선택)</div>
         <div class="row">
-          <input class="in" id="ai-img-kor" placeholder="예) 외국인 학생들이 K-POP 가사집을 보며 밝게 웃는 사진">
-          <button type="button" class="act" data-act="ai-img-translate">✨ 영문 프롬프트 반영</button>
+          <input class="in" id="ai-img-kor" placeholder="예) 한국 학생들이 스트레스 받아하며 학교에서 공부하고 있다. 한 명의 학생에 집중 포커스">
+          <button type="button" class="act" id="btn-ai-img-translate" data-act="ai-img-translate">✨ 영문 프롬프트 반영</button>
         </div>
       </div>
       <div>
         <div class="lbl" style="margin-bottom:5px">② 영문 이미지 생성 프롬프트 <span class="badge">깨진 글자 방지 구문 자동 포함</span></div>
         <textarea class="in" id="ai-img-prompt" style="height:90px;font-family:Consolas,monospace;font-size:12px;line-height:1.5" placeholder="English commercial photography prompt..."></textarea>
-        <div class="hint" style="margin-top:4px">* <code>clean commercial photography, no text, no letters, no watermark, high resolution</code> 구문이 기본 포함됩니다.</div>
+        <div class="hint" style="margin-top:4px">* <code>16:9 wide aspect ratio, shallow depth of field, clean commercial photography, no text, no letters, no watermark, high resolution</code> 구문이 기본 포함됩니다.</div>
       </div>
       <div id="ai-img-status" class="hint" style="color:var(--purple);font-weight:700"></div>
       <div class="row" style="justify-content:space-between;flex-wrap:wrap;margin-top:6px">
@@ -2374,59 +2374,107 @@ function cycleSlotStock(stepRaw, silent) {
   if (!silent) toast('🔄 추천 스톡 사진 #' + (obj.stock_index + 1) + '(으)로 교체했습니다. (CORS 안전 DataURL 자동 변환)', { type: 'ok' });
 }
 
+let lastTranslatedKor = '';
+
 function openAiImgModal(stepRaw) {
   syncFromDom();
   activeAiImgSlot = stepRaw === 'thumb' ? 'thumb' : Number(stepRaw);
+  lastTranslatedKor = '';
   const dim = getSlotDimensions(activeAiImgSlot);
   $('#ai-img-slot-badge').textContent = dim.label;
   $('#ai-img-kor').value = '';
   $('#ai-img-prompt').value = getDefaultSlotPrompt(activeAiImgSlot);
-  $('#ai-img-status').textContent = '';
+  const stEl = $('#ai-img-status');
+  stEl.textContent = '';
+  stEl.style.color = 'var(--purple)';
+  const trBtn = $('#btn-ai-img-translate');
+  if (trBtn) { trBtn.disabled = false; trBtn.textContent = '✨ 영문 프롬프트 반영'; }
+  const runBtn = $('#btn-ai-img-run');
+  if (runBtn) { runBtn.disabled = false; runBtn.textContent = '🎨 Gemini / Imagen AI로 지금 생성'; }
   $('#ai-img-modal').hidden = false;
 }
 
 async function translateAiImgPrompt() {
   const kor = $('#ai-img-kor').value.trim();
-  if (!kor) { toast('한글 장면 지시어를 먼저 입력해 주세요.', { type: 'warn' }); return; }
-  const Eng = window.RagInterviewEngine;
-  const cfg = Eng && Eng.getConfig ? Eng.getConfig() : {};
-  const dim = getSlotDimensions(activeAiImgSlot || 1);
-  $('#ai-img-status').textContent = '✨ 한글 지시어를 최적 영문 이미지 프롬프트로 변환 중…';
-
-  if (cfg.hasDirectKey && Eng && Eng.callGemini) {
-    try {
-      const eng = await Eng.callGemini({
-        temperature: 0.3,
-        maxOutputTokens: 280,
-        systemInstruction: 'You are an expert commercial photography prompt engineer for Imagen 3. Translate the Korean visual instruction into one vivid, detailed English photography prompt (max 50 words). Output ONLY the English prompt sentence without quotes.',
-        userText: kor
-      });
-      $('#ai-img-prompt').value = Eng.ensureImagePromptSuffix(eng);
-      $('#ai-img-status').textContent = '✅ Gemini가 한글 지시어를 영문 프롬프트로 변환했습니다.';
-      return;
-    } catch (e) {}
+  const stEl = $('#ai-img-status');
+  if (!kor) {
+    stEl.style.color = 'var(--red)';
+    stEl.textContent = '❌ ① 한글로 원하는 장면 수정 지시 입력란에 내용을 먼저 입력해 주세요.';
+    toast('한글 장면 지시어를 먼저 입력해 주세요.', { type: 'warn' });
+    return null;
   }
-  const built = Eng && Eng.buildEnglishImagePrompt
-    ? Eng.buildEnglishImagePrompt({ customInstruction: kor, channelName: S.partner.channel_name, slotRole: dim.slotKey })
-    : kor + ', clean commercial photography, no text, no letters, no watermark, high resolution';
-  $('#ai-img-prompt').value = built;
-  $('#ai-img-status').textContent = '✅ 영문 이미지 프롬프트가 반영되었습니다.';
+  const Eng = window.RagInterviewEngine;
+  const trBtn = $('#btn-ai-img-translate');
+  if (trBtn) {
+    trBtn.disabled = true;
+    trBtn.textContent = '⏳ 영문 프롬프트 변환 중...';
+  }
+  stEl.style.color = 'var(--purple)';
+  stEl.textContent = '⏳ Gemini AI가 입력하신 한글 장면 묘사를 상업 사진용 영문 프롬프트로 변환하고 있습니다…';
+
+  try {
+    if (!Eng || typeof Eng.translateKoreanToImagePrompt !== 'function') {
+      throw new Error('RagInterviewEngine.translateKoreanToImagePrompt 엔진을 찾을 수 없습니다.');
+    }
+    const translated = await Eng.translateKoreanToImagePrompt(kor);
+    $('#ai-img-prompt').value = translated;
+    lastTranslatedKor = kor;
+
+    // 현재 슬롯의 imagePrompt 상태에도 즉시 저장
+    const isThumb = activeAiImgSlot === 'thumb';
+    const obj = isThumb ? S.t1 : (S.t2.blocks[Number(activeAiImgSlot) - 1] || null);
+    if (obj) obj.imagePrompt = translated;
+
+    stEl.style.color = 'var(--green)';
+    stEl.textContent = '✅ Gemini AI가 한글 장면 지시를 영문 프롬프트에 정확히 반영했습니다!';
+    toast('✨ 한글 장면 지시가 영문 프롬프트로 변환·반영되었습니다.', { type: 'ok' });
+    return translated;
+  } catch (err) {
+    stEl.style.color = 'var(--red)';
+    stEl.textContent = '❌ 영문 프롬프트 변환 실패: ' + err.message;
+    toast('❌ 영문 프롬프트 변환 실패: ' + err.message, { type: 'err', ms: 6000 });
+    return null;
+  } finally {
+    if (trBtn) {
+      trBtn.disabled = false;
+      trBtn.textContent = '✨ 영문 프롬프트 반영';
+    }
+  }
 }
 
 async function generateSlotAiImage(targetSlot, customPrompt, isBatch) {
   const slot = targetSlot !== undefined ? targetSlot : activeAiImgSlot;
-  if (!slot) return;
+  if (!slot) return false;
   const isThumb = slot === 'thumb';
   const obj = isThumb ? S.t1 : S.t2.blocks[Number(slot) - 1];
-  if (!obj) return;
+  if (!obj) return false;
   const dim = getSlotDimensions(slot);
   const Eng = window.RagInterviewEngine;
   const IC = window.ImageCapturer;
-  const promptText = String(customPrompt !== undefined ? customPrompt : ($('#ai-img-prompt').value || $('#ai-img-kor').value || getDefaultSlotPrompt(slot))).trim();
+  const stEl = $('#ai-img-status');
+  const runBtn = $('#btn-ai-img-run');
+
+  // [사용성 안전장치] 사용자가 ① 한글 수정 지시 칸에 글자를 적어놓고 [✨ 영문 프롬프트 반영]을 누르지 않은 채
+  // 바로 [🎨 Gemini / Imagen AI로 지금 생성]을 누른 경우, 변경된 한글 입력값을 감지해 자동으로 먼저 영문 변환 수행
+  if (!isBatch && customPrompt === undefined) {
+    const korVal = ($('#ai-img-kor') && $('#ai-img-kor').value || '').trim();
+    if (korVal && korVal !== lastTranslatedKor) {
+      const autoTranslated = await translateAiImgPrompt();
+      if (!autoTranslated) return false;
+    }
+  }
+
+  const promptText = String(customPrompt !== undefined ? customPrompt : ($('#ai-img-prompt').value || getDefaultSlotPrompt(slot))).trim();
 
   if (!isBatch) {
-    $('#btn-ai-img-run').disabled = true;
-    $('#ai-img-status').textContent = '🎨 Gemini / Imagen 3 엔진으로 고해상도 비주얼 이미지를 생성하고 있습니다…';
+    if (runBtn) {
+      runBtn.disabled = true;
+      runBtn.textContent = '⏳ AI 이미지 생성 중...';
+    }
+    if (stEl) {
+      stEl.style.color = 'var(--purple)';
+      stEl.textContent = '🎨 Gemini / Imagen AI 엔진으로 고해상도 비주얼 이미지를 생성하고 있습니다…';
+    }
   }
 
   try {
@@ -2434,22 +2482,36 @@ async function generateSlotAiImage(targetSlot, customPrompt, isBatch) {
       width: dim.w,
       height: dim.h,
       aspectRatio: '16:9',
-      slotRole: dim.slotKey
+      slotRole: dim.slotKey,
+      onPromptResolved: function (resolvedEng) {
+        if (!isBatch && $('#ai-img-prompt')) $('#ai-img-prompt').value = resolvedEng;
+      }
     });
     obj.show_visual = true;
     obj.imagePrompt = res.prompt || promptText;
     obj.visual_image = res.dataUrl;
     if (isThumb) renderT1(); else renderT2();
     if (!isBatch) {
-      $('#ai-img-status').textContent = '✅ 생성 완료 (' + res.engine + ') — 슬롯에 즉시 적용되었습니다!';
+      if (stEl) {
+        stEl.style.color = 'var(--green)';
+        stEl.textContent = '✅ 생성 완료 (' + res.engine + ') — 슬롯에 즉시 적용되었습니다!';
+      }
       $('#ai-img-modal').hidden = true;
-      toast('🎨 AI 비주얼 이미지가 생성되어 슬롯에 적용되었습니다!', { type: 'ok' });
+      toast('🎨 AI 비주얼 이미지가 생성되어 슬롯에 적용되었습니다! (' + res.engine + ')', { type: 'ok' });
     }
     return true;
   } catch (err) {
-    // API 키 미설정 또는 엔드포인트 할당량 초과 시: 테마 맞춤 고해상도 스톡/캔버스 비주얼로 폴백하여 빈칸 방지
+    if (!isBatch) {
+      // 모달 내 단일 생성 실패 시: 거짓 성공 처리나 모달 강제 종료 없이 빨간색 에러 사유를 정확히 표시
+      if (stEl) {
+        stEl.style.color = 'var(--red)';
+        stEl.textContent = '❌ AI 이미지 생성 실패: ' + err.message;
+      }
+      toast('❌ AI 이미지 생성 실패: ' + err.message, { type: 'err', ms: 6500 });
+      return false;
+    }
+    // 상단 [전체 비주얼 일괄 생성] 배치 실행 시에만 오프라인 폴백 허용
     obj.show_visual = true;
-    obj.imagePrompt = Eng && Eng.ensureImagePromptSuffix ? Eng.ensureImagePromptSuffix(promptText) : promptText;
     const pool = getStockPool(dim.slotKey);
     const nextIdx = ((Number(obj.stock_index) || 0) + 1) % Math.max(1, (pool.stocks || []).length);
     obj.stock_index = nextIdx;
@@ -2458,17 +2520,12 @@ async function generateSlotAiImage(targetSlot, customPrompt, isBatch) {
       obj.visual_image = await IC.urlToSafeDataUrl(stockUrl, { width: dim.w, height: dim.h, primary: S.brand.primary, variant: nextIdx + 1 });
     }
     if (isThumb) renderT1(); else renderT2();
-    if (!isBatch) {
-      const msg = err.message === 'NO_API_KEY'
-        ? '🔑 Gemini API 키 미연결 상태이므로 맞춤 고해상도 스튜디오 비주얼로 먼저 적용했습니다. (상단 [🔑 AI 엔진 설정]에서 키 연결 가능)'
-        : '⚠️ AI 이미지 API 안내(' + err.message + ') — 맞춤 고해상도 스튜디오 비주얼로 자동 대체 적용했습니다.';
-      $('#ai-img-status').textContent = msg;
-      $('#ai-img-modal').hidden = true;
-      toast(msg, { type: 'warn', ms: 5500 });
-    }
     return false;
   } finally {
-    if (!isBatch && $('#btn-ai-img-run')) $('#btn-ai-img-run').disabled = false;
+    if (!isBatch && runBtn) {
+      runBtn.disabled = false;
+      runBtn.textContent = '🎨 Gemini / Imagen AI로 지금 생성';
+    }
   }
 }
 
@@ -2875,7 +2932,7 @@ function init() {
 
   window.LB = { state: () => { syncFromDom(); return S; }, toCampaignMaster, fixUrlSpacing, fixSheetVars, findBannedWords, loadPreset,
                 openState: d => { S = stateFromData(d, null); renderAll(); },
-                doThumbPng, doLandingPng, doFriendtalkJpg, doCarouselPng, doZip, switchTab, switchMenu, setWebzine, setZoom, runPinpointAi, toggleSlotVisual, cycleSlotStock, openAiImgModal, generateSlotAiImage, runBatchVisualAi, withCapture, compressFile, updateAiKeyBadge };
+                doThumbPng, doLandingPng, doFriendtalkJpg, doCarouselPng, doZip, switchTab, switchMenu, setWebzine, setZoom, runPinpointAi, toggleSlotVisual, cycleSlotStock, openAiImgModal, translateAiImgPrompt, generateSlotAiImage, runBatchVisualAi, withCapture, compressFile, updateAiKeyBadge };
   console.log('✅ 고마워톡 조종석 초기화 완료');
   if (/[?&]selftest\b/.test(location.search)) { const s = document.createElement('script'); s.src = 'tests/phase1_selftest.js'; document.body.appendChild(s); }
 }

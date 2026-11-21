@@ -260,20 +260,63 @@
   }
 
   // ─────────────────────────────────────────────────────────────
-  // 4-B. AI 비주얼 이미지 생성 엔진 (Imagen 3 + Gemini Multimodal Image 자동 폴백)
+  // 4-B. AI 비주얼 이미지 생성 엔진 (Gemini 한글->영문 프롬프트 직결 + Imagen 3/4 & Gemini Image 폴백)
   // ─────────────────────────────────────────────────────────────
-  var IMAGE_PROMPT_SUFFIX = 'clean commercial photography, no text, no letters, no watermark, high resolution';
+  var IMAGE_PROMPT_SUFFIX = '16:9 wide aspect ratio, shallow depth of field, clean commercial photography, no text, no letters, no watermark, high resolution';
 
   function ensureImagePromptSuffix(p) {
-    var base = String(p || '').trim().replace(/[,.\s]+$/, '');
+    var base = String(p || '').trim()
+      .replace(/^["'`]+|["'`]+$/g, '')
+      .replace(/,?\s*16:9 wide aspect ratio.*$/i, '')
+      .replace(/,?\s*clean commercial photography.*$/i, '')
+      .replace(/[,.\s]+$/, '');
     if (!base) base = 'Modern professional studio scene, warm natural lighting, premium commercial aesthetic';
-    if (base.toLowerCase().indexOf('no text') === -1) {
-      base += ', ' + IMAGE_PROMPT_SUFFIX;
-    }
-    return base;
+    return base + ', ' + IMAGE_PROMPT_SUFFIX;
   }
 
-  // 캠페인 컨텍스트 또는 한글 지시문으로부터 최적의 영문 이미지 프롬프트 자동 구성
+  // [실제 Gemini API 직결] 사용자가 입력한 한글 장면 묘사를 100% 충실하게 상업 사진용 영문 프롬프트로 번역·구체화
+  // (가짜 템플릿 폴백 절대 없음 — 실패 시 정확한 에러를 그대로 throw)
+  function translateKoreanToImagePrompt(koreanText, opts) {
+    opts = opts || {};
+    var kor = String(koreanText || '').trim();
+    if (!kor) {
+      return Promise.reject(new Error('한글 장면 묘사를 입력해 주세요.'));
+    }
+    var cfg = getConfig();
+    var apiKey = (opts.apiKey || cfg.apiKey || '').trim();
+    var proxyUrl = (opts.proxyUrl || cfg.proxyUrl || '').trim();
+
+    if (!apiKey && !proxyUrl) {
+      return Promise.reject(new Error('Gemini API Key가 설정되지 않았습니다. 상단 우측 [🔑 AI 엔진 설정] 버튼을 눌러 Gemini API Key(AIza...)를 먼저 등록해 주세요.'));
+    }
+
+    var sysInstruction = [
+      'You are a world-class commercial photography director and Imagen prompt engineer.',
+      'Your task is to translate and expand the user\'s Korean scene description into a vivid, realistic, high-end commercial photography prompt in English (2 to 3 detailed sentences).',
+      'STRICT RULES:',
+      '1. Faithfully depict 100% of the exact scene, subjects, facial expressions, emotions, actions, lighting, and environment described by the user in Korean.',
+      '2. NEVER mix in unrelated default templates (do NOT add random bright desks, tablets, or upward achievement graphs unless the user explicitly asked for them).',
+      '3. When the user mentions Korean people or Korean students (e.g., 한국 학생들), explicitly specify "Korean students" or "Korean people" in an authentic Korean setting.',
+      '4. Output ONLY the pure English scene description sentence(s) without quotes, markdown, explanations, or prefixes.'
+    ].join('\n');
+
+    return callGemini({
+      apiKey: apiKey,
+      proxyUrl: proxyUrl,
+      temperature: 0.25,
+      maxOutputTokens: 350,
+      systemInstruction: sysInstruction,
+      userText: '다음 한글 장면 지시를 영문 상업 사진 프롬프트로 정확히 번역·구체화해 주세요:\n' + kor
+    }).then(function (engRaw) {
+      var cleaned = String(engRaw || '').trim().replace(/^["'`]+|["'`]+$/g, '').replace(/\r?\n+/g, ' ').trim();
+      if (!cleaned) {
+        throw new Error('Gemini API로부터 빈 응답이 반환되었습니다.');
+      }
+      return ensureImagePromptSuffix(cleaned);
+    });
+  }
+
+  // 캠페인 초기 로드시 기본 영문 프롬프트 생성기 (초기 기본값 세팅 전용)
   function buildEnglishImagePrompt(ctx) {
     ctx = ctx || {};
     var raw = String(ctx.customInstruction || ctx.copyText || '').trim();
@@ -299,16 +342,15 @@
 
     var roleDesc = '';
     if (slotRole === 'thumb') {
-      roleDesc = '16:9 hero thumbnail key visual, strong focal point, vibrant contrast';
+      roleDesc = 'hero thumbnail key visual, strong focal point, vibrant contrast';
     } else if (slotRole === 'slot1' || slotRole === 'hero') {
-      roleDesc = '16:9 wide hero banner photography, inspiring main subject, shallow depth of field';
+      roleDesc = 'wide hero banner photography, inspiring main subject';
     } else if (slotRole === 'slot2' || slotRole === 'solution') {
-      roleDesc = 'Premium product and digital guidebook mockup presentation on a clean desk, tangible service value';
+      roleDesc = 'premium product and digital guidebook mockup presentation on a clean desk, tangible service value';
     } else if (slotRole === 'slot3' || slotRole === 'trust') {
-      roleDesc = 'Authentic positive transformation and customer satisfaction scene, trustworthy professional environment';
+      roleDesc = 'authentic positive transformation and customer satisfaction scene, trustworthy professional environment';
     }
 
-    // 사용자가 이미 영문 프롬프트를 입력한 경우 그대로 보존
     if (raw && !/[\uAC00-\uD7A3]/.test(raw) && raw.length >= 15) {
       return ensureImagePromptSuffix(raw);
     }
@@ -316,14 +358,13 @@
     return ensureImagePromptSuffix(subject + (roleDesc ? ', ' + roleDesc : ''));
   }
 
-  function callImagen3Endpoint(apiKey, promptText, aspectRatio) {
-    var url = 'https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=' + encodeURIComponent(apiKey);
+  function callImagenEndpoint(apiKey, modelName, promptText, aspectRatio) {
+    var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(modelName) + ':predict?key=' + encodeURIComponent(apiKey);
     var body = {
       instances: [{ prompt: promptText }],
       parameters: {
         sampleCount: 1,
-        aspectRatio: aspectRatio || '16:9',
-        personGeneration: 'ALLOW_ADULT'
+        aspectRatio: aspectRatio || '16:9'
       }
     };
     return fetch(url, {
@@ -333,12 +374,15 @@
     }).then(function (res) {
       return res.json().then(function (data) {
         if (!res.ok || data.error) {
-          throw new Error((data && data.error && data.error.message) || ('Imagen 3 HTTP ' + res.status));
+          throw new Error((data && data.error && data.error.message) || (modelName + ' HTTP ' + res.status));
         }
-        var pred = data.predictions && data.predictions[0];
-        var b64 = pred && (pred.bytesBase64Encoded || (pred.image && pred.image.bytesBase64Encoded));
-        if (!b64) throw new Error('Imagen 3 응답에 이미지 데이터가 없습니다.');
-        var mime = (pred && pred.mimeType) || 'image/png';
+        var pred = (data.predictions && data.predictions[0]) || (data.generatedImages && data.generatedImages[0]);
+        var b64 = pred && (
+          pred.bytesBase64Encoded ||
+          (pred.image && (pred.image.bytesBase64Encoded || pred.image.imageBytes))
+        );
+        if (!b64) throw new Error(modelName + ' 응답에 이미지 데이터(bytesBase64Encoded)가 없습니다.');
+        var mime = (pred && (pred.mimeType || (pred.image && pred.image.mimeType))) || 'image/png';
         return 'data:' + mime + ';base64,' + b64;
       });
     });
@@ -348,8 +392,7 @@
     var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(modelName) + ':generateContent?key=' + encodeURIComponent(apiKey);
     var body = {
       contents: [{
-        role: 'user',
-        parts: [{ text: 'Generate a single high-resolution commercial photograph matching this description: ' + promptText }]
+        parts: [{ text: 'Generate a high-resolution commercial photograph: ' + promptText }]
       }],
       generationConfig: {
         responseModalities: ['TEXT', 'IMAGE']
@@ -364,13 +407,15 @@
         if (!res.ok || data.error) {
           throw new Error((data && data.error && data.error.message) || (modelName + ' HTTP ' + res.status));
         }
-        var cand = data.candidates && data.candidates[0];
-        var parts = (cand && cand.content && cand.content.parts) || [];
-        for (var i = 0; i < parts.length; i++) {
-          var inl = parts[i].inlineData || parts[i].inline_data;
-          if (inl && inl.data) {
-            var mime = inl.mimeType || inl.mime_type || 'image/png';
-            return 'data:' + mime + ';base64,' + inl.data;
+        var cands = data.candidates || [];
+        for (var c = 0; c < cands.length; c++) {
+          var parts = (cands[c].content && cands[c].content.parts) || [];
+          for (var i = 0; i < parts.length; i++) {
+            var inl = parts[i].inlineData || parts[i].inline_data;
+            if (inl && inl.data) {
+              var mime = inl.mimeType || inl.mime_type || 'image/png';
+              return 'data:' + mime + ';base64,' + inl.data;
+            }
           }
         }
         throw new Error(modelName + ' 응답에 inlineData 이미지가 없습니다.');
@@ -387,28 +432,17 @@
     var targetH = opts.height || 500;
     var aspectRatio = opts.aspectRatio || '16:9';
 
+    if (!apiKey && !proxyUrl) {
+      return Promise.reject(new Error('Gemini API Key가 설정되지 않았습니다. 상단 우측 [🔑 AI 엔진 설정]에서 API 키(AIza...)를 먼저 등록해 주세요.'));
+    }
+
     var rawInput = String(promptOrInstruction || '').trim();
     var hasKorean = /[\uAC00-\uD7A3]/.test(rawInput);
 
-    // 1단계: 한글 지시어가 포함되어 있고 API 키가 있으면 영문 프롬프트로 먼저 정교하게 변환
-    var promptPromise;
-    if (hasKorean && apiKey) {
-      promptPromise = callGemini({
-        apiKey: apiKey,
-        temperature: 0.3,
-        maxOutputTokens: 300,
-        systemInstruction: 'You are an expert commercial photography prompt engineer for Imagen 3. Translate the Korean visual instruction into one vivid, detailed English photography prompt (max 55 words). Output ONLY the English prompt sentence without quotes.',
-        userText: rawInput
-      }).then(function (engText) {
-        return ensureImagePromptSuffix(engText);
-      }).catch(function () {
-        return buildEnglishImagePrompt({ customInstruction: rawInput, slotRole: opts.slotRole });
-      });
-    } else if (hasKorean) {
-      promptPromise = Promise.resolve(buildEnglishImagePrompt({ customInstruction: rawInput, slotRole: opts.slotRole }));
-    } else {
-      promptPromise = Promise.resolve(ensureImagePromptSuffix(rawInput));
-    }
+    // 1단계: 한글 지시어가 포함되어 있으면 실제 Gemini API로 영문 프롬프트 변환을 먼저 수행
+    var promptPromise = hasKorean
+      ? translateKoreanToImagePrompt(rawInput, { apiKey: apiKey, proxyUrl: proxyUrl })
+      : Promise.resolve(ensureImagePromptSuffix(rawInput));
 
     function finalizeDataUrl(rawDataUrl, usedPrompt, engineUsed) {
       if (global.ImageCapturer && typeof global.ImageCapturer.normalizeToCoverDataUrl === 'function') {
@@ -424,37 +458,55 @@
     }
 
     return promptPromise.then(function (finalPrompt) {
+      if (typeof opts.onPromptResolved === 'function') {
+        try { opts.onPromptResolved(finalPrompt); } catch (e) {}
+      }
       if (apiKey) {
-        // 순차 폴백 체인: ① imagen-3.0-generate-002:predict -> ② gemini-2.0-flash-exp-image-generation -> ③ gemini-2.5-flash-image-preview -> ④ gemini-2.0-flash-preview-image-generation
-        return callImagen3Endpoint(apiKey, finalPrompt, aspectRatio)
+        var errors = [];
+        // 순차 폴백 체인:
+        // ① imagen-3.0-generate-002:predict
+        // ② imagen-4.0-generate-001:predict
+        // ③ gemini-2.0-flash-preview-image-generation:generateContent
+        // ④ gemini-2.0-flash-exp-image-generation:generateContent
+        // ⑤ gemini-2.5-flash-image-preview:generateContent
+        return callImagenEndpoint(apiKey, 'imagen-3.0-generate-002', finalPrompt, aspectRatio)
           .then(function (dUrl) { return finalizeDataUrl(dUrl, finalPrompt, 'imagen-3.0-generate-002'); })
-          .catch(function () {
+          .catch(function (e1) {
+            errors.push('imagen-3.0-generate-002: ' + e1.message);
+            return callImagenEndpoint(apiKey, 'imagen-4.0-generate-001', finalPrompt, aspectRatio)
+              .then(function (dUrl) { return finalizeDataUrl(dUrl, finalPrompt, 'imagen-4.0-generate-001'); });
+          })
+          .catch(function (e2) {
+            errors.push('imagen-4.0-generate-001: ' + e2.message);
+            return callGeminiImageModel(apiKey, 'gemini-2.0-flash-preview-image-generation', finalPrompt)
+              .then(function (dUrl) { return finalizeDataUrl(dUrl, finalPrompt, 'gemini-2.0-flash-preview-image-generation'); });
+          })
+          .catch(function (e3) {
+            errors.push('gemini-2.0-flash-preview-image-generation: ' + e3.message);
             return callGeminiImageModel(apiKey, 'gemini-2.0-flash-exp-image-generation', finalPrompt)
               .then(function (dUrl) { return finalizeDataUrl(dUrl, finalPrompt, 'gemini-2.0-flash-exp-image-generation'); });
           })
-          .catch(function () {
+          .catch(function (e4) {
+            errors.push('gemini-2.0-flash-exp-image-generation: ' + e4.message);
             return callGeminiImageModel(apiKey, 'gemini-2.5-flash-image-preview', finalPrompt)
               .then(function (dUrl) { return finalizeDataUrl(dUrl, finalPrompt, 'gemini-2.5-flash-image-preview'); });
           })
-          .catch(function () {
-            return callGeminiImageModel(apiKey, 'gemini-2.0-flash-preview-image-generation', finalPrompt)
-              .then(function (dUrl) { return finalizeDataUrl(dUrl, finalPrompt, 'gemini-2.0-flash-preview-image-generation'); });
+          .catch(function (e5) {
+            errors.push('gemini-2.5-flash-image-preview: ' + e5.message);
+            throw new Error(errors.join(' | '));
           });
       }
-      if (proxyUrl) {
-        return fetch(proxyUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'generate_image', prompt: finalPrompt, aspectRatio: aspectRatio })
-        }).then(function (res) {
-          if (!res.ok) throw new Error('프록시 이미지 생성 오류 HTTP ' + res.status);
-          return res.json();
-        }).then(function (data) {
-          if (!data || !data.dataUrl) throw new Error((data && data.error) || '프록시 이미지 응답 없음');
-          return finalizeDataUrl(data.dataUrl, finalPrompt, 'backend-proxy');
-        });
-      }
-      return Promise.reject(new Error('NO_API_KEY'));
+      return fetch(proxyUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'generate_image', prompt: finalPrompt, aspectRatio: aspectRatio })
+      }).then(function (res) {
+        if (!res.ok) throw new Error('프록시 이미지 생성 오류 HTTP ' + res.status);
+        return res.json();
+      }).then(function (data) {
+        if (!data || !data.dataUrl) throw new Error((data && data.error) || '프록시 이미지 응답 없음');
+        return finalizeDataUrl(data.dataUrl, finalPrompt, 'backend-proxy');
+      });
     });
   }
 
@@ -604,6 +656,7 @@
   RagInterviewEngine.getBridgeCampaign = getBridgeCampaign;
   RagInterviewEngine.callGemini = callGemini;
   RagInterviewEngine.generateImage = generateImage;
+  RagInterviewEngine.translateKoreanToImagePrompt = translateKoreanToImagePrompt;
   RagInterviewEngine.buildEnglishImagePrompt = buildEnglishImagePrompt;
   RagInterviewEngine.ensureImagePromptSuffix = ensureImagePromptSuffix;
   RagInterviewEngine.extractJson = extractJson;

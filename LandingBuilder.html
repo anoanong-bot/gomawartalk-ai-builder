@@ -340,7 +340,7 @@ body:not(.wz-on) .wz-only{display:none}
 
 <!-- ═════════ 상단 글로벌 네비게이션 ═════════ -->
 <nav id="nav">
-  <div class="brand"><span class="brand-mark">🎯</span>고마워톡 조종석 <small>Phase 3</small></div>
+  <div class="brand"><span class="brand-mark">🎯</span>고마워톡 조종석 <small>V2.0 Final</small></div>
   <div class="menus">
     <button class="menu-btn on" id="menu-admin" data-menu="admin">📋 고마워톡 어드민 세팅 (5대 탭 미러링)</button>
     <button class="menu-btn" id="menu-webzine" data-menu="webzine">✨ 모바일 웹진 스튜디오</button>
@@ -1638,13 +1638,67 @@ function saveJson() {
 async function refreshIntake() {
   const url = $('#proxy-url').value.trim(), box = $('#intake');
   try { localStorage.setItem('gmt_proxy_url', url); } catch (e) {}
-  if (!url) { box.innerHTML = '<div class="intake-empty">Backend_Proxy.gs 웹앱 URL을 먼저 입력하세요.<br>(Phase 4에서 배포 후 연결합니다.)</div>'; $('#proxy-url').focus(); return; }
-  box.innerHTML = '<div class="intake-empty">불러오는 중…</div>';
+  if (!url) {
+    box.innerHTML = '<div class="intake-empty">Backend_Proxy.gs URL 미설정 — 로컬 데모 모드로 테스트할 수 있습니다.<br><button class="sbtn pri" style="margin-top:7px" data-act="intake-demo">🧪 샘플 접수 2건 불러오기</button></div>';
+    return;
+  }
+  box.innerHTML = '<div class="intake-empty">구글 드라이브 [파트너접수함] 조회 중…</div>';
   try {
     const res = await fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + 'action=list'); const d = await res.json();
     const list = Array.isArray(d) ? d : (d.files || d.list || []);
     box.innerHTML = list.length ? list.map(f => '<div class="intake-item" data-act="intake-load" data-id="' + esc(f.id || f.fileId) + '"><b>' + esc(f.name || '(이름 없음)') + '</b><span>' + esc(f.createdTime || '') + '</span></div>').join('') : '<div class="intake-empty">접수된 캠페인이 없습니다.</div>';
-  } catch (e) { box.innerHTML = '<div class="intake-empty" style="color:var(--red)">연결 실패: ' + esc(e.message) + '</div>'; }
+  } catch (e) { box.innerHTML = '<div class="intake-empty" style="color:var(--red)">연결 실패: ' + esc(e.message) + '<br><button class="sbtn" style="margin-top:6px" data-act="intake-demo">🧪 로컬 샘플로 테스트</button></div>'; }
+}
+function loadDemoIntakeList() {
+  const demos = [
+    { code: 'academy', name: '20261121_장희지수학학원_장희지.json', createdTime: '로컬 샘플 · Pro 신청' },
+    { code: 'pro_ngo_church', name: '20261121_바른세무컨설팅_김세무.json', createdTime: '로컬 샘플 · Starter' }
+  ];
+  $('#intake').innerHTML = demos.map(f => '<div class="intake-item" data-act="intake-demo-load" data-code="' + esc(f.code) + '"><b>' + esc(f.name) + '</b><span>' + esc(f.createdTime) + '</span></div>').join('');
+  toast('🧪 로컬 테스트용 접수 목록 2건을 표시했습니다. 클릭하면 즉시 로드됩니다.', { type: 'ok' });
+}
+async function runPinpointAi(instruction) {
+  const before = snapshot();
+  const url = $('#proxy-url').value.trim();
+  const tabKeyMap = { tab1: 't1', tab2: 't2', tab3: 't3', tab4: 't4', tab5: 't5' };
+  const k = tabKeyMap[currentTab] || 't1';
+
+  if (url) {
+    toast('🤖 [' + TAB_NAME[currentTab] + '] AI 수정 요청 중…');
+    try {
+      const res = await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'pinpoint_edit', tabId: currentTab, instruction, currentData: S[k] }) });
+      const data = await res.json();
+      if (data.ok && data.updatedData) {
+        S[k] = Object.assign(S[k], data.updatedData);
+        renderAll();
+        AI_LOG[currentTab].push('✅ [실시간 AI] ' + instruction); renderAI();
+        toast('✨ AI 수정이 반영되었습니다!', { type: 'ok', ms: 6000, action: { label: '되돌리기', fn: () => restore(before) } });
+        return;
+      }
+      throw new Error(data.error || 'AI 응답 형식 오류');
+    } catch (err) { toast('프록시 호출 실패 → 로컬 시뮬레이션으로 적용합니다 (' + err.message + ')', { type: 'warn' }); }
+  }
+
+  // 로컬 오프라인 시뮬레이션 Fallback (에러 없이 즉시 미리보기 체험 가능)
+  syncFromDom();
+  if (currentTab === 'tab1') {
+    if (/짧|강렬|임팩트/.test(instruction)) S.t1.title = ('[필독] ' + S.t1.title.replace(/^\[[^\]]+\]\s*/, '')).slice(0, 28);
+    else S.t1.desc = S.t1.desc + ' (' + instruction.slice(0, 24) + ')';
+  } else if (currentTab === 'tab2') {
+    if (/추가/.test(instruction)) S.t2.blocks[1].items.push('AI 추천 추가 항목: ' + instruction);
+    else S.t2.blocks[0].subtitle = S.t2.blocks[0].subtitle + ' · ' + instruction.slice(0, 24);
+  } else if (currentTab === 'tab3') {
+    S.t3.form_title = S.t3.form_title + ' (수정됨)';
+  } else if (currentTab === 'tab4' && S.t4.sequence[0]) {
+    const b = S.t4.sequence[S.t4.sequence.length - 1].branches[0];
+    b.body_text_400chars = (b.body_text_400chars || '') + '\n' + instruction;
+  } else if (currentTab === 'tab5' && S.t5.items[0]) {
+    const b = S.t5.items[0].branches[0];
+    b.body_text_400chars = (b.body_text_400chars || '') + '\n' + instruction;
+  }
+  AI_LOG[currentTab].push('🧪 [로컬 시뮬] ' + instruction);
+  renderAll();
+  toast('🧪 로컬 시뮬레이션으로 [' + TAB_NAME[currentTab] + ']에 즉시 반영했습니다.', { type: 'ok', ms: 6000, action: { label: '되돌리기', fn: () => restore(before) } });
 }
 async function loadIntake(id) {
   const url = $('#proxy-url').value.trim();
@@ -1689,6 +1743,8 @@ function bind() {
         case 'json-open': return $('#json-file').click();
         case 'json-save': return saveJson();
         case 'intake-refresh': return refreshIntake();
+        case 'intake-demo': return loadDemoIntakeList();
+        case 'intake-demo-load': return loadPreset(a.dataset.code);
         case 'intake-load': return loadIntake(a.dataset.id);
         case 'logo-clear': S.brand.logo = null; return renderBrand();
         case 'thumb-bg-clear': S.t1.bg_image = null; return renderT1();
@@ -1708,7 +1764,7 @@ function bind() {
         case 'o-copy-tag': return copyText(S.t3.questions[qi].options[oi].tag, a);
         case 'o-copy-sheet': { const o = S.t3.questions[qi].options[oi]; return copyText([o.sheet_field, SHEET_TYPE[o.sheet_type], SHEET_OP[o.sheet_op], o.sheet_value].join(' / '), a); }
         case 'q-copy-all': { const q = S.t3.questions[qi]; return copyText('보기\t[태그]\t[시트]시트명.필드명\t데이터형\t연산\t값\n' + q.options.map(o => [o.text, o.tag, o.sheet_field, SHEET_TYPE[o.sheet_type], SHEET_OP[o.sheet_op], o.sheet_value].join('\t')).join('\n'), a); }
-        case 'ai-send': { const v = $('#ai-text').value.trim(); if (!v) return toast('지시문을 입력하세요.', { type: 'warn' }); AI_LOG[currentTab].push(v); $('#ai-text').value = ''; renderAI(); return toast('지시문을 [' + TAB_NAME[currentTab] + '] 대기열에 보관했습니다.', { type: 'warn' }); }
+        case 'ai-send': { const v = $('#ai-text').value.trim(); if (!v) return toast('지시문을 입력하세요.', { type: 'warn' }); $('#ai-text').value = ''; return await runPinpointAi(v); }
 
         // ── 탭 4 & 탭 5 액션 ──
         case 't4-add': S.t4.sequence.push(newIntervalStep(S.t4.sequence.length + 1, 'FREE_FRIENDTALK', 'AFTER_3_DAYS_0900')); return renderT4();

@@ -167,6 +167,7 @@ body.ws-webzine #main{padding-top:calc(var(--nav-h) + 24px)}
 .ed:hover{background:rgba(124,58,237,.07)}
 .ed:focus{background:rgba(124,58,237,.09);box-shadow:0 0 0 2px rgba(124,58,237,.35)}
 body.capturing .ed:hover,body.capturing .ed:focus{background:none;box-shadow:none}
+body.capturing .panel{display:block !important}
 .box{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--g200);border-radius:9px;background:#fff;line-height:1.58;min-height:38px}
 .box:focus{border-color:var(--purple-md);box-shadow:0 0 0 3px rgba(124,58,237,.14)}
 .copy-row{display:flex;gap:8px;align-items:flex-start}
@@ -212,14 +213,22 @@ body.capturing .ed:hover,body.capturing .ed:focus{background:none;box-shadow:non
 #thumb .t-badge-dot{width:8px;height:8px;border-radius:50%;background:#FDE047;box-shadow:0 0 8px #FDE047;flex-shrink:0}
 #thumb .t-badge{color:#FEF08A;font-family:var(--font-body);font-weight:800;font-size:12px;letter-spacing:-0.03em;line-height:1.2}
 #thumb .t-logo{max-width:100px;max-height:34px;object-fit:contain;background:rgba(255,255,255,.95);padding:4px 9px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
-#thumb .t-head{margin-top:18px;font-family:var(--font-head);font-size:27px;font-weight:800;line-height:1.34;letter-spacing:-0.03em;color:#FFFFFF;text-shadow:0 4px 18px rgba(0,0,0,.35)}
+#thumb .t-mid{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:12px;flex:1;min-height:0}
+#thumb .t-head{margin-top:0;flex:1;min-width:0;font-family:var(--font-head);font-size:24px;font-weight:800;line-height:1.32;letter-spacing:-0.03em;color:#FFFFFF;text-shadow:0 4px 18px rgba(0,0,0,.35)}
+#thumb .t-visual-card{position:relative;width:154px;height:132px;border-radius:12px;overflow:hidden;border:1.5px solid rgba(255,255,255,.32);box-shadow:0 10px 24px rgba(0,0,0,.38);flex-shrink:0;background:#0F172A}
+#thumb .t-visual-card img{width:100%;height:100%;object-fit:cover;display:block}
 #thumb .t-foot{margin-top:auto;padding:10px 14px;background:rgba(15,23,42,.58);border:1px solid rgba(255,255,255,.16);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 #thumb .t-foot-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
 #thumb .t-dot{padding:2px 7px;border-radius:5px;background:#FDE047;color:#0F172A;font-size:10px;font-weight:900;letter-spacing:.3px;flex-shrink:0}
 #thumb .t-sub{font-family:var(--font-body);font-size:12.5px;font-weight:700;color:rgba(255,255,255,.94);letter-spacing:-0.03em;line-height:1.35}
 #thumb .deco1{position:absolute;right:-48px;top:-48px;width:210px;height:210px;border-radius:50%;border:24px solid rgba(255,255,255,.05);pointer-events:none}
 #thumb .deco2{position:absolute;right:24px;bottom:54px;width:76px;height:76px;border-radius:18px;transform:rotate(18deg);background:linear-gradient(135deg,rgba(253,224,71,.16),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);pointer-events:none}
-.thumb-frame{border-radius:14px;overflow:hidden;box-shadow:0 16px 36px -10px rgba(15,23,42,.35);width:500px;max-width:100%;border:1px solid rgba(15,23,42,.12)}
+.thumb-frame{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 16px 36px -10px rgba(15,23,42,.35);width:500px;max-width:100%;border:1px solid rgba(15,23,42,.12)}
+.thumb-vbar{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:8px 10px;border-radius:10px;background:rgba(15,23,42,.9);backdrop-filter:blur(6px);opacity:0;transition:opacity .15s;z-index:9}
+.thumb-frame:hover .thumb-vbar{opacity:1}
+.tvbtn{padding:6px 10px;border-radius:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:11.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.tvbtn:hover{background:rgba(255,255,255,.26)}
+.tvbtn.pri{background:linear-gradient(135deg,#7C3AED,#4F46E5);border-color:#A78BFA}
 
 /* ── 탭2 랜딩 캔버스 1000px (클래스101·와디즈·토스 수준 5단 전환 공식 — 가짜 헤더/하단 신청버튼 절대 없음) ── */
 .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
@@ -313,6 +322,22 @@ body.capturing .li-text:hover,body.capturing .li-text:focus{background:none;box-
 .lb:hover .block-tools{opacity:1}
 .bt{padding:12px 22px;border-radius:12px;background:rgba(15,23,42,.88);color:#fff;font-size:36px;font-weight:700;cursor:pointer;line-height:1.2}
 .bt:hover{background:var(--purple)}
+
+/* ── 탭2 3대 핵심 비주얼 이미지 슬롯 (가로 888px 풀와이드, 둥근 모서리 24px, 3-Way 스마트 컨트롤 바) ── */
+.lb-visual-slot{position:relative;width:888px;max-width:100%;height:500px;margin-top:38px;border-radius:24px;overflow:hidden;box-sizing:border-box;background:#0F172A;border:2px solid rgba(255,255,255,.24);box-shadow:0 20px 44px -12px rgba(15,23,42,.34)}
+.lb.solution .lb-visual-slot,.lb.trust .lb-visual-slot{border:2px solid #CBD5E1;box-shadow:0 18px 38px -12px rgba(15,23,42,.18)}
+.lb-visual-slot.slot-h460{height:460px}
+.lb-visual-img{width:100%;height:100%;object-fit:cover;display:block}
+.vslot-bar{position:absolute;top:16px;left:16px;right:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;padding:14px 18px;border-radius:18px;background:rgba(15,23,42,.9);backdrop-filter:blur(8px);opacity:0;transition:opacity .16s ease;z-index:8}
+.lb-visual-slot:hover .vslot-bar{opacity:1}
+.vbtn{padding:12px 20px;border-radius:12px;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.28);color:#FFFFFF;font-family:var(--font-body);font-size:36px;font-weight:700;line-height:1.2;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.vbtn:hover{background:rgba(255,255,255,.26)}
+.vbtn.pri{background:linear-gradient(135deg,#7C3AED,#4F46E5);border-color:#A78BFA}
+.vslot-hidden-bar{width:888px;max-width:100%;box-sizing:border-box;margin-top:26px;padding:18px 26px;border-radius:20px;border:2px dashed rgba(148,163,184,.55);background:rgba(15,23,42,.08);display:flex;align-items:center;justify-content:center}
+.lb.hero .vslot-hidden-bar{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.32)}
+.vslot-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding:11px 14px;background:linear-gradient(90deg,#F5F3FF,#EFF6FF);border:1px solid var(--purple-bd);border-radius:10px}
+.vtog{padding:6px 11px;border-radius:8px;border:1px solid var(--purple-bd);background:#fff;font-size:12px;font-weight:700;color:var(--g700);cursor:pointer}
+.vtog.on{background:var(--purple);color:#fff;border-color:var(--purple)}
 
 /* ── 탭3 ── */
 .warn{display:flex;gap:10px;align-items:flex-start;background:var(--amber-lt);border:1px solid var(--amber-bd);border-radius:11px;padding:13px 15px;font-size:12.5px;color:#78350F;line-height:1.6;margin-bottom:16px}
@@ -530,6 +555,12 @@ body:not(.wz-on) .wz-only{display:none}
         </div>
         <div class="card-b">
           <div class="thumb-frame">
+            <div class="thumb-vbar" data-html2canvas-ignore="true">
+              <button type="button" class="tvbtn pri" data-act="vslot-ai" data-step="thumb">🎨 AI 이미지 생성</button>
+              <label class="tvbtn">📁 내 사진 업로드<input type="file" accept="image/*" hidden data-act="vslot-upload" data-step="thumb"></label>
+              <button type="button" class="tvbtn" data-act="vslot-stock" data-step="thumb">🔄 추천 스톡 교체</button>
+              <button type="button" class="tvbtn" data-act="vslot-toggle" data-step="thumb">👁️ 비주얼 토글</button>
+            </div>
             <div id="thumb">
               <div class="t-grid-bg"></div>
               <div class="t-accent-bar"></div>
@@ -542,7 +573,12 @@ body:not(.wz-on) .wz-only{display:none}
                   </div>
                   <img class="t-logo" id="t-logo" alt="" hidden>
                 </div>
-                <div class="t-head ed" id="t-head" contenteditable="true"></div>
+                <div class="t-mid">
+                  <div class="t-head ed" id="t-head" contenteditable="true"></div>
+                  <div class="t-visual-card" id="t-visual-wrap">
+                    <img id="t-visual-img" data-w="308" data-h="264" crossorigin="anonymous" alt="">
+                  </div>
+                </div>
                 <div class="t-foot">
                   <div class="t-foot-left">
                     <span class="t-dot">OFFICIAL</span>
@@ -552,10 +588,12 @@ body:not(.wz-on) .wz-only{display:none}
               </div>
             </div>
           </div>
-          <div class="hint" style="margin-top:8px">글자를 클릭해 바로 수정하세요 · 선택한 한글 웹폰트가 500×280 PNG에 그대로 선명하게 찍힙니다</div>
+          <div class="hint" style="margin-top:8px">썸네일에 마우스를 올리면 <b>[🎨 AI 이미지 생성 / 📁 내 사진 업로드 / 🔄 추천 스톡 교체]</b> 컨트롤 바가 나타납니다</div>
           <div class="row" style="margin-top:10px;flex-wrap:wrap">
             <button class="act pri" data-act="thumb-png">📸 썸네일 PNG 다운로드</button>
-            <label class="act" style="cursor:pointer">🖼️ 배경 사진 교체<input type="file" accept="image/*" id="thumb-bg-file" hidden></label>
+            <button class="act" data-act="vslot-ai" data-step="thumb">🎨 AI 비주얼 생성</button>
+            <button class="act" data-act="vslot-stock" data-step="thumb">🔄 추천 스톡 교체</button>
+            <label class="act" style="cursor:pointer">🖼️ 배경 전체 사진<input type="file" accept="image/*" id="thumb-bg-file" hidden></label>
             <button class="act" data-act="thumb-bg-clear">배경 제거</button>
           </div>
         </div>
@@ -630,6 +668,8 @@ body:not(.wz-on) .wz-only{display:none}
         </div>
         <div class="row" style="flex-wrap:wrap">
           <button class="act pri" data-act="landing-png">📸 선택한 방식으로 PNG 다운로드</button>
+          <button class="act pri" style="background:linear-gradient(135deg,#059669,#047857)" data-act="vslot-ai-all">🎨 전체 비주얼 AI 일괄 생성 (3장)</button>
+          <button class="act" data-act="vslot-stock-all">🔄 전체 추천 스톡 일괄 교체</button>
           <span class="hint" style="margin-left:8px">보기 배율</span>
           <div class="seg" id="zoom-seg">
             <label title="모바일 375px 실물 폭으로 가독성 확인 (캡처 시에는 자동으로 1,000px 원본 폭으로 복원됩니다)"><input type="radio" name="zoom" value="0.375">📱 모바일 실물(375px)</label>
@@ -637,7 +677,13 @@ body:not(.wz-on) .wz-only{display:none}
             <label><input type="radio" name="zoom" value="0.75" checked>75%</label>
             <label><input type="radio" name="zoom" value="1">100%</label>
           </div>
-          <span class="hint">(모바일 375px 상태에서도 다운로드 시 자동으로 1,000px×scale 2 원본 해상도로 선명하게 출력됩니다)</span>
+        </div>
+        <div class="vslot-toolbar">
+          <b style="font-size:12.5px;color:var(--purple-dk)">🖼️ 3대 핵심 비주얼 슬롯 표시 제어 (가로 888px 풀와이드):</b>
+          <button type="button" class="vtog on" id="vtog-1" data-act="vslot-toggle" data-step="1">👁️ 슬롯 1 (1단 Hero 하단 888×500): 보이기</button>
+          <button type="button" class="vtog on" id="vtog-3" data-act="vslot-toggle" data-step="3">👁️ 슬롯 2 (3단 해결책 상단 888×500): 보이기</button>
+          <button type="button" class="vtog on" id="vtog-4" data-act="vslot-toggle" data-step="4">👁️ 슬롯 3 (4단 신뢰증거 상단 888×460): 보이기</button>
+          <span class="hint" style="margin-left:auto">각 이미지 슬롯 위에 마우스를 올리면 <b>[🎨 AI 이미지 생성 / 📁 내 사진 업로드 / 🔄 추천 스톡 교체]</b> 버튼이 나타납니다</span>
         </div>
       </div>
     </div>
@@ -832,6 +878,39 @@ body:not(.wz-on) .wz-only{display:none}
   </div>
 </div>
 
+<!-- ═════════ [🎨 AI 비주얼 이미지 생성 스튜디오] 모달 ═════════ -->
+<div class="modal-bg" id="ai-img-modal" hidden>
+  <div class="modal" style="max-width:600px">
+    <div class="modal-h">
+      <h3>🎨 AI 비주얼 이미지 생성 스튜디오 <span class="badge g" id="ai-img-slot-badge">슬롯 1 · Hero</span></h3>
+      <button class="act sm" data-act="ai-img-close">✕ 닫기</button>
+    </div>
+    <div class="modal-b">
+      <div class="hint">현재 캠페인 주제와 해당 섹션 카피를 분석해 최적의 영문 프롬프트를 자동 작성했습니다. 한글로 원하는 장면을 입력해 수정하거나, 아래 영문 프롬프트로 즉시 이미지를 생성해 슬롯에 꽂아 넣을 수 있습니다.</div>
+      <div>
+        <div class="lbl" style="margin-bottom:5px">① 한글로 원하는 장면 수정 지시 (선택)</div>
+        <div class="row">
+          <input class="in" id="ai-img-kor" placeholder="예) 외국인 학생들이 K-POP 가사집을 보며 밝게 웃는 사진">
+          <button type="button" class="act" data-act="ai-img-translate">✨ 영문 프롬프트 반영</button>
+        </div>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:5px">② 영문 이미지 생성 프롬프트 <span class="badge">깨진 글자 방지 구문 자동 포함</span></div>
+        <textarea class="in" id="ai-img-prompt" style="height:90px;font-family:Consolas,monospace;font-size:12px;line-height:1.5" placeholder="English commercial photography prompt..."></textarea>
+        <div class="hint" style="margin-top:4px">* <code>clean commercial photography, no text, no letters, no watermark, high resolution</code> 구문이 기본 포함됩니다.</div>
+      </div>
+      <div id="ai-img-status" class="hint" style="color:var(--purple);font-weight:700"></div>
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap;margin-top:6px">
+        <button type="button" class="act" data-act="ai-img-stock">🔄 추천 스톡 사진으로 순환 교체</button>
+        <div class="row">
+          <button type="button" class="act" data-act="ai-img-close">취소</button>
+          <button type="button" class="act pri" id="btn-ai-img-run" data-act="ai-img-generate">🎨 Gemini / Imagen AI로 지금 생성</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toasts"></div>
 
 <script>
@@ -1004,18 +1083,23 @@ function blankBlocks() {
   return [
     {
       step: 1, type: 'HERO', tag: '', title: '', subtitle: '', image: null,
-      spec_1: '실전 압축 핵심 가이드 제공', spec_2: '카카오톡 1초 신청 · 즉시 발송', spec_3: '유형별 1:1 맞춤 처방 연동'
+      spec_1: '실전 압축 핵심 가이드 제공', spec_2: '카카오톡 1초 신청 · 즉시 발송', spec_3: '유형별 1:1 맞춤 처방 연동',
+      show_visual: true, imagePrompt: '', stock_index: 0, visual_image: null
     },
     {
       step: 2, type: 'PAIN_POINT', title: '', items: [''], image: null,
       lead: '하나라도 해당된다면 지금 아래의 맞춤 해결책을 반드시 확인해 보세요.',
       bottom_quote: '혼자 고민하지 마세요. 검증된 실전 공식으로 가장 빠르게 해결해 드립니다.'
     },
-    { step: 3, type: 'SOLUTION', title: '', points: [''], image: null },
+    {
+      step: 3, type: 'SOLUTION', title: '', points: [''], image: null,
+      show_visual: true, imagePrompt: '', stock_index: 0, visual_image: null
+    },
     {
       step: 4, type: 'TRUST_PROOF', title: '', stat_highlight: '', image: null,
       rec1_title: '이런 분께 강력 추천합니다', rec1_body: '시행착오 없이 검증된 핵심 노하우와 맞춤 가이드를 한 번에 받아보고 싶은 분',
-      rec2_title: '신청 즉시 얻게 되는 확실한 변화', rec2_body: '1편 핵심 요약 즉시 열람 및 채널 친구 전용 후속 심화 칼럼·혜택 순차 수신'
+      rec2_title: '신청 즉시 얻게 되는 확실한 변화', rec2_body: '1편 핵심 요약 즉시 열람 및 채널 친구 전용 후속 심화 칼럼·혜택 순차 수신',
+      show_visual: true, imagePrompt: '', stock_index: 0, visual_image: null
     },
     {
       step: 5, type: 'BOTTOM_CUE', notice: '', arrow_text: '', image: null,
@@ -1077,7 +1161,7 @@ function blankState() {
     meta: { use_webzine: false, webzine_base_url: 'https://gomawartalk.com/webzine/sample.html', industry_code: '' },
     partner: { owner_name: '', channel_name: '장희지 수학학원', channel_id_num: '15', current_plan: 'STARTER', pro_upgrade_requested: false },
     brand: { primary: '#4F46E5', secondary: '#EEF2FF', logo: null, font_theme: 'modern' },
-    t1: { badge: '', headline: '', subtext: '', title: '', desc: '', apply: '', cancel: '', bg_image: null, form_only_mode: false },
+    t1: { badge: '', headline: '', subtext: '', title: '', desc: '', apply: '', cancel: '', bg_image: null, form_only_mode: false, show_visual: true, imagePrompt: '', stock_index: 0, visual_image: null },
     t2: { output_mode: 'FULL', bg_color: '#F8FAFC', use_shorts: false, shorts_url: '', blocks: blankBlocks(), branch_links: ['', '', '', '', ''] },
     t3: { is_active: true, form_title: '', guide_text: GUIDE_DEFAULT, questions: [] },
     t4: { quick_single_mode: false, exclude_days: ['SAT', 'SUN'], sequence: [newIntervalStep(1, 'ALIMTALK', 'IMMEDIATE')] },
@@ -1094,16 +1178,30 @@ function normalizeBlocks(arr) {
     if (step === 1) {
       t.tag = b.tag || ''; t.title = b.title || ''; t.subtitle = b.subtitle || '';
       if (b.spec_1) t.spec_1 = b.spec_1; if (b.spec_2) t.spec_2 = b.spec_2; if (b.spec_3) t.spec_3 = b.spec_3;
+      t.show_visual = b.show_visual !== false;
+      t.imagePrompt = b.imagePrompt || '';
+      t.stock_index = Number(b.stock_index || 0);
+      t.visual_image = b.visual_image || null;
     }
     if (step === 2) {
       t.title = b.title || ''; t.items = (b.items && b.items.length ? b.items : ['']).slice();
       if (b.lead) t.lead = b.lead; if (b.bottom_quote) t.bottom_quote = b.bottom_quote;
     }
-    if (step === 3) { t.title = b.title || ''; t.points = (b.points && b.points.length ? b.points : ['']).slice(); }
+    if (step === 3) {
+      t.title = b.title || ''; t.points = (b.points && b.points.length ? b.points : ['']).slice();
+      t.show_visual = b.show_visual !== false;
+      t.imagePrompt = b.imagePrompt || '';
+      t.stock_index = Number(b.stock_index || 0);
+      t.visual_image = b.visual_image || null;
+    }
     if (step === 4) {
       t.title = b.title || ''; t.stat_highlight = b.stat_highlight || '';
       if (b.rec1_title) t.rec1_title = b.rec1_title; if (b.rec1_body) t.rec1_body = b.rec1_body;
       if (b.rec2_title) t.rec2_title = b.rec2_title; if (b.rec2_body) t.rec2_body = b.rec2_body;
+      t.show_visual = b.show_visual !== false;
+      t.imagePrompt = b.imagePrompt || '';
+      t.stock_index = Number(b.stock_index || 0);
+      t.visual_image = b.visual_image || null;
     }
     if (step === 5) {
       t.notice = b.notice || '카카오 로그인 한 번으로 별도 입력 없이 즉시 접수됩니다';
@@ -1221,7 +1319,8 @@ function stateFromData(d, keep) {
 
   const t1 = d.tab1_basic_settings || {}, th = t1.thumbnail_500x280 || {};
   s.t1 = { badge: th.badge || '', headline: th.headline || '', subtext: th.subtext || '', title: t1.title_30chars || '', desc: t1.description || '',
-           apply: t1.apply_btn_text || '', cancel: t1.cancel_btn_text || '', bg_image: null, form_only_mode: !!t1.form_only_mode };
+           apply: t1.apply_btn_text || '', cancel: t1.cancel_btn_text || '', bg_image: null, form_only_mode: !!t1.form_only_mode,
+           show_visual: th.show_visual !== false, imagePrompt: th.imagePrompt || '', stock_index: Number(th.stock_index || 0), visual_image: th.visual_image || null };
 
   const t2 = d.tab2_landing_content || {};
   const blocks = normalizeBlocks(t2.blocks_1000px || t2.blocks || d.tab2_landing_blocks);
@@ -1335,7 +1434,7 @@ function toCampaignMaster() {
                     current_plan: S.partner.current_plan, pro_upgrade_requested: S.partner.pro_upgrade_requested, industry_code: S.meta.industry_code || '', track_id: '' },
     brand_assets: { primary_color: S.brand.primary, secondary_color: S.brand.secondary, font_theme: S.brand.font_theme || 'modern', logo_base64: S.brand.logo, block_images_base64: images },
     tab1_basic_settings: {
-      thumbnail_500x280: { badge: S.t1.badge, headline: S.t1.headline, subtext: S.t1.subtext },
+      thumbnail_500x280: { badge: S.t1.badge, headline: S.t1.headline, subtext: S.t1.subtext, show_visual: S.t1.show_visual !== false, imagePrompt: S.t1.imagePrompt || '', stock_index: S.t1.stock_index || 0, visual_image: S.t1.visual_image || null },
       title_30chars: S.t1.title, description: S.t1.desc, apply_btn_text: S.t1.apply, cancel_btn_text: S.t1.cancel,
       show_apply_btn: true, show_top_bar: true, form_only_mode: S.t1.form_only_mode,
       failure_notice_alimtalk: true, friendtalk_rescue_2times: true, marketing_consent_popup: true
@@ -1344,10 +1443,10 @@ function toCampaignMaster() {
       output_mode: S.t2.output_mode, bg_color: S.t2.bg_color, use_shorts_landing: S.t2.use_shorts, shorts_youtube_url: S.t2.shorts_url,
       blocks_1000px: S.t2.blocks.map(b => {
         const o = { step: b.step, type: b.type };
-        if (b.step === 1) { o.tag = b.tag; o.title = b.title; o.subtitle = b.subtitle; o.spec_1 = b.spec_1; o.spec_2 = b.spec_2; o.spec_3 = b.spec_3; }
+        if (b.step === 1) { o.tag = b.tag; o.title = b.title; o.subtitle = b.subtitle; o.spec_1 = b.spec_1; o.spec_2 = b.spec_2; o.spec_3 = b.spec_3; o.show_visual = b.show_visual !== false; o.imagePrompt = b.imagePrompt || ''; o.stock_index = b.stock_index || 0; o.visual_image = b.visual_image || null; }
         if (b.step === 2) { o.title = b.title; o.items = b.items.filter(x => x.trim()); o.lead = b.lead; o.bottom_quote = b.bottom_quote; }
-        if (b.step === 3) { o.title = b.title; o.points = b.points.filter(x => x.trim()); }
-        if (b.step === 4) { o.title = b.title; o.stat_highlight = b.stat_highlight; o.rec1_title = b.rec1_title; o.rec1_body = b.rec1_body; o.rec2_title = b.rec2_title; o.rec2_body = b.rec2_body; }
+        if (b.step === 3) { o.title = b.title; o.points = b.points.filter(x => x.trim()); o.show_visual = b.show_visual !== false; o.imagePrompt = b.imagePrompt || ''; o.stock_index = b.stock_index || 0; o.visual_image = b.visual_image || null; }
+        if (b.step === 4) { o.title = b.title; o.stat_highlight = b.stat_highlight; o.rec1_title = b.rec1_title; o.rec1_body = b.rec1_body; o.rec2_title = b.rec2_title; o.rec2_body = b.rec2_body; o.show_visual = b.show_visual !== false; o.imagePrompt = b.imagePrompt || ''; o.stock_index = b.stock_index || 0; o.visual_image = b.visual_image || null; }
         if (b.step === 5) { o.notice = b.notice; o.arrow_text = b.arrow_text; o.sum_method = b.sum_method; o.sum_benefit = b.sum_benefit; o.sum_timing = b.sum_timing; o.sum_notice = b.sum_notice; }
         return o;
       }),
@@ -1419,11 +1518,96 @@ function renderSidebar() {
   $('#p-plan').value = S.partner.current_plan; $('#p-pro').checked = !!S.partner.pro_upgrade_requested;
   $('#industry').value = S.meta.industry_code && $('#industry option[value="' + S.meta.industry_code + '"]') ? S.meta.industry_code : '';
 }
+/* ═══════════════ 비주얼 슬롯 (탭1 썸네일 & 탭2 3대 비주얼 슬롯) 관리 엔진 ═══════════════ */
+const STOCK_DATAURL_CACHE = {};
+let activeAiImgSlot = null;
+
+function getSlotDimensions(stepOrThumb) {
+  if (stepOrThumb === 'thumb' || stepOrThumb === 0) {
+    return { w: 500, h: 280, ratio: '16:9', slotKey: 'thumb', label: '탭 1 · 대표 썸네일 비주얼 (500×280px)' };
+  }
+  const s = Number(stepOrThumb);
+  if (s === 1) return { w: 888, h: 500, ratio: '16:9', slotKey: 'slot1', label: '비주얼 슬롯 1 · 1단 Hero 와이드 메인 비주얼 (888×500px)' };
+  if (s === 3) return { w: 888, h: 500, ratio: '16:9', slotKey: 'slot2', label: '비주얼 슬롯 2 · 3단 해결책/자료 목업 비주얼 (888×500px)' };
+  return { w: 888, h: 460, ratio: '16:9', slotKey: 'slot3', label: '비주얼 슬롯 3 · 4단 신뢰 증거/성과 비주얼 (888×460px)' };
+}
+
+function getStockPool(slotKey) {
+  const pools = window.GOMAWARTALK_VISUAL_STOCK_POOLS || window.VisualStockPools || {};
+  const ind = (S && S.meta && S.meta.industry_code) || 'academy';
+  const p = pools[ind] || pools.academy || {};
+  return p[slotKey] || { prompt: '', stocks: [] };
+}
+
+function getDefaultSlotPrompt(stepOrThumb) {
+  const dim = getSlotDimensions(stepOrThumb);
+  const pool = getStockPool(dim.slotKey);
+  const Eng = window.RagInterviewEngine;
+  if (stepOrThumb === 'thumb' || stepOrThumb === 0) {
+    if (S.t1.imagePrompt) return S.t1.imagePrompt;
+    if (pool.prompt && S.meta.industry_code) return pool.prompt;
+    return Eng && Eng.buildEnglishImagePrompt
+      ? Eng.buildEnglishImagePrompt({ customInstruction: S.t1.headline + ' ' + S.t1.subtext, channelName: S.partner.channel_name, slotRole: 'thumb' })
+      : pool.prompt;
+  }
+  const b = S.t2.blocks[Number(stepOrThumb) - 1] || {};
+  if (b.imagePrompt) return b.imagePrompt;
+  if (pool.prompt && S.meta.industry_code) return pool.prompt;
+  return Eng && Eng.buildEnglishImagePrompt
+    ? Eng.buildEnglishImagePrompt({ customInstruction: (b.title || '') + ' ' + (b.subtitle || b.stat_highlight || ''), channelName: S.partner.channel_name, slotRole: dim.slotKey })
+    : pool.prompt;
+}
+
+function getSlotVisualSrc(stepOrThumb) {
+  const isThumb = (stepOrThumb === 'thumb' || stepOrThumb === 0);
+  const targetObj = isThumb ? S.t1 : (S.t2.blocks[Number(stepOrThumb) - 1] || {});
+  if (targetObj.visual_image) return targetObj.visual_image;
+
+  const dim = getSlotDimensions(stepOrThumb);
+  const idx = Number(targetObj.stock_index || 0);
+  const ind = (S && S.meta && S.meta.industry_code) || 'academy';
+  const cacheKey = ind + '_' + dim.slotKey + '_' + idx;
+
+  if (!STOCK_DATAURL_CACHE[cacheKey]) {
+    // 0ms 즉시 CORS 안전 고해상도 캔버스 비주얼 시드
+    const IC = window.ImageCapturer;
+    STOCK_DATAURL_CACHE[cacheKey] = (IC && IC.generateCommercialVisualDataUrl)
+      ? IC.generateCommercialVisualDataUrl({ width: dim.w, height: dim.h, primary: (S && S.brand && S.brand.primary) || '#4F46E5', variant: idx + (isThumb ? 0 : Number(stepOrThumb)) })
+      : '';
+
+    // 비동기 fetch -> Blob -> FileReader(DataURL)로 실제 추천 스톡 사진 로드 후 DataURL 캐시 갱신
+    const pool = getStockPool(dim.slotKey);
+    const stocks = pool.stocks || [];
+    const stockUrl = stocks.length ? stocks[idx % stocks.length] : '';
+    if (stockUrl && IC && IC.urlToSafeDataUrl) {
+      IC.urlToSafeDataUrl(stockUrl, { width: dim.w, height: dim.h, primary: (S && S.brand && S.brand.primary) || '#4F46E5', variant: idx })
+        .then(safeUrl => {
+          STOCK_DATAURL_CACHE[cacheKey] = safeUrl;
+          const domImg = isThumb ? $('#t-visual-img') : $('#lc img[data-slot-img="' + stepOrThumb + '"]');
+          const curObj = isThumb ? S.t1 : (S.t2.blocks[Number(stepOrThumb) - 1] || {});
+          if (domImg && !curObj.visual_image && Number(curObj.stock_index || 0) === idx) {
+            domImg.src = safeUrl;
+          }
+        });
+    }
+  }
+  return STOCK_DATAURL_CACHE[cacheKey];
+}
+
 function renderT1() {
   setText($('#t-badge'), S.t1.badge); setText($('#t-head'), S.t1.headline); setText($('#t-sub'), S.t1.subtext);
   setText($('#f-title'), S.t1.title); setText($('#f-desc'), S.t1.desc); setText($('#f-apply'), S.t1.apply); setText($('#f-cancel'), S.t1.cancel);
   const th = $('#thumb');
   if (S.t1.bg_image) { th.style.backgroundImage = 'url(' + S.t1.bg_image + ')'; th.classList.add('has-img'); } else { th.style.backgroundImage = ''; th.classList.remove('has-img'); }
+  const vw = $('#t-visual-wrap'), vi = $('#t-visual-img');
+  if (vw && vi) {
+    if (S.t1.show_visual !== false) {
+      vw.hidden = false;
+      vi.src = getSlotVisualSrc('thumb');
+    } else {
+      vw.hidden = true;
+    }
+  }
   $('input[name=formmode][value=' + (S.t1.form_only_mode ? 'formonly' : 'normal') + ']').checked = true;
   updateTitleCounter();
 }
@@ -1436,6 +1620,25 @@ function blockTools(b, extra) {
   return '<div class="block-tools" data-html2canvas-ignore="true">' +
     '<label class="bt" title="사진 교체 (장당 150KB 이하로 자동 압축)">📷 사진 교체<input type="file" accept="image/*" hidden data-act="block-img" data-step="' + b.step + '"></label>' +
     (b.image ? '<button class="bt" data-act="block-img-clear" data-step="' + b.step + '">🗑 사진 제거</button>' : '') + (extra || '') + '</div>';
+}
+function visualSlotHTML(b) {
+  const isH460 = b.step === 4;
+  const h = isH460 ? 460 : 500;
+  if (b.show_visual === false) {
+    return '<div class="vslot-hidden-bar" data-html2canvas-ignore="true">' +
+      '<button type="button" class="vbtn" data-act="vslot-toggle" data-step="' + b.step + '">👁️ 비주얼 이미지 슬롯 다시 보이기</button>' +
+    '</div>';
+  }
+  const src = getSlotVisualSrc(b.step);
+  return '<div class="lb-visual-slot' + (isH460 ? ' slot-h460' : '') + '" data-vslot="' + b.step + '">' +
+    '<img class="lb-visual-img" data-slot-img="' + b.step + '" data-w="888" data-h="' + h + '" crossorigin="anonymous" src="' + esc(src) + '" alt="">' +
+    '<div class="vslot-bar" data-html2canvas-ignore="true">' +
+      '<button type="button" class="vbtn pri" data-act="vslot-ai" data-step="' + b.step + '">🎨 AI 이미지 생성</button>' +
+      '<label class="vbtn">📁 내 사진 업로드<input type="file" accept="image/*" hidden data-act="vslot-upload" data-step="' + b.step + '"></label>' +
+      '<button type="button" class="vbtn" data-act="vslot-stock" data-step="' + b.step + '">🔄 추천 스톡 교체</button>' +
+      '<button type="button" class="vbtn" data-act="vslot-toggle" data-step="' + b.step + '">🙈 숨기기</button>' +
+    '</div>' +
+  '</div>';
 }
 function painListHTML(items) {
   return '<ul class="lb-list">' + items.map(t => '<li><span class="pain-icon">✔</span><span class="li-text" contenteditable="true">' + esc(t) + '</span><button class="li-del" data-act="item-del" data-html2canvas-ignore="true" title="이 항목 삭제">×</button></li>').join('') + '</ul>';
@@ -1454,6 +1657,7 @@ function blockHTML(b) {
       E('title', b.title, 'lb-title') +
       '<div class="hero-accent-line"></div>' +
       E('subtitle', b.subtitle, 'lb-sub') +
+      visualSlotHTML(b) +
       '<div class="hero-spec-bar">' +
         '<div class="hero-spec-item"><span class="hero-check-icon">✔</span>' + E('spec_1', b.spec_1 || '실전 압축 핵심 가이드 제공', 'hero-spec-v', true) + '</div>' +
         '<div class="hero-spec-item"><span class="hero-check-icon">✔</span>' + E('spec_2', b.spec_2 || '카카오톡 1초 신청 · 즉시 발송', 'hero-spec-v', true) + '</div>' +
@@ -1476,6 +1680,7 @@ function blockHTML(b) {
     return wrap('solution',
       '<div class="sec-badge sol-badge">맞춤 해결 솔루션</div>' +
       E('title', b.title, 'lb-title') +
+      visualSlotHTML(b) +
       solListHTML(b.points),
       blockTools(b, add)
     );
@@ -1484,6 +1689,7 @@ function blockHTML(b) {
     return wrap('trust',
       '<div class="sec-badge trust-badge">검증된 핵심 성과</div>' +
       E('title', b.title, 'lb-title') +
+      visualSlotHTML(b) +
       '<div class="stat-card-wrap">' +
         E('stat_highlight', b.stat_highlight, 'lb-stat') +
       '</div>' +
@@ -1510,6 +1716,17 @@ function blockHTML(b) {
     blockTools(b)
   );
 }
+function updateVisualToggleButtons() {
+  [1, 3, 4].forEach(st => {
+    const btn = $('#vtog-' + st);
+    const b = S.t2.blocks[st - 1];
+    if (!btn || !b) return;
+    const on = b.show_visual !== false;
+    btn.classList.toggle('on', on);
+    const name = st === 1 ? '슬롯 1 (1단 Hero 하단 888×500)' : st === 3 ? '슬롯 2 (3단 해결책 상단 888×500)' : '슬롯 3 (4단 신뢰증거 상단 888×460)';
+    btn.textContent = (on ? '👁️ ' : '🙈 ') + name + ': ' + (on ? '보이기' : '숨김');
+  });
+}
 function renderT2() {
   $('#lc').innerHTML = S.t2.blocks.map(blockHTML).join('');
   S.t2.blocks.forEach(b => { if (b.image) $('#lc .lb[data-block-step="' + b.step + '"]').style.backgroundImage = 'url(' + b.image + ')'; });
@@ -1517,6 +1734,7 @@ function renderT2() {
   $('input[name=outmode][value=' + S.t2.output_mode + ']').checked = true;
   $('#use-shorts').checked = S.t2.use_shorts; $('#shorts-url').value = S.t2.shorts_url;
   $('#bg-color').value = isHex(S.t2.bg_color) ? S.t2.bg_color : '#F8FAFC'; $('#bg-hex').value = S.t2.bg_color;
+  updateVisualToggleButtons();
   renderBranch(); applyZoom();
 }
 function renderBranch() {
@@ -2127,6 +2345,152 @@ async function compressFile(file) {
 function getMsgList(sc) { return sc === 't4' ? S.t4.sequence : S.t5.items; }
 function rerenderScope(sc) { if (sc === 't4') renderT4(); else renderT5(); }
 
+/* ═══════════════ 3-Way 비주얼 슬롯 액션 & AI 이미지 생성 스튜디오 ═══════════════ */
+function toggleSlotVisual(stepRaw) {
+  syncFromDom();
+  if (stepRaw === 'thumb') {
+    S.t1.show_visual = S.t1.show_visual === false;
+    renderT1();
+    toast(S.t1.show_visual ? '👁️ 썸네일 비주얼 카드를 표시합니다.' : '🙈 썸네일 비주얼 카드를 숨겼습니다.', { type: 'ok' });
+    return;
+  }
+  const st = Number(stepRaw);
+  const b = S.t2.blocks[st - 1];
+  if (!b) return;
+  b.show_visual = b.show_visual === false;
+  renderT2();
+  toast(b.show_visual ? '👁️ 비주얼 슬롯을 표시합니다.' : '🙈 비주얼 슬롯을 숨겼습니다.', { type: 'ok' });
+}
+
+function cycleSlotStock(stepRaw, silent) {
+  syncFromDom();
+  const isThumb = stepRaw === 'thumb';
+  const obj = isThumb ? S.t1 : S.t2.blocks[Number(stepRaw) - 1];
+  if (!obj) return;
+  obj.show_visual = true;
+  obj.visual_image = null;
+  obj.stock_index = ((Number(obj.stock_index) || 0) + 1) % 3;
+  if (isThumb) renderT1(); else renderT2();
+  if (!silent) toast('🔄 추천 스톡 사진 #' + (obj.stock_index + 1) + '(으)로 교체했습니다. (CORS 안전 DataURL 자동 변환)', { type: 'ok' });
+}
+
+function openAiImgModal(stepRaw) {
+  syncFromDom();
+  activeAiImgSlot = stepRaw === 'thumb' ? 'thumb' : Number(stepRaw);
+  const dim = getSlotDimensions(activeAiImgSlot);
+  $('#ai-img-slot-badge').textContent = dim.label;
+  $('#ai-img-kor').value = '';
+  $('#ai-img-prompt').value = getDefaultSlotPrompt(activeAiImgSlot);
+  $('#ai-img-status').textContent = '';
+  $('#ai-img-modal').hidden = false;
+}
+
+async function translateAiImgPrompt() {
+  const kor = $('#ai-img-kor').value.trim();
+  if (!kor) { toast('한글 장면 지시어를 먼저 입력해 주세요.', { type: 'warn' }); return; }
+  const Eng = window.RagInterviewEngine;
+  const cfg = Eng && Eng.getConfig ? Eng.getConfig() : {};
+  const dim = getSlotDimensions(activeAiImgSlot || 1);
+  $('#ai-img-status').textContent = '✨ 한글 지시어를 최적 영문 이미지 프롬프트로 변환 중…';
+
+  if (cfg.hasDirectKey && Eng && Eng.callGemini) {
+    try {
+      const eng = await Eng.callGemini({
+        temperature: 0.3,
+        maxOutputTokens: 280,
+        systemInstruction: 'You are an expert commercial photography prompt engineer for Imagen 3. Translate the Korean visual instruction into one vivid, detailed English photography prompt (max 50 words). Output ONLY the English prompt sentence without quotes.',
+        userText: kor
+      });
+      $('#ai-img-prompt').value = Eng.ensureImagePromptSuffix(eng);
+      $('#ai-img-status').textContent = '✅ Gemini가 한글 지시어를 영문 프롬프트로 변환했습니다.';
+      return;
+    } catch (e) {}
+  }
+  const built = Eng && Eng.buildEnglishImagePrompt
+    ? Eng.buildEnglishImagePrompt({ customInstruction: kor, channelName: S.partner.channel_name, slotRole: dim.slotKey })
+    : kor + ', clean commercial photography, no text, no letters, no watermark, high resolution';
+  $('#ai-img-prompt').value = built;
+  $('#ai-img-status').textContent = '✅ 영문 이미지 프롬프트가 반영되었습니다.';
+}
+
+async function generateSlotAiImage(targetSlot, customPrompt, isBatch) {
+  const slot = targetSlot !== undefined ? targetSlot : activeAiImgSlot;
+  if (!slot) return;
+  const isThumb = slot === 'thumb';
+  const obj = isThumb ? S.t1 : S.t2.blocks[Number(slot) - 1];
+  if (!obj) return;
+  const dim = getSlotDimensions(slot);
+  const Eng = window.RagInterviewEngine;
+  const IC = window.ImageCapturer;
+  const promptText = String(customPrompt !== undefined ? customPrompt : ($('#ai-img-prompt').value || $('#ai-img-kor').value || getDefaultSlotPrompt(slot))).trim();
+
+  if (!isBatch) {
+    $('#btn-ai-img-run').disabled = true;
+    $('#ai-img-status').textContent = '🎨 Gemini / Imagen 3 엔진으로 고해상도 비주얼 이미지를 생성하고 있습니다…';
+  }
+
+  try {
+    const res = await Eng.generateImage(promptText, {
+      width: dim.w,
+      height: dim.h,
+      aspectRatio: '16:9',
+      slotRole: dim.slotKey
+    });
+    obj.show_visual = true;
+    obj.imagePrompt = res.prompt || promptText;
+    obj.visual_image = res.dataUrl;
+    if (isThumb) renderT1(); else renderT2();
+    if (!isBatch) {
+      $('#ai-img-status').textContent = '✅ 생성 완료 (' + res.engine + ') — 슬롯에 즉시 적용되었습니다!';
+      $('#ai-img-modal').hidden = true;
+      toast('🎨 AI 비주얼 이미지가 생성되어 슬롯에 적용되었습니다!', { type: 'ok' });
+    }
+    return true;
+  } catch (err) {
+    // API 키 미설정 또는 엔드포인트 할당량 초과 시: 테마 맞춤 고해상도 스톡/캔버스 비주얼로 폴백하여 빈칸 방지
+    obj.show_visual = true;
+    obj.imagePrompt = Eng && Eng.ensureImagePromptSuffix ? Eng.ensureImagePromptSuffix(promptText) : promptText;
+    const pool = getStockPool(dim.slotKey);
+    const nextIdx = ((Number(obj.stock_index) || 0) + 1) % Math.max(1, (pool.stocks || []).length);
+    obj.stock_index = nextIdx;
+    const stockUrl = (pool.stocks || [])[nextIdx];
+    if (IC && IC.urlToSafeDataUrl) {
+      obj.visual_image = await IC.urlToSafeDataUrl(stockUrl, { width: dim.w, height: dim.h, primary: S.brand.primary, variant: nextIdx + 1 });
+    }
+    if (isThumb) renderT1(); else renderT2();
+    if (!isBatch) {
+      const msg = err.message === 'NO_API_KEY'
+        ? '🔑 Gemini API 키 미연결 상태이므로 맞춤 고해상도 스튜디오 비주얼로 먼저 적용했습니다. (상단 [🔑 AI 엔진 설정]에서 키 연결 가능)'
+        : '⚠️ AI 이미지 API 안내(' + err.message + ') — 맞춤 고해상도 스튜디오 비주얼로 자동 대체 적용했습니다.';
+      $('#ai-img-status').textContent = msg;
+      $('#ai-img-modal').hidden = true;
+      toast(msg, { type: 'warn', ms: 5500 });
+    }
+    return false;
+  } finally {
+    if (!isBatch && $('#btn-ai-img-run')) $('#btn-ai-img-run').disabled = false;
+  }
+}
+
+async function runBatchVisualAi() {
+  syncFromDom();
+  const slots = [1, 3, 4];
+  toast('🎨 3대 핵심 비주얼 슬롯(1단 Hero · 3단 해결책 · 4단 신뢰증거) AI 일괄 생성을 시작합니다…', { type: 'ok', ms: 4000 });
+  let apiCount = 0;
+  for (let i = 0; i < slots.length; i++) {
+    const st = slots[i];
+    const prompt = getDefaultSlotPrompt(st);
+    const ok = await generateSlotAiImage(st, prompt, true);
+    if (ok) apiCount++;
+  }
+  renderT2();
+  if (apiCount > 0) {
+    toast('✨ 3대 비주얼 슬롯 AI 이미지 일괄 생성(' + apiCount + '/3장)이 완료되었습니다!', { type: 'ok', ms: 5500 });
+  } else {
+    toast('✨ 3대 비주얼 슬롯에 캠페인 맞춤 고해상도 비주얼 3장이 일괄 세팅되었습니다! (실제 AI 생성은 상단 [🔑 AI 엔진 설정]에서 API 키 연결 시 작동)', { type: 'ok', ms: 6000 });
+  }
+}
+
 /* ═══════════════ 이벤트 ═══════════════ */
 function bind() {
   document.addEventListener('click', async e => {
@@ -2254,6 +2618,22 @@ function bind() {
           $('#ai-cfg-modal').hidden = true;
           updateAiKeyBadge();
           return toast('🔑 AI 엔진 설정이 저장되었습니다. (인터뷰 봇과 자동 공유)', { type: 'ok' });
+        }
+        case 'vslot-toggle': return toggleSlotVisual(a.dataset.step);
+        case 'vslot-stock': return cycleSlotStock(a.dataset.step);
+        case 'vslot-stock-all': {
+          [1, 3, 4].forEach(st => cycleSlotStock(st, true));
+          return toast('🔄 3대 비주얼 슬롯(1단·3단·4단)을 모두 다음 추천 스톡 사진으로 교체했습니다!', { type: 'ok' });
+        }
+        case 'vslot-ai': return openAiImgModal(a.dataset.step);
+        case 'vslot-ai-all': return await runBatchVisualAi();
+        case 'ai-img-close': $('#ai-img-modal').hidden = true; return;
+        case 'ai-img-translate': return await translateAiImgPrompt();
+        case 'ai-img-generate': return await generateSlotAiImage();
+        case 'ai-img-stock': {
+          if (activeAiImgSlot) cycleSlotStock(activeAiImgSlot);
+          $('#ai-img-modal').hidden = true;
+          return;
         }
       }
     } catch (err) { console.error(err); toast('❌ ' + err.message, { type: 'err', ms: 6000 }); }
@@ -2384,6 +2764,22 @@ function bind() {
         const url = await compressFile(f);
         if (t.id === 'thumb-bg-file') { S.t1.bg_image = url; renderT1(); }
         else if (t.id === 'logo-file') { S.brand.logo = url; renderBrand(); }
+        else if (t.dataset.act === 'vslot-upload') {
+          syncFromDom();
+          const st = t.dataset.step;
+          const dim = getSlotDimensions(st);
+          const IC = window.ImageCapturer;
+          const cropped = (IC && IC.normalizeToCoverDataUrl) ? await IC.normalizeToCoverDataUrl(url, dim.w, dim.h, 0.85) : url;
+          if (st === 'thumb') {
+            S.t1.show_visual = true;
+            S.t1.visual_image = cropped;
+            renderT1();
+          } else {
+            const b = S.t2.blocks[+st - 1];
+            if (b) { b.show_visual = true; b.visual_image = cropped; renderT2(); }
+          }
+          toast('📁 내 사진이 슬롯 비율(' + dim.w + '×' + dim.h + 'px)에 맞춰 선명하게 삽입되었습니다!', { type: 'ok' });
+        }
         else if (t.dataset.act === 'block-img') { syncLandingFromDom(); S.t2.blocks[+t.dataset.step - 1].image = url; renderT2(); }
         else if (t.dataset.act === 'ft-img') { getMsgList(sc)[mi].branches[bi].image_base64 = url; rerenderScope(sc); }
         else if (t.dataset.act === 'car-img') { getMsgList(sc)[mi].branches[bi].cards_800x600[+t.dataset.ci].image = url; rerenderScope(sc); }
@@ -2479,7 +2875,7 @@ function init() {
 
   window.LB = { state: () => { syncFromDom(); return S; }, toCampaignMaster, fixUrlSpacing, fixSheetVars, findBannedWords, loadPreset,
                 openState: d => { S = stateFromData(d, null); renderAll(); },
-                doThumbPng, doLandingPng, doFriendtalkJpg, doCarouselPng, doZip, switchTab, switchMenu, setWebzine, setZoom, runPinpointAi, withCapture, compressFile, updateAiKeyBadge };
+                doThumbPng, doLandingPng, doFriendtalkJpg, doCarouselPng, doZip, switchTab, switchMenu, setWebzine, setZoom, runPinpointAi, toggleSlotVisual, cycleSlotStock, openAiImgModal, generateSlotAiImage, runBatchVisualAi, withCapture, compressFile, updateAiKeyBadge };
   console.log('✅ 고마워톡 조종석 초기화 완료');
   if (/[?&]selftest\b/.test(location.search)) { const s = document.createElement('script'); s.src = 'tests/phase1_selftest.js'; document.body.appendChild(s); }
 }

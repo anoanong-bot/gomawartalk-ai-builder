@@ -64,7 +64,25 @@
       }));
       return true;
     } catch (e) {
-      return false;
+      // QuotaExceededError 방어: 대용량 base64 이미지만 경량화하여 재저장
+      try {
+        var slim = JSON.parse(JSON.stringify(sanitizeObject(campaignObj)));
+        if (slim && slim.brand_assets && slim.brand_assets.block_images_base64) {
+          slim.brand_assets.block_images_base64 = {};
+        }
+        if (slim && slim.tab2_landing_content && Array.isArray(slim.tab2_landing_content.blocks_1000px)) {
+          slim.tab2_landing_content.blocks_1000px.forEach(function (b) {
+            if (b.visual_image && b.visual_image.length > 180000) b.visual_image = null;
+          });
+        }
+        localStorage.setItem(STORAGE_KEYS.BRIDGE_CAMPAIGN, JSON.stringify({
+          savedAt: new Date().toISOString(),
+          campaign: slim
+        }));
+        return true;
+      } catch (e2) {
+        return false;
+      }
     }
   }
 
@@ -242,6 +260,205 @@
   }
 
   // ─────────────────────────────────────────────────────────────
+  // 4-B. AI 비주얼 이미지 생성 엔진 (Imagen 3 + Gemini Multimodal Image 자동 폴백)
+  // ─────────────────────────────────────────────────────────────
+  var IMAGE_PROMPT_SUFFIX = 'clean commercial photography, no text, no letters, no watermark, high resolution';
+
+  function ensureImagePromptSuffix(p) {
+    var base = String(p || '').trim().replace(/[,.\s]+$/, '');
+    if (!base) base = 'Modern professional studio scene, warm natural lighting, premium commercial aesthetic';
+    if (base.toLowerCase().indexOf('no text') === -1) {
+      base += ', ' + IMAGE_PROMPT_SUFFIX;
+    }
+    return base;
+  }
+
+  // 캠페인 컨텍스트 또는 한글 지시문으로부터 최적의 영문 이미지 프롬프트 자동 구성
+  function buildEnglishImagePrompt(ctx) {
+    ctx = ctx || {};
+    var raw = String(ctx.customInstruction || ctx.copyText || '').trim();
+    var slotRole = String(ctx.slotRole || 'hero');
+    var hay = (raw + ' ' + (ctx.channelName || '') + ' ' + (ctx.title || '')).toLowerCase();
+
+    var subject = 'Modern professional Korean lifestyle and business studio photography, bright welcoming atmosphere';
+    if (/k-pop|kpop|한국어|외국인|가사|korean/i.test(hay)) {
+      subject = 'Diverse young international students smiling together in a bright modern studio while listening to K-pop music with headphones and holding a sleek study workbook';
+    } else if (/수학|학원|오답노트|공부|성적|내신|입시|교육|학생/i.test(hay)) {
+      subject = 'Bright modern private academy classroom desk with a neatly organized study planner, tablet showing upward achievement graph, warm encouraging lighting';
+    } else if (/유튜브|지식창업|웨비나|강의|크리에이터|코칭/i.test(hay)) {
+      subject = 'Confident content creator and online instructor in a sleek home studio with laptop, condenser microphone, and soft key lighting';
+    } else if (/세무|절세|법인|세법|회계|노무|법무|컨설팅/i.test(hay)) {
+      subject = 'Professional financial consultant in a modern executive office with a tablet showing clean financial growth charts and warm sunlight';
+    } else if (/병원|건강검진|클리닉|의원|치과|한의원|진료/i.test(hay)) {
+      subject = 'Friendly doctor in a bright premium medical clinic consulting room with modern diagnostic tablet and reassuring warm atmosphere';
+    } else if (/카페|매장|식당|음료|쿠폰|멤버십|뷰티|네일|피트니스/i.test(hay)) {
+      subject = 'Cozy specialty coffee shop counter with artisan latte art, warm ambient pendant lights, and happy customer holding a smartphone';
+    } else if (/쇼핑몰|패션|신상|코디|옷장|라이프스타일|화보|커머스/i.test(hay)) {
+      subject = 'Minimalist luxury fashion showroom with curated seasonal outfits on a sleek rack, soft studio lighting, editorial lookbook aesthetic';
+    }
+
+    var roleDesc = '';
+    if (slotRole === 'thumb') {
+      roleDesc = '16:9 hero thumbnail key visual, strong focal point, vibrant contrast';
+    } else if (slotRole === 'slot1' || slotRole === 'hero') {
+      roleDesc = '16:9 wide hero banner photography, inspiring main subject, shallow depth of field';
+    } else if (slotRole === 'slot2' || slotRole === 'solution') {
+      roleDesc = 'Premium product and digital guidebook mockup presentation on a clean desk, tangible service value';
+    } else if (slotRole === 'slot3' || slotRole === 'trust') {
+      roleDesc = 'Authentic positive transformation and customer satisfaction scene, trustworthy professional environment';
+    }
+
+    // 사용자가 이미 영문 프롬프트를 입력한 경우 그대로 보존
+    if (raw && !/[\uAC00-\uD7A3]/.test(raw) && raw.length >= 15) {
+      return ensureImagePromptSuffix(raw);
+    }
+
+    return ensureImagePromptSuffix(subject + (roleDesc ? ', ' + roleDesc : ''));
+  }
+
+  function callImagen3Endpoint(apiKey, promptText, aspectRatio) {
+    var url = 'https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=' + encodeURIComponent(apiKey);
+    var body = {
+      instances: [{ prompt: promptText }],
+      parameters: {
+        sampleCount: 1,
+        aspectRatio: aspectRatio || '16:9',
+        personGeneration: 'ALLOW_ADULT'
+      }
+    };
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(function (res) {
+      return res.json().then(function (data) {
+        if (!res.ok || data.error) {
+          throw new Error((data && data.error && data.error.message) || ('Imagen 3 HTTP ' + res.status));
+        }
+        var pred = data.predictions && data.predictions[0];
+        var b64 = pred && (pred.bytesBase64Encoded || (pred.image && pred.image.bytesBase64Encoded));
+        if (!b64) throw new Error('Imagen 3 응답에 이미지 데이터가 없습니다.');
+        var mime = (pred && pred.mimeType) || 'image/png';
+        return 'data:' + mime + ';base64,' + b64;
+      });
+    });
+  }
+
+  function callGeminiImageModel(apiKey, modelName, promptText) {
+    var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(modelName) + ':generateContent?key=' + encodeURIComponent(apiKey);
+    var body = {
+      contents: [{
+        role: 'user',
+        parts: [{ text: 'Generate a single high-resolution commercial photograph matching this description: ' + promptText }]
+      }],
+      generationConfig: {
+        responseModalities: ['TEXT', 'IMAGE']
+      }
+    };
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(function (res) {
+      return res.json().then(function (data) {
+        if (!res.ok || data.error) {
+          throw new Error((data && data.error && data.error.message) || (modelName + ' HTTP ' + res.status));
+        }
+        var cand = data.candidates && data.candidates[0];
+        var parts = (cand && cand.content && cand.content.parts) || [];
+        for (var i = 0; i < parts.length; i++) {
+          var inl = parts[i].inlineData || parts[i].inline_data;
+          if (inl && inl.data) {
+            var mime = inl.mimeType || inl.mime_type || 'image/png';
+            return 'data:' + mime + ';base64,' + inl.data;
+          }
+        }
+        throw new Error(modelName + ' 응답에 inlineData 이미지가 없습니다.');
+      });
+    });
+  }
+
+  function generateImage(promptOrInstruction, opts) {
+    opts = opts || {};
+    var cfg = getConfig();
+    var apiKey = (opts.apiKey || cfg.apiKey || '').trim();
+    var proxyUrl = (opts.proxyUrl || cfg.proxyUrl || '').trim();
+    var targetW = opts.width || 888;
+    var targetH = opts.height || 500;
+    var aspectRatio = opts.aspectRatio || '16:9';
+
+    var rawInput = String(promptOrInstruction || '').trim();
+    var hasKorean = /[\uAC00-\uD7A3]/.test(rawInput);
+
+    // 1단계: 한글 지시어가 포함되어 있고 API 키가 있으면 영문 프롬프트로 먼저 정교하게 변환
+    var promptPromise;
+    if (hasKorean && apiKey) {
+      promptPromise = callGemini({
+        apiKey: apiKey,
+        temperature: 0.3,
+        maxOutputTokens: 300,
+        systemInstruction: 'You are an expert commercial photography prompt engineer for Imagen 3. Translate the Korean visual instruction into one vivid, detailed English photography prompt (max 55 words). Output ONLY the English prompt sentence without quotes.',
+        userText: rawInput
+      }).then(function (engText) {
+        return ensureImagePromptSuffix(engText);
+      }).catch(function () {
+        return buildEnglishImagePrompt({ customInstruction: rawInput, slotRole: opts.slotRole });
+      });
+    } else if (hasKorean) {
+      promptPromise = Promise.resolve(buildEnglishImagePrompt({ customInstruction: rawInput, slotRole: opts.slotRole }));
+    } else {
+      promptPromise = Promise.resolve(ensureImagePromptSuffix(rawInput));
+    }
+
+    function finalizeDataUrl(rawDataUrl, usedPrompt, engineUsed) {
+      if (global.ImageCapturer && typeof global.ImageCapturer.normalizeToCoverDataUrl === 'function') {
+        return global.ImageCapturer.normalizeToCoverDataUrl(rawDataUrl, targetW, targetH, 0.85)
+          .then(function (normUrl) {
+            return { dataUrl: normUrl, prompt: usedPrompt, engine: engineUsed };
+          })
+          .catch(function () {
+            return { dataUrl: rawDataUrl, prompt: usedPrompt, engine: engineUsed };
+          });
+      }
+      return Promise.resolve({ dataUrl: rawDataUrl, prompt: usedPrompt, engine: engineUsed });
+    }
+
+    return promptPromise.then(function (finalPrompt) {
+      if (apiKey) {
+        // 순차 폴백 체인: ① imagen-3.0-generate-002:predict -> ② gemini-2.0-flash-exp-image-generation -> ③ gemini-2.5-flash-image-preview -> ④ gemini-2.0-flash-preview-image-generation
+        return callImagen3Endpoint(apiKey, finalPrompt, aspectRatio)
+          .then(function (dUrl) { return finalizeDataUrl(dUrl, finalPrompt, 'imagen-3.0-generate-002'); })
+          .catch(function () {
+            return callGeminiImageModel(apiKey, 'gemini-2.0-flash-exp-image-generation', finalPrompt)
+              .then(function (dUrl) { return finalizeDataUrl(dUrl, finalPrompt, 'gemini-2.0-flash-exp-image-generation'); });
+          })
+          .catch(function () {
+            return callGeminiImageModel(apiKey, 'gemini-2.5-flash-image-preview', finalPrompt)
+              .then(function (dUrl) { return finalizeDataUrl(dUrl, finalPrompt, 'gemini-2.5-flash-image-preview'); });
+          })
+          .catch(function () {
+            return callGeminiImageModel(apiKey, 'gemini-2.0-flash-preview-image-generation', finalPrompt)
+              .then(function (dUrl) { return finalizeDataUrl(dUrl, finalPrompt, 'gemini-2.0-flash-preview-image-generation'); });
+          });
+      }
+      if (proxyUrl) {
+        return fetch(proxyUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'generate_image', prompt: finalPrompt, aspectRatio: aspectRatio })
+        }).then(function (res) {
+          if (!res.ok) throw new Error('프록시 이미지 생성 오류 HTTP ' + res.status);
+          return res.json();
+        }).then(function (data) {
+          if (!data || !data.dataUrl) throw new Error((data && data.error) || '프록시 이미지 응답 없음');
+          return finalizeDataUrl(data.dataUrl, finalPrompt, 'backend-proxy');
+        });
+      }
+      return Promise.reject(new Error('NO_API_KEY'));
+    });
+  }
+
+  // ─────────────────────────────────────────────────────────────
   // 5. 기존 RagInterviewEngine 클래스 (하위 호환 100% 유지)
   // ─────────────────────────────────────────────────────────────
   function RagInterviewEngine(options) {
@@ -386,6 +603,9 @@
   RagInterviewEngine.saveBridgeCampaign = saveBridgeCampaign;
   RagInterviewEngine.getBridgeCampaign = getBridgeCampaign;
   RagInterviewEngine.callGemini = callGemini;
+  RagInterviewEngine.generateImage = generateImage;
+  RagInterviewEngine.buildEnglishImagePrompt = buildEnglishImagePrompt;
+  RagInterviewEngine.ensureImagePromptSuffix = ensureImagePromptSuffix;
   RagInterviewEngine.extractJson = extractJson;
   RagInterviewEngine.sanitizeText = sanitizeText;
   RagInterviewEngine.sanitizeObject = sanitizeObject;

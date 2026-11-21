@@ -588,5 +588,243 @@ window.GOMAWARTALK_INDUSTRY_PRESETS = {
   },
 };
 
+// ═══════════════════════════════════════════════════════════════
+// 6대 주력 업종별 비주얼 슬롯(썸네일 + 탭2 슬롯 1·2·3) 엄선 무료 상업용 실사 스톡 풀 & 기본 AI 프롬프트
+// ═══════════════════════════════════════════════════════════════
+window.GOMAWARTALK_VISUAL_STOCK_POOLS = {
+  online_edu: {
+    thumb: {
+      prompt: "Confident online creator in a sleek studio with laptop and microphone, warm key lighting, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot1: {
+      prompt: "Confident online instructor recording a live webinar in a modern creative studio with laptop and lighting, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1590650153855-d9e808231d41?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot2: {
+      prompt: "Clean modern desk flatlay with digital tablet showing course roadmap and structured workbook notes, warm coffee cup, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot3: {
+      prompt: "Smiling creators and students celebrating online business revenue growth in a bright coworking lounge, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1000&q=85"
+      ]
+    }
+  },
+  academy: {
+    thumb: {
+      prompt: "Bright private academy study desk with organized math notebook and pen in warm sunlight, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot1: {
+      prompt: "Focused high school student studying math with a neat planner in a bright modern classroom, warm natural light, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot2: {
+      prompt: "Structured study curriculum binder, geometric compass, highlighter and tablet on a clean wooden desk, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot3: {
+      prompt: "Warm mentoring moment between a dedicated teacher and smiling student in a bright educational lounge, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1000&q=85"
+      ]
+    }
+  },
+  pro_ngo_church: {
+    thumb: {
+      prompt: "Professional tax and financial consultant in a modern executive office with tablet and financial graphs, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot1: {
+      prompt: "Professional tax advisor explaining business strategy to a client in a sunlit glass office, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot2: {
+      prompt: "Clean executive desk with calculator, fountain pen, laptop showing upward financial chart, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot3: {
+      prompt: "Trustworthy handshake between business partners in a modern conference room, warm lighting, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1600880292203-757bb62b4goal?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1000&q=85"
+      ]
+    }
+  },
+  medical: {
+    thumb: {
+      prompt: "Friendly doctor in a bright modern medical clinic room with stethoscope and digital tablet, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot1: {
+      prompt: "Warm and bright health checkup center reception and consultation room with caring physician, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot2: {
+      prompt: "Modern medical diagnostic equipment, stethoscope and wellness checkup folder on a spotless white table, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot3: {
+      prompt: "Reassured smiling family and patient having a friendly consultation with a medical specialist, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=1000&q=85"
+      ]
+    }
+  },
+  local_store: {
+    thumb: {
+      prompt: "Cozy specialty cafe counter with artisan latte art and fresh pastry under warm pendant lights, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot1: {
+      prompt: "Inviting neighborhood coffee shop interior with warm wooden table, artisan latte art and sunlight, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot2: {
+      prompt: "Freshly brewed coffee cup and croissant on a cafe table next to a smartphone, warm aesthetic, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot3: {
+      prompt: "Friendly barista smiling while handing a specialty coffee cup to a happy regular customer, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1000&q=85"
+      ]
+    }
+  },
+  commerce: {
+    thumb: {
+      prompt: "Minimalist luxury fashion boutique rack with curated seasonal outfits in soft natural light, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot1: {
+      prompt: "Modern fashion showroom with curated designer clothing on a sleek rack, editorial lookbook lighting, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot2: {
+      prompt: "Aesthetic fashion flatlay of coordinated seasonal outfit, knitwear, leather bag and accessories, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=85"
+      ]
+    },
+    slot3: {
+      prompt: "Happy stylish customer smiling with shopping bags in a bright contemporary lifestyle boutique, clean commercial photography, no text, no letters, no watermark, high resolution",
+      stocks: [
+        "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1000&q=85",
+        "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=1000&q=85"
+      ]
+    }
+  }
+};
+
+// 각 프리셋 객체에 imagePrompt 및 기본 추천 스톡 URL 자동 주입
+Object.keys(window.GOMAWARTALK_INDUSTRY_PRESETS).forEach(function (code) {
+  var p = window.GOMAWARTALK_INDUSTRY_PRESETS[code];
+  var pool = window.GOMAWARTALK_VISUAL_STOCK_POOLS[code] || window.GOMAWARTALK_VISUAL_STOCK_POOLS.academy;
+  if (p.tab1_basic_settings && p.tab1_basic_settings.thumbnail_500x280) {
+    p.tab1_basic_settings.thumbnail_500x280.imagePrompt = pool.thumb.prompt;
+    p.tab1_basic_settings.thumbnail_500x280.defaultStockUrl = pool.thumb.stocks[0];
+  }
+  if (Array.isArray(p.tab2_landing_blocks)) {
+    p.tab2_landing_blocks.forEach(function (b) {
+      if (b.step === 1) {
+        b.show_visual = true;
+        b.imagePrompt = pool.slot1.prompt;
+        b.defaultStockUrl = pool.slot1.stocks[0];
+      } else if (b.step === 3) {
+        b.show_visual = true;
+        b.imagePrompt = pool.slot2.prompt;
+        b.defaultStockUrl = pool.slot2.stocks[0];
+      } else if (b.step === 4) {
+        b.show_visual = true;
+        b.imagePrompt = pool.slot3.prompt;
+        b.defaultStockUrl = pool.slot3.stocks[0];
+      }
+    });
+  }
+});
+
 // 짧은 별칭 (일반 <script src> 로드 호환)
 window.IndustryPresets = window.GOMAWARTALK_INDUSTRY_PRESETS;
+window.VisualStockPools = window.GOMAWARTALK_VISUAL_STOCK_POOLS;

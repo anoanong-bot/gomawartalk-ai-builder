@@ -379,26 +379,26 @@ body.capturing .li-text:hover,body.capturing .li-text:focus{background:none;box-
 .kakao-btn.yt{background:#FEF2F2;border-color:#FECACA;color:#B91C1C}
 .kakao-btn.cp{background:#FFFBEB;border-color:#FDE68A;color:#92400E}
 
-/* 친구톡 800x400 / 800x533 배너 캔버스 */
-.ft-frame{width:100%;max-width:440px;border-radius:10px;overflow:hidden;border:1px solid var(--g200);box-shadow:0 6px 18px -6px rgba(15,23,42,.2)}
-.ft-canvas{width:800px;height:400px;transform-origin:0 0;position:relative;background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dk) 65%,var(--brand-dkr) 100%);background-size:cover;background-position:center;color:#fff;padding:42px 48px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+/* 친구톡 800x400 / 800x533 배너 캔버스 (모바일 고가독성 대형 웹폰트 + 다크/브랜드 프리미엄 그라데이션) */
+.ft-frame{width:100%;max-width:440px;border-radius:12px;overflow:hidden;border:1px solid var(--g200);box-shadow:0 10px 24px -8px rgba(15,23,42,.25)}
+.ft-canvas{width:800px;height:400px;transform-origin:0 0;position:relative;font-family:var(--font-body);word-break:keep-all;letter-spacing:-0.03em;background-color:#0B0F19;background-image:radial-gradient(circle at 86% 18%,var(--brand) 0%,transparent 52%),linear-gradient(135deg,#0B0F19 0%,var(--brand-dkr) 55%,var(--brand-dk) 100%);background-size:cover;background-position:center;color:#fff;padding:44px 52px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 .ft-canvas.r15{height:533px}
-.ft-canvas.has-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.42),rgba(15,23,42,.72))}
+.ft-canvas.has-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,13,22,.46),rgba(9,13,22,.78))}
 .ft-canvas>*{position:relative}
-.ft-badge{display:inline-block;align-self:flex-start;background:#FEE500;color:#191919;font-size:18px;font-weight:900;padding:7px 18px;border-radius:99px;margin-bottom:18px}
-.ft-head{font-size:38px;font-weight:900;line-height:1.3;letter-spacing:-.8px}
-.ft-sub{margin-top:14px;font-size:20px;opacity:.92;font-weight:600}
+.ft-badge{display:inline-block;align-self:flex-start;background:#FEE500;color:#111827;font-family:var(--font-body);font-size:21px;font-weight:900;padding:8px 20px;border-radius:99px;margin-bottom:20px;letter-spacing:-0.03em;box-shadow:0 6px 16px rgba(0,0,0,.22)}
+.ft-head{font-family:var(--font-head);font-size:44px;font-weight:800;line-height:1.3;letter-spacing:-0.03em;color:#FFFFFF;text-shadow:0 4px 16px rgba(0,0,0,.32)}
+.ft-sub{margin-top:16px;font-family:var(--font-body);font-size:23px;color:rgba(255,255,255,.92);font-weight:700;letter-spacing:-0.03em}
 
-/* 캐러셀 800x600 카드 캔버스 */
+/* 캐러셀 800x600 카드 캔버스 (모바일 고가독성 대형 웹폰트) */
 .car-wrap{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px}
 .car-item{flex:0 0 320px;border:1px solid var(--g200);border-radius:12px;background:#fff;overflow:hidden;box-shadow:var(--shadow-sm)}
 .car-stage{width:320px;height:240px;overflow:hidden;position:relative}
-.car-canvas{width:800px;height:600px;transform:scale(.4);transform-origin:0 0;position:relative;background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dk) 100%);background-size:cover;background-position:center;color:#fff;padding:54px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
-.car-canvas.has-img::before{content:'';position:absolute;inset:0;background:rgba(15,23,42,.52)}
+.car-canvas{width:800px;height:600px;transform:scale(.4);transform-origin:0 0;position:relative;font-family:var(--font-body);word-break:keep-all;letter-spacing:-0.03em;background-color:#0B0F19;background-image:radial-gradient(circle at 86% 18%,var(--brand) 0%,transparent 52%),linear-gradient(140deg,#0B0F19 0%,var(--brand-dkr) 55%,var(--brand-dk) 100%);background-size:cover;background-position:center;color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.car-canvas.has-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,13,22,.48),rgba(9,13,22,.8))}
 .car-canvas>*{position:relative}
-.car-num{display:inline-block;align-self:flex-start;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);padding:8px 18px;border-radius:99px;font-size:20px;font-weight:800}
-.car-title{font-size:44px;font-weight:900;line-height:1.3;letter-spacing:-.8px}
-.car-desc{font-size:24px;opacity:.92;line-height:1.5}
+.car-num{display:inline-block;align-self:flex-start;background:rgba(253,224,71,.18);border:1.5px solid rgba(253,224,71,.55);color:#FDE047;padding:9px 22px;border-radius:99px;font-size:22px;font-weight:900;letter-spacing:.5px}
+.car-title{font-family:var(--font-head);font-size:48px;font-weight:800;line-height:1.3;letter-spacing:-0.03em;color:#FFFFFF}
+.car-desc{font-family:var(--font-body);font-size:27px;color:rgba(255,255,255,.93);line-height:1.52;font-weight:600;letter-spacing:-0.03em}
 .car-form{padding:12px;display:flex;flex-direction:column;gap:8px}
 
 /* Pro 에디터 복사용 명세 카드 */
@@ -636,8 +636,13 @@ body:not(.wz-on) .wz-only{display:none}
         <div class="row" style="flex-wrap:wrap">
           <button class="act pri" data-act="landing-png">📸 선택한 방식으로 PNG 다운로드</button>
           <span class="hint" style="margin-left:8px">보기 배율</span>
-          <div class="seg" id="zoom-seg"><label><input type="radio" name="zoom" value="0.5">50%</label><label><input type="radio" name="zoom" value="0.75" checked>75%</label><label><input type="radio" name="zoom" value="1">100%</label></div>
-          <span class="hint">(배율은 화면 표시용 — 다운로드는 항상 1000px×scale 2 고화질 + 웹폰트 100% 보존)</span>
+          <div class="seg" id="zoom-seg">
+            <label title="모바일 375px 실물 폭으로 가독성 확인 (캡처 시에는 자동으로 1,000px 원본 폭으로 복원됩니다)"><input type="radio" name="zoom" value="0.375">📱 모바일 실물(375px)</label>
+            <label><input type="radio" name="zoom" value="0.5">50%</label>
+            <label><input type="radio" name="zoom" value="0.75" checked>75%</label>
+            <label><input type="radio" name="zoom" value="1">100%</label>
+          </div>
+          <span class="hint">(모바일 375px 상태에서도 다운로드 시 자동으로 1,000px×scale 2 원본 해상도로 선명하게 출력됩니다)</span>
         </div>
       </div>
     </div>
@@ -836,12 +841,14 @@ function toast(msg, opt) {
 }
 
 async function copyText(text, btn) {
-  try { await navigator.clipboard.writeText(text); }
+  const clean = String(text == null ? '' : text).replace(/\u00a0/g, ' ').replace(/\r\n/g, '\n').trim();
+  try { await navigator.clipboard.writeText(clean); }
   catch (e) {
-    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+    const ta = document.createElement('textarea'); ta.value = clean; ta.style.cssText = 'position:fixed;opacity:0';
     document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
   }
   if (btn) { const o = btn.textContent; btn.textContent = '✅ 복사됨'; btn.classList.add('done'); setTimeout(() => { btn.textContent = o; btn.classList.remove('done'); }, 1300); }
+  toast('📋 클립보드에 순수 텍스트가 복사되었습니다.', { type: 'ok', ms: 2200 });
 }
 
 function hexToRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
@@ -969,11 +976,26 @@ function getTab3Refs() {
 /* ═══════════════ 기본 데이터 팩토리 ═══════════════ */
 function blankBlocks() {
   return [
-    { step: 1, type: 'HERO', tag: '', title: '', subtitle: '', image: null },
-    { step: 2, type: 'PAIN_POINT', title: '', items: [''], image: null },
+    {
+      step: 1, type: 'HERO', tag: '', title: '', subtitle: '', image: null,
+      spec_1: '실전 압축 핵심 가이드 제공', spec_2: '카카오톡 1초 신청 · 즉시 발송', spec_3: '유형별 1:1 맞춤 처방 연동'
+    },
+    {
+      step: 2, type: 'PAIN_POINT', title: '', items: [''], image: null,
+      lead: '하나라도 해당된다면 지금 아래의 맞춤 해결책을 반드시 확인해 보세요.',
+      bottom_quote: '혼자 고민하지 마세요. 검증된 실전 공식으로 가장 빠르게 해결해 드립니다.'
+    },
     { step: 3, type: 'SOLUTION', title: '', points: [''], image: null },
-    { step: 4, type: 'TRUST_PROOF', title: '', stat_highlight: '', image: null },
-    { step: 5, type: 'BOTTOM_CUE', notice: '', arrow_text: '', image: null }
+    {
+      step: 4, type: 'TRUST_PROOF', title: '', stat_highlight: '', image: null,
+      rec1_title: '이런 분께 강력 추천합니다', rec1_body: '시행착오 없이 검증된 핵심 노하우와 맞춤 가이드를 한 번에 받아보고 싶은 분',
+      rec2_title: '신청 즉시 얻게 되는 확실한 변화', rec2_body: '1편 핵심 요약 즉시 열람 및 채널 친구 전용 후속 심화 칼럼·혜택 순차 수신'
+    },
+    {
+      step: 5, type: 'BOTTOM_CUE', notice: '', arrow_text: '', image: null,
+      sum_method: '카카오 원클릭 로그인 (10초 간편 접수)', sum_benefit: '신청자 전원 핵심 자료집 & 맞춤 가이드 발송',
+      sum_timing: '신청 완료 즉시 카카오톡 알림톡 100% 발송', sum_notice: '상단 노란색 [채널 추가] 클릭 시 후속 혜택 수신'
+    }
   ];
 }
 function newOption(text) { return { text: text || '', tag: '', sheet_field: '', sheet_type: 'STRING', sheet_op: 'ATTACH', sheet_value: '' }; }
@@ -1043,11 +1065,25 @@ function normalizeBlocks(arr) {
   const base = blankBlocks();
   (arr || []).forEach((b, i) => {
     const step = Number(b.step) || i + 1, t = base[step - 1]; if (!t) return;
-    if (step === 1) { t.tag = b.tag || ''; t.title = b.title || ''; t.subtitle = b.subtitle || ''; }
-    if (step === 2) { t.title = b.title || ''; t.items = (b.items && b.items.length ? b.items : ['']).slice(); }
+    if (step === 1) {
+      t.tag = b.tag || ''; t.title = b.title || ''; t.subtitle = b.subtitle || '';
+      if (b.spec_1) t.spec_1 = b.spec_1; if (b.spec_2) t.spec_2 = b.spec_2; if (b.spec_3) t.spec_3 = b.spec_3;
+    }
+    if (step === 2) {
+      t.title = b.title || ''; t.items = (b.items && b.items.length ? b.items : ['']).slice();
+      if (b.lead) t.lead = b.lead; if (b.bottom_quote) t.bottom_quote = b.bottom_quote;
+    }
     if (step === 3) { t.title = b.title || ''; t.points = (b.points && b.points.length ? b.points : ['']).slice(); }
-    if (step === 4) { t.title = b.title || ''; t.stat_highlight = b.stat_highlight || ''; }
-    if (step === 5) { t.notice = b.notice || ''; t.arrow_text = b.arrow_text || ''; }
+    if (step === 4) {
+      t.title = b.title || ''; t.stat_highlight = b.stat_highlight || '';
+      if (b.rec1_title) t.rec1_title = b.rec1_title; if (b.rec1_body) t.rec1_body = b.rec1_body;
+      if (b.rec2_title) t.rec2_title = b.rec2_title; if (b.rec2_body) t.rec2_body = b.rec2_body;
+    }
+    if (step === 5) {
+      t.notice = b.notice || ''; t.arrow_text = b.arrow_text || '';
+      if (b.sum_method) t.sum_method = b.sum_method; if (b.sum_benefit) t.sum_benefit = b.sum_benefit;
+      if (b.sum_timing) t.sum_timing = b.sum_timing; if (b.sum_notice) t.sum_notice = b.sum_notice;
+    }
     if (b.image) t.image = b.image;
   });
   return base;
@@ -1225,11 +1261,25 @@ function syncLandingFromDom() {
   $$('#lc .lb').forEach(el => {
     const b = S.t2.blocks[Number(el.dataset.blockStep) - 1]; if (!b) return;
     const f = k => { const n = $('[data-f="' + k + '"]', el); return n ? readText(n) : ''; };
-    if (b.step === 1) { b.tag = f('tag'); b.title = f('title'); b.subtitle = f('subtitle'); }
-    if (b.step === 2) { b.title = f('title'); b.items = $$('.li-text', el).map(readText); }
+    if (b.step === 1) {
+      b.tag = f('tag'); b.title = f('title'); b.subtitle = f('subtitle');
+      b.spec_1 = f('spec_1') || b.spec_1; b.spec_2 = f('spec_2') || b.spec_2; b.spec_3 = f('spec_3') || b.spec_3;
+    }
+    if (b.step === 2) {
+      b.title = f('title'); b.items = $$('.li-text', el).map(readText);
+      b.lead = f('lead') || b.lead; b.bottom_quote = f('bottom_quote') || b.bottom_quote;
+    }
     if (b.step === 3) { b.title = f('title'); b.points = $$('.li-text', el).map(readText); }
-    if (b.step === 4) { b.title = f('title'); b.stat_highlight = f('stat_highlight'); }
-    if (b.step === 5) { b.notice = f('notice'); b.arrow_text = f('arrow_text'); }
+    if (b.step === 4) {
+      b.title = f('title'); b.stat_highlight = f('stat_highlight');
+      b.rec1_title = f('rec1_title') || b.rec1_title; b.rec1_body = f('rec1_body') || b.rec1_body;
+      b.rec2_title = f('rec2_title') || b.rec2_title; b.rec2_body = f('rec2_body') || b.rec2_body;
+    }
+    if (b.step === 5) {
+      b.notice = f('notice'); b.arrow_text = f('arrow_text');
+      b.sum_method = f('sum_method') || b.sum_method; b.sum_benefit = f('sum_benefit') || b.sum_benefit;
+      b.sum_timing = f('sum_timing') || b.sum_timing; b.sum_notice = f('sum_notice') || b.sum_notice;
+    }
   });
 }
 
@@ -1267,11 +1317,11 @@ function toCampaignMaster() {
       output_mode: S.t2.output_mode, bg_color: S.t2.bg_color, use_shorts_landing: S.t2.use_shorts, shorts_youtube_url: S.t2.shorts_url,
       blocks_1000px: S.t2.blocks.map(b => {
         const o = { step: b.step, type: b.type };
-        if (b.step === 1) { o.tag = b.tag; o.title = b.title; o.subtitle = b.subtitle; }
-        if (b.step === 2) { o.title = b.title; o.items = b.items.filter(x => x.trim()); }
+        if (b.step === 1) { o.tag = b.tag; o.title = b.title; o.subtitle = b.subtitle; o.spec_1 = b.spec_1; o.spec_2 = b.spec_2; o.spec_3 = b.spec_3; }
+        if (b.step === 2) { o.title = b.title; o.items = b.items.filter(x => x.trim()); o.lead = b.lead; o.bottom_quote = b.bottom_quote; }
         if (b.step === 3) { o.title = b.title; o.points = b.points.filter(x => x.trim()); }
-        if (b.step === 4) { o.title = b.title; o.stat_highlight = b.stat_highlight; }
-        if (b.step === 5) { o.notice = b.notice; o.arrow_text = b.arrow_text; }
+        if (b.step === 4) { o.title = b.title; o.stat_highlight = b.stat_highlight; o.rec1_title = b.rec1_title; o.rec1_body = b.rec1_body; o.rec2_title = b.rec2_title; o.rec2_body = b.rec2_body; }
+        if (b.step === 5) { o.notice = b.notice; o.arrow_text = b.arrow_text; o.sum_method = b.sum_method; o.sum_benefit = b.sum_benefit; o.sum_timing = b.sum_timing; o.sum_notice = b.sum_notice; }
         return o;
       }),
       branch_links: S.t2.branch_links
@@ -1376,9 +1426,9 @@ function blockHTML(b) {
       '<div class="hero-accent-line"></div>' +
       E('subtitle', b.subtitle, 'lb-sub') +
       '<div class="hero-spec-bar">' +
-        '<div class="hero-spec-item"><span class="hero-spec-k">01 · CORE BENEFIT</span><div class="hero-spec-v ed" contenteditable="true" data-single>실전 압축 핵심 가이드 제공</div></div>' +
-        '<div class="hero-spec-item"><span class="hero-spec-k">02 · INSTANT DELIVERY</span><div class="hero-spec-v ed" contenteditable="true" data-single>카카오톡 1초 신청 · 즉시 발송</div></div>' +
-        '<div class="hero-spec-item"><span class="hero-spec-k">03 · CUSTOM ROADMAP</span><div class="hero-spec-v ed" contenteditable="true" data-single>유형별 1:1 맞춤 처방 연동</div></div>' +
+        '<div class="hero-spec-item"><span class="hero-spec-k">01 · CORE BENEFIT</span>' + E('spec_1', b.spec_1 || '실전 압축 핵심 가이드 제공', 'hero-spec-v', true) + '</div>' +
+        '<div class="hero-spec-item"><span class="hero-spec-k">02 · INSTANT DELIVERY</span>' + E('spec_2', b.spec_2 || '카카오톡 1초 신청 · 즉시 발송', 'hero-spec-v', true) + '</div>' +
+        '<div class="hero-spec-item"><span class="hero-spec-k">03 · CUSTOM ROADMAP</span>' + E('spec_3', b.spec_3 || '유형별 1:1 맞춤 처방 연동', 'hero-spec-v', true) + '</div>' +
       '</div>',
       blockTools(b)
     );
@@ -1387,9 +1437,9 @@ function blockHTML(b) {
     return wrap('pain',
       '<div class="sec-eyebrow"><span>●</span> VOICE OF CUSTOMER · 고객 페인포인트 진단</div>' +
       E('title', b.title, 'lb-title') +
-      '<div class="sec-lead ed" contenteditable="true" data-single>하나라도 해당된다면 지금 아래의 맞춤 해결책을 반드시 확인해 보세요.</div>' +
+      E('lead', b.lead || '하나라도 해당된다면 지금 아래의 맞춤 해결책을 반드시 확인해 보세요.', 'sec-lead', true) +
       listHTML(b.items) +
-      '<div class="pain-bottom-quote"><span class="q-badge">SOLUTION READY</span><div class="ed" contenteditable="true" data-single style="flex:1">혼자 고민하지 마세요. 검증된 실전 공식으로 가장 빠르게 해결해 드립니다.</div></div>',
+      '<div class="pain-bottom-quote"><span class="q-badge">SOLUTION READY</span>' + E('bottom_quote', b.bottom_quote || '혼자 고민하지 마세요. 검증된 실전 공식으로 가장 빠르게 해결해 드립니다.', '', true) + '</div>',
       blockTools(b, add)
     );
   }
@@ -1410,8 +1460,8 @@ function blockHTML(b) {
         E('stat_highlight', b.stat_highlight, 'lb-stat') +
       '</div>' +
       '<div class="trust-check-grid">' +
-        '<div class="trust-check-card"><div class="trust-check-h"><i>✔</i><span class="ed" contenteditable="true" data-single>이런 분께 강력 추천합니다</span></div><div class="trust-check-b ed" contenteditable="true">시행착오 없이 검증된 핵심 노하우와 맞춤 가이드를 한 번에 받아보고 싶은 분</div></div>' +
-        '<div class="trust-check-card"><div class="trust-check-h"><i>★</i><span class="ed" contenteditable="true" data-single>신청 즉시 얻게 되는 확실한 변화</span></div><div class="trust-check-b ed" contenteditable="true">1편 핵심 요약 즉시 열람 및 채널 친구 전용 후속 심화 칼럼·혜택 순차 수신</div></div>' +
+        '<div class="trust-check-card"><div class="trust-check-h"><i>✔</i>' + E('rec1_title', b.rec1_title || '이런 분께 강력 추천합니다', '', true) + '</div>' + E('rec1_body', b.rec1_body || '시행착오 없이 검증된 핵심 노하우와 맞춤 가이드를 한 번에 받아보고 싶은 분', 'trust-check-b') + '</div>' +
+        '<div class="trust-check-card"><div class="trust-check-h"><i>★</i>' + E('rec2_title', b.rec2_title || '신청 즉시 얻게 되는 확실한 변화', '', true) + '</div>' + E('rec2_body', b.rec2_body || '1편 핵심 요약 즉시 열람 및 채널 친구 전용 후속 심화 칼럼·혜택 순차 수신', 'trust-check-b') + '</div>' +
       '</div>',
       blockTools(b)
     );
@@ -1419,10 +1469,10 @@ function blockHTML(b) {
   return wrap('cue',
     '<div class="sec-eyebrow"><span>📋</span> PROGRAM SUMMARY &amp; GUIDE · 참여 혜택 및 신청 안내</div>' +
     '<div class="cue-summary-table">' +
-      '<div class="cue-cell"><div class="cue-th">신청 방식</div><div class="cue-td ed" contenteditable="true" data-single>카카오 원클릭 로그인 (10초 간편 접수)</div></div>' +
-      '<div class="cue-cell"><div class="cue-th">제공 혜택</div><div class="cue-td ed" contenteditable="true" data-single>신청자 전원 핵심 자료집 &amp; 맞춤 가이드 발송</div></div>' +
-      '<div class="cue-cell"><div class="cue-th">발송 시점</div><div class="cue-td ed" contenteditable="true" data-single>신청 완료 즉시 카카오톡 알림톡 100% 발송</div></div>' +
-      '<div class="cue-cell"><div class="cue-th">안내 사항</div><div class="cue-td ed" contenteditable="true" data-single>상단 노란색 [채널 추가] 클릭 시 후속 혜택 수신</div></div>' +
+      '<div class="cue-cell"><div class="cue-th">신청 방식</div>' + E('sum_method', b.sum_method || '카카오 원클릭 로그인 (10초 간편 접수)', 'cue-td', true) + '</div>' +
+      '<div class="cue-cell"><div class="cue-th">제공 혜택</div>' + E('sum_benefit', b.sum_benefit || '신청자 전원 핵심 자료집 & 맞춤 가이드 발송', 'cue-td', true) + '</div>' +
+      '<div class="cue-cell"><div class="cue-th">발송 시점</div>' + E('sum_timing', b.sum_timing || '신청 완료 즉시 카카오톡 알림톡 100% 발송', 'cue-td', true) + '</div>' +
+      '<div class="cue-cell"><div class="cue-th">안내 사항</div>' + E('sum_notice', b.sum_notice || '상단 노란색 [채널 추가] 클릭 시 후속 혜택 수신', 'cue-td', true) + '</div>' +
     '</div>' +
     '<div class="cue-callout-box">' +
       E('notice', b.notice, 'lb-notice') +
@@ -1563,9 +1613,15 @@ function renderMessageBody(scope, mi, msg, refs) {
   const condChips = (refs.tags.length ? refs.tags.map(t => '<button class="vchip tag" data-act="cond-chip" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '" data-val="태그 = ' + esc(t) + '">🏷️ 태그 = ' + esc(t) + '</button>').join('') : '') +
     (refs.sheets.length ? refs.sheets.map(s => '<button class="vchip" data-act="cond-chip" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '" data-val="시트 ' + esc(s.field) + ' = ' + esc(s.sample) + '">📊 ' + esc(s.field) + '</button>').join('') : '');
 
-  const condRow = '<div class="field"><div class="lbl">🔍 ' + (bi + 1) + '순위 타겟 조건' + (condChips ? ' <span class="hint">(탭 3 태그·시트 클릭 시 자동 입력)</span>' : '') + '</div>' +
+  const condDropdownOpts = ['<option value="">🎯 탭 3 태그·시트 조건 바로 선택 ▾</option>', '<option value="모두 (전체 신청자)">모두 (전체 신청자)</option>', '<option value="나머지 (위 조건 외 전체)">나머지 (위 조건 외 전체)</option>']
+    .concat(refs.tags.map(t => '<option value="태그 = ' + esc(t) + '">🏷️ 태그 = ' + esc(t) + '</option>'))
+    .concat(refs.sheets.map(s => '<option value="시트 ' + esc(s.field) + ' = ' + esc(s.sample) + '">📊 시트 ' + esc(s.field) + ' = ' + esc(s.sample) + '</option>')).join('');
+
+  const condRow = '<div class="field"><div class="lbl">🔍 ' + (bi + 1) + '순위 타겟 조건' + (condChips ? ' <span class="hint">(탭 3 태그·시트 드롭다운/칩 선택 시 즉시 입력)</span>' : '') + '</div>' +
     (condChips ? '<div class="chip-bar">' + condChips + '</div>' : '') +
-    '<div class="copy-row"><input class="in" data-mcond data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '" value="' + esc(br.condition_desc) + '" placeholder="예) 태그 = 예비고1학부모"><button class="copy" data-act="mcond-copy" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '">복사</button></div></div>';
+    '<div class="copy-row"><input class="in" style="flex:1" data-mcond data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '" value="' + esc(br.condition_desc) + '" placeholder="예) 태그 = 예비고1학부모">' +
+    '<select class="in" style="width:235px;flex:0 0 235px" data-cond-sel data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '">' + condDropdownOpts + '</select>' +
+    '<button class="copy" data-act="mcond-copy" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '">복사</button></div></div>';
 
   const varChips = '<div class="chip-bar"><span class="hint">변수 삽입:</span><button class="vchip sys" data-act="vchip" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '" data-val="#{이름}">+ #{이름}</button>' +
     refs.sheets.map(s => '<button class="vchip" data-act="vchip" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '" data-val="#{@' + esc(s.field) + '}">+ #{@' + esc(s.field) + '}</button>').join('') + '</div>';
@@ -1734,24 +1790,73 @@ function renderAll() { renderBrand(); renderSidebar(); renderT1(); renderT2(); r
 /* ═══════════════ 배율 / 캡처 / ZIP ═══════════════ */
 function applyZoom() {
   const lc = $('#lc'), lz = $('#lz');
+  if (!lc || !lz) return;
+  lc.style.width = '1000px';
   lc.style.transform = 'scale(' + viewZoom + ')';
-  lz.style.width = (1000 * viewZoom) + 'px';
-  lz.style.height = (lc.offsetHeight * viewZoom) + 'px';
+  lz.style.width = Math.round(1000 * viewZoom) + 'px';
+  lz.style.height = Math.round(lc.offsetHeight * viewZoom) + 'px';
 }
 async function withCapture(fn) {
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
-  const prev = viewZoom; viewZoom = 1; applyZoom();
+  const lc = $('#lc'), lz = $('#lz');
+  const prev = viewZoom;
+  viewZoom = 1;
+  if (lc && lz) {
+    lc.style.transform = 'none';
+    lc.style.width = '1000px';
+    lz.style.width = '1000px';
+    lz.style.height = 'auto';
+    lz.style.overflow = 'visible';
+  }
   document.body.classList.add('capturing');
-  await nextFrames(2);
+  await nextFrames(3);
   try { return await fn(); }
-  finally { document.body.classList.remove('capturing'); viewZoom = prev; applyZoom(); }
+  finally {
+    document.body.classList.remove('capturing');
+    if (lz) lz.style.overflow = 'hidden';
+    viewZoom = prev;
+    applyZoom();
+  }
 }
 function needEngine() {
   if (!window.ImageCapturer) throw new Error('ImageCapturer.js 가 로드되지 않았습니다.');
   if (typeof window.html2canvas !== 'function') throw new Error('html2canvas 가 로드되지 않았습니다.');
 }
 function fileTag() { return (S.partner.channel_name || '캠페인').replace(/[\\\/:*?"<>|\s]+/g, '_'); }
+
+function buildTextSummary() {
+  const cm = toCampaignMaster();
+  const t1 = cm.tab1_basic_settings || {}, t3 = cm.tab3_application_form || {};
+  const lines = [
+    '====================================================',
+    ' [고마워톡 어드민 세팅 복붙용 가이드] ' + (cm.partner_info.channel_name || ''),
+    '====================================================',
+    '',
+    '■ [탭 1: 기본 설정]',
+    '• 타이틀(30자): ' + (t1.title_30chars || ''),
+    '• 설명문: ' + (t1.description || ''),
+    '• 신청하기 버튼명: ' + (t1.apply_btn_text || ''),
+    '• 신청취소 버튼명: ' + (t1.cancel_btn_text || ''),
+    '',
+    '■ [탭 3: 신청폼 관리]',
+    '• 신청폼 제목: ' + (t3.form_title || ''),
+    '• 신청자 안내 문구(URL 공백 보정 완료): ' + (t3.form_guide_text || ''),
+    '• 질문 수: ' + ((t3.questions || []).length) + '개',
+    '',
+    '■ [탭 4: 간격발송 시퀀스] (' + ((cm.tab4_interval_messages && cm.tab4_interval_messages.sequence || []).length) + '회차)',
+  ];
+  ((cm.tab4_interval_messages && cm.tab4_interval_messages.sequence) || []).forEach(m => {
+    const b = (m.branches && m.branches[0]) || {};
+    lines.push('  - ' + m.step + '회차 [' + m.timing + ' / ' + m.template_type + '] 조건: ' + (b.condition_desc || '') + ' | 본문: ' + (b.body_text_400chars || JSON.stringify(b.variables || {})));
+  });
+  lines.push('', '■ [탭 5: 날짜발송] (' + ((cm.tab5_date_messages || []).length) + '건)');
+  (cm.tab5_date_messages || []).forEach((m, i) => {
+    const b = (m.branches && m.branches[0]) || {};
+    lines.push('  - #' + (i + 1) + ' [' + m.send_datetime + ' / ' + m.template_type + '] 본문: ' + (b.body_text_400chars || '캐러셀/알림톡'));
+  });
+  return lines.join('\r\n');
+}
 
 async function captureUnscaled(el, fn) {
   if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
@@ -1803,13 +1908,21 @@ async function doZip() {
         }
       }
     }
-    return await window.ImageCapturer.downloadAllAsZip({ channelName: S.partner.channel_name, thumbnail: thumb, landingImages: land, messageImages: msgImages });
+    return await window.ImageCapturer.downloadAllAsZip({
+      channelName: S.partner.channel_name,
+      thumbnail: thumb,
+      landingImages: land,
+      messageImages: msgImages,
+      masterJson: toCampaignMaster(),
+      textSummary: buildTextSummary()
+    });
   } finally { switchTab(back); }
 }
 
 /* ═══════════════ 탭 / 대메뉴 ═══════════════ */
 const TAB_NAME = { tab1: '탭 1 — 기본 설정', tab2: '탭 2 — 신청페이지 내용', tab3: '탭 3 — 신청폼 관리', tab4: '탭 4 — 간격발송', tab5: '탭 5 — 날짜발송' };
 function switchTab(id) {
+  if (S) syncFromDom();
   currentTab = id;
   $$('.tab-btn').forEach(b => b.classList.toggle('on', b.dataset.tab === id));
   $$('#ws-admin .panel').forEach(p => p.classList.toggle('on', p.id === id));
@@ -1820,6 +1933,7 @@ function switchTab(id) {
   window.scrollTo(0, 0);
 }
 function switchMenu(m) {
+  if (S) syncFromDom();
   const admin = m === 'admin';
   $('#menu-admin').classList.toggle('on', admin); $('#menu-webzine').classList.toggle('on', !admin);
   $('#ws-admin').hidden = !admin; $('#ws-webzine').hidden = admin;
@@ -2050,8 +2164,15 @@ function bind() {
 
   document.addEventListener('input', e => {
     const t = e.target;
-    if (t.id === 'f-title') updateTitleCounter();
-    if (t.id === 'form-guide') updateGuidePreview();
+    if (t.id === 'f-title') { S.t1.title = readText(t); updateTitleCounter(); }
+    if (t.id === 'f-desc') S.t1.desc = readText(t);
+    if (t.id === 'f-apply') S.t1.apply = readText(t);
+    if (t.id === 'f-cancel') S.t1.cancel = readText(t);
+    if (t.id === 't-badge') S.t1.badge = readText(t);
+    if (t.id === 't-head') S.t1.headline = readText(t);
+    if (t.id === 't-sub') S.t1.subtext = readText(t);
+    if (t.id === 'form-title') S.t3.form_title = readText(t);
+    if (t.id === 'form-guide') { S.t3.guide_text = readText(t); updateGuidePreview(); }
     if (t.matches('[data-q][data-o][data-f]')) { S.t3.questions[+t.dataset.q].options[+t.dataset.o][t.dataset.f] = t.value; validateRow(t.closest('tr')); }
     if (t.dataset && t.dataset.qtext !== undefined) S.t3.questions[+t.dataset.qtext].text = readText(t);
     if (t.dataset && t.dataset.branch !== undefined) S.t2.branch_links[+t.dataset.branch] = t.value.trim();
@@ -2059,18 +2180,54 @@ function bind() {
     if (t.id === 'c-primary-hex' || t.id === 'c-secondary-hex') { if (isHex(t.value)) { S.brand[t.id === 'c-primary-hex' ? 'primary' : 'secondary'] = t.value; renderBrand(); } }
     if (t.id === 'bg-color' || (t.id === 'bg-hex' && isHex(t.value))) { S.t2.bg_color = t.value; $('#lc').style.background = t.value; $('#bg-hex').value = t.value; if (isHex(t.value)) $('#bg-color').value = t.value; }
     if (t.id === 'wz-base-url' || t.id === 'wz-base-url2') { S.meta.webzine_base_url = t.value.trim(); $('#wz-base-url').value = t.value; $('#wz-base-url2').value = t.value; }
-    if (t.id === 'lc' || t.closest('#lc')) applyZoom();
+    if (t.id === 'lc' || t.closest('#lc')) { syncLandingFromDom(); applyZoom(); }
 
-    // 탭 4·5 실시간 입력 반영
+    // 탭 4·5 실시간 입력 반영 + 커서 유지 실시간 프리뷰 업데이트
     const sc = t.dataset && t.dataset.sc, mi = +(t.dataset && t.dataset.mi), bi = +(t.dataset && t.dataset.bi);
+    const card = t.closest && t.closest('.msg-card');
     if (t.hasAttribute && t.hasAttribute('data-mcond')) getMsgList(sc)[mi].branches[bi].condition_desc = t.value;
-    if (t.dataset && t.dataset.mvar !== undefined) getMsgList(sc)[mi].branches[bi].variables[t.dataset.mvar] = readText(t);
-    if (t.hasAttribute && t.hasAttribute('data-mbody')) getMsgList(sc)[mi].branches[bi].body_text_400chars = readText(t);
+    if (t.dataset && t.dataset.mvar !== undefined) {
+      const br = getMsgList(sc)[mi].branches[bi];
+      br.variables[t.dataset.mvar] = readText(t);
+      if (card) { const kb = $('.kakao-body', card); if (kb) kb.textContent = renderAlimtalkBody(findTemplate(br.template_id), br); }
+    }
+    if (t.hasAttribute && t.hasAttribute('data-mbody')) {
+      const txt = readText(t);
+      getMsgList(sc)[mi].branches[bi].body_text_400chars = txt;
+      if (card) {
+        const kb = $('.kakao-body', card); if (kb) kb.textContent = txt;
+        const cnt = $('.counter', t.closest('.field')); if (cnt) { const l = cpLen(txt); cnt.textContent = l + ' / 400자'; cnt.classList.toggle('over', l > 400); }
+      }
+    }
     if (t.dataset && t.dataset.mfb !== undefined) getMsgList(sc)[mi].branches[bi].sheet_fallback_strings[t.dataset.mfb] = t.value;
-    if (t.dataset && t.dataset.mbtn !== undefined) getMsgList(sc)[mi].branches[bi].buttons[+t.dataset.idx][t.dataset.mbtn] = t.value;
+    if (t.dataset && t.dataset.mbtn !== undefined) {
+      getMsgList(sc)[mi].branches[bi].buttons[+t.dataset.idx][t.dataset.mbtn] = t.value;
+      if (card && t.dataset.mbtn === 'name') {
+        const btns = $$('.kakao-btns .kakao-btn', card);
+        if (btns[+t.dataset.idx]) btns[+t.dataset.idx].textContent = t.value;
+      }
+    }
     if (t.dataset && t.dataset.ftf !== undefined) getMsgList(sc)[mi].branches[bi].image_copy[t.dataset.ftf] = readText(t);
-    if (t.dataset && t.dataset.carf !== undefined) getMsgList(sc)[mi].branches[bi].cards_800x600[+t.dataset.ci][t.dataset.carf] = readText(t);
-    if (t.dataset && t.dataset.carin !== undefined) getMsgList(sc)[mi].branches[bi].cards_800x600[+t.dataset.ci][t.dataset.carin] = t.value;
+    if (t.dataset && t.dataset.carf !== undefined) {
+      const val = readText(t), ci = +t.dataset.ci, f = t.dataset.carf;
+      getMsgList(sc)[mi].branches[bi].cards_800x600[ci][f] = val;
+      const item = t.closest('.car-item');
+      if (item) { const inp = $('[data-carin="' + f + '"]', item); if (inp) inp.value = val; }
+    }
+    if (t.dataset && t.dataset.carin !== undefined) {
+      const val = t.value, ci = +t.dataset.ci, f = t.dataset.carin;
+      getMsgList(sc)[mi].branches[bi].cards_800x600[ci][f] = val;
+      const item = t.closest('.car-item');
+      if (item) {
+        const cvEl = $('[data-carf="' + f + '"]', item); if (cvEl) cvEl.textContent = val;
+        const maxMap = { header_20chars: 20, body_180chars: 180, button_8chars: 8 };
+        const lblMap = { header_20chars: '헤더 ', body_180chars: '본문 ', button_8chars: '버튼 ' };
+        if (maxMap[f]) {
+          const cnt = $('.counter', t.parentElement.parentElement);
+          if (cnt) { const l = cpLen(val); cnt.textContent = lblMap[f] + l + '/' + maxMap[f] + '자'; cnt.classList.toggle('over', l > maxMap[f]); }
+        }
+      }
+    }
   });
 
   document.addEventListener('change', async e => {
@@ -2100,8 +2257,13 @@ function bind() {
     if (t.id === 'p-chid' || t.id === 'p-plan' || t.id === 'p-pro' || t.id === 'p-channel') { syncFromDom(); if (currentTab === 'tab4') renderT4(); if (currentTab === 'tab5') renderT5(); }
     if (t.hasAttribute && t.hasAttribute('data-lock') && !t.checked) { t.checked = true; toast('⚠️ 도달률 보장을 위해 이 스위치는 반드시 ON이어야 합니다.', { type: 'warn' }); }
 
-    // 탭 4·5 셀렉트/날짜/앵커
+    // 탭 4·5 셀렉트/날짜/앵커/조건드롭다운
     const sc = t.dataset && t.dataset.sc, mi = +(t.dataset && t.dataset.mi), bi = +(t.dataset && t.dataset.bi);
+    if (t.hasAttribute && t.hasAttribute('data-cond-sel') && t.value) {
+      getMsgList(sc)[mi].branches[bi].condition_desc = t.value;
+      rerenderScope(sc);
+      return;
+    }
     if (t.hasAttribute && t.hasAttribute('data-mtiming')) { S.t4.sequence[mi].timing = t.value; renderT4(); }
     if (t.hasAttribute && t.hasAttribute('data-mdatetime')) { S.t5.items[mi].send_datetime = t.value.replace('T', ' '); }
     if (t.hasAttribute && t.hasAttribute('data-mtype')) { getMsgList(sc)[mi].template_type = t.value; rerenderScope(sc); }

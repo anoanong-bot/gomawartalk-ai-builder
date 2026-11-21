@@ -225,20 +225,29 @@
   }
 
   // ───────────── 6. ZIP 일괄 패키징 ─────────────
-  // campaignData: { channelName, thumbnail(dataUrl), landingImages:[{filename,dataUrl}], messageImages:[{filename,dataUrl}] }
+  // campaignData: { channelName, thumbnail(dataUrl), landingImages:[{filename,dataUrl}], messageImages:[{filename,dataUrl}], masterJson, textSummary }
   function downloadAllAsZip(campaignData) {
     if (typeof global.JSZip === 'undefined') return Promise.reject(new Error('JSZip 라이브러리가 로드되지 않았습니다.'));
     campaignData = campaignData || {};
     var d = new Date();
     var ds = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
-    var ch = String(campaignData.channelName || '채널명').replace(/[\\\/:*?"<>|]/g, '_');
+    var ch = String(campaignData.channelName || '채널명').replace(/[\\\/:*?"<>|\s]+/g, '_');
     var zipName = '[고마워톡_에셋]_' + ch + '_' + ds + '.zip';
 
     var zip = new global.JSZip();
-    var fThumb = zip.folder('01_썸네일'), fLand = zip.folder('02_신청페이지'), fMsg = zip.folder('03_메시지배너');
+    var fThumb = zip.folder('01_썸네일');
+    var fLand = zip.folder('02_신청페이지');
+    var fMsg = zip.folder('03_메시지배너');
+    var fDoc = zip.folder('04_세팅텍스트_및_원본JSON');
+
     if (campaignData.thumbnail) fThumb.file('thumbnail_500x280.png', dataUrlToBlob(campaignData.thumbnail));
     (campaignData.landingImages || []).forEach(function (it) { fLand.file(it.filename, dataUrlToBlob(it.dataUrl)); });
     (campaignData.messageImages || []).forEach(function (it) { fMsg.file(it.filename, dataUrlToBlob(it.dataUrl)); });
+    if (campaignData.textSummary) fDoc.file('고마워톡_어드민_세팅가이드.txt', campaignData.textSummary);
+    if (campaignData.masterJson) {
+      var jsonStr = typeof campaignData.masterJson === 'string' ? campaignData.masterJson : JSON.stringify(campaignData.masterJson, null, 2);
+      fDoc.file('CampaignMaster.json', jsonStr);
+    }
 
     return zip.generateAsync({ type: 'blob' }).then(function (blob) {
       downloadBlob(blob, zipName);

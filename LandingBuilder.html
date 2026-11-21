@@ -340,7 +340,7 @@ body:not(.wz-on) .wz-only{display:none}
 
 <!-- ═════════ 상단 글로벌 네비게이션 ═════════ -->
 <nav id="nav">
-  <div class="brand"><span class="brand-mark">🎯</span>고마워톡 조종석 <small>Phase 2</small></div>
+  <div class="brand"><span class="brand-mark">🎯</span>고마워톡 조종석 <small>Phase 3</small></div>
   <div class="menus">
     <button class="menu-btn on" id="menu-admin" data-menu="admin">📋 고마워톡 어드민 세팅 (5대 탭 미러링)</button>
     <button class="menu-btn" id="menu-webzine" data-menu="webzine">✨ 모바일 웹진 스튜디오</button>
@@ -645,17 +645,23 @@ body:not(.wz-on) .wz-only{display:none}
 
 </section>
 
-<!-- ########## 대메뉴 2: 모바일 웹진 스튜디오 ########## -->
+<!-- ########## 대메뉴 2: 모바일 웹진 스튜디오 (WebzineBuilder.html 실시간 연동) ########## -->
 <section id="ws-webzine" hidden>
-  <div class="soon-box">
-    <div style="font-size:46px">✨</div>
-    <h2>모바일 웹진 스튜디오</h2>
-    <p>어드민 5대 탭과 완전히 분리된 별도 작업 공간입니다.<br>Phase 3에서 <code>WebzineBuilder.html</code>이 이 영역에 <code>iframe</code> + <code>postMessage</code>로 연동됩니다.</p>
-    <div class="row" style="justify-content:center;margin:18px 0 6px;gap:14px"><b>모바일 웹진 사용</b><label class="tg"><input type="checkbox" id="wz-toggle"><span></span></label><b id="wz-toggle-text" style="color:var(--g500)">OFF</b></div>
-    <p class="hint" style="margin:0 0 10px">ON으로 바꾸면 탭 2 브랜치 링크와 탭 4·5의 모든 메시지 버튼 옆에 <b>[📑 웹진 목차 선택 ▾]</b> 도우미가 자동으로 나타납니다.</p>
-    <div class="field wz-only" style="text-align:left"><div class="lbl">웹진 기본 URL</div><input class="in" id="wz-base-url2" placeholder="https://gomawartalk.com/webzine/202611_xxx.html"></div>
-    <ul><li>목차(섹션)별 <code>#sec-1</code> ~ <code>#sec-N</code>, <code>#sec-cta</code> 앵커 자동 부여</li><li>웹진 목차 → 탭 4·5 캐러셀 카드 자동 구성</li><li>감마 스타일 인터랙션 · 1MB 미만 단일 HTML 추출</li></ul>
+  <div class="mode-bar" style="margin-bottom:14px">
+    <div class="row" style="gap:14px;flex-wrap:wrap">
+      <b style="font-size:14px;color:var(--g900)">✨ 모바일 웹진 스튜디오</b>
+      <div class="row" style="gap:8px">
+        <span class="hint" style="font-weight:700">모바일 웹진 사용</span>
+        <label class="tg"><input type="checkbox" id="wz-toggle"><span></span></label>
+        <b id="wz-toggle-text" style="color:var(--g500)">OFF</b>
+      </div>
+    </div>
+    <div class="row" style="flex:1;max-width:480px;min-width:240px">
+      <span class="hint" style="white-space:nowrap;font-weight:700">웹진 기본 URL:</span>
+      <input class="in" id="wz-base-url2" placeholder="https://gomawartalk.com/webzine/202611_sample.html">
+    </div>
   </div>
+  <iframe id="wz-iframe" src="WebzineBuilder.html" style="width:100%;height:calc(100vh - 150px);min-height:760px;border:1px solid var(--g200);border-radius:14px;background:#EEF2F6;box-shadow:var(--shadow-card)"></iframe>
 </section>
 
 </main>
@@ -782,12 +788,23 @@ const TPL_TYPES = [
   { v: 'BRAND_M', l: '📣 브랜드메시지 M형 (25원 · 미친추 포괄)' }
 ];
 const BTN_TYPES = { WL: '🌐 일반 웹링크', YT: '▶ 유튜브 앱 직행', CP: '🎟️ 카톡 쿠폰 링크' };
-const WEBZINE_ANCHORS = [
+let WEBZINE_ANCHORS = [
   { v: '#sec-1', l: '#sec-1 (목차 1)' },
   { v: '#sec-2', l: '#sec-2 (목차 2)' },
   { v: '#sec-3', l: '#sec-3 (목차 3)' },
   { v: '#sec-cta', l: '#sec-cta (하단 신청 CTA)' }
 ];
+function syncWebzineIframe() {
+  const f = $('#wz-iframe');
+  if (!f || !f.contentWindow || !S) return;
+  f.contentWindow.postMessage({
+    type: 'SYNC_FROM_PARENT',
+    payload: {
+      brand: { primary: S.brand.primary, dk: shade(isHex(S.brand.primary) ? S.brand.primary : '#4F46E5', -0.3), lt: S.brand.secondary },
+      webzine_studio: S.passthrough && S.passthrough.webzine_studio
+    }
+  }, '*');
+}
 const GUIDE_DEFAULT = '정확한 맞춤 자료 발송을 위해 아래 항목을 선택해 주세요.';
 
 let S = null;
@@ -1490,7 +1507,7 @@ function renderWebzine() {
   $('#wz-base-url').value = S.meta.webzine_base_url; $('#wz-base-url2').value = S.meta.webzine_base_url;
 }
 function renderAI() { $('#ai-log').innerHTML = (AI_LOG[currentTab] || []).map(x => '<div class="ai-item">⏳ ' + esc(x) + '</div>').join(''); }
-function renderAll() { renderBrand(); renderSidebar(); renderT1(); renderT2(); renderT3(); renderT4(); renderT5(); renderWebzine(); renderAI(); }
+function renderAll() { renderBrand(); renderSidebar(); renderT1(); renderT2(); renderT3(); renderT4(); renderT5(); renderWebzine(); renderAI(); syncWebzineIframe(); }
 
 /* ═══════════════ 배율 / 캡처 / ZIP ═══════════════ */
 function applyZoom() {
@@ -1847,6 +1864,33 @@ function bind() {
   });
   $('#proxy-url').addEventListener('change', () => { try { localStorage.setItem('gmt_proxy_url', $('#proxy-url').value.trim()); } catch (e) {} });
   if (window.ResizeObserver) new ResizeObserver(applyZoom).observe($('#lc'));
+
+  // WebzineBuilder.html iframe 양방향 postMessage 연동
+  const wzFrame = $('#wz-iframe');
+  if (wzFrame) wzFrame.addEventListener('load', syncWebzineIframe);
+  window.addEventListener('message', e => {
+    const d = e.data || {};
+    if (d.type === 'WEBZINE_UPDATE' && d.payload) {
+      S.passthrough.webzine_studio = { webzine_title: d.payload.webzine_title, sections: d.payload.sections };
+      WEBZINE_ANCHORS = (d.payload.sections || []).map(s => ({
+        v: '#' + s.anchor_id,
+        l: '#' + s.anchor_id + ' (' + String(s.title || s.button_text || s.anchor_id).slice(0, 14) + ')'
+      }));
+      if (currentTab === 'tab2') renderBranch();
+      if (currentTab === 'tab4') renderT4();
+      if (currentTab === 'tab5') renderT5();
+    }
+    if (d.type === 'WEBZINE_TO_CAROUSEL' && d.payload && Array.isArray(d.payload.cards)) {
+      const base = (S.meta.webzine_base_url || 'https://gomawartalk.com/webzine/sample.html').replace(/#.*$/, '');
+      const mapped = d.payload.cards.map((c, i) => Object.assign(newCarouselCard(i + 1), c, { button_url: base + (c.webzine_anchor || '#sec-1') }));
+      // 탭 4 캐러셀 회차(없으면 마지막 회차) 및 탭 5 첫 번째 항목에 자동 반영
+      const t4Target = S.t4.sequence.find(m => m.template_type === 'BRAND_CAROUSEL') || S.t4.sequence[S.t4.sequence.length - 1];
+      if (t4Target) { t4Target.template_type = 'BRAND_CAROUSEL'; t4Target.branches[0].cards_800x600 = clone(mapped); }
+      if (S.t5.items[0]) { S.t5.items[0].template_type = 'BRAND_CAROUSEL'; S.t5.items[0].branches[0].cards_800x600 = clone(mapped); }
+      S.meta.use_webzine = true; renderWebzine(); renderT4(); renderT5();
+      toast('⚡ 웹진 목차 ' + mapped.length + '개가 탭 4·5 캐러셀 카드에 자동 구성되었습니다! (웹진 ON)', { type: 'ok', ms: 5000 });
+    }
+  });
 }
 
 /* ═══════════════ 초기화 ═══════════════ */

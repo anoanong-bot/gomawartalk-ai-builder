@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고마워톡 모바일 웹진 스튜디오 — WebzineBuilder</title>
+
+<script src="engines/ImageCapturer.js"></script>
+<script src="data/IndustryPresets.js"></script>
+
+<style>
+:root{
+  --purple:#6D28D9; --purple-md:#7C3AED; --purple-dk:#4C1D95; --purple-lt:#F5F3FF; --purple-bd:#DDD6FE;
+  --green:#059669; --green-lt:#ECFDF5; --green-bd:#A7F3D0;
+  --red:#DC2626; --red-lt:#FEF2F2; --red-bd:#FECACA;
+  --amber:#D97706; --amber-lt:#FFFBEB; --amber-bd:#FDE68A;
+  --g50:#F8FAFC; --g100:#F1F5F9; --g200:#E2E8F0; --g300:#CBD5E1; --g400:#94A3B8; --g500:#64748B; --g700:#334155; --g900:#0F172A;
+  --brand:#4F46E5; --brand-dk:#3730A3; --brand-lt:#EEF2FF;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13.5px;color:var(--g700);background:#EEF2F6;min-height:100vh;word-break:keep-all}
+button{font-family:inherit;font-size:12.5px;cursor:pointer;border:none;background:none;color:inherit;transition:.15s}
+input,textarea,select{font-family:inherit;font-size:13px;color:var(--g700)}
+code{background:var(--purple-lt);color:var(--purple-dk);padding:2px 6px;border-radius:5px;font-size:11.5px;font-family:Consolas,monospace}
+
+/* 상단 툴바 */
+#topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--g200);padding:12px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tb-title{font-size:15px;font-weight:800;color:var(--g900);display:flex;align-items:center;gap:8px}
+.tb-badge{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:99px;background:var(--purple-lt);color:var(--purple);border:1px solid var(--purple-bd)}
+.tb-right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{padding:8px 13px;border-radius:9px;background:#fff;border:1px solid var(--g200);font-weight:700;font-size:12px;color:var(--g700)}
+.btn:hover{background:var(--g50);border-color:var(--g300)}
+.btn.pri{background:linear-gradient(135deg,#7C3AED,#5B21B6);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(109,40,217,.24)}
+.btn.pri:hover{filter:brightness(1.06)}
+.btn.grn{background:linear-gradient(135deg,#10B981,#059669);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(5,150,105,.24)}
+.btn.sm{padding:5px 9px;font-size:11.5px;border-radius:7px}
+.btn.danger{color:var(--red);border-color:var(--red-bd)} .btn.danger:hover{background:var(--red-lt)}
+
+/* 2단 워크스페이스: 좌측 에디터 / 우측 모바일 프레임 프리뷰 */
+#wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;padding:20px;max-width:1460px;margin:0 auto;align-items:start}
+@media(max-width:1080px){#wrap{grid-template-columns:1fr}}
+
+.card{background:#fff;border:1px solid var(--g200);border-radius:14px;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 24px -10px rgba(15,23,42,.08);margin-bottom:16px;overflow:hidden}
+.card-h{padding:13px 18px;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;background:linear-gradient(180deg,#fff,#FAFCFF)}
+.card-h h3{font-size:14px;font-weight:800;color:var(--g900)}
+.card-b{padding:16px 18px}
+.in{width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:8px;background:#fff}
+.in:focus{outline:none;border-color:var(--purple-md);box-shadow:0 0 0 3px rgba(124,58,237,.14)}
+.row{display:flex;gap:8px;align-items:center}
+.hint{font-size:11.5px;color:var(--g500);line-height:1.5}
+.ed{outline:none;cursor:text;border-radius:5px;white-space:pre-line}
+.ed:hover{background:rgba(124,58,237,.07)}
+.ed:focus{background:rgba(124,58,237,.09);box-shadow:0 0 0 2px rgba(124,58,237,.32)}
+
+/* 섹션 에디터 카드 */
+.sec-card{border:1px solid var(--g200);border-radius:12px;background:#fff;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,.04)}
+.sec-h{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--g50);border-bottom:1px solid var(--g100);flex-wrap:wrap}
+.anchor-pill{font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;background:var(--brand-lt);color:var(--brand-dk);font-family:Consolas,monospace}
+.type-pill{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:#fff;border:1px solid var(--g200);color:var(--g700)}
+.sec-b{padding:14px;display:flex;flex-direction:column;gap:10px}
+.tab-chip-edit{display:flex;gap:6px;align-items:center;padding:8px;border:1px solid var(--g200);border-radius:8px;background:var(--g50);margin-bottom:6px}
+
+/* 우측 모바일 프레임 목업 (390px) */
+.phone-sticky{position:sticky;top:76px;display:flex;flex-direction:column;align-items:center}
+.phone{width:390px;max-width:100%;height:760px;background:#0F172A;border-radius:42px;padding:12px;box-shadow:0 24px 56px -14px rgba(15,23,42,.42);border:2px solid #334155;display:flex;flex-direction:column}
+.phone-notch{width:118px;height:22px;background:#0F172A;border-radius:0 0 14px 14px;margin:0 auto -12px;position:relative;z-index:5}
+.phone-screen{flex:1;background:#F8FAFC;border-radius:30px;overflow-y:auto;position:relative;scroll-behavior:smooth}
+.phone-screen::-webkit-scrollbar{width:4px} .phone-screen::-webkit-scrollbar-thumb{background:rgba(15,23,42,.18);border-radius:99px}
+
+/* 감마 스타일 모바일 웹진 프리뷰 내부 */
+.wz-hero{background:linear-gradient(135deg,var(--brand),var(--brand-dk));color:#fff;padding:36px 22px 26px;position:relative;overflow:hidden}
+.wz-hero::after{content:'';position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.1)}
+.wz-kicker{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:99px;margin-bottom:10px}
+.wz-htitle{font-size:21px;font-weight:900;line-height:1.3;letter-spacing:-.5px}
+.wz-toc{display:flex;gap:6px;overflow-x:auto;padding:12px 16px;background:#fff;border-bottom:1px solid var(--g200);position:sticky;top:0;z-index:4}
+.wz-toc a{flex-shrink:0;font-size:11px;font-weight:700;padding:5px 11px;border-radius:99px;background:var(--g100);color:var(--g700);text-decoration:none}
+.wz-toc a:hover{background:var(--brand-lt);color:var(--brand-dk)}
+.wz-sec{margin:14px;background:#fff;border:1px solid var(--g200);border-radius:16px;padding:18px;box-shadow:0 4px 16px -8px rgba(15,23,42,.1)}
+.wz-sec-tag{font-size:10.5px;font-weight:800;color:var(--brand);margin-bottom:6px;display:flex;justify-content:space-between}
+.wz-sec-title{font-size:16px;font-weight:800;color:var(--g900);line-height:1.38;margin-bottom:8px}
+.wz-sec-body{font-size:13px;color:var(--g700);line-height:1.65;white-space:pre-line}
+.wz-sec-img{width:100%;border-radius:11px;margin-top:12px;display:block;object-fit:cover;max-height:190px}
+.wz-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.wz-tab-btn{padding:6px 11px;border-radius:99px;font-size:11.5px;font-weight:700;background:var(--g100);color:var(--g700)}
+.wz-tab-btn.on{background:var(--brand);color:#fff}
+.wz-tab-panel{background:var(--brand-lt);border-radius:11px;padding:12px 14px;font-size:12.5px;color:var(--g900);line-height:1.6}
+.wz-stat{background:linear-gradient(135deg,var(--brand-lt),#fff);border-left:4px solid var(--brand);border-radius:12px;padding:14px;margin-bottom:12px}
+.wz-stat-num{font-size:28px;font-weight:900;color:var(--brand-dk)}
+.wz-faq-q{width:100%;text-align:left;padding:10px 12px;border-radius:9px;background:var(--g50);border:1px solid var(--g200);font-weight:700;font-size:12.5px;display:flex;justify-content:space-between}
+.wz-faq-a{padding:10px 12px;font-size:12.5px;color:var(--g500);line-height:1.6}
+.wz-cta-wrap{position:sticky;bottom:0;padding:12px 16px;background:linear-gradient(180deg,rgba(248,250,252,0),#F8FAFC 35%)}
+.wz-cta-btn{display:block;width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand-dk));color:#fff;font-weight:800;font-size:14px;text-align:center;text-decoration:none;box-shadow:0 8px 20px -6px rgba(79,70,229,.5)}
+
+#toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:9999}
+.toast{background:var(--g900);color:#fff;padding:10px 15px;border-radius:10px;font-size:12.5px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.toast.ok{background:#065F46} .toast.warn{background:#92400E}
+</style>
+</head>
+<body>
+
+<header id="topbar">
+  <div class="tb-title">✨ 모바일 웹진 스튜디오 <span class="tb-badge">Gamma 스타일 · #sec-N 자동 앵커</span></div>
+  <div class="tb-right">
+    <button class="btn" data-act="copy-anchors">🔗 전체 앵커 목차 복사</button>
+    <button class="btn pri" data-act="push-carousel">⚡ 현재 웹진 목차로 탭 4·5 캐러셀 자동 구성</button>
+    <button class="btn grn" data-act="export-html">💾 배포용 단일 HTML 다운로드 (&lt;1MB)</button>
+  </div>
+</header>
+
+<div id="wrap">
+  <!-- 좌측: 에디터 -->
+  <div>
+    <div class="card">
+      <div class="card-h"><h3>📰 웹진 기본 헤더 설정</h3><span class="hint">모바일 프레임 안의 글자도 직접 클릭 수정 가능</span></div>
+      <div class="card-b">
+        <div class="row" style="margin-bottom:10px">
+          <div style="flex:1"><div class="hint" style="margin-bottom:4px">웹진 타이틀</div><input class="in" id="wz-title" placeholder="예) 장희지 수학학원 교육 매거진"></div>
+          <div style="width:180px"><div class="hint" style="margin-bottom:4px">상단 배지</div><input class="in" id="wz-kicker" placeholder="예) 2026 SPECIAL GUIDE"></div>
+        </div>
+        <div class="row" style="flex-wrap:wrap">
+          <span class="hint">섹션 추가:</span>
+          <button class="btn sm" data-act="add-sec" data-type="ARTICLE_CARD">+ 📄 아티클 카드</button>
+          <button class="btn sm" data-act="add-sec" data-type="MULTI_CATEGORY_TABS">+ 🗂️ 다중 유형 탭 필터 (6개+ 분기 우회)</button>
+          <button class="btn sm" data-act="add-sec" data-type="STAT_AND_FAQ">+ 📊 핵심 수치 &amp; FAQ</button>
+          <button class="btn sm" data-act="add-sec" data-type="FLOATING_CTA">+ 🚀 플로팅 CTA (#sec-cta)</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="sec-editor-list"></div>
+  </div>
+
+  <!-- 우측: 실시간 모바일 프레임 프리뷰 -->
+  <div class="phone-sticky">
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen" id="phone-screen"></div>
+    </div>
+    <div class="hint" style="margin-top:10px;text-align:center">390px 모바일 실시간 프리뷰 · 상단 목차 클릭 시 <code>#sec-N</code> 앵커 이동 확인 가능</div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+(function () {
+'use strict';
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function toast(msg, type) {
+  const t = document.createElement('div'); t.className = 'toast ' + (type || ''); t.textContent = msg;
+  $('#toasts').appendChild(t); setTimeout(() => t.remove(), 3200);
+}
+async function copyText(txt) {
+  try { await navigator.clipboard.writeText(txt); }
+  catch (e) { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+}
+
+const TYPE_LABEL = { ARTICLE_CARD: '📄 아티클 카드', MULTI_CATEGORY_TABS: '🗂️ 다중 유형 탭 필터', STAT_AND_FAQ: '📊 핵심 수치 & FAQ', FLOATING_CTA: '🚀 플로팅 CTA' };
+
+let W = {
+  webzine_title: '장희지 수학학원 교육 매거진',
+  kicker: '2026 SPECIAL GUIDE',
+  brand: { primary: '#4F46E5', dk: '#3730A3', lt: '#EEF2FF' },
+  sections: [
+    { anchor_id: 'sec-1', type: 'ARTICLE_CARD', badge: 'PART 01', title: '1. 중3 겨울방학 필수 단원 로드맵', body: '고등 수학 상·하의 핵심 연결 고리를 잡아야 첫 중간고사에서 흔들리지 않습니다. 개념 정리 후 기출 오답 패턴을 3회독하세요.', image: null },
+    { anchor_id: 'sec-2', type: 'MULTI_CATEGORY_TABS', badge: 'PART 02 · 뜰채 5순위 초과 분기 우회', title: '2. 학년별·성적대별 맞춤 오답노트 공식', activeTab: 0,
+      tabs: [
+        { label: '중1~2 기초', content: '개념 정의를 자기 말로 3줄 요약하고, 틀린 문제의 조건에 밑줄 긋는 습관부터 잡습니다.' },
+        { label: '예비고1 심화', content: '다항식·이차함수·도형의 방정식 킬러 문항을 유형별 바인더로 분류해 시험 직전 15분 복습합니다.' },
+        { label: '고1~2 내신1등급', content: '시간 압박을 줄이는 발상 전환 메모를 오답 상단에 1줄로 기록합니다.' },
+        { label: '수능 집중반', content: '평가원 기출 4점 문항의 조건 해석 흐름을 단계별로 도식화합니다.' }
+      ]
+    },
+    { anchor_id: 'sec-3', type: 'STAT_AND_FAQ', badge: 'PART 03 · VERIFIED', title: '3. 검증된 성적 향상 & 자주 묻는 질문', stat_label: '수강생 내신 1등급 달성률', stat_value: 82, stat_unit: '%', q: '선행이 부족해도 겨울방학 특강 수강이 가능한가요?', a: '네! 첫 주 개별 학습 진단을 통해 결손 단원 클리닉부터 1:1로 보완해 드립니다.' },
+    { anchor_id: 'sec-cta', type: 'FLOATING_CTA', button_text: '원장님 1:1 학습 진단 예약하기', link: 'https://gomawartalk.com/content/jangheeji_consult' }
+  ]
+};
+
+function reindexAnchors() {
+  let n = 1;
+  W.sections.forEach(s => { s.anchor_id = s.type === 'FLOATING_CTA' ? 'sec-cta' : ('sec-' + (n++)); });
+}
+function applyBrand() {
+  const r = document.documentElement.style;
+  r.setProperty('--brand', W.brand.primary || '#4F46E5');
+  r.setProperty('--brand-dk', W.brand.dk || '#3730A3');
+  r.setProperty('--brand-lt', W.brand.lt || '#EEF2FF');
+}
+function notifyParent() {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'WEBZINE_UPDATE', payload: JSON.parse(JSON.stringify(W)) }, '*');
+  }
+}
+
+function renderEditor() {
+  reindexAnchors();
+  $('#wz-title').value = W.webzine_title;
+  $('#wz-kicker').value = W.kicker || '';
+
+  $('#sec-editor-list').innerHTML = W.sections.map((s, i) => {
+    let fields = '';
+    if (s.type === 'ARTICLE_CARD') {
+      fields = '<div class="row"><input class="in" style="width:140px;flex:0 0 140px" data-sf="badge" data-i="' + i + '" value="' + esc(s.badge || '') + '" placeholder="배지">' +
+        '<input class="in" data-sf="title" data-i="' + i + '" value="' + esc(s.title || '') + '" placeholder="섹션 제목"></div>' +
+        '<textarea class="in" style="height:78px;resize:vertical" data-sf="body" data-i="' + i + '" placeholder="본문 내용">' + esc(s.body || '') + '</textarea>' +
+        '<div class="row"><label class="btn sm" style="cursor:pointer">🖼️ 사진 교체 (150KB 압축)<input type="file" accept="image/*" hidden data-act="sec-img" data-i="' + i + '"></label>' +
+        (s.image ? '<button class="btn sm danger" data-act="sec-img-del" data-i="' + i + '">사진 제거</button>' : '') + '</div>';
+    } else if (s.type === 'MULTI_CATEGORY_TABS') {
+      fields = '<input class="in" data-sf="title" data-i="' + i + '" value="' + esc(s.title || '') + '" placeholder="다중 탭 섹션 제목">' +
+        '<div>' + (s.tabs || []).map((tb, ti) => '<div class="tab-chip-edit"><input class="in" style="width:130px;flex:0 0 130px" data-tf="label" data-i="' + i + '" data-ti="' + ti + '" value="' + esc(tb.label) + '" placeholder="탭 이름"><input class="in" data-tf="content" data-i="' + i + '" data-ti="' + ti + '" value="' + esc(tb.content) + '" placeholder="탭 선택 시 보여줄 안내"><button class="btn sm danger" data-act="tab-del" data-i="' + i + '" data-ti="' + ti + '">✕</button></div>').join('') +
+        '<button class="btn sm" data-act="tab-add" data-i="' + i + '">+ 유형 탭 추가 (6개 이상 무제한)</button></div>';
+    } else if (s.type === 'STAT_AND_FAQ') {
+      fields = '<input class="in" data-sf="title" data-i="' + i + '" value="' + esc(s.title || '') + '" placeholder="섹션 제목">' +
+        '<div class="row"><input class="in" data-sf="stat_label" data-i="' + i + '" value="' + esc(s.stat_label || '') + '" placeholder="수치 라벨"><input class="in" style="width:90px;flex:0 0 90px" type="number" data-sf="stat_value" data-i="' + i + '" value="' + esc(s.stat_value) + '"><input class="in" style="width:70px;flex:0 0 70px" data-sf="stat_unit" data-i="' + i + '" value="' + esc(s.stat_unit || '%') + '"></div>' +
+        '<input class="in" data-sf="q" data-i="' + i + '" value="' + esc(s.q || '') + '" placeholder="FAQ 질문">' +
+        '<textarea class="in" style="height:60px" data-sf="a" data-i="' + i + '" placeholder="FAQ 답변">' + esc(s.a || '') + '</textarea>';
+    } else if (s.type === 'FLOATING_CTA') {
+      fields = '<div class="row"><input class="in" data-sf="button_text" data-i="' + i + '" value="' + esc(s.button_text || '') + '" placeholder="플로팅 버튼 문구"><input class="in" data-sf="link" data-i="' + i + '" value="' + esc(s.link || '') + '" placeholder="https://…"></div>';
+    }
+    return '<div class="sec-card"><div class="sec-h"><span class="anchor-pill">#' + esc(s.anchor_id) + '</span><span class="type-pill">' + TYPE_LABEL[s.type] + '</span>' +
+      '<div class="row" style="margin-left:auto"><button class="btn sm" data-act="copy-anchor" data-val="#' + esc(s.anchor_id) + '">앵커 복사</button>' +
+      '<button class="btn sm" data-act="sec-up" data-i="' + i + '">▲</button><button class="btn sm" data-act="sec-down" data-i="' + i + '">▼</button>' +
+      '<button class="btn sm danger" data-act="sec-del" data-i="' + i + '">삭제</button></div></div><div class="sec-b">' + fields + '</div></div>';
+  }).join('');
+}
+
+function renderPhone() {
+  const toc = W.sections.filter(s => s.type !== 'FLOATING_CTA').map(s => '<a href="#' + esc(s.anchor_id) + '">' + esc((s.title || s.anchor_id).slice(0, 14)) + '</a>').join('');
+  const cta = W.sections.find(s => s.type === 'FLOATING_CTA');
+  const body = W.sections.filter(s => s.type !== 'FLOATING_CTA').map((s, i) => {
+    const idx = W.sections.indexOf(s);
+    if (s.type === 'ARTICLE_CARD') {
+      return '<section class="wz-sec" id="' + esc(s.anchor_id) + '"><div class="wz-sec-tag"><span>' + esc(s.badge || 'ARTICLE') + '</span><span>#' + esc(s.anchor_id) + '</span></div>' +
+        '<div class="wz-sec-title ed" contenteditable="true" data-pf="title" data-i="' + idx + '">' + esc(s.title) + '</div>' +
+        '<div class="wz-sec-body ed" contenteditable="true" data-pf="body" data-i="' + idx + '">' + esc(s.body) + '</div>' +
+        (s.image ? '<img class="wz-sec-img" src="' + s.image + '" alt="">' : '') + '</section>';
+    }
+    if (s.type === 'MULTI_CATEGORY_TABS') {
+      const at = Math.min(s.activeTab || 0, (s.tabs || []).length - 1);
+      const cur = (s.tabs || [])[at] || { content: '' };
+      return '<section class="wz-sec" id="' + esc(s.anchor_id) + '"><div class="wz-sec-tag"><span>MULTI TABS</span><span>#' + esc(s.anchor_id) + '</span></div>' +
+        '<div class="wz-sec-title ed" contenteditable="true" data-pf="title" data-i="' + idx + '">' + esc(s.title) + '</div>' +
+        '<div class="wz-tabs">' + (s.tabs || []).map((tb, ti) => '<button class="wz-tab-btn' + (ti === at ? ' on' : '') + '" data-act="ptab" data-i="' + idx + '" data-ti="' + ti + '">' + esc(tb.label) + '</button>').join('') + '</div>' +
+        '<div class="wz-tab-panel">' + esc(cur.content) + '</div></section>';
+    }
+    if (s.type === 'STAT_AND_FAQ') {
+      return '<section class="wz-sec" id="' + esc(s.anchor_id) + '"><div class="wz-sec-tag"><span>STAT &amp; FAQ</span><span>#' + esc(s.anchor_id) + '</span></div>' +
+        '<div class="wz-sec-title ed" contenteditable="true" data-pf="title" data-i="' + idx + '">' + esc(s.title) + '</div>' +
+        '<div class="wz-stat"><div style="font-size:11.5px;color:#64748B;font-weight:700">' + esc(s.stat_label) + '</div><div class="wz-stat-num">' + esc(s.stat_value) + esc(s.stat_unit || '') + '</div></div>' +
+        '<div class="wz-faq-q"><span>Q. ' + esc(s.q) + '</span><span>▾</span></div><div class="wz-faq-a">' + esc(s.a) + '</div></section>';
+    }
+    return '';
+  }).join('');
+
+  $('#phone-screen').innerHTML =
+    '<div class="wz-hero"><div class="wz-kicker">' + esc(W.kicker || 'MOBILE WEBZINE') + '</div><div class="wz-htitle">' + esc(W.webzine_title) + '</div></div>' +
+    '<nav class="wz-toc">' + toc + '</nav>' + body +
+    (cta ? '<div class="wz-cta-wrap" id="sec-cta"><a class="wz-cta-btn" href="' + esc(cta.link || '#') + '" target="_blank" rel="noopener">' + esc(cta.button_text) + ' →</a></div>' : '');
+}
+
+function renderAll() { applyBrand(); renderEditor(); renderPhone(); notifyParent(); }
+
+/* 배포용 1MB 미만 단일 실행 HTML 생성 (IntersectionObserver Fade-up + 수치 카운팅 + 다중 탭 + FAQ 아코디언 + #sec-N 앵커) */
+function buildStandaloneHtml() {
+  reindexAnchors();
+  const dataJson = JSON.stringify(W).replace(/<\//g, '<\\/');
+  const html = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>' + esc(W.webzine_title) + '</title><style>' +
+    ':root{--b:' + (W.brand.primary || '#4F46E5') + ';--bd:' + (W.brand.dk || '#3730A3') + ';--bl:' + (W.brand.lt || '#EEF2FF') + '}' +
+    '*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:#F1F5F9;color:#1E293B;line-height:1.65;word-break:keep-all}' +
+    '.wrap{max-width:480px;margin:0 auto;min-height:100vh;background:#F8FAFC;padding-bottom:84px;box-shadow:0 0 40px rgba(15,23,42,.08)}' +
+    '.hero{background:linear-gradient(135deg,var(--b),var(--bd));color:#fff;padding:42px 24px 30px}.kicker{display:inline-block;background:rgba(255,255,255,.2);padding:4px 12px;border-radius:99px;font-size:11px;font-weight:800;margin-bottom:12px}h1{font-size:24px;font-weight:900;line-height:1.3}' +
+    '.toc{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);display:flex;gap:8px;overflow-x:auto;padding:12px 16px;border-bottom:1px solid #E2E8F0}.toc a{flex-shrink:0;padding:6px 12px;border-radius:99px;background:#F1F5F9;color:#334155;font-size:12px;font-weight:700;text-decoration:none}' +
+    '.card{margin:16px;background:#fff;border:1px solid #E2E8F0;border-radius:18px;padding:22px;box-shadow:0 6px 20px -10px rgba(15,23,42,.12);opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}.card.show{opacity:1;transform:none}' +
+    '.tag{font-size:11px;font-weight:800;color:var(--b);margin-bottom:6px}h2{font-size:18px;font-weight:800;margin-bottom:10px;color:#0F172A}.body{font-size:14px;color:#334155;white-space:pre-line}.img{width:100%;border-radius:12px;margin-top:14px;display:block}' +
+    '.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.tbtn{border:none;padding:7px 12px;border-radius:99px;background:#F1F5F9;color:#334155;font-weight:700;font-size:12px;cursor:pointer}.tbtn.on{background:var(--b);color:#fff}.tpanel{background:var(--bl);padding:14px;border-radius:12px;font-size:13.5px}' +
+    '.stat{background:linear-gradient(135deg,var(--bl),#fff);border-left:5px solid var(--b);border-radius:12px;padding:16px;margin-bottom:12px}.snum{font-size:32px;font-weight:900;color:var(--bd)}' +
+    '.fq{width:100%;text-align:left;padding:12px;border-radius:10px;border:1px solid #E2E8F0;background:#F8FAFC;font-weight:700;cursor:pointer}.fa{padding:12px;font-size:13.5px;color:#475569;display:none}.fa.open{display:block}' +
+    '.cta{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:calc(100% - 32px);max-width:448px;z-index:20}.cta a{display:block;padding:15px;border-radius:14px;background:linear-gradient(135deg,var(--b),var(--bd));color:#fff;font-weight:800;font-size:15px;text-align:center;text-decoration:none;box-shadow:0 10px 24px -6px rgba(79,70,229,.5)}' +
+    '</style></head><body><div class="wrap" id="app"></div><script>' +
+    'const D=' + dataJson + ';const app=document.getElementById("app");' +
+    'const e=s=>String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");' +
+    'const toc=D.sections.filter(s=>s.type!=="FLOATING_CTA").map(s=>"<a href=\\"#"+s.anchor_id+"\\">"+e((s.title||s.anchor_id).slice(0,14))+"</a>").join("");' +
+    'const cta=D.sections.find(s=>s.type==="FLOATING_CTA");' +
+    'app.innerHTML="<div class=hero><div class=kicker>"+e(D.kicker)+"</div><h1>"+e(D.webzine_title)+"</h1></div><nav class=toc>"+toc+"</nav>"+D.sections.filter(s=>s.type!=="FLOATING_CTA").map((s,i)=>{' +
+    'if(s.type==="ARTICLE_CARD")return "<section class=card id="+s.anchor_id+"><div class=tag>"+e(s.badge||"ARTICLE")+"</div><h2>"+e(s.title)+"</h2><div class=body>"+e(s.body)+"</div>"+(s.image?"<img class=img src=\\""+s.image+"\\">":"")+"</section>";' +
+    'if(s.type==="MULTI_CATEGORY_TABS")return "<section class=card id="+s.anchor_id+"><div class=tag>맞춤 유형 선택</div><h2>"+e(s.title)+"</h2><div class=tabs data-t="+i+">"+(s.tabs||[]).map((t,j)=>"<button class=\\"tbtn"+(j===0?" on":"")+"\\" data-j="+j+">"+e(t.label)+"</button>").join("")+"</div><div class=tpanel id=tp-"+i+">"+e((s.tabs[0]||{}).content)+"</div></section>";' +
+    'if(s.type==="STAT_AND_FAQ")return "<section class=card id="+s.anchor_id+"><div class=tag>STAT & FAQ</div><h2>"+e(s.title)+"</h2><div class=stat><div style=\\"font-size:12px;color:#64748B\\">"+e(s.stat_label)+"</div><div class=snum data-count="+Number(s.stat_value||0)+">0</div><span>"+e(s.stat_unit)+"</span></div><button class=fq onclick=\\"this.nextElementSibling.classList.toggle(\\\'open\\\')\\">Q. "+e(s.q)+"</button><div class=\\"fa open\\">"+e(s.a)+"</div></section>";' +
+    'return "";}).join("")+(cta?"<div class=cta id=sec-cta><a href=\\""+e(cta.link)+"\\" target=_blank>"+e(cta.button_text)+" →</a></div>":"");' +
+    'document.addEventListener("click",ev=>{const b=ev.target.closest(".tbtn");if(!b)return;const g=b.parentElement,s=D.sections[+g.dataset.t];g.querySelectorAll(".tbtn").forEach(x=>x.classList.remove("on"));b.classList.add("on");document.getElementById("tp-"+g.dataset.t).textContent=s.tabs[+b.dataset.j].content;});' +
+    'const io=new IntersectionObserver(es=>es.forEach(x=>{if(!x.isIntersecting)return;x.target.classList.add("show");const n=x.target.querySelector("[data-count]");if(n&&!n.dataset.done){n.dataset.done=1;const to=+n.dataset.count;let c=0;const iv=setInterval(()=>{c+=Math.max(1,Math.ceil(to/24));if(c>=to){n.textContent=to;clearInterval(iv);}else n.textContent=c;},25);}}),{threshold:.12});' +
+    'document.querySelectorAll(".card").forEach(c=>io.observe(c));' +
+    '</' + 'script></body></html>';
+  return html;
+}
+
+/* 이벤트 */
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  const act = a.dataset.act, i = +a.dataset.i, ti = +a.dataset.ti;
+  if (act === 'add-sec') {
+    const tp = a.dataset.type;
+    if (tp === 'ARTICLE_CARD') W.sections.push({ anchor_id: '', type: tp, badge: 'NEW ARTICLE', title: '새 칼럼 제목을 입력하세요', body: '핵심 내용을 간결하게 작성해 주세요.', image: null });
+    if (tp === 'MULTI_CATEGORY_TABS') W.sections.push({ anchor_id: '', type: tp, title: '유형별 맞춤 가이드', activeTab: 0, tabs: [{ label: '유형 A', content: '유형 A 맞춤 안내입니다.' }, { label: '유형 B', content: '유형 B 맞춤 안내입니다.' }] });
+    if (tp === 'STAT_AND_FAQ') W.sections.push({ anchor_id: '', type: tp, title: '핵심 성과 & FAQ', stat_label: '고객 만족도', stat_value: 98, stat_unit: '%', q: '자주 묻는 질문을 입력하세요', a: '명쾌한 답변을 입력하세요.' });
+    if (tp === 'FLOATING_CTA') W.sections.push({ anchor_id: 'sec-cta', type: tp, button_text: '지금 바로 신청하기', link: 'https://gomawartalk.com' });
+    return renderAll();
+  }
+  if (act === 'sec-up' && i > 0) { [W.sections[i - 1], W.sections[i]] = [W.sections[i], W.sections[i - 1]]; return renderAll(); }
+  if (act === 'sec-down' && i < W.sections.length - 1) { [W.sections[i + 1], W.sections[i]] = [W.sections[i], W.sections[i + 1]]; return renderAll(); }
+  if (act === 'sec-del') { W.sections.splice(i, 1); return renderAll(); }
+  if (act === 'sec-img-del') { W.sections[i].image = null; return renderAll(); }
+  if (act === 'tab-add') { W.sections[i].tabs.push({ label: '유형 ' + (W.sections[i].tabs.length + 1), content: '맞춤 안내 내용을 입력하세요.' }); return renderAll(); }
+  if (act === 'tab-del' && W.sections[i].tabs.length > 1) { W.sections[i].tabs.splice(ti, 1); return renderAll(); }
+  if (act === 'ptab') { W.sections[i].activeTab = ti; return renderPhone(); }
+  if (act === 'copy-anchor') { copyText(a.dataset.val); return toast('🔗 ' + a.dataset.val + ' 앵커 복사 완료', 'ok'); }
+  if (act === 'copy-anchors') {
+    const txt = W.sections.map(s => '#' + s.anchor_id + ' — ' + (s.title || s.button_text || s.anchor_id)).join('\n');
+    copyText(txt); return toast('🔗 전체 앵커 목차를 복사했습니다.', 'ok');
+  }
+  if (act === 'push-carousel') {
+    const cards = W.sections.filter(s => s.type !== 'FLOATING_CTA').slice(0, 6).map((s, idx) => ({
+      card_index: idx + 1,
+      header_20chars: (s.title || ('섹션 ' + (idx + 1))).slice(0, 20),
+      body_180chars: (s.body || s.a || (s.tabs && s.tabs[0] && s.tabs[0].content) || '웹진에서 상세 내용을 확인하세요.').slice(0, 180),
+      button_8chars: '바로보기',
+      webzine_anchor: '#' + s.anchor_id,
+      image: s.image || null
+    }));
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'WEBZINE_TO_CAROUSEL', payload: { cards } }, '*');
+      toast('⚡ 웹진 목차 ' + cards.length + '개를 탭 4·5 캐러셀 카드로 전송했습니다!', 'ok');
+    } else {
+      toast('LandingBuilder.html 내부에서 실행하면 탭 4·5 캐러셀에 자동 반영됩니다.', 'warn');
+    }
+    return;
+  }
+  if (act === 'export-html') {
+    const out = buildStandaloneHtml();
+    const kb = Math.round(new Blob([out]).size / 1024);
+    const blob = new Blob([out], { type: 'text/html;charset=utf-8' });
+    const aEl = document.createElement('a'); aEl.href = URL.createObjectURL(blob);
+    aEl.download = 'webzine_' + (W.webzine_title || 'mobile').replace(/[\\\/:*?"<>|\s]+/g, '_') + '.html';
+    document.body.appendChild(aEl); aEl.click(); aEl.remove();
+    return toast('💾 배포용 단일 HTML 다운로드 완료 (' + kb + 'KB)', 'ok');
+  }
+});
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'wz-title') { W.webzine_title = t.value; renderPhone(); notifyParent(); }
+  if (t.id === 'wz-kicker') { W.kicker = t.value; renderPhone(); notifyParent(); }
+  if (t.dataset && t.dataset.sf) { W.sections[+t.dataset.i][t.dataset.sf] = t.value; renderPhone(); notifyParent(); }
+  if (t.dataset && t.dataset.tf) { W.sections[+t.dataset.i].tabs[+t.dataset.ti][t.dataset.tf] = t.value; renderPhone(); notifyParent(); }
+  if (t.dataset && t.dataset.pf) { W.sections[+t.dataset.i][t.dataset.pf] = t.innerText; renderEditor(); notifyParent(); }
+});
+
+document.addEventListener('change', async e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.act === 'sec-img' && t.files[0]) {
+    const f = t.files[0]; t.value = '';
+    const url = window.ImageCapturer ? await window.ImageCapturer.compressImageToBase64(f) : await new Promise(r => { const fr = new FileReader(); fr.onload = ev => r(ev.target.result); fr.readAsDataURL(f); });
+    W.sections[+t.dataset.i].image = url; renderAll();
+    toast('🗜️ 웹진 이미지 150KB 이하 압축 적용 완료', 'ok');
+  }
+});
+
+/* 부모 창(LandingBuilder.html)과 postMessage 양방향 연동 (file:// 호환) */
+window.addEventListener('message', e => {
+  const d = e.data || {};
+  if (d.type === 'SYNC_FROM_PARENT' && d.payload) {
+    if (d.payload.brand) W.brand = Object.assign(W.brand, d.payload.brand);
+    if (d.payload.webzine_studio) {
+      const ws = d.payload.webzine_studio;
+      if (ws.webzine_title) W.webzine_title = ws.webzine_title;
+      if (Array.isArray(ws.sections) && ws.sections.length) {
+        W.sections = ws.sections.map(s => {
+          if (s.type === 'MULTI_CATEGORY_TABS' && Array.isArray(s.tabs) && typeof s.tabs[0] === 'string') {
+            return Object.assign({}, s, { activeTab: 0, tabs: s.tabs.map(lbl => ({ label: lbl, content: lbl + ' 맞춤 핵심 가이드입니다.' })) });
+          }
+          return Object.assign({}, s);
+        });
+      }
+    }
+    applyBrand(); renderEditor(); renderPhone();
+  }
+});
+
+window.WZ = { state: () => W, buildStandaloneHtml };
+renderAll();
+})();
+</script>
+</body>
+</html>

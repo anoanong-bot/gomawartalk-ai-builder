@@ -194,18 +194,53 @@ button { cursor: pointer; border: none; background: none; }
   transition: width 0.28s ease;
 }
 
-/* 메인 스크롤 영역 */
+/* 메인 스크롤 영역 (하단 고정 CTA 가림 방지를 위해 stage-pane padding-bottom: 120px 확보) */
 .stage-viewport {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
-  padding: 18px 16px calc(28px + env(safe-area-inset-bottom, 0px));
+  padding: 0;
   scroll-behavior: smooth;
 }
 .stage-pane {
+  flex: 1 0 auto;
+  padding: 18px 16px 120px;
   display: flex;
   flex-direction: column;
   gap: 14px;
   animation: fadeSlide 0.2s ease;
+}
+
+/* 토스식 모바일 하단 고정 액션 바 (Sticky Bottom CTA) */
+.sticky-cta-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+  margin-top: auto;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.sticky-cta-caption {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--blue-dk);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sticky-cta-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 @keyframes fadeSlide {
   from { opacity: 0; transform: translateY(6px); }
@@ -298,6 +333,76 @@ button { cursor: pointer; border: none; background: none; }
   border-color: var(--blue);
   background: var(--blue-lt);
   box-shadow: 0 4px 14px rgba(49, 130, 246, 0.18);
+}
+.sector-card.other-card {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  border-style: dashed;
+  background: #FAFCFF;
+  padding: 13px 15px;
+}
+.sector-card.other-card.selected {
+  border-style: solid;
+  background: var(--blue-lt);
+}
+.sector-other-desc {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g500);
+  margin-top: 2px;
+}
+
+/* Step 2 상단 컴팩트 AI 추천 배너 & 선택 카드 내 즉시 진행 버튼 */
+.btn-ai-banner {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 100%);
+  border: 1.5px solid #BFDBFE;
+  color: var(--blue-dk);
+  font-size: 13.5px;
+  font-weight: 800;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 3px 10px rgba(49, 130, 246, 0.08);
+}
+.btn-ai-banner:active { transform: scale(0.99); }
+.flow-loading-banner {
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: var(--blue-lt);
+  color: var(--blue-dk);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-align: center;
+}
+.flow-selected-bar {
+  margin-top: 2px;
+  padding-top: 10px;
+  border-top: 1px dashed #93C5FD;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.flow-selected-hint {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue-dk);
+}
+.btn-flow-go {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border-radius: 9px;
+  background: var(--blue);
+  color: #FFFFFF;
+  font-size: 12.5px;
+  font-weight: 800;
 }
 .sector-icon { font-size: 24px; line-height: 1; }
 .sector-num {
@@ -945,7 +1050,7 @@ button { cursor: pointer; border: none; background: none; }
 
     <main class="stage-viewport" id="stage-viewport">
 
-      <!-- ── STEP 1: 6대 비즈니스 분야 선택 + 1줄 세부 업종 ── -->
+      <!-- ── STEP 1: 6대 비즈니스 분야 선택 + 7번째 기타 업종 + 1줄 세부 업종 ── -->
       <section class="stage-pane" id="stage-1">
         <div>
           <h2 class="stage-heading" id="s1-heading">대표님, 어떤 분야의 비즈니스를 운영하고 계신가요?</h2>
@@ -958,7 +1063,6 @@ button { cursor: pointer; border: none; background: none; }
           <label class="sub-label" for="sub-industry-input">✏️ 대표님의 구체적인 세부 업종을 한 줄로 적어주세요</label>
           <input type="text" class="field-input" id="sub-industry-input" placeholder="예) 병의원·기장 전문 세무사" autocomplete="off">
           <div class="quick-sub-chips" id="sub-quick-chips"></div>
-          <button type="button" class="btn-primary" id="btn-to-stage2">다음: 내 분야 맞춤 카톡 흐름 6가지 보기 →</button>
         </div>
       </section>
 
@@ -971,24 +1075,25 @@ button { cursor: pointer; border: none; background: none; }
 
         <div>
           <h2 class="stage-heading">내 분야에 딱 맞춘<br>6가지 카톡 운영 흐름이에요</h2>
-          <p class="stage-sub">신청페이지부터 즉시 첫 카톡·후속 자동 카톡까지 미리 보시고 가장 원하는 흐름을 골라주세요.</p>
+          <p class="stage-sub">신청페이지부터 즉시 첫 카톡·후속 자동 카톡까지 미리 보시고 가장 원하는 흐름을 골라주세요. (선택된 카드를 한 번 더 누르면 바로 시작돼요!)</p>
         </div>
 
-        <div class="flow-list" id="flow-list"></div>
-
-        <!-- AI 흐름 추천 도우미 -->
-        <button type="button" class="btn-secondary" id="btn-toggle-flow-ai">
-          🤔 어떤 흐름이 좋을지 고민돼요 — 제 목표를 적고 AI 추천받기
+        <!-- ★ 상단 컴팩트 AI 흐름 추천 배너 (1번 카드 위 배치) -->
+        <button type="button" class="btn-ai-banner" id="btn-toggle-flow-ai">
+          <span>🤔 어떤 흐름이 좋을지 고민돼요 — 제 목표를 적고 AI 추천받기</span>
+          <span id="flow-ai-toggle-icon">▾</span>
         </button>
 
         <div class="ai-rec-card" id="flow-ai-panel" hidden>
           <div style="font-size:13.5px;font-weight:800;color:var(--g900)">✨ 이번 캠페인으로 이루고 싶은 목표를 한 줄로 적어주세요</div>
-          <textarea class="field-input" id="flow-goal-input" rows="2" placeholder="예) 세무 상담 문의를 늘리고, 매달 절세 팁을 보내 기존 고객 이탈을 막고 싶어요"></textarea>
+          <textarea class="field-input" id="flow-goal-input" rows="2" placeholder="예) 신규 예약·상담 문의를 늘리고, 유익한 안내를 카톡으로 보내 단골을 만들고 싶어요"></textarea>
           <button type="button" class="btn-primary" id="btn-run-flow-ai" style="min-height:46px;padding:11px">✨ AI 맞춤 흐름 추천받기</button>
           <div class="ai-rec-result" id="flow-ai-result" hidden></div>
         </div>
 
-        <button type="button" class="btn-primary" id="btn-to-stage3" disabled>선택한 흐름으로 심층 인터뷰 시작 →</button>
+        <div class="flow-loading-banner" id="flow-loading-banner" hidden>⏳ 입력하신 세부 업종 전용 6가지 카톡 운영 흐름을 맞춤 생성하고 있어요…</div>
+
+        <div class="flow-list" id="flow-list"></div>
       </section>
 
       <!-- ── STEP 3: Tap-to-Edit 주관식 5단계 심층 인터뷰 + 매뉴얼 검문소 ── -->
@@ -1039,11 +1144,6 @@ button { cursor: pointer; border: none; background: none; }
             <span class="tap-edit-toast" id="tap-edit-toast"></span>
             <span id="textarea-char-count">0자</span>
           </div>
-        </div>
-
-        <div class="interview-action-row">
-          <button type="button" class="btn-prev-q" id="btn-prev-q" hidden>← 이전</button>
-          <button type="button" class="btn-primary" id="btn-submit-q" style="flex:1">답변 완료 · 다음 질문 →</button>
         </div>
       </section>
 
@@ -1115,8 +1215,6 @@ button { cursor: pointer; border: none; background: none; }
             <span id="ai-photo-mode-check">○</span>
           </button>
         </div>
-
-        <button type="button" class="btn-primary" id="btn-to-stage5">최종 기획안 요약 확인하기 →</button>
       </section>
 
       <!-- ── STEP 5: 최종 요약 컨펌 ➔ 제출 ── -->
@@ -1143,13 +1241,42 @@ button { cursor: pointer; border: none; background: none; }
             <input type="text" id="summary-revise-input" placeholder="예) 말투를 더 친근하게 바꿔주세요">
             <button type="button" id="btn-apply-revise">수정 반영</button>
           </div>
-
-          <button type="button" class="btn-primary" id="btn-submit-campaign">✅ 이대로 제작 요청 제출하기</button>
         </div>
 
         <!-- 제출 완료 카드 -->
         <div class="summary-card" id="submit-done-card" style="border-color:var(--green)" hidden></div>
       </section>
+
+      <!-- ═════════ 토스식 모바일 하단 고정 액션 바 (Step 1 ~ Step 5 공용 Sticky Bottom CTA) ═════════ -->
+      <div class="sticky-cta-bar" id="sticky-cta-bar" hidden>
+        <div class="sticky-cta-caption" id="sticky-cta-caption" hidden></div>
+
+        <!-- Step 1 CTA -->
+        <div class="sticky-cta-row" id="cta-row-1" hidden>
+          <button type="button" class="btn-primary" id="btn-to-stage2">다음: 내 분야 맞춤 카톡 흐름 6가지 보기 →</button>
+        </div>
+
+        <!-- Step 2 CTA -->
+        <div class="sticky-cta-row" id="cta-row-2" hidden>
+          <button type="button" class="btn-primary" id="btn-to-stage3" disabled>선택한 흐름으로 심층 인터뷰 시작 →</button>
+        </div>
+
+        <!-- Step 3 CTA -->
+        <div class="sticky-cta-row" id="cta-row-3" hidden>
+          <button type="button" class="btn-prev-q" id="btn-prev-q" hidden>← 이전</button>
+          <button type="button" class="btn-primary" id="btn-submit-q" style="flex:1">답변 완료 · 다음 질문 →</button>
+        </div>
+
+        <!-- Step 4 CTA -->
+        <div class="sticky-cta-row" id="cta-row-4" hidden>
+          <button type="button" class="btn-primary" id="btn-to-stage5">최종 기획안 요약 확인하기 →</button>
+        </div>
+
+        <!-- Step 5 CTA -->
+        <div class="sticky-cta-row" id="cta-row-5" hidden>
+          <button type="button" class="btn-primary" id="btn-submit-campaign">✅ 이대로 제작 요청 제출하기</button>
+        </div>
+      </div>
 
     </main>
   </section>
@@ -1247,6 +1374,8 @@ const ST = {
   sectorId: '',
   subIndustry: '',
   flowId: '',
+  customFlows: [],
+  submitted: false,
 
   qNum: 1, // 1..5
   answers: {},
@@ -1403,6 +1532,58 @@ const STAGE_LABELS = {
   5: 'STEP 5 / 5 · 최종 요약 확인'
 };
 
+function updateStickyCtaBar() {
+  const bar = $('#sticky-cta-bar');
+  const cap = $('#sticky-cta-caption');
+  [1, 2, 3, 4, 5].forEach(i => { $('#cta-row-' + i).hidden = true; });
+  cap.hidden = true;
+  cap.textContent = '';
+
+  if (ST.stage === 1) {
+    if (!ST.sectorId) { bar.hidden = true; return; }
+    bar.hidden = false;
+    $('#cta-row-1').hidden = false;
+    const rawSub = ($('#sub-industry-input').value || '').trim();
+    const isOtherNeedInput = ST.sectorId === 'other' && rawSub.length < 2;
+    $('#btn-to-stage2').disabled = isOtherNeedInput;
+    $('#btn-to-stage2').textContent = isOtherNeedInput
+      ? '세부 업종을 먼저 한 줄 적어주세요'
+      : '다음: 내 분야 맞춤 카톡 흐름 6가지 보기 →';
+    return;
+  }
+
+  if (ST.stage === 2) {
+    if (!ST.flowId) { bar.hidden = true; return; }
+    bar.hidden = false;
+    $('#cta-row-2').hidden = false;
+    const flow = Consult.getFlow(ST.sectorId, ST.flowId, ST.customFlows, ST.subIndustry);
+    cap.hidden = false;
+    cap.textContent = '✅ 선택됨: ' + (flow ? flow.title : '운영 흐름');
+    const cta = $('#btn-to-stage3');
+    cta.disabled = false;
+    cta.textContent = '이 흐름으로 심층 인터뷰 시작 →';
+    return;
+  }
+
+  if (ST.stage === 3) {
+    bar.hidden = false;
+    $('#cta-row-3').hidden = false;
+    return;
+  }
+
+  if (ST.stage === 4) {
+    bar.hidden = false;
+    $('#cta-row-4').hidden = false;
+    return;
+  }
+
+  if (ST.stage === 5) {
+    if (ST.submitted) { bar.hidden = true; return; }
+    bar.hidden = false;
+    $('#cta-row-5').hidden = false;
+  }
+}
+
 function goStage(n) {
   ST.stage = n;
   [1, 2, 3, 4, 5].forEach(i => { $('#stage-' + i).hidden = (i !== n); });
@@ -1416,12 +1597,15 @@ function goStage(n) {
   $('#stage-progress-sub').textContent = sub;
   $('#stage-progress-fill').style.width = pct + '%';
   $('#stage-viewport').scrollTop = 0;
+  updateStickyCtaBar();
 }
 
 function resetConsultFlow() {
   ST.sectorId = '';
   ST.subIndustry = '';
   ST.flowId = '';
+  ST.customFlows = [];
+  ST.submitted = false;
   ST.qNum = 1;
   ST.answers = {};
   ST.currentQPack = null;
@@ -1439,24 +1623,36 @@ function resetConsultFlow() {
   $('#sub-industry-box').hidden = true;
   $('#flow-ai-panel').hidden = true;
   $('#flow-ai-result').hidden = true;
+  $('#flow-ai-toggle-icon').textContent = '▾';
   $('#submit-done-card').hidden = true;
   $('#summary-confirm-card').hidden = false;
   renderStage1Sectors();
   goStage(1);
 }
 
-/* ═══════════════ STEP 1: 6대 비즈니스 분야 선택 + 세부 업종 ═══════════════ */
-const CIRCLED_NUMS = ['①', '②', '③', '④', '⑤', '⑥'];
+/* ═══════════════ STEP 1: 6대 비즈니스 분야 + 7번째 기타 업종 직접 입력 + 세부 업종 ═══════════════ */
+const CIRCLED_NUMS = ['①', '②', '③', '④', '⑤', '⑥', '⑦'];
 
 function renderStage1Sectors() {
   const grid = $('#sector-grid');
-  grid.innerHTML = (Catalog.sectors || []).map((sec, idx) =>
-    '<button type="button" class="sector-card' + (ST.sectorId === sec.id ? ' selected' : '') + '" data-sector="' + esc(sec.id) + '">' +
+  grid.innerHTML = (Catalog.sectors || []).map((sec, idx) => {
+    const isOther = !!sec.isOther || sec.id === 'other';
+    if (isOther) {
+      return '<button type="button" class="sector-card other-card' + (ST.sectorId === sec.id ? ' selected' : '') + '" data-sector="' + esc(sec.id) + '">' +
+        '<div class="sector-icon">' + sec.icon + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div class="sector-num">분야 ' + (CIRCLED_NUMS[idx] || (idx + 1)) + ' · 직접 입력</div>' +
+          '<div class="sector-title">' + esc(sec.title) + '</div>' +
+          '<div class="sector-other-desc">위 6개 분야에 딱 맞는 곳이 없다면 내 업종을 자유롭게 적어주세요</div>' +
+        '</div>' +
+      '</button>';
+    }
+    return '<button type="button" class="sector-card' + (ST.sectorId === sec.id ? ' selected' : '') + '" data-sector="' + esc(sec.id) + '">' +
       '<div class="sector-icon">' + sec.icon + '</div>' +
       '<div class="sector-num">분야 ' + (CIRCLED_NUMS[idx] || (idx + 1)) + '</div>' +
       '<div class="sector-title">' + esc(sec.title) + '</div>' +
-    '</button>'
-  ).join('');
+    '</button>';
+  }).join('');
 
   $$('[data-sector]', grid).forEach(btn => {
     btn.onclick = () => selectSector(btn.dataset.sector);
@@ -1466,6 +1662,7 @@ function renderStage1Sectors() {
 function selectSector(sectorId) {
   ST.sectorId = sectorId;
   ST.flowId = '';
+  ST.customFlows = [];
   renderStage1Sectors();
   const sec = Consult.getSector(sectorId);
   if (!sec) return;
@@ -1482,6 +1679,7 @@ function selectSector(sectorId) {
     c.onclick = () => {
       inp.value = c.dataset.subEx;
       ST.subIndustry = inp.value;
+      updateStickyCtaBar();
       inp.focus();
     };
   });
@@ -1491,37 +1689,83 @@ function selectSector(sectorId) {
   if (defCol && !ST.brandAssets.colorThemeId) {
     applyBrandColorTheme(defCol.id, defCol.label, defCol.primary, defCol.secondary, false);
   }
-  setTimeout(() => { subBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 60);
+  updateStickyCtaBar();
+  // 세부 업종 입력칸과 하단 고정 CTA가 한눈에 들어오도록 부드럽게 자동 스크롤 & 포커스
+  setTimeout(() => {
+    subBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    inp.focus();
+  }, 80);
 }
 
-function proceedToStage2() {
+async function proceedToStage2() {
   if (!ST.sectorId) return;
   const sec = Consult.getSector(ST.sectorId);
   const rawSub = ($('#sub-industry-input').value || '').trim();
+  if (ST.sectorId === 'other' && rawSub.length < 2) {
+    $('#sub-industry-input').focus();
+    return;
+  }
   ST.subIndustry = rawSub || (sec ? sec.shortTitle : '');
+  ST.flowId = '';
+
   // 세부 업종 기반 기본 추천 컬러 재반영 (아직 사용자가 Step 4에서 직접 고르지 않은 경우)
   const defCol = Consult.getDefaultColorForSector(ST.sectorId, ST.subIndustry);
   if (defCol && !ST.brandAssets.isCustomColor) {
     applyBrandColorTheme(defCol.id, defCol.label, defCol.primary, defCol.secondary, false);
   }
+
+  // 1차로 타 업종 오염 없는 로컬 세부 업종 6대 플로우를 즉시 렌더링
+  ST.customFlows = Consult.getFlowsForContext(ST.sectorId, ST.subIndustry);
   renderStage2Flows();
   goStage(2);
+
+  // AI가 연결돼 있으면 입력한 세부 업종 100% 전용 6대 플로우를 실시간 AI 번역으로 정교화
+  const cfg = Engine.getConfig();
+  const hasAi = (getAiMode() === 'admin' && cfg.hasDirectKey) || (getAiMode() !== 'admin' && !!getProxyUrl());
+  if (hasAi && rawSub.length >= 2) {
+    const loadBanner = $('#flow-loading-banner');
+    loadBanner.hidden = false;
+    try {
+      const res = await Consult.generateSubIndustryFlows({
+        mode: getAiMode(),
+        proxyUrl: getProxyUrl(),
+        token: ST.partnerToken,
+        sectorId: ST.sectorId,
+        subIndustry: ST.subIndustry
+      });
+      if (ST.stage === 2 && res && Array.isArray(res.flows) && res.flows.length === 6) {
+        ST.customFlows = res.flows;
+        renderStage2Flows();
+      }
+    } finally {
+      loadBanner.hidden = true;
+    }
+  }
 }
 
 /* ═══════════════ STEP 2: 내 분야 맞춤 6대 운영 플로우 미리보기 & AI 추천 ═══════════════ */
 function renderStage2Flows(recommendedId) {
   const sec = Consult.getSector(ST.sectorId);
   if (!sec) return;
-  $('#s2-context-tag').textContent = sec.icon + ' ' + sec.shortTitle + (ST.subIndustry ? (' · ' + ST.subIndustry) : '');
+  $('#s2-context-tag').textContent = sec.icon + ' ' + (ST.subIndustry || sec.shortTitle);
 
+  const flows = (ST.customFlows && ST.customFlows.length)
+    ? ST.customFlows
+    : Consult.getFlowsForContext(ST.sectorId, ST.subIndustry);
   const list = $('#flow-list');
-  list.innerHTML = (sec.flows || []).map((f, idx) => {
+  list.innerHTML = flows.map((f, idx) => {
     const isSel = ST.flowId === f.id;
     const isRec = recommendedId === f.id;
     const badgeTxt = isRec ? '✨ AI 추천' : (f.badge || '');
     const pipeHtml = (f.pipeline || []).map(p =>
       '<div class="pipe-row"><span class="pipe-tag">' + esc(p.step) + '</span><span>' + esc(p.text) + '</span></div>'
     ).join('');
+    const selectedBar = isSel
+      ? '<div class="flow-selected-bar">' +
+          '<span class="flow-selected-hint">✅ 선택됨 · 한 번 더 터치하면 바로 시작돼요</span>' +
+          '<span class="btn-flow-go" data-flow-go="' + esc(f.id) + '">이 흐름으로 선택 →</span>' +
+        '</div>'
+      : '';
     return '<button type="button" class="flow-card' + (isSel ? ' selected' : '') + '" data-flow="' + esc(f.id) + '">' +
       '<div class="flow-head">' +
         '<div class="flow-title-wrap"><span class="flow-icon">' + f.icon + '</span><span class="flow-title">' + (idx + 1) + '. ' + esc(f.title) + '</span></div>' +
@@ -1529,22 +1773,29 @@ function renderStage2Flows(recommendedId) {
       '</div>' +
       '<div class="flow-summary">' + esc(f.summary) + '</div>' +
       '<div class="flow-pipeline">' + pipeHtml + '</div>' +
+      selectedBar +
     '</button>';
   }).join('');
 
   $$('[data-flow]', list).forEach(btn => {
-    btn.onclick = () => selectFlow(btn.dataset.flow);
+    btn.onclick = ev => {
+      const fid = btn.dataset.flow;
+      // 이미 선택된 카드를 한 번 더 터치하거나, 카드 내 [이 흐름으로 선택 →] 클릭 시 즉시 다음 단계 이동!
+      if (ST.flowId === fid || (ev.target && ev.target.closest && ev.target.closest('[data-flow-go]'))) {
+        ST.flowId = fid;
+        startStage3Interview();
+        return;
+      }
+      selectFlow(fid);
+    };
   });
-  $('#btn-to-stage3').disabled = !ST.flowId;
+  updateStickyCtaBar();
 }
 
 function selectFlow(flowId) {
   ST.flowId = flowId;
   renderStage2Flows();
-  const cta = $('#btn-to-stage3');
-  cta.disabled = false;
-  const flow = Consult.getFlow(ST.sectorId, flowId);
-  cta.textContent = '선택 완료 · [' + (flow ? flow.title : '이 흐름') + ']으로 인터뷰 시작 →';
+  updateStickyCtaBar();
 }
 
 async function runFlowAiRecommend() {
@@ -1561,6 +1812,7 @@ async function runFlowAiRecommend() {
       token: ST.partnerToken,
       sectorId: ST.sectorId,
       subIndustry: ST.subIndustry,
+      customFlows: ST.customFlows,
       goalText: goal
     });
     const box = $('#flow-ai-result');
@@ -1722,7 +1974,8 @@ async function startStage3Interview() {
     ownerName: ST.partnerInfo.ownerName,
     sectorId: ST.sectorId,
     subIndustry: ST.subIndustry,
-    flowId: ST.flowId
+    flowId: ST.flowId,
+    customFlows: ST.customFlows
   });
   $('#btn-submit-q').disabled = false;
   renderCurrentQuestionPack(pack);
@@ -1735,6 +1988,7 @@ function jumpToInterviewQuestion(targetQ) {
     sectorId: ST.sectorId,
     subIndustry: ST.subIndustry,
     flowId: ST.flowId,
+    customFlows: ST.customFlows,
     answers: ST.answers
   });
   renderCurrentQuestionPack(pack);
@@ -1765,6 +2019,7 @@ async function submitCurrentInterviewAnswer() {
       sectorId: ST.sectorId,
       subIndustry: ST.subIndustry,
       flowId: ST.flowId,
+      customFlows: ST.customFlows,
       qNum: ST.qNum,
       answers: ST.answers,
       userText: txt
@@ -2014,6 +2269,7 @@ function renderStage4BrandAssets() {
 
 /* ═══════════════ STEP 5: 최종 요약 컨펌 & 제출 ═══════════════ */
 async function enterStage5Summary(revisionText) {
+  ST.submitted = false;
   goStage(5);
   $('#submit-done-card').hidden = true;
   $('#summary-confirm-card').hidden = false;
@@ -2027,6 +2283,7 @@ async function enterStage5Summary(revisionText) {
     sectorId: ST.sectorId,
     subIndustry: ST.subIndustry,
     flowId: ST.flowId,
+    customFlows: ST.customFlows,
     answers: ST.answers,
     notes: ST.notes
   }, revisionText);
@@ -2036,7 +2293,7 @@ async function enterStage5Summary(revisionText) {
 
 function renderStage5SummaryCard() {
   const sum = ST.summary || Consult.localSummary({
-    sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId, answers: ST.answers
+    sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId, customFlows: ST.customFlows, answers: ST.answers
   });
   ST.summary = sum;
   const photos = ST.brandAssets.photos.filter(Boolean);
@@ -2077,6 +2334,7 @@ async function generateAndSubmitCampaign() {
     sectorId: ST.sectorId,
     subIndustry: ST.subIndustry,
     flowId: ST.flowId,
+    customFlows: ST.customFlows,
     answers: ST.answers,
     notes: ST.notes,
     summary: ST.summary,
@@ -2113,8 +2371,10 @@ async function generateAndSubmitCampaign() {
   }
 
   ST.isBusy = false;
+  ST.submitted = true;
   btn.disabled = false;
   btn.textContent = '✅ 이대로 제작 요청 제출하기';
+  updateStickyCtaBar();
 
   const uploadedCnt = (master.brand_assets.partner_photos || []).length;
   const adminBtnsHtml = IS_ADMIN_ENV
@@ -2173,6 +2433,7 @@ $('#btn-reset').onclick = () => { if (ST.verified) resetConsultFlow(); };
 
 // Step 1
 $('#btn-to-stage2').onclick = proceedToStage2;
+$('#sub-industry-input').addEventListener('input', updateStickyCtaBar);
 $('#sub-industry-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') { e.preventDefault(); proceedToStage2(); }
 });
@@ -2182,6 +2443,7 @@ $('#btn-back-to-s1').onclick = () => goStage(1);
 $('#btn-toggle-flow-ai').onclick = () => {
   const p = $('#flow-ai-panel');
   p.hidden = !p.hidden;
+  $('#flow-ai-toggle-icon').textContent = p.hidden ? '▾' : '▴';
   if (!p.hidden) $('#flow-goal-input').focus();
 };
 $('#btn-run-flow-ai').onclick = runFlowAiRecommend;

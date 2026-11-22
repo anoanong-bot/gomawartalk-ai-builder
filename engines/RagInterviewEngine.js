@@ -1416,9 +1416,132 @@
     return list[0] || null;
   };
 
-  CONSULT.getFlow = function (sectorId, flowId) {
+  CONSULT.matchSubDomainPack = function (sectorId, subIndustry) {
+    var cat = CONSULT.getCatalog();
+    var packs = cat.subDomainPacks || {};
+    var sub = String(subIndustry || '').trim();
+    if (!sub) return null;
+    var keys = Object.keys(packs);
+    for (var i = 0; i < keys.length; i++) {
+      var p = packs[keys[i]];
+      if (p && p.re && p.re.test(sub)) return { key: keys[i], pack: p };
+    }
+    return null;
+  };
+
+  function interpolateSub(str, subLabel) {
+    return String(str == null ? '' : str).replace(/\{SUB\}/g, subLabel || '우리 브랜드');
+  }
+
+  // 타 업종 용어 오염 0% 보장 — 세부 업종 전용 6대 플로우 로컬 생성기
+  CONSULT.getFlowsForContext = function (sectorId, subIndustry) {
+    var sub = String(subIndustry || '').trim();
     var sec = CONSULT.getSector(sectorId);
-    var flows = (sec && sec.flows) || [];
+    var matched = CONSULT.matchSubDomainPack(sectorId, sub);
+    var srcFlows = null;
+    if (matched && matched.pack && Array.isArray(matched.pack.flows)) {
+      srcFlows = matched.pack.flows;
+    } else if (sec && Array.isArray(sec.flows)) {
+      srcFlows = sec.flows;
+    } else {
+      return [];
+    }
+    var subLabel = sub || (sec ? sec.shortTitle : '우리 브랜드');
+    return srcFlows.map(function (f) {
+      var title = interpolateSub(f.title, subLabel);
+      // 기타 업종(other)에서 사용자가 세부 업종을 적었다면 제목/요약에 자연스럽게 세부 업종 반영
+      if (sectorId === 'other' && sub && title.indexOf(sub) === -1) {
+        title = sub + ' ' + title;
+      }
+      return {
+        id: f.id,
+        trackId: f.trackId,
+        icon: f.icon,
+        badge: f.badge || '',
+        title: CONSULT.cleanPartnerText(title),
+        summary: CONSULT.cleanPartnerText(interpolateSub(f.summary, subLabel)),
+        useWebzine: !!f.useWebzine,
+        pipeline: (f.pipeline || []).map(function (p) {
+          return {
+            step: p.step,
+            text: CONSULT.cleanPartnerText(interpolateSub(p.text, subLabel))
+          };
+        })
+      };
+    });
+  };
+
+  // Step 2: 세부 업종 100% 맞춤형 6대 카톡 운영 플로우 실시간 AI 번역 생성 (오프라인 시 키워드 분리 폴백)
+  CONSULT.generateSubIndustryFlows = function (ctx) {
+    ctx = ctx || {};
+    var sec = CONSULT.getSector(ctx.sectorId);
+    var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
+    var localFlows = CONSULT.getFlowsForContext(ctx.sectorId, sub);
+
+    // 세부 업종이 없거나 AI 미연결이면 즉시 오염 없는 로컬 6대 플로우 반환
+    if (!sub || (ctx.mode === 'admin' && !getConfig().hasDirectKey) || (ctx.mode !== 'admin' && !String(ctx.proxyUrl || '').trim())) {
+      return Promise.resolve({ flows: localFlows, source: 'local_clean' });
+    }
+
+    var baseRef = localFlows.map(function (f, i) {
+      return (i + 1) + '. [' + f.id + '] ' + f.title;
+    }).join('\n');
+
+    var sys = [
+      '당신은 고마워톡 수석 마케팅 컨설턴트입니다.',
+      '파트너가 직접 입력한 [세부 업종]의 실전 언어와 고객 상황에만 100% 맞춘 6가지 카톡 운영 플로우를 JSON 배열로 작성하세요.',
+      '절대 규칙:',
+      '1) 타 업종 용어 오염 100% 금지! 예를 들어 세부 업종이 "산부인과"·"치과"·"한의원" 등 병의원이면 세무·절세·부가세·법인·기장 같은 타 업종 단어를 단 한 글자도 절대 넣지 마세요.',
+      '2) 내부 시스템 용어(뜰채, 시트 정수 더하기, 1회차 알림톡, 트랙 번호, ' + TOSS_BANNED_LIT + ') 절대 금지.',
+      '3) 6개 흐름은 반드시 FLOW_1(일정·예약 리마인드), FLOW_2(가이드·혜택 즉시 발급), FLOW_3(정기 칼럼·소식 연재), FLOW_4(자가진단 & 유형별 맞춤 분기), FLOW_5(열독·방문 포인트 적립 VIP), FLOW_6(현장 QR 체크인·통합 안내) 구조를 유지하되 이름과 내용을 100% 세부 업종 현장 용어로 번역하세요.',
+      '4) 출력 JSON만: {"flows":[{"id":"FLOW_1","title":"...","badge":"짧은뱃지","summary":"1줄 요약","pipeline":[{"step":"신청페이지","text":"..."},{"step":"즉시 첫 카톡","text":"..."},{"step":"후속 자동 카톡","text":"..."}]}]} (정확히 6개)'
+    ].join('\n');
+
+    var user = '[선택 분야] ' + (sec ? sec.title : '기타 업종') +
+      '\n[세부 업종 — 모든 문구는 오직 이 업종에만 맞춰 작성] ' + sub +
+      '\n[6개 슬롯 참고]\n' + baseRef +
+      '\n\nJSON만 출력하세요.';
+
+    return TOSS.callAI({
+      mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
+      system: sys, user: user, temperature: 0.35, maxOutputTokens: 2048
+    }).then(function (raw) {
+      var obj = extractJson(raw);
+      var arr = obj && Array.isArray(obj.flows) ? obj.flows : null;
+      if (!arr || arr.length < 6) {
+        return { flows: localFlows, source: 'local_clean' };
+      }
+      var merged = localFlows.map(function (lf, idx) {
+        var af = arr.find(function (x) { return x && x.id === lf.id; }) || arr[idx] || {};
+        var pipe = (Array.isArray(af.pipeline) && af.pipeline.length === 3)
+          ? af.pipeline.map(function (p, pi) {
+              return {
+                step: (lf.pipeline[pi] && lf.pipeline[pi].step) || p.step || '',
+                text: CONSULT.cleanPartnerText(p.text || (lf.pipeline[pi] && lf.pipeline[pi].text) || '')
+              };
+            })
+          : lf.pipeline;
+        return {
+          id: lf.id,
+          trackId: lf.trackId,
+          icon: lf.icon,
+          badge: CONSULT.cleanPartnerText(af.badge || lf.badge || ''),
+          title: CONSULT.cleanPartnerText(af.title || lf.title),
+          summary: CONSULT.cleanPartnerText(af.summary || lf.summary),
+          useWebzine: lf.useWebzine,
+          pipeline: pipe
+        };
+      });
+      return { flows: merged, source: 'ai_realtime' };
+    }).catch(function () {
+      return { flows: localFlows, source: 'local_clean' };
+    });
+  };
+
+  CONSULT.getFlow = function (sectorId, flowId, customFlows, subIndustry) {
+    var flows = (Array.isArray(customFlows) && customFlows.length)
+      ? customFlows
+      : CONSULT.getFlowsForContext(sectorId, subIndustry);
     for (var i = 0; i < flows.length; i++) {
       if (flows[i].id === flowId) return flows[i];
     }
@@ -1430,10 +1553,10 @@
     var themes = cat.colorThemes || [];
     var hay = String(subIndustry || '').toLowerCase();
     // 세부 업종 키워드 우선 반영
-    if (/상추|무농약|유기농|농장|채소|과일|산지|식품|건강|교회|봉사|힐링/.test(hay)) {
+    if (/산부인과|산후|여성의원|상추|무농약|유기농|농장|채소|과일|산지|식품|건강|교회|봉사|힐링/.test(hay)) {
       return themes.find(function (t) { return t.id === 'forest'; }) || themes[0];
     }
-    if (/뷰티|피부|네일|헤어|카페|베이커리|공방|필라테스|요가|디저트/.test(hay)) {
+    if (/뷰티|피부|네일|헤어|카페|베이커리|공방|필라테스|요가|디저트|웨딩|스튜디오/.test(hay)) {
       return themes.find(function (t) { return t.id === 'espresso'; }) || themes[2];
     }
     if (/패션|쇼핑몰|의류|코디|코스메틱|리빙|라이프스타일/.test(hay)) {
@@ -1471,31 +1594,33 @@
   CONSULT.recommendFlow = function (ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var flows = (sec && sec.flows) || [];
-    var goal = String(ctx.goalText || '').trim();
     var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
+    var flows = (Array.isArray(ctx.customFlows) && ctx.customFlows.length)
+      ? ctx.customFlows
+      : CONSULT.getFlowsForContext(ctx.sectorId, sub);
+    var goal = String(ctx.goalText || '').trim();
 
     function localPick() {
       var g = goal.toLowerCase();
       var pickId = 'FLOW_2';
       var reason = '신규 고객이 가장 부담 없이 1초 만에 신청하고 바로 혜택을 받아볼 수 있어 첫 캠페인으로 전환율이 가장 높아요.';
-      if (/설명회|세미나|웨비나|특강|일정|마감|신고|예약|리마인드|노쇼|행사|오픈런|공구|프리오더/.test(g)) {
+      if (/설명회|세미나|웨비나|특강|일정|마감|신고|예약|리마인드|노쇼|행사|오픈런|공구|프리오더|진료|검진/.test(g)) {
         pickId = 'FLOW_1';
-        reason = '일정·예약·오픈 시점에 맞춰 D-3·D-1 자동 리마인드를 보내면 노쇼를 크게 줄이고 참석·구매율을 끌어올릴 수 있어요.';
-      } else if (/진단|유형|분기|맞춤|학년|성향|스타일|취향|증상|사업자|소그룹|분과/.test(g)) {
+        reason = '일정·예약·방문 시점에 맞춰 D-3·D-1 자동 리마인드를 보내면 노쇼를 크게 줄이고 참석·내원율을 끌어올릴 수 있어요.';
+      } else if (/진단|유형|분기|맞춤|학년|성향|스타일|취향|증상|사업자|소그룹|분과|체크/.test(g)) {
         pickId = 'FLOW_4';
-        reason = '신청할 때 고객의 상황·유형을 객관식으로 먼저 분류해 각자에게 딱 맞는 맞춤 안내를 보내면 상담·구매 전환율이 훨씬 높아져요.';
+        reason = '신청할 때 고객의 상황·유형을 객관식으로 먼저 분류해 각자에게 딱 맞는 맞춤 안내를 보내면 상담·예약 전환율이 훨씬 높아져요.';
       } else if (/연재|칼럼|매주|정기|주보|챌린지|팬덤|구독|레시피|소식/.test(g)) {
         pickId = 'FLOW_3';
         reason = '단발성 안내에 그치지 않고 주기적으로 유익한 칼럼·소식을 카톡으로 보내며 신뢰와 단골 팬덤을 차곡차곡 쌓는 데 최적이에요.';
       } else if (/스탬프|적립|포인트|vip|단골|출석|완주|개근|재방문/.test(g)) {
         pickId = 'FLOW_5';
         reason = '열람·방문·참여 횟수를 자동으로 쌓아 열성 고객(VIP)을 선별하고 특별 보상을 주면 재방문과 고가 전환이 자연스럽게 일어나요.';
-      } else if (/qr|현장|테이블|로비|택배|박스|체크인|오프라인/.test(g)) {
+      } else if (/qr|현장|테이블|로비|택배|박스|체크인|오프라인|대기실/.test(g)) {
         pickId = 'FLOW_6';
-        reason = '현장이나 택배 상자의 QR을 찍는 순간 3초 만에 DB로 모으고 안내서·후속 혜택까지 자동 발송할 수 있어 현장 효율이 가장 좋아요.';
+        reason = '현장이나 대기실·택배 상자의 QR을 찍는 순간 3초 만에 DB로 모으고 안내서·후속 혜택까지 자동 발송할 수 있어 현장 효율이 가장 좋아요.';
       }
-      var found = CONSULT.getFlow(ctx.sectorId, pickId) || flows[0];
+      var found = CONSULT.getFlow(ctx.sectorId, pickId, flows, sub) || flows[0];
       return { flowId: found.id, flowTitle: found.title, reason: reason };
     }
 
@@ -1537,17 +1662,19 @@
   CONSULT.buildLocalQuestionPack = function (qNum, ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
     var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '비즈니스')).trim();
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, sub);
     var flowTitle = flow ? flow.title : '카카오 자동 운영 흐름';
     var A = ctx.answers || {};
     var owner = String(ctx.ownerName || '대표님').trim();
     var meta = CONSULT.Q_META[qNum - 1] || CONSULT.Q_META[0];
-    var rawChips = (sec && sec.examples && sec.examples[qNum]) ? sec.examples[qNum].slice(0, 3) : [];
+    var subPack = CONSULT.matchSubDomainPack(ctx.sectorId, sub);
+    var rawChips = (subPack && subPack.pack && subPack.pack.examples && subPack.pack.examples[qNum])
+      ? subPack.pack.examples[qNum].map(function (x) { return interpolateSub(x, sub); })
+      : ((sec && sec.examples && sec.examples[qNum]) ? sec.examples[qNum].slice(0, 3) : []);
 
     var qText = '';
     var topicSnippet = tFirst(A[1] || sub, 28);
-    var targetSnippet = tFirst(A[2] || '핵심 고객', 24);
     var giftSnippet = tFirst(A[3] || '첫 무료 혜택', 24);
 
     if (qNum === 1) {
@@ -1568,7 +1695,7 @@
       label: meta.label,
       usageHint: meta.usageHint,
       questionText: CONSULT.cleanPartnerText(qText),
-      exampleChips: rawChips.map(function (c) { return CONSULT.cleanPartnerText(c); })
+      exampleChips: rawChips.slice(0, 3).map(function (c) { return CONSULT.cleanPartnerText(c); })
     };
   };
 
@@ -1590,8 +1717,8 @@
   CONSULT.getInitialQ1 = function (ctx) {
     var localPack = CONSULT.buildLocalQuestionPack(1, ctx);
     var sec = CONSULT.getSector(ctx.sectorId);
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
     var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, sub);
     // 세부 업종이 비어 있거나 AI 미연결이면 즉시 로컬 팩 반환 (0ms 쾌속 진입)
     if (ctx.mode === 'admin' && !getConfig().hasDirectKey) {
       return Promise.resolve(localPack);
@@ -1644,8 +1771,8 @@
     var qNum = Number(ctx.qNum) || 1;
     var userText = String(ctx.userText || '').trim();
     var sec = CONSULT.getSector(ctx.sectorId);
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
     var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, sub);
 
     // ① 1차 하드 가드레일 (로컬 매뉴얼 정규식 즉시 검문 — 온라인/오프라인 무관 100% 차단)
     var localCheck = CONSULT.checkFeasibilityLocal(userText);
@@ -1816,7 +1943,7 @@
   CONSULT.localSummary = function (ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, ctx.subIndustry);
     var A = ctx.answers || {};
     var flowTxt = String(A[5] || (flow ? flow.title : ''));
     return {
@@ -1880,7 +2007,7 @@
     var A = ctx.answers || {};
     var partner = ctx.partner || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, ctx.subIndustry);
     var brand = ctx.brandAssets || {};
     var photos = Array.isArray(brand.photos) ? brand.photos.filter(Boolean).slice(0, 3) : [];
     var photoMode = (brand.photoMode === 'ai_auto' || !photos.length) ? 'ai_auto' : 'uploaded';
@@ -1963,7 +2090,7 @@
   CONSULT.generateCampaign = function (ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, ctx.subIndustry);
     var A = ctx.answers || {};
 
     var mappedAnswers = {

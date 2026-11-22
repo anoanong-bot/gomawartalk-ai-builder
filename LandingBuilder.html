@@ -213,6 +213,8 @@ body.capturing .panel{display:block !important}
 #thumb .t-badge-dot{width:8px;height:8px;border-radius:50%;background:#FDE047;box-shadow:0 0 8px #FDE047;flex-shrink:0}
 #thumb .t-badge{color:#FEF08A;font-family:var(--font-body);font-weight:800;font-size:12px;letter-spacing:-0.03em;line-height:1.2}
 #thumb .t-logo{max-width:100px;max-height:34px;object-fit:contain;background:rgba(255,255,255,.95);padding:4px 9px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+#thumb .t-text-logo{display:inline-flex;align-items:center;gap:4px;max-width:165px;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#FFFFFF;font-family:var(--font-head);font-size:12px;font-weight:800;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#thumb .t-text-logo[hidden]{display:none!important}
 #thumb .t-mid{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:12px;flex:1;min-height:0}
 #thumb .t-head{margin-top:0;flex:1;min-width:0;font-family:var(--font-head);font-size:24px;font-weight:800;line-height:1.32;letter-spacing:-0.03em;color:#FFFFFF;text-shadow:0 4px 18px rgba(0,0,0,.35)}
 #thumb .t-visual-card{position:relative;width:154px;height:132px;border-radius:12px;overflow:hidden;border:1.5px solid rgba(255,255,255,.32);box-shadow:0 10px 24px rgba(0,0,0,.38);flex-shrink:0;background:#0F172A}
@@ -255,6 +257,9 @@ body.capturing .panel{display:block !important}
 .hero-logo-wrap{display:flex;align-items:center;margin-bottom:36px}
 .hero-logo-wrap[hidden]{display:none!important}
 .hero-brand-logo{max-height:78px;max-width:300px;object-fit:contain;background:rgba(255,255,255,.96);padding:12px 24px;border-radius:18px;box-shadow:0 8px 24px rgba(15,23,42,.18)}
+.hero-brand-logo[hidden]{display:none!important}
+.hero-text-logo{display:inline-flex;align-items:center;gap:12px;padding:12px 28px;border-radius:99px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.26);color:#FFFFFF;font-family:var(--font-head);font-size:38px;font-weight:800;line-height:1.25;letter-spacing:-0.02em}
+.hero-text-logo[hidden]{display:none!important}
 .lb.hero .sec-eyebrow-txt{color:rgba(255,255,255,.78)}
 .lb-title{font-family:var(--font-head);font-size:70px;font-weight:800;line-height:1.28;letter-spacing:-0.03em;word-break:keep-all;width:100%}
 .lb.hero .lb-title{font-size:88px;line-height:1.25;letter-spacing:-0.03em;color:#FFFFFF}
@@ -573,6 +578,7 @@ body:not(.wz-on) .wz-only{display:none}
                     <div class="t-badge ed" id="t-badge" contenteditable="true" data-single></div>
                   </div>
                   <img class="t-logo" id="t-logo" alt="" hidden>
+                  <span class="t-text-logo" id="t-text-logo" hidden></span>
                 </div>
                 <div class="t-mid">
                   <div class="t-head ed" id="t-head" contenteditable="true"></div>
@@ -1548,12 +1554,33 @@ function renderBrand() {
   r.setProperty('--font-body', ft.body);
   $$('[data-font-theme]').forEach(sel => { sel.value = ftKey; });
   $('#c-primary').value = p; $('#c-primary-hex').value = p; $('#c-secondary').value = sc; $('#c-secondary-hex').value = sc;
-  const logo = $('#t-logo');
-  if (S.brand.logo) { logo.src = S.brand.logo; logo.hidden = false; } else { logo.removeAttribute('src'); logo.hidden = true; }
-  const heroLogoWrap = $('#lc-hero-logo-wrap'), heroLogo = $('#lc-hero-logo');
+  const logo = $('#t-logo'), textLogo = $('#t-text-logo');
+  const chText = String((S.partner && S.partner.channel_name) || '').trim();
+  if (S.brand.logo) {
+    logo.src = S.brand.logo; logo.hidden = false;
+    if (textLogo) textLogo.hidden = true;
+  } else {
+    logo.removeAttribute('src'); logo.hidden = true;
+    if (textLogo) {
+      if (chText) { textLogo.textContent = '✦ ' + chText; textLogo.hidden = false; }
+      else { textLogo.hidden = true; }
+    }
+  }
+  const heroLogoWrap = $('#lc-hero-logo-wrap'), heroLogo = $('#lc-hero-logo'), heroTextLogo = $('#lc-hero-text-logo');
   if (heroLogoWrap && heroLogo) {
-    if (S.brand.logo) { heroLogo.src = S.brand.logo; heroLogoWrap.hidden = false; }
-    else { heroLogo.removeAttribute('src'); heroLogoWrap.hidden = true; }
+    if (S.brand.logo) {
+      heroLogo.src = S.brand.logo; heroLogo.hidden = false;
+      if (heroTextLogo) heroTextLogo.hidden = true;
+      heroLogoWrap.hidden = false;
+    } else if (chText && heroTextLogo) {
+      heroLogo.removeAttribute('src'); heroLogo.hidden = true;
+      heroTextLogo.textContent = '✦ ' + chText; heroTextLogo.hidden = false;
+      heroLogoWrap.hidden = false;
+    } else {
+      heroLogo.removeAttribute('src'); heroLogo.hidden = true;
+      if (heroTextLogo) heroTextLogo.hidden = true;
+      heroLogoWrap.hidden = true;
+    }
   }
 }
 function renderSidebar() {
@@ -1855,8 +1882,12 @@ function blockHTML(b) {
   const add = '<button class="bt" data-act="item-add" data-step="' + b.step + '">＋ 항목 추가</button>';
   const wrap = (cls, inner, tools) => '<section class="lb ' + cls + (b.image ? ' has-img' : '') + '" data-block-step="' + b.step + '" data-block-type="' + b.type + '">' + tools + inner + '</section>';
   if (b.step === 1) {
-    const heroLogoHtml = '<div class="hero-logo-wrap" id="lc-hero-logo-wrap"' + (S.brand && S.brand.logo ? '' : ' hidden') + '>' +
-      '<img id="lc-hero-logo" class="hero-brand-logo" crossorigin="anonymous"' + (S.brand && S.brand.logo ? (' src="' + esc(S.brand.logo) + '"') : '') + ' alt="">' +
+    const hasImgLogo = !!(S.brand && S.brand.logo);
+    const chName = String((S.partner && S.partner.channel_name) || '').trim();
+    const showTextLogo = !hasImgLogo && !!chName;
+    const heroLogoHtml = '<div class="hero-logo-wrap" id="lc-hero-logo-wrap"' + ((hasImgLogo || showTextLogo) ? '' : ' hidden') + '>' +
+      '<img id="lc-hero-logo" class="hero-brand-logo" crossorigin="anonymous"' + (hasImgLogo ? (' src="' + esc(S.brand.logo) + '"') : ' hidden') + ' alt="">' +
+      '<span id="lc-hero-text-logo" class="hero-text-logo"' + (showTextLogo ? '' : ' hidden') + '>' + (showTextLogo ? ('✦ ' + esc(chName)) : '') + '</span>' +
     '</div>';
     return wrap('hero',
       heroLogoHtml +
@@ -3086,7 +3117,7 @@ function bind() {
     if (t.id === 'json-file' && t.files[0]) { openJson(t.files[0]); t.value = ''; }
     if (t.id === 'form-active') { S.t3.is_active = t.checked; $('#form-active-s').textContent = '현재 ' + (t.checked ? 'ON' : 'OFF'); }
     if (t.id === 'wz-toggle') setWebzine(t.checked);
-    if (t.id === 'p-chid' || t.id === 'p-plan' || t.id === 'p-pro' || t.id === 'p-channel') { syncFromDom(); if (currentTab === 'tab4') renderT4(); if (currentTab === 'tab5') renderT5(); }
+    if (t.id === 'p-chid' || t.id === 'p-plan' || t.id === 'p-pro' || t.id === 'p-channel') { syncFromDom(); if (t.id === 'p-channel') renderBrand(); if (currentTab === 'tab4') renderT4(); if (currentTab === 'tab5') renderT5(); }
     if (t.hasAttribute && t.hasAttribute('data-lock') && !t.checked) { t.checked = true; toast('⚠️ 도달률 보장을 위해 이 스위치는 반드시 ON이어야 합니다.', { type: 'warn' }); }
 
     // 탭 4·5 셀렉트/날짜/앵커/조건드롭다운

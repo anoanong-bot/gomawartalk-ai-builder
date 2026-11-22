@@ -445,50 +445,89 @@ button { cursor: pointer; border: none; background: none; }
 }
 .quick-sub-chip:active, .quick-sub-chip:hover { background: var(--blue-lt); color: var(--blue-dk); border-color: #93C5FD; }
 
-/* ═════════ Step 2: 6대 운영 플로우 미리보기 카드 & AI 추천 ═════════ */
-.flow-list { display: flex; flex-direction: column; gap: 11px; }
+/* ═════════ Step 2: 3초 스캔 조합형 아코디언 + 1줄 화살표 Flow Pill + BEST 하이라이트 ═════════ */
+.flow-list { display: flex; flex-direction: column; gap: 9px; }
 .flow-card {
   width: 100%;
   background: #FFFFFF;
   border: 1.5px solid var(--g200);
-  border-radius: 16px;
-  padding: 15px 15px 14px;
+  border-radius: 15px;
+  padding: 13px 14px;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  transition: all 0.14s ease;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  gap: 8px;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
 }
 .flow-card:hover { border-color: #93C5FD; }
+.flow-card.best-pick {
+  border-color: #F59E0B;
+  background: linear-gradient(180deg, #FFFDF7 0%, #FFFFFF 100%);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12);
+}
 .flow-card.selected {
   border-color: var(--blue);
   background: #F4F9FF;
   box-shadow: 0 6px 18px rgba(49, 130, 246, 0.18);
 }
-.flow-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.flow-title-wrap { display: flex; align-items: center; gap: 8px; }
-.flow-icon { font-size: 20px; flex-shrink: 0; }
-.flow-title { font-size: 15px; font-weight: 800; color: var(--g900); line-height: 1.35; word-break: keep-all; }
+.flow-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.flow-title-wrap { display: flex; align-items: center; gap: 7px; min-width: 0; flex: 1; }
+.flow-icon { font-size: 18px; flex-shrink: 0; }
+.flow-title { font-size: 14.5px; font-weight: 800; color: var(--g900); line-height: 1.32; word-break: keep-all; }
 .flow-card.selected .flow-title { color: var(--blue-dk); }
 .flow-badge {
   flex-shrink: 0; padding: 3px 8px; border-radius: 99px;
-  font-size: 11px; font-weight: 800; background: var(--g100); color: var(--g700);
+  font-size: 10.5px; font-weight: 800; background: var(--g100); color: var(--g700);
+  white-space: nowrap;
 }
-.flow-card.selected .flow-badge, .flow-badge.rec { background: var(--blue); color: #FFFFFF; }
-.flow-summary { font-size: 13px; color: var(--g700); line-height: 1.45; word-break: keep-all; }
+.flow-badge.best { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
+.flow-card.selected .flow-badge, .flow-badge.rec { background: var(--blue); color: #FFFFFF; border-color: transparent; }
+
+/* 1줄 화살표 키워드 흐름도 (Flow Pill) */
+.flow-pills-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.flow-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--g100);
+  color: var(--g700);
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.flow-pill.p2 { background: #FEF9C3; color: #713F12; }
+.flow-pill.p3 { background: var(--blue-lt); color: var(--blue-dk); }
+.flow-arrow { font-size: 10.5px; font-weight: 800; color: var(--g400); }
+
+/* 아코디언 상세 본문 (선택 시에만 펼침) */
+.flow-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #DBEAFE;
+  animation: fadeSlide 0.16s ease;
+}
+.flow-summary { font-size: 12.5px; color: var(--g700); line-height: 1.45; word-break: keep-all; }
 
 /* 3단계 카톡 발송 파이프라인 미리보기 */
 .flow-pipeline {
-  background: var(--g50);
-  border: 1px solid var(--g200);
+  background: #FFFFFF;
+  border: 1px solid #BFDBFE;
   border-radius: 12px;
   padding: 10px 11px;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-.flow-card.selected .flow-pipeline { background: #FFFFFF; border-color: #BFDBFE; }
 .pipe-row {
   display: flex; align-items: flex-start; gap: 7px;
   font-size: 12.5px; line-height: 1.42; color: var(--g700);
@@ -501,6 +540,179 @@ button { cursor: pointer; border: none; background: none; }
 }
 .pipe-row:nth-child(2) .pipe-tag { background: #FEF08A; color: #422006; }
 .pipe-row:nth-child(3) .pipe-tag { background: var(--blue-lt); color: var(--blue-dk); }
+
+/* Step 4 로고 안심 안내 & 텍스트 로고 칩 */
+.logo-reassure-box {
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: #F8FAFC;
+  border: 1px solid var(--g200);
+  font-size: 12px;
+  color: var(--g700);
+  line-height: 1.48;
+  word-break: keep-all;
+}
+.text-logo-preview-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--g900);
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Step 5: 상단 히어로 요약 카드 + 아코디언 인라인 수정 + 세련된 브랜드 재료 바 */
+.sum-hero-card {
+  background: linear-gradient(160deg, #1E293B 0%, #0F172A 100%);
+  color: #FFFFFF;
+  border-radius: 18px;
+  padding: 17px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.16);
+}
+.sum-hero-badges { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.sum-hero-pill {
+  padding: 3px 9px; border-radius: 99px;
+  background: rgba(255, 255, 255, 0.14); color: #E2E8F0;
+  font-size: 11.5px; font-weight: 800;
+}
+.sum-hero-pill.accent { background: var(--blue); color: #FFFFFF; }
+.sum-hero-title {
+  font-size: 16.5px; font-weight: 800; line-height: 1.4;
+  color: #FFFFFF; word-break: keep-all;
+}
+.sum-journey-box {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 9px 10px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.sum-journey-chip {
+  padding: 4px 8px; border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14); color: #FFFFFF;
+  font-size: 11.5px; font-weight: 700;
+}
+.sum-journey-chip.c2 { background: #FEF08A; color: #191919; }
+.sum-journey-chip.c3 { background: #60A5FA; color: #0F172A; }
+.sum-journey-arr { font-size: 11px; color: rgba(255, 255, 255, 0.55); font-weight: 800; }
+
+/* Step 5 슬림 아코디언 요약 리스트 */
+.sum-acc-list {
+  display: flex; flex-direction: column; gap: 7px;
+}
+.sum-acc-item {
+  background: #FFFFFF;
+  border: 1px solid var(--g200);
+  border-radius: 13px;
+  overflow: hidden;
+  transition: border-color 0.14s ease;
+}
+.sum-acc-item.open { border-color: var(--blue); box-shadow: 0 3px 12px rgba(49, 130, 246, 0.1); }
+.sum-acc-head {
+  width: 100%;
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+  background: #FFFFFF;
+}
+.sum-acc-lbl {
+  flex-shrink: 0;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--g900);
+  min-width: 92px;
+}
+.sum-acc-preview {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--g700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sum-acc-toggle {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--blue);
+  background: var(--blue-lt);
+  padding: 3px 7px;
+  border-radius: 6px;
+}
+.sum-acc-body {
+  padding: 0 13px 13px;
+  border-top: 1px dashed var(--g200);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--g50);
+}
+.sum-acc-full {
+  font-size: 13.5px; line-height: 1.52; color: var(--g900); word-break: keep-all;
+}
+.sum-inline-ta {
+  width: 100%;
+  min-height: 84px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--blue);
+  background: #FFFFFF;
+  font-size: 16px;
+  line-height: 1.48;
+  resize: vertical;
+  outline: none;
+}
+.sum-inline-actions { display: flex; gap: 6px; justify-content: flex-end; }
+
+/* Step 5 세련된 브랜드 재료 요약 바 */
+.sum-brand-bar {
+  background: #FFFFFF;
+  border: 1px solid var(--g200);
+  border-radius: 14px;
+  padding: 12px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.sum-brand-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.brand-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 99px;
+  background: var(--g100);
+  border: 1px solid var(--g200);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--g900);
+}
+.brand-chip.positive { background: var(--blue-lt); border-color: #BFDBFE; color: var(--blue-dk); }
+.color-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  display: inline-block; border: 1px solid rgba(15, 23, 42, 0.2); flex-shrink: 0;
+}
 
 /* AI 흐름 추천 박스 */
 .ai-rec-card {
@@ -1170,6 +1382,14 @@ button { cursor: pointer; border: none; background: none; }
             <span>가로 400px 이하로 자동 리사이즈되어 깔끔하게 배치돼요</span>
             <input type="file" accept="image/*" id="logo-file-input" hidden>
           </label>
+          <div class="logo-reassure-box" id="logo-reassure-box">
+            💡 별도 로고 이미지가 없으셔도 전혀 괜찮아요! 비워두시면 입력하신 상호명으로 깔끔한 텍스트 로고를 자동 적용해 드립니다.
+            <div id="text-logo-live-preview"></div>
+          </div>
+          <button type="button" class="ai-photo-mode-btn active" id="btn-no-logo-mode">
+            <span>✨ 로고 파일 없음 (상호명 텍스트로 깔끔하게 표시)</span>
+            <span id="no-logo-mode-check">✅ 선택됨</span>
+          </button>
           <div class="logo-preview-row" id="logo-preview-row" hidden>
             <img class="logo-preview-img" id="logo-preview-img" alt="브랜드 로고 미리보기">
             <div class="logo-preview-info">
@@ -1224,22 +1444,26 @@ button { cursor: pointer; border: none; background: none; }
           <span class="context-tag">STEP 5 · 최종 확인 및 제출</span>
         </div>
 
-        <div class="summary-card" id="summary-confirm-card">
-          <div class="summary-head">
-            <span>📋 최종 캠페인 기획 요약</span>
-          </div>
-          <div id="summary-items-wrap" style="display:flex;flex-direction:column;gap:9px"></div>
+        <div id="summary-confirm-card" style="display:flex;flex-direction:column;gap:12px">
+          <!-- ① 상단 '내 캠페인 한눈에 보기' 히어로 카드 -->
+          <div class="sum-hero-card" id="summary-hero-card"></div>
 
-          <div class="jump-edit-row">
-            <button type="button" class="jump-edit-btn" data-jump="1">✏️ 분야·흐름 수정</button>
-            <button type="button" class="jump-edit-btn" data-jump="3">✏️ 인터뷰 답변 수정</button>
-            <button type="button" class="jump-edit-btn" data-jump="4">✏️ 로고·컬러·사진 수정</button>
-          </div>
+          <!-- ② 5대 핵심 기획 슬림 아코디언 (터치 시 펼침 & 인라인 수정) -->
+          <div class="sum-acc-list" id="summary-items-wrap"></div>
 
-          <div style="font-size:12px;color:var(--g500);margin-top:2px">추가로 고치고 싶은 내용이나 특별 요청이 있으면 적어주세요.</div>
-          <div class="revise-row">
-            <input type="text" id="summary-revise-input" placeholder="예) 말투를 더 친근하게 바꿔주세요">
-            <button type="button" id="btn-apply-revise">수정 반영</button>
+          <!-- ③ 세련된 브랜드 디자인 재료 요약 바 -->
+          <div class="sum-brand-bar" id="summary-brand-bar"></div>
+
+          <div class="card" style="padding:13px 14px;gap:8px">
+            <div class="jump-edit-row">
+              <button type="button" class="jump-edit-btn" data-jump="1">✏️ 분야·흐름 변경</button>
+              <button type="button" class="jump-edit-btn" data-jump="4">✏️ 로고·컬러·사진 변경</button>
+            </div>
+            <div style="font-size:12px;color:var(--g500)">AI에게 한 번에 고쳐달라고 요청하실 내용이 있으면 적어주세요.</div>
+            <div class="revise-row">
+              <input type="text" id="summary-revise-input" placeholder="예) 말투를 더 친근하게 바꿔주세요">
+              <button type="button" id="btn-apply-revise">수정 반영</button>
+            </div>
           </div>
         </div>
 
@@ -1385,6 +1609,7 @@ const ST = {
 
   brandAssets: {
     logoBase64: null,
+    logoMode: 'text_auto', // 'text_auto' | 'image'
     logoName: '',
     logoDominantHex: '',
     colorThemeId: '',
@@ -1397,11 +1622,22 @@ const ST = {
     photoMode: 'ai_auto' // 'uploaded' | 'ai_auto'
   },
 
+  summaryOpenIdx: 0, // Step 5 아코디언 열림 항목 번호 (0=모두 접힘, 1~5=해당 항목 열림)
+  summaryEditIdx: 0, // Step 5 인라인 편집 중인 항목 번호 (0=편집 아님, 1~5=편집 중)
   pendingPhotoSlot: 0,
   summary: null,
   isBusy: false,
   lastGeneratedCampaign: null
 };
+
+function syncHeaderBadge() {
+  const badge = $('#partner-badge');
+  if (!badge) return;
+  const sub = String(ST.subIndustry || ($('#sub-industry-input') && $('#sub-industry-input').value) || '').trim();
+  const label = sub || ST.partnerInfo.businessName || '파트너';
+  badge.textContent = label;
+  badge.title = label;
+}
 
 function getProxyUrl() {
   const cfg = Engine.getConfig();
@@ -1614,12 +1850,15 @@ function resetConsultFlow() {
   ST.summary = null;
   ST.lastGeneratedCampaign = null;
   ST.brandAssets = {
-    logoBase64: null, logoName: '', logoDominantHex: '',
+    logoBase64: null, logoMode: 'text_auto', logoName: '', logoDominantHex: '',
     colorThemeId: '', colorThemeLabel: '', primaryColor: '#182232', secondaryColor: '#F6F7F9',
     isCustomColor: false, photos: [null, null, null], photoSizesKB: [0, 0, 0], photoMode: 'ai_auto'
   };
+  ST.summaryOpenIdx = 0;
+  ST.summaryEditIdx = 0;
   $('#s1-heading').textContent = ST.partnerInfo.ownerName + ' 대표님, 어떤 분야의 비즈니스를 운영하고 계신가요?';
   $('#sub-industry-input').value = '';
+  syncHeaderBadge();
   $('#sub-industry-box').hidden = true;
   $('#flow-ai-panel').hidden = true;
   $('#flow-ai-result').hidden = true;
@@ -1679,6 +1918,7 @@ function selectSector(sectorId) {
     c.onclick = () => {
       inp.value = c.dataset.subEx;
       ST.subIndustry = inp.value;
+      syncHeaderBadge();
       updateStickyCtaBar();
       inp.focus();
     };
@@ -1707,6 +1947,7 @@ async function proceedToStage2() {
   }
   ST.subIndustry = rawSub || (sec ? sec.shortTitle : '');
   ST.flowId = '';
+  syncHeaderBadge();
 
   // 세부 업종 기반 기본 추천 컬러 재반영 (아직 사용자가 Step 4에서 직접 고르지 않은 경우)
   const defCol = Consult.getDefaultColorForSector(ST.sectorId, ST.subIndustry);
@@ -1743,37 +1984,67 @@ async function proceedToStage2() {
   }
 }
 
-/* ═══════════════ STEP 2: 내 분야 맞춤 6대 운영 플로우 미리보기 & AI 추천 ═══════════════ */
+/* ═══════════════ STEP 2: 3초 스캔 조합형 아코디언 + 1줄 화살표 Flow Pill + BEST 하이라이트 ═══════════════ */
 function renderStage2Flows(recommendedId) {
   const sec = Consult.getSector(ST.sectorId);
   if (!sec) return;
-  $('#s2-context-tag').textContent = sec.icon + ' ' + (ST.subIndustry || sec.shortTitle);
+  const subLabel = ST.subIndustry || sec.shortTitle;
+  const shortSub = subLabel.length > 10 ? (subLabel.slice(0, 10) + '…') : subLabel;
+  $('#s2-context-tag').textContent = sec.icon + ' ' + subLabel;
 
   const flows = (ST.customFlows && ST.customFlows.length)
     ? ST.customFlows
     : Consult.getFlowsForContext(ST.sectorId, ST.subIndustry);
+  const bestFlowId = Consult.getBestFlowId(ST.sectorId, ST.subIndustry);
+
   const list = $('#flow-list');
   list.innerHTML = flows.map((f, idx) => {
     const isSel = ST.flowId === f.id;
     const isRec = recommendedId === f.id;
-    const badgeTxt = isRec ? '✨ AI 추천' : (f.badge || '');
-    const pipeHtml = (f.pipeline || []).map(p =>
-      '<div class="pipe-row"><span class="pipe-tag">' + esc(p.step) + '</span><span>' + esc(p.text) + '</span></div>'
-    ).join('');
-    const selectedBar = isSel
-      ? '<div class="flow-selected-bar">' +
-          '<span class="flow-selected-hint">✅ 선택됨 · 한 번 더 터치하면 바로 시작돼요</span>' +
-          '<span class="btn-flow-go" data-flow-go="' + esc(f.id) + '">이 흐름으로 선택 →</span>' +
-        '</div>'
-      : '';
-    return '<button type="button" class="flow-card' + (isSel ? ' selected' : '') + '" data-flow="' + esc(f.id) + '">' +
+    const isBest = !recommendedId && bestFlowId === f.id;
+
+    let badgeHtml = '';
+    if (isRec) {
+      badgeHtml = '<span class="flow-badge rec">✨ AI 추천</span>';
+    } else if (isBest) {
+      badgeHtml = '<span class="flow-badge best">🔥 ' + esc(shortSub) + ' 가장 많이 선택!</span>';
+    } else if (f.badge) {
+      badgeHtml = '<span class="flow-badge">' + esc(f.badge) + '</span>';
+    }
+
+    // 1줄 화살표 키워드 흐름도 (기본 접힘 상태에서도 항상 노출 ➔ 1초 스캔)
+    const pills = Consult.buildFlowPills(f);
+    const pillsHtml = '<div class="flow-pills-row">' +
+      pills.map((p, pi) =>
+        '<span class="flow-pill p' + (pi + 1) + '">' + p.icon + ' ' + esc(p.text) + '</span>' +
+        (pi < 2 ? '<span class="flow-arrow">➔</span>' : '')
+      ).join('') +
+    '</div>';
+
+    // 아코디언 상세 본문: 선택된 카드(isSel)일 때만 펼쳐짐!
+    let detailHtml = '';
+    if (isSel) {
+      const pipeHtml = (f.pipeline || []).map(p =>
+        '<div class="pipe-row"><span class="pipe-tag">' + esc(p.step) + '</span><span>' + esc(p.text) + '</span></div>'
+      ).join('');
+      detailHtml =
+        '<div class="flow-detail-body">' +
+          '<div class="flow-summary">' + esc(f.summary) + '</div>' +
+          '<div class="flow-pipeline">' + pipeHtml + '</div>' +
+          '<div class="flow-selected-bar">' +
+            '<span class="flow-selected-hint">✅ 선택됨 · 한 번 더 터치하면 바로 시작돼요</span>' +
+            '<span class="btn-flow-go" data-flow-go="' + esc(f.id) + '">이 흐름으로 선택 →</span>' +
+          '</div>' +
+        '</div>';
+    }
+
+    return '<button type="button" class="flow-card' + (isBest ? ' best-pick' : '') + (isSel ? ' selected' : '') + '" data-flow="' + esc(f.id) + '">' +
       '<div class="flow-head">' +
         '<div class="flow-title-wrap"><span class="flow-icon">' + f.icon + '</span><span class="flow-title">' + (idx + 1) + '. ' + esc(f.title) + '</span></div>' +
-        (badgeTxt ? '<span class="flow-badge' + (isRec ? ' rec' : '') + '">' + esc(badgeTxt) + '</span>' : '') +
+        badgeHtml +
       '</div>' +
-      '<div class="flow-summary">' + esc(f.summary) + '</div>' +
-      '<div class="flow-pipeline">' + pipeHtml + '</div>' +
-      selectedBar +
+      pillsHtml +
+      detailHtml +
     '</button>';
   }).join('');
 
@@ -2170,10 +2441,21 @@ const PHOTO_SLOT_LABELS = [
 ];
 
 function renderStage4BrandAssets() {
-  // 1) 로고 미리보기
+  // 1) 로고 미리보기 & '로고 없어도 OK' 안심 텍스트 로고 프리뷰
   const hasLogo = !!ST.brandAssets.logoBase64;
   $('#logo-dropzone').hidden = hasLogo;
+  $('#logo-reassure-box').hidden = hasLogo;
   $('#logo-preview-row').hidden = !hasLogo;
+  const bizTitle = ST.partnerInfo.businessName || ST.subIndustry || '우리 브랜드';
+  const livePrev = $('#text-logo-live-preview');
+  if (livePrev) {
+    livePrev.innerHTML = '<span class="text-logo-preview-pill" style="background:' + esc(ST.brandAssets.primaryColor) + '">✦ ' + esc(bizTitle) + '</span>';
+  }
+  const noLogoBtn = $('#btn-no-logo-mode');
+  if (noLogoBtn) {
+    noLogoBtn.classList.toggle('active', !hasLogo);
+    $('#no-logo-mode-check').textContent = !hasLogo ? '✅ 선택됨' : '선택하기';
+  }
   if (hasLogo) {
     $('#logo-preview-img').src = ST.brandAssets.logoBase64;
     $('#logo-preview-name').textContent = ST.brandAssets.logoName || '브랜드 로고 첨부됨';
@@ -2291,33 +2573,151 @@ async function enterStage5Summary(revisionText) {
   renderStage5SummaryCard();
 }
 
+const SUM_ROWS_META = [
+  { n: 1, key: 'goalTopic',   iconLabel: '🎯 목표·주제' },
+  { n: 2, key: 'targetPain',  iconLabel: '🙋 핵심 타겟' },
+  { n: 3, key: 'firstGift',   iconLabel: '🎁 첫 카톡 혜택' },
+  { n: 4, key: 'trustProof',  iconLabel: '🏆 대표님 강점' },
+  { n: 5, key: 'formAndFlow', iconLabel: '💬 후속 흐름' }
+];
+
+function shortLine(text, max) {
+  max = max || 28;
+  const s = String(text || '').replace(/\s+/g, ' ').trim();
+  const chars = Array.from(s);
+  return chars.length > max ? (chars.slice(0, max).join('') + '…') : (s || '내용을 입력해 주세요');
+}
+
 function renderStage5SummaryCard() {
   const sum = ST.summary || Consult.localSummary({
     sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId, customFlows: ST.customFlows, answers: ST.answers
   });
   ST.summary = sum;
+  const sec = Consult.getSector(ST.sectorId);
+  const flow = Consult.getFlow(ST.sectorId, ST.flowId, ST.customFlows, ST.subIndustry);
+  const pills = Consult.buildFlowPills(flow);
   const photos = ST.brandAssets.photos.filter(Boolean);
 
-  const assetsHtml =
-    '<div class="summary-assets-row">' +
-      (ST.brandAssets.logoBase64 ? '<img class="sum-logo" src="' + ST.brandAssets.logoBase64 + '" alt="로고">' : '<span class="opt-badge">로고 미첨부</span>') +
-      '<span class="opt-badge" style="background:' + esc(ST.brandAssets.primaryColor) + ';color:#fff">컬러 · ' + esc(ST.brandAssets.colorThemeLabel || ST.brandAssets.primaryColor) + '</span>' +
-    '</div>' +
-    '<div class="summary-assets-row" style="margin-top:8px">' +
-      (photos.length
-        ? photos.map(p => '<img class="sum-thumb" src="' + p + '" alt="첨부 사진">').join('') +
-          '<span style="font-size:12px;color:var(--g700);font-weight:700">실사 ' + photos.length + '장 최우선 배치' + (photos.length < 3 ? (' + 빈 칸 ' + (3 - photos.length) + '장 AI 자동 생성') : '') + '</span>'
-        : '<span style="font-size:12.5px;color:var(--blue-dk);font-weight:700">✨ 사진 미첨부 — 문구에 맞춰 전 슬롯 AI 실사 자동 생성</span>') +
-    '</div>';
+  // ① 상단 '내 캠페인 한눈에 보기' 히어로 카드 (업종 배지 + 헤드라인 + 1줄 화살표 카톡 여정)
+  const j1 = shortLine((ST.answers[5] && /묻고|질문|선택/.test(ST.answers[5])) ? pills[0].text : pills[0].text, 13);
+  const j2 = shortLine(ST.answers[3] ? ST.answers[3].replace(/^신청\s*즉시\s*/, '').replace(/^["'「]/, '') : pills[1].text, 13);
+  const j3 = shortLine(pills[2].text, 13);
 
-  $('#summary-items-wrap').innerHTML =
-    '<div class="summary-item"><b>분야 & 선택 운영 흐름</b>' + esc(sum.sectorLine) + '<br><span style="color:var(--blue-dk);font-weight:800">👉 ' + esc(sum.flowTitle) + '</span></div>' +
-    '<div class="summary-item"><b>Q1. 캠페인 목표 & 핵심 주제</b>' + esc(sum.goalTopic) + '</div>' +
-    '<div class="summary-item"><b>Q2. 핵심 타겟 & 단골 고민</b>' + esc(sum.targetPain) + '</div>' +
-    '<div class="summary-item"><b>Q3. 신청 직후 첫 무료 혜택</b>' + esc(sum.firstGift) + '</div>' +
-    '<div class="summary-item"><b>Q4. 대표님만의 경력·강점·성과</b>' + esc(sum.trustProof) + '</div>' +
-    '<div class="summary-item"><b>Q5. 신청 질문 & 후속 카톡 디테일</b>' + esc(sum.formAndFlow) + '</div>' +
-    '<div class="summary-item"><b>브랜드 디자인 재료 (로고 · 컬러 · 사진)</b>' + assetsHtml + '</div>';
+  const heroEl = $('#summary-hero-card');
+  if (heroEl) {
+    heroEl.style.background = 'linear-gradient(155deg, ' + ST.brandAssets.primaryColor + ' 0%, #0F172A 100%)';
+    heroEl.innerHTML =
+      '<div class="sum-hero-badges">' +
+        '<span class="sum-hero-pill">' + (sec ? sec.icon : '✨') + ' ' + esc(ST.subIndustry || (sec ? sec.shortTitle : '맞춤 업종')) + '</span>' +
+        '<span class="sum-hero-pill accent">' + esc(sum.flowTitle) + '</span>' +
+      '</div>' +
+      '<div class="sum-hero-title">' + esc(shortLine(sum.goalTopic, 58)) + '</div>' +
+      '<div class="sum-journey-box">' +
+        '<span class="sum-journey-chip c1">📋 ' + esc(j1) + '</span>' +
+        '<span class="sum-journey-arr">➔</span>' +
+        '<span class="sum-journey-chip c2">💬 ' + esc(j2) + '</span>' +
+        '<span class="sum-journey-arr">➔</span>' +
+        '<span class="sum-journey-chip c3">⏰ ' + esc(j3) + '</span>' +
+      '</div>';
+  }
+
+  // ② 5대 핵심 기획 슬림 아코디언 (접힘 기본: 1줄 요약 + [상세/수정 ▾], 펼침: 전체 원문 + 인라인 편집)
+  const wrap = $('#summary-items-wrap');
+  wrap.innerHTML = SUM_ROWS_META.map(m => {
+    const isOpen = ST.summaryOpenIdx === m.n;
+    const isEditing = ST.summaryEditIdx === m.n;
+    const fullText = String(ST.answers[m.n] || sum[m.key] || '');
+    const preview = shortLine(sum[m.key] || fullText, 28);
+
+    let bodyHtml = '';
+    if (isOpen) {
+      if (isEditing) {
+        bodyHtml =
+          '<div class="sum-acc-body">' +
+            '<textarea class="sum-inline-ta" id="sum-inline-ta-' + m.n + '">' + esc(fullText) + '</textarea>' +
+            '<div class="sum-inline-actions">' +
+              '<button type="button" class="btn-mini" data-sum-cancel="' + m.n + '">취소</button>' +
+              '<button type="button" class="btn-mini blue" data-sum-save="' + m.n + '">✅ 저장</button>' +
+            '</div>' +
+          '</div>';
+      } else {
+        bodyHtml =
+          '<div class="sum-acc-body">' +
+            '<div class="sum-acc-full">' + esc(fullText) + '</div>' +
+            '<div class="sum-inline-actions">' +
+              '<button type="button" class="btn-mini blue" data-sum-edit="' + m.n + '">✏️ 내용 수정</button>' +
+            '</div>' +
+          '</div>';
+      }
+    }
+
+    return '<div class="sum-acc-item' + (isOpen ? ' open' : '') + '">' +
+      '<button type="button" class="sum-acc-head" data-sum-toggle="' + m.n + '">' +
+        '<span class="sum-acc-lbl">' + m.iconLabel + '</span>' +
+        '<span class="sum-acc-preview">' + esc(preview) + '</span>' +
+        '<span class="sum-acc-toggle">' + (isOpen ? '접기 ▴' : '상세/수정 ▾') + '</span>' +
+      '</button>' +
+      bodyHtml +
+    '</div>';
+  }).join('');
+
+  $$('[data-sum-toggle]', wrap).forEach(btn => {
+    btn.onclick = () => {
+      const n = Number(btn.dataset.sumToggle);
+      ST.summaryOpenIdx = (ST.summaryOpenIdx === n) ? 0 : n;
+      ST.summaryEditIdx = 0;
+      renderStage5SummaryCard();
+    };
+  });
+  $$('[data-sum-edit]', wrap).forEach(btn => {
+    btn.onclick = () => {
+      const n = Number(btn.dataset.sumEdit);
+      ST.summaryOpenIdx = n;
+      ST.summaryEditIdx = n;
+      renderStage5SummaryCard();
+      const ta = $('#sum-inline-ta-' + n);
+      if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    };
+  });
+  $$('[data-sum-cancel]', wrap).forEach(btn => {
+    btn.onclick = () => {
+      ST.summaryEditIdx = 0;
+      renderStage5SummaryCard();
+    };
+  });
+  $$('[data-sum-save]', wrap).forEach(btn => {
+    btn.onclick = () => {
+      const n = Number(btn.dataset.sumSave);
+      const ta = $('#sum-inline-ta-' + n);
+      const nextVal = ta ? ta.value.trim() : '';
+      if (nextVal.length >= 2) {
+        ST.answers[n] = nextVal;
+        const rowMeta = SUM_ROWS_META.find(x => x.n === n);
+        if (rowMeta && ST.summary) ST.summary[rowMeta.key] = nextVal;
+      }
+      ST.summaryEditIdx = 0;
+      renderStage5SummaryCard();
+    };
+  });
+
+  // ③ 세련된 브랜드 디자인 재료 요약 바 (긍정 텍스트 로고 + 원형 컬러 스와치 + 사진 썸네일/AI 실사 배지)
+  const brandBar = $('#summary-brand-bar');
+  if (brandBar) {
+    const logoBadge = ST.brandAssets.logoBase64
+      ? '<span class="brand-chip"><img class="sum-logo" style="height:20px;padding:1px 4px;border:none" src="' + ST.brandAssets.logoBase64 + '" alt="로고"> 로고 첨부됨</span>'
+      : '<span class="brand-chip positive">✨ 상호명 텍스트 로고 적용</span>';
+    const colorBadge = '<span class="brand-chip"><span class="color-dot" style="background:' + esc(ST.brandAssets.primaryColor) + '"></span>' + esc(ST.brandAssets.colorThemeLabel || ST.brandAssets.primaryColor) + '</span>';
+    const photoBadge = photos.length
+      ? '<div class="summary-assets-row">' +
+          photos.map(p => '<img class="sum-thumb" style="width:44px;height:32px" src="' + p + '" alt="첨부 사진">').join('') +
+          '<span class="brand-chip">📸 실사 ' + photos.length + '장' + (photos.length < 3 ? (' + AI ' + (3 - photos.length) + '장') : '') + '</span>' +
+        '</div>'
+      : '<span class="brand-chip positive">✨ 문구 맞춤 AI 실사 자동 생성</span>';
+
+    brandBar.innerHTML =
+      '<div style="font-size:11.5px;font-weight:800;color:var(--g500)">🎨 브랜드 디자인 재료</div>' +
+      '<div class="sum-brand-row">' + logoBadge + colorBadge + photoBadge + '</div>';
+  }
 }
 
 async function generateAndSubmitCampaign() {
@@ -2341,6 +2741,7 @@ async function generateAndSubmitCampaign() {
     partner: ST.partnerInfo,
     brandAssets: {
       logoBase64: ST.brandAssets.logoBase64,
+      logoMode: ST.brandAssets.logoBase64 ? 'image' : 'text_auto',
       colorThemeId: ST.brandAssets.colorThemeId,
       colorThemeLabel: ST.brandAssets.colorThemeLabel,
       primaryColor: ST.brandAssets.primaryColor,
@@ -2390,7 +2791,7 @@ async function generateAndSubmitCampaign() {
     '<div class="summary-head" style="color:var(--green)">🎉 제작 요청이 완벽히 접수되었어요!</div>' +
     '<div class="summary-item"><b>캠페인 제목</b>' + esc(master.tab1_basic_settings.title_30chars) + '</div>' +
     '<div class="summary-item"><b>메인 헤드카피</b>' + esc(master.tab2_landing_content.blocks_1000px[0].title) + '</div>' +
-    '<div class="summary-item"><b>브랜드 에셋 연동</b>로고: ' + (master.brand_assets.logo_base64 ? '첨부됨' : '미첨부') +
+    '<div class="summary-item"><b>브랜드 에셋 연동</b>로고: ' + (master.brand_assets.logo_base64 ? '로고 이미지 첨부됨' : '✨ 상호명 텍스트 로고 자동 적용') +
       ' · 컬러: ' + esc(master.brand_assets.primary_color) +
       ' · 사진: ' + (uploadedCnt ? ('실사 ' + uploadedCnt + '장 우선 배치') : 'AI 실사 자동 생성') + '</div>' +
     '<div style="font-size:13px;color:var(--g700);line-height:1.5">' +
@@ -2433,7 +2834,11 @@ $('#btn-reset').onclick = () => { if (ST.verified) resetConsultFlow(); };
 
 // Step 1
 $('#btn-to-stage2').onclick = proceedToStage2;
-$('#sub-industry-input').addEventListener('input', updateStickyCtaBar);
+$('#sub-industry-input').addEventListener('input', () => {
+  ST.subIndustry = ($('#sub-industry-input').value || '').trim();
+  syncHeaderBadge();
+  updateStickyCtaBar();
+});
 $('#sub-industry-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') { e.preventDefault(); proceedToStage2(); }
 });
@@ -2484,6 +2889,7 @@ $('#logo-file-input').addEventListener('change', async e => {
   try {
     const res = await compressImageOnCanvas(f, 400, 0.85, true);
     ST.brandAssets.logoBase64 = res.dataUrl;
+    ST.brandAssets.logoMode = 'image';
     ST.brandAssets.logoName = f.name + ' (' + res.kb + 'KB)';
     ST.brandAssets.logoDominantHex = res.dominantHex || '';
     renderStage4BrandAssets();
@@ -2493,6 +2899,14 @@ $('#logo-file-input').addEventListener('change', async e => {
 });
 $('#btn-logo-clear').onclick = () => {
   ST.brandAssets.logoBase64 = null;
+  ST.brandAssets.logoMode = 'text_auto';
+  ST.brandAssets.logoName = '';
+  ST.brandAssets.logoDominantHex = '';
+  renderStage4BrandAssets();
+};
+$('#btn-no-logo-mode').onclick = () => {
+  ST.brandAssets.logoBase64 = null;
+  ST.brandAssets.logoMode = 'text_auto';
   ST.brandAssets.logoName = '';
   ST.brandAssets.logoDominantHex = '';
   renderStage4BrandAssets();

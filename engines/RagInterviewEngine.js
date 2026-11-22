@@ -1433,6 +1433,54 @@
     return String(str == null ? '' : str).replace(/\{SUB\}/g, subLabel || '우리 브랜드');
   }
 
+  function shortenPill(text, maxChars) {
+    maxChars = maxChars || 13;
+    var s = String(text == null ? '' : text)
+      .replace(/\(.*?\)/g, '')
+      .replace(/카카오\s*1초\s*/g, '')
+      .replace(/신청\s*즉시\s*/g, '즉시 ')
+      .replace(/자동\s*발송|발송$/g, '')
+      .replace(/안내\s*&.*/g, '안내')
+      .replace(/\s+/g, ' ')
+      .trim();
+    // 앞 핵심 구절 우선 추출
+    var cut = s.split(/\s*[+➔→·]\s*/)[0] || s;
+    if (tLen(cut) < 5 && s.length > cut.length) cut = s;
+    return tFirst(cut, maxChars);
+  }
+
+  CONSULT.buildFlowPills = function (flow) {
+    var icons = ['📋', '💬', '⏰'];
+    if (flow && Array.isArray(flow.pills) && flow.pills.length === 3) {
+      return flow.pills.map(function (p, i) {
+        return { icon: icons[i], text: CONSULT.cleanPartnerText(tFirst(p, 15)) };
+      });
+    }
+    var pipe = (flow && Array.isArray(flow.pipeline)) ? flow.pipeline : [];
+    return [0, 1, 2].map(function (i) {
+      var raw = (pipe[i] && pipe[i].text) || (['간편 신청 체크', '즉시 첫 혜택 카톡', '후속 자동 카톡'][i]);
+      return { icon: icons[i], text: CONSULT.cleanPartnerText(shortenPill(raw, 13)) };
+    });
+  };
+
+  CONSULT.getBestFlowId = function (sectorId, subIndustry) {
+    var sub = String(subIndustry || '').toLowerCase();
+    if (/산부인과|병원|의원|치과|한의원|검진|설명회|세미나|웨비나|특강/.test(sub)) return 'FLOW_1';
+    if (/세무|법무|변호사|노무|학원|수학|영어|패션|쇼핑몰|피부|필라테스/.test(sub)) return 'FLOW_4';
+    if (/교회|협회|모임|커뮤니티|후원|비영리/.test(sub)) return 'FLOW_3';
+    if (/카페|식당|매장|네일|헤어|베이커리|유치원|호텔|스튜디오|인테리어/.test(sub)) return 'FLOW_2';
+    var map = {
+      online_edu: 'FLOW_2',
+      academy: 'FLOW_4',
+      professional: 'FLOW_4',
+      local_store: 'FLOW_2',
+      commerce: 'FLOW_4',
+      community: 'FLOW_3',
+      other: 'FLOW_2'
+    };
+    return map[sectorId] || 'FLOW_2';
+  };
+
   // 타 업종 용어 오염 0% 보장 — 세부 업종 전용 6대 플로우 로컬 생성기
   CONSULT.getFlowsForContext = function (sectorId, subIndustry) {
     var sub = String(subIndustry || '').trim();
@@ -1449,11 +1497,10 @@
     var subLabel = sub || (sec ? sec.shortTitle : '우리 브랜드');
     return srcFlows.map(function (f) {
       var title = interpolateSub(f.title, subLabel);
-      // 기타 업종(other)에서 사용자가 세부 업종을 적었다면 제목/요약에 자연스럽게 세부 업종 반영
       if (sectorId === 'other' && sub && title.indexOf(sub) === -1) {
         title = sub + ' ' + title;
       }
-      return {
+      var built = {
         id: f.id,
         trackId: f.trackId,
         icon: f.icon,
@@ -1468,6 +1515,8 @@
           };
         })
       };
+      built.pills = CONSULT.buildFlowPills(built).map(function (x) { return x.text; });
+      return built;
     });
   };
 
@@ -1494,7 +1543,7 @@
       '1) 타 업종 용어 오염 100% 금지! 예를 들어 세부 업종이 "산부인과"·"치과"·"한의원" 등 병의원이면 세무·절세·부가세·법인·기장 같은 타 업종 단어를 단 한 글자도 절대 넣지 마세요.',
       '2) 내부 시스템 용어(뜰채, 시트 정수 더하기, 1회차 알림톡, 트랙 번호, ' + TOSS_BANNED_LIT + ') 절대 금지.',
       '3) 6개 흐름은 반드시 FLOW_1(일정·예약 리마인드), FLOW_2(가이드·혜택 즉시 발급), FLOW_3(정기 칼럼·소식 연재), FLOW_4(자가진단 & 유형별 맞춤 분기), FLOW_5(열독·방문 포인트 적립 VIP), FLOW_6(현장 QR 체크인·통합 안내) 구조를 유지하되 이름과 내용을 100% 세부 업종 현장 용어로 번역하세요.',
-      '4) 출력 JSON만: {"flows":[{"id":"FLOW_1","title":"...","badge":"짧은뱃지","summary":"1줄 요약","pipeline":[{"step":"신청페이지","text":"..."},{"step":"즉시 첫 카톡","text":"..."},{"step":"후속 자동 카톡","text":"..."}]}]} (정확히 6개)'
+      '4) 출력 JSON만: {"flows":[{"id":"FLOW_1","title":"...","badge":"짧은뱃지","pills":["10자내외키워드1","10자내외키워드2","10자내외키워드3"],"summary":"1줄 요약","pipeline":[{"step":"신청페이지","text":"..."},{"step":"즉시 첫 카톡","text":"..."},{"step":"후속 자동 카톡","text":"..."}]}]} (정확히 6개)'
     ].join('\n');
 
     var user = '[선택 분야] ' + (sec ? sec.title : '기타 업종') +
@@ -1521,7 +1570,7 @@
               };
             })
           : lf.pipeline;
-        return {
+        var built = {
           id: lf.id,
           trackId: lf.trackId,
           icon: lf.icon,
@@ -1529,8 +1578,13 @@
           title: CONSULT.cleanPartnerText(af.title || lf.title),
           summary: CONSULT.cleanPartnerText(af.summary || lf.summary),
           useWebzine: lf.useWebzine,
-          pipeline: pipe
+          pipeline: pipe,
+          pills: (Array.isArray(af.pills) && af.pills.length === 3)
+            ? af.pills.map(function (x) { return CONSULT.cleanPartnerText(tFirst(x, 14)); })
+            : null
         };
+        built.pills = CONSULT.buildFlowPills(built).map(function (x) { return x.text; });
+        return built;
       });
       return { flows: merged, source: 'ai_realtime' };
     }).catch(function () {
@@ -2053,6 +2107,7 @@
     master.brand_assets.color_theme_id = brand.colorThemeId || (defColor && defColor.id) || 'charcoal';
     master.brand_assets.color_theme_label = brand.colorThemeLabel || (defColor && defColor.label) || '';
     master.brand_assets.logo_base64 = brand.logoBase64 || null;
+    master.brand_assets.logo_mode = brand.logoBase64 ? 'image' : (brand.logoMode || 'text_auto');
     master.brand_assets.photo_mode = photoMode;
     master.brand_assets.partner_photos = photos.slice();
     master.tab2_landing_content.bg_color = secondary;

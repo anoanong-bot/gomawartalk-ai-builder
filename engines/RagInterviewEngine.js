@@ -71,16 +71,15 @@
       }));
       return true;
     } catch (e) {
-      // QuotaExceededError 방어: 대용량 base64 이미지만 경량화하여 재저장
+      // QuotaExceededError 방어: 중복 저장된 이미지만 정리하여 파트너 첨부 실사/로고는 최대한 보존
       try {
         var slim = JSON.parse(JSON.stringify(sanitizeObject(campaignObj)));
         if (slim && slim.brand_assets && slim.brand_assets.block_images_base64) {
           slim.brand_assets.block_images_base64 = {};
         }
-        if (slim && slim.tab2_landing_content && Array.isArray(slim.tab2_landing_content.blocks_1000px)) {
-          slim.tab2_landing_content.blocks_1000px.forEach(function (b) {
-            if (b.visual_image && b.visual_image.length > 180000) b.visual_image = null;
-          });
+        // partner_photos가 blocks visual_image에 이미 매핑되어 있으면 중복 사본만 제거
+        if (slim && slim.brand_assets && Array.isArray(slim.brand_assets.partner_photos) && slim.brand_assets.partner_photos.length) {
+          slim.brand_assets.partner_photos = [];
         }
         localStorage.setItem(STORAGE_KEYS.BRIDGE_CAMPAIGN, JSON.stringify({
           savedAt: new Date().toISOString(),
@@ -88,7 +87,25 @@
         }));
         return true;
       } catch (e2) {
-        return false;
+        try {
+          var slim2 = JSON.parse(JSON.stringify(sanitizeObject(campaignObj)));
+          if (slim2 && slim2.brand_assets) {
+            slim2.brand_assets.block_images_base64 = {};
+            slim2.brand_assets.partner_photos = [];
+          }
+          if (slim2 && slim2.tab2_landing_content && Array.isArray(slim2.tab2_landing_content.blocks_1000px)) {
+            slim2.tab2_landing_content.blocks_1000px.forEach(function (b) {
+              if (b.visual_image && b.visual_image.length > 350000) b.visual_image = null;
+            });
+          }
+          localStorage.setItem(STORAGE_KEYS.BRIDGE_CAMPAIGN, JSON.stringify({
+            savedAt: new Date().toISOString(),
+            campaign: slim2
+          }));
+          return true;
+        } catch (e3) {
+          return false;
+        }
       }
     }
   }
@@ -1329,6 +1346,656 @@
     return TOSS.postProxy(proxyUrl, Object.assign({ action: 'verifyPartner' }, payload || {}));
   };
 
+  // ─────────────────────────────────────────────────────────────
+  // 7. 5단계 컨설턴트 인터뷰 엔진 (RagInterviewEngine.Consult)
+  //    - Step 1: 6대 마스터 분야 + 1줄 세부 업종
+  //    - Step 2: 선택 분야 언어로 번역된 6대 운영 플로우 미리보기 + AI 흐름 추천
+  //    - Step 3: Tap-to-Edit 주관식 5단계 심층 인터뷰 + 실시간 매뉴얼 검문소(Feasibility Guardrail) + 분리된 기능 Q&A
+  //    - Step 4: 브랜드 에셋 수집(로고 · 컬러 5종/직접선택 · 실사 사진 최대 3장 또는 AI 자동 생성)
+  //    - Step 5: 최종 요약 컨펌 -> 100% 제로베이스 CampaignMaster.json 생성 & 조종석 직결
+  // ─────────────────────────────────────────────────────────────
+  var CONSULT = {};
+  CONSULT.TOTAL_Q = 5;
+  CONSULT.Q_META = [
+    {
+      n: 1, key: 'goal_topic', label: '캠페인 목표 & 핵심 주제',
+      usageHint: '신청페이지 첫 화면(Hero) 헤드카피와 캠페인 전체 방향을 결정하는 핵심 재료예요.'
+    },
+    {
+      n: 2, key: 'target_pain', label: '핵심 타겟 & 현실 고민',
+      usageHint: '고객이 "어? 딱 내 얘기네!" 하며 고개를 끄덕이는 신청페이지 2단 공감 섹션에 들어가요.'
+    },
+    {
+      n: 3, key: 'first_gift', label: '신청 직후 첫 무료 혜택',
+      usageHint: '카카오 1초 신청을 망설임 없이 누르게 만드는 첫 카톡 선물과 3단 솔루션 섹션에 반영돼요.'
+    },
+    {
+      n: 4, key: 'trust_proof', label: '대표님만의 경력·강점·성과',
+      usageHint: '고객이 믿고 신청하게 만드는 4단 신뢰 증거 섹션에 실제 숫자·강점으로 멋지게 담겨요.'
+    },
+    {
+      n: 5, key: 'form_and_tone', label: '신청 질문 & 후속 카톡 디테일',
+      usageHint: '고객을 분류할 신청폼 객관식 질문과 이후 카톡 발송 주기·말투·언어 설정에 직결돼요.'
+    }
+  ];
+
+  // 추가 내부 용어 필터링 (시트 정수 더하기 등 절대 미노출)
+  var CONSULT_JARGON = [
+    [/시트\s*정수\s*더하기/g, '포인트 자동 적립'],
+    [/시트\s*액션/g, '고객 맞춤 기록'],
+    [/뜰채\s*조건?\s*분기?/g, '유형별 맞춤 자동 발송'],
+    [/1\s*회차\s*알림톡/g, '신청 즉시 첫 카톡'],
+    [/미끼\s*(자료|상품|혜택)?/g, '첫 무료 혜택'],
+    [/\d+\s*번\s*트랙/g, '선택하신 운영 흐름'],
+    [/청사진/g, '캠페인 기획안'],
+    [/제로\s*베이스/g, '맞춤 제작'],
+    [/웹진\s*앵커/g, '모바일 페이지 바로가기'],
+    [new RegExp(TOSS_BANNED_LIT, 'g'), '정기 칼럼·소식']
+  ];
+
+  CONSULT.cleanPartnerText = function (text) {
+    var t = TOSS.cleanJargon(String(text == null ? '' : text));
+    CONSULT_JARGON.forEach(function (r) { t = t.replace(r[0], r[1]); });
+    return sanitizeText(t);
+  };
+
+  CONSULT.getCatalog = function () {
+    return global.GOMAWARTALK_CONSULT_CATALOG || global.GomawartalkConsultCatalog || { colorThemes: [], sectors: [] };
+  };
+
+  CONSULT.getFeasibilityRules = function () {
+    return global.GOMAWARTALK_FEASIBILITY_RULES || global.GomawartalkFeasibilityRules || [];
+  };
+
+  CONSULT.getSector = function (sectorId) {
+    var cat = CONSULT.getCatalog();
+    var list = cat.sectors || [];
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === sectorId) return list[i];
+    }
+    return list[0] || null;
+  };
+
+  CONSULT.getFlow = function (sectorId, flowId) {
+    var sec = CONSULT.getSector(sectorId);
+    var flows = (sec && sec.flows) || [];
+    for (var i = 0; i < flows.length; i++) {
+      if (flows[i].id === flowId) return flows[i];
+    }
+    return flows[0] || null;
+  };
+
+  CONSULT.getDefaultColorForSector = function (sectorId, subIndustry) {
+    var cat = CONSULT.getCatalog();
+    var themes = cat.colorThemes || [];
+    var hay = String(subIndustry || '').toLowerCase();
+    // 세부 업종 키워드 우선 반영
+    if (/상추|무농약|유기농|농장|채소|과일|산지|식품|건강|교회|봉사|힐링/.test(hay)) {
+      return themes.find(function (t) { return t.id === 'forest'; }) || themes[0];
+    }
+    if (/뷰티|피부|네일|헤어|카페|베이커리|공방|필라테스|요가|디저트/.test(hay)) {
+      return themes.find(function (t) { return t.id === 'espresso'; }) || themes[2];
+    }
+    if (/패션|쇼핑몰|의류|코디|코스메틱|리빙|라이프스타일/.test(hay)) {
+      return themes.find(function (t) { return t.id === 'burgundy'; }) || themes[4];
+    }
+    var sec = CONSULT.getSector(sectorId);
+    var defId = (sec && sec.defaultColorId) || 'charcoal';
+    return themes.find(function (t) { return t.id === defId; }) || themes[0];
+  };
+
+  // ── 1) 실시간 고마워톡 매뉴얼 검문소 (로컬 즉시 1차 방어막 — 오프라인/온라인 100% 작동)
+  CONSULT.checkFeasibilityLocal = function (userText) {
+    var txt = String(userText || '').trim();
+    if (!txt) return { feasible: true };
+    var rules = CONSULT.getFeasibilityRules();
+    for (var i = 0; i < rules.length; i++) {
+      var rule = rules[i];
+      var pats = rule.patterns || [];
+      for (var j = 0; j < pats.length; j++) {
+        if (pats[j].test(txt)) {
+          return {
+            feasible: false,
+            ruleId: rule.id,
+            title: rule.title,
+            reason: rule.reason,
+            alternatives: (rule.alternatives || []).slice(0, 2)
+          };
+        }
+      }
+    }
+    return { feasible: true };
+  };
+
+  // ── 2) Step 2: AI 최적 운영 플로우 추천 (목표 입력 ➔ 6개 중 1개 + 이유)
+  CONSULT.recommendFlow = function (ctx) {
+    ctx = ctx || {};
+    var sec = CONSULT.getSector(ctx.sectorId);
+    var flows = (sec && sec.flows) || [];
+    var goal = String(ctx.goalText || '').trim();
+    var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
+
+    function localPick() {
+      var g = goal.toLowerCase();
+      var pickId = 'FLOW_2';
+      var reason = '신규 고객이 가장 부담 없이 1초 만에 신청하고 바로 혜택을 받아볼 수 있어 첫 캠페인으로 전환율이 가장 높아요.';
+      if (/설명회|세미나|웨비나|특강|일정|마감|신고|예약|리마인드|노쇼|행사|오픈런|공구|프리오더/.test(g)) {
+        pickId = 'FLOW_1';
+        reason = '일정·예약·오픈 시점에 맞춰 D-3·D-1 자동 리마인드를 보내면 노쇼를 크게 줄이고 참석·구매율을 끌어올릴 수 있어요.';
+      } else if (/진단|유형|분기|맞춤|학년|성향|스타일|취향|증상|사업자|소그룹|분과/.test(g)) {
+        pickId = 'FLOW_4';
+        reason = '신청할 때 고객의 상황·유형을 객관식으로 먼저 분류해 각자에게 딱 맞는 맞춤 안내를 보내면 상담·구매 전환율이 훨씬 높아져요.';
+      } else if (/연재|칼럼|매주|정기|주보|챌린지|팬덤|구독|레시피|소식/.test(g)) {
+        pickId = 'FLOW_3';
+        reason = '단발성 안내에 그치지 않고 주기적으로 유익한 칼럼·소식을 카톡으로 보내며 신뢰와 단골 팬덤을 차곡차곡 쌓는 데 최적이에요.';
+      } else if (/스탬프|적립|포인트|vip|단골|출석|완주|개근|재방문/.test(g)) {
+        pickId = 'FLOW_5';
+        reason = '열람·방문·참여 횟수를 자동으로 쌓아 열성 고객(VIP)을 선별하고 특별 보상을 주면 재방문과 고가 전환이 자연스럽게 일어나요.';
+      } else if (/qr|현장|테이블|로비|택배|박스|체크인|오프라인/.test(g)) {
+        pickId = 'FLOW_6';
+        reason = '현장이나 택배 상자의 QR을 찍는 순간 3초 만에 DB로 모으고 안내서·후속 혜택까지 자동 발송할 수 있어 현장 효율이 가장 좋아요.';
+      }
+      var found = CONSULT.getFlow(ctx.sectorId, pickId) || flows[0];
+      return { flowId: found.id, flowTitle: found.title, reason: reason };
+    }
+
+    var flowSummaryList = flows.map(function (f, idx) {
+      return (idx + 1) + '. [' + f.id + '] ' + f.title + ' — ' + f.summary;
+    }).join('\n');
+
+    var sys = [
+      '당신은 고마워톡 수석 마케팅 컨설턴트입니다.',
+      '파트너의 분야·세부업종과 목표를 보고 아래 6가지 카톡 운영 흐름 중 가장 잘 맞는 1개를 추천하세요.',
+      '내부 전문용어(뜰채, 시트 정수 더하기, 트랙 번호, ' + TOSS_BANNED_LIT + ')는 절대 쓰지 말고 쉬운 일상 언어로 2문장 이내 이유를 쓰세요.',
+      '출력 JSON만: {"flowId":"FLOW_1~FLOW_6 중 하나","reason":"친절한 추천 이유 1~2문장"}'
+    ].join('\n');
+
+    var user = '[분야] ' + (sec ? sec.title : '') + ' / [세부 업종] ' + sub +
+      '\n[파트너 목표] ' + goal +
+      '\n\n[6가지 운영 흐름 목록]\n' + flowSummaryList +
+      '\n\nJSON만 출력하세요.';
+
+    return TOSS.callAI({
+      mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
+      system: sys, user: user, temperature: 0.3, maxOutputTokens: 512
+    }).then(function (raw) {
+      var obj = extractJson(raw);
+      if (!obj || !obj.flowId) return localPick();
+      var matched = flows.find(function (f) { return f.id === obj.flowId; });
+      if (!matched) return localPick();
+      return {
+        flowId: matched.id,
+        flowTitle: matched.title,
+        reason: CONSULT.cleanPartnerText(obj.reason || localPick().reason)
+      };
+    }).catch(function () {
+      return localPick();
+    });
+  };
+
+  // ── 3) Step 3: 업종·플로우·이전 답변 맥락에 100% 맞춘 살아있는 질문 & Tap-to-Edit 예시 칩 3개 생성
+  CONSULT.buildLocalQuestionPack = function (qNum, ctx) {
+    ctx = ctx || {};
+    var sec = CONSULT.getSector(ctx.sectorId);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
+    var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '비즈니스')).trim();
+    var flowTitle = flow ? flow.title : '카카오 자동 운영 흐름';
+    var A = ctx.answers || {};
+    var owner = String(ctx.ownerName || '대표님').trim();
+    var meta = CONSULT.Q_META[qNum - 1] || CONSULT.Q_META[0];
+    var rawChips = (sec && sec.examples && sec.examples[qNum]) ? sec.examples[qNum].slice(0, 3) : [];
+
+    var qText = '';
+    var topicSnippet = tFirst(A[1] || sub, 28);
+    var targetSnippet = tFirst(A[2] || '핵심 고객', 24);
+    var giftSnippet = tFirst(A[3] || '첫 무료 혜택', 24);
+
+    if (qNum === 1) {
+      qText = '**' + sub + '** 분야에 딱 맞는 **' + flowTitle + '**을 골라주셨네요!\n' +
+        owner + ' 대표님, 이번 캠페인으로 **꼭 이루고 싶은 진짜 목표와 핵심 주제**를 편하게 들려주세요.';
+    } else if (qNum === 2) {
+      qText = '목표가 아주 선명해요! **"' + topicSnippet + '"**에 반응할 **가장 모으고 싶은 핵심 고객**은 어떤 분이고, 그분들이 평소 겪는 **단골 현실 고민**은 무엇인가요?';
+    } else if (qNum === 3) {
+      qText = '공감이 확 되는 고민이네요! **' + sub + '** 고객이 카카오로 1초 신청하자마자 **첫 카톡으로 바로 선물받을 무료 혜택·자료·안내**는 무엇으로 준비하면 좋을까요?';
+    } else if (qNum === 4) {
+      qText = '**"' + giftSnippet + '"** 구성이 매력적이에요! 이제 고객이 "여기 진짜 믿을 만하네!" 하고 바로 신청할 수 있게 **대표님만의 실제 경력·강점·성과 숫자**를 자랑해 주세요.';
+    } else {
+      qText = '마지막 질문이에요! **' + sub + '** 신청폼에서 고객을 분류할 **객관식 질문(예: 유형·고민)**과, 이후 카톡을 보낼 **주기·원하시는 말투(또는 언어)**를 알려주세요.';
+    }
+
+    return {
+      qNum: qNum,
+      label: meta.label,
+      usageHint: meta.usageHint,
+      questionText: CONSULT.cleanPartnerText(qText),
+      exampleChips: rawChips.map(function (c) { return CONSULT.cleanPartnerText(c); })
+    };
+  };
+
+  CONSULT.formatConsultAnswers = function (answers) {
+    return CONSULT.Q_META.map(function (m) {
+      return (answers && answers[m.n]) ? ('Q' + m.n + ' [' + m.label + ']: ' + answers[m.n]) : null;
+    }).filter(Boolean).join('\n') || '(아직 입력된 답변 없음)';
+  };
+
+  CONSULT.buildGuardrailManualSummary = function () {
+    var rules = CONSULT.getFeasibilityRules();
+    return rules.map(function (r, idx) {
+      return (idx + 1) + ') [불가] ' + r.title + ' → 사유: ' + r.reason +
+        ' / 대안: ' + (r.alternatives || []).map(function (a) { return a.label; }).join(' 또는 ');
+    }).join('\n');
+  };
+
+  // Q1 시작 시에도 업종·세부업종·플로우 맥락에 맞춘 맞춤형 Q1 + 예시 칩 3개 제공
+  CONSULT.getInitialQ1 = function (ctx) {
+    var localPack = CONSULT.buildLocalQuestionPack(1, ctx);
+    var sec = CONSULT.getSector(ctx.sectorId);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
+    var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
+    // 세부 업종이 비어 있거나 AI 미연결이면 즉시 로컬 팩 반환 (0ms 쾌속 진입)
+    if (ctx.mode === 'admin' && !getConfig().hasDirectKey) {
+      return Promise.resolve(localPack);
+    }
+    if (ctx.mode !== 'admin' && !String(ctx.proxyUrl || '').trim()) {
+      return Promise.resolve(localPack);
+    }
+
+    var sys = [
+      '당신은 고마워톡 수석 마케팅 컨설턴트입니다.',
+      '파트너가 방금 선택한 [분야], [세부 업종], [선택 운영 흐름]에 100% 맞춘 살아있는 첫 번째 질문(Q1: 캠페인 목표 & 핵심 주제)과',
+      '파트너가 터치해 내 내용으로 고쳐 쓸 수 있는 현실적인 예시 문장 칩 3개를 JSON으로 작성하세요.',
+      '절대 규칙:',
+      '1) "어떤 클래스·상품·모임을 알리고 싶으신가요?" 같은 천편일률적 고정 문구 절대 금지. 반드시 세부 업종 언어를 녹여서 물어보세요.',
+      '2) 내부 시스템 용어(뜰채, 시트 정수 더하기, 1회차 알림톡, 트랙 번호, ' + TOSS_BANNED_LIT + ') 절대 금지.',
+      '3) questionText는 2문장 이내, 친근하고 전문적인 존댓말, 핵심 강조만 **굵게** 1~2곳.',
+      '4) exampleChips는 정확히 3개, 각 35~75자 사이의 실제 대표님이 쓸 법한 완성된 1인칭("~하고 싶어요.") 문장.',
+      '출력 JSON만: {"questionText":"...","exampleChips":["예시1","예시2","예시3"]}'
+    ].join('\n');
+
+    var user = '[대표자] ' + (ctx.ownerName || '대표님') +
+      '\n[분야] ' + (sec ? sec.title : '') +
+      '\n[세부 업종] ' + sub +
+      '\n[선택 운영 흐름] ' + (flow ? (flow.title + ' — ' + flow.summary) : '') +
+      '\n\nJSON만 출력하세요.';
+
+    return TOSS.callAI({
+      mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
+      system: sys, user: user, temperature: 0.45, maxOutputTokens: 900
+    }).then(function (raw) {
+      var obj = extractJson(raw);
+      if (!obj || !obj.questionText || !Array.isArray(obj.exampleChips) || obj.exampleChips.length < 2) {
+        return localPack;
+      }
+      return {
+        qNum: 1,
+        label: localPack.label,
+        usageHint: localPack.usageHint,
+        questionText: CONSULT.cleanPartnerText(obj.questionText),
+        exampleChips: obj.exampleChips.slice(0, 3).map(function (c) { return CONSULT.cleanPartnerText(c); })
+      };
+    }).catch(function () {
+      return localPack;
+    });
+  };
+
+  // 매 답변 제출 시: ① 고마워톡 매뉴얼 불가능 기능 검증(Feasibility Guardrail) ② 통과 시 다음 맥락 질문 + Tap-to-Edit 예시 칩 3개 생성
+  CONSULT.evaluateAndAdvance = function (ctx) {
+    ctx = ctx || {};
+    var qNum = Number(ctx.qNum) || 1;
+    var userText = String(ctx.userText || '').trim();
+    var sec = CONSULT.getSector(ctx.sectorId);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
+    var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
+
+    // ① 1차 하드 가드레일 (로컬 매뉴얼 정규식 즉시 검문 — 온라인/오프라인 무관 100% 차단)
+    var localCheck = CONSULT.checkFeasibilityLocal(userText);
+    if (!localCheck.feasible) {
+      return Promise.resolve({
+        feasible: false,
+        guardrail: {
+          ruleId: localCheck.ruleId,
+          title: localCheck.title,
+          reason: localCheck.reason,
+          alternatives: localCheck.alternatives
+        }
+      });
+    }
+
+    var nextAnswers = Object.assign({}, ctx.answers || {});
+    nextAnswers[qNum] = userText;
+    var isLastQ = qNum >= CONSULT.TOTAL_Q;
+    var nextQNum = isLastQ ? CONSULT.TOTAL_Q : (qNum + 1);
+    var localNext = isLastQ ? null : CONSULT.buildLocalQuestionPack(nextQNum, Object.assign({}, ctx, { answers: nextAnswers }));
+
+    // 오프라인(키/프록시 미설정) 즉시 진행
+    if ((ctx.mode === 'admin' && !getConfig().hasDirectKey) || (ctx.mode !== 'admin' && !String(ctx.proxyUrl || '').trim())) {
+      return Promise.resolve({
+        feasible: true,
+        completedInterview: isLastQ,
+        ackText: isLastQ ? '5가지 핵심 내용을 아주 잘 정리해 주셨어요! 이제 브랜드 로고와 컬러·사진을 담아볼까요?' : '',
+        nextPack: localNext
+      });
+    }
+
+    // ② 2차 AI 심층 매뉴얼 검문소 + 다음 맥락 질문 & 예시 칩 3개 동적 생성
+    var nextMeta = CONSULT.Q_META[nextQNum - 1];
+    var sys = [
+      '당신은 고마워톡(카카오톡 자동화 플랫폼) 수석 컨설턴트입니다.',
+      '지금은 파트너의 Q' + qNum + ' 답변을 검토하고, 1) 고마워톡 시스템에서 물리적으로 불가능한 기능이 포함됐는지 먼저 검문한 뒤, 2) 가능할 때만 다음 질문과 예시 칩 3개를 만듭니다.',
+      '',
+      '[절대 매뉴얼 검문 기준 — 아래 중 하나라도 파트너 답변에 요구되면 반드시 feasible=false로 차단하세요!]',
+      CONSULT.buildGuardrailManualSummary(),
+      '※ 위 목록 외라도 "실시간 맞춤 영상/음성/이미지 즉석 자동 제작 발송", "카톡방 내 실시간 AI 1:1 자유 채팅 상담", "채널 미추가 고객 광고성 친구톡 강제 발송", "알림톡 본문에 할인·특가·쿠폰 발송", "고마워톡 자체 카드결제창/장바구니 내장", "신청폼 내 사진·서류 파일 업로드", "야간(20:30~08:00) 친구톡 발송", "한 회차 6개 이상 다중 분기"가 포함되면 절대 통과시키지 마세요!',
+      '※ 단, 파트너가 정상적인 목표·고민·무료 PDF/가이드/쿠폰(친구톡)/상담/예약/기존 링크 연결/객관식 분류 등을 적었다면 반드시 feasible=true로 통과시키세요.',
+      '',
+      '[응답 JSON 규격]',
+      'A) 불가능한 기능 감지 시 (다음 질문으로 절대 넘어가지 않음):',
+      '{"feasible":false,"title":"한 줄 요약","reason":"고마워톡에서 지원하지 않는 정확한 사유(대표님, 고마워톡에서는 [이 부분] 기능은 지원하지 않아요. 에 들어갈 명사구)","alternatives":[{"label":"대안1 제목","detail":"고마워톡 기능으로 구현하는 친절한 설명 1~2문장","draftText":"파트너가 아래 칸에 채워 바로 쓸 수 있는 1인칭 수정 문장"},{"label":"대안2 제목","detail":"대안2 설명 1~2문장","draftText":"대안2 1인칭 수정 문장"}]}',
+      '',
+      'B) 구현 가능 시 (feasible=true):',
+      isLastQ
+        ? '{"feasible":true,"completedInterview":true,"ackText":"5가지 답변을 바탕으로 브랜드 스타일 단계로 넘어가는 따뜻한 한 문장"}'
+        : ('{"feasible":true,"completedInterview":false,"questionText":"직전 답변을 짧게 공감하며 자연스럽게 이어가는 Q' + nextQNum + '(' + nextMeta.label + ') 맞춤 질문 (2문장 이내, 핵심만 **굵게**, 내부 전문용어 및 ' + TOSS_BANNED_LIT + ' 절대 금지)","exampleChips":["이 업종·맥락에 100% 맞춘 현실적 1인칭 예시1 (40~80자)","예시2","예시3"]}')
+    ].join('\n');
+
+    var user = '[분야] ' + (sec ? sec.title : '') +
+      '\n[세부 업종] ' + sub +
+      '\n[선택 운영 흐름] ' + (flow ? (flow.title + ' — ' + flow.summary) : '') +
+      '\n[지금까지 받은 답변]\n' + CONSULT.formatConsultAnswers(nextAnswers) +
+      '\n\n[방금 검토할 Q' + qNum + ' 답변]\n' + userText +
+      '\n\nJSON만 출력하세요.';
+
+    return TOSS.callAI({
+      mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
+      system: sys, user: user, temperature: 0.35, maxOutputTokens: 1200
+    }).then(function (raw) {
+      var obj = extractJson(raw);
+      if (!obj || typeof obj !== 'object') {
+        return { feasible: true, completedInterview: isLastQ, ackText: '', nextPack: localNext };
+      }
+      if (obj.feasible === false && obj.reason) {
+        var alts = Array.isArray(obj.alternatives) ? obj.alternatives.slice(0, 2).map(function (a) {
+          return {
+            label: CONSULT.cleanPartnerText(a.label || '고마워톡 맞춤 대안'),
+            detail: CONSULT.cleanPartnerText(a.detail || ''),
+            draftText: CONSULT.cleanPartnerText(a.draftText || a.detail || '')
+          };
+        }) : [];
+        return {
+          feasible: false,
+          guardrail: {
+            ruleId: 'ai_guardrail',
+            title: CONSULT.cleanPartnerText(obj.title || '고마워톡 기능 지원 여부 확인'),
+            reason: CONSULT.cleanPartnerText(obj.reason),
+            alternatives: alts
+          }
+        };
+      }
+      if (isLastQ) {
+        return {
+          feasible: true,
+          completedInterview: true,
+          ackText: CONSULT.cleanPartnerText(obj.ackText || '모든 핵심 내용을 잘 들었어요! 이제 브랜드 스타일을 담아볼까요?'),
+          nextPack: null
+        };
+      }
+      var chips = (Array.isArray(obj.exampleChips) && obj.exampleChips.length >= 2)
+        ? obj.exampleChips.slice(0, 3).map(function (c) { return CONSULT.cleanPartnerText(c); })
+        : localNext.exampleChips;
+      return {
+        feasible: true,
+        completedInterview: false,
+        nextPack: {
+          qNum: nextQNum,
+          label: localNext.label,
+          usageHint: localNext.usageHint,
+          questionText: CONSULT.cleanPartnerText(obj.questionText || localNext.questionText),
+          exampleChips: chips
+        }
+      };
+    }).catch(function () {
+      return { feasible: true, completedInterview: isLastQ, ackText: '', nextPack: localNext };
+    });
+  };
+
+  // ── 4) 별도 분리된 [💬 고마워톡 기능 가능 여부 물어보기] Q&A 엔진
+  CONSULT.askFeatureQA = function (questionText, ctx) {
+    ctx = ctx || {};
+    var q = String(questionText || '').trim();
+    if (!q) return Promise.resolve('궁금한 고마워톡 기능이나 요금·규정을 편하게 적어 주세요!');
+
+    var localGuard = CONSULT.checkFeasibilityLocal(q);
+    var ragSnippet = searchKnowledge(q, global.GOMAWARTALK_MANUAL || global.GomawartalkManual || []);
+
+    function localAnswer() {
+      if (!localGuard.feasible) {
+        var altLines = (localGuard.alternatives || []).map(function (a, i) {
+          return (i + 1) + ') **' + a.label + '**: ' + a.detail;
+        }).join('\n');
+        return CONSULT.cleanPartnerText(
+          '대표님, 고마워톡에서는 **' + localGuard.reason + '** 기능은 지원하지 않아요.\n\n대신 이런 방법으로 구현하시면 효과가 아주 좋아요:\n' + altLines
+        );
+      }
+      if (ragSnippet) {
+        return CONSULT.cleanPartnerText(ragSnippet.slice(0, 520));
+      }
+      return '고마워톡은 **카카오 1초 신청 ➔ 즉시 첫 카톡(알림톡) ➔ 채널 친구 대상 후속 자동 카톡(친구톡/캐러셀) 및 날짜 예약 발송**을 지원해요. 요금제(Starter 연 24만 / Pro 연 40만), 신청폼 분류, 모바일 웹진 연동 등 구체적인 기능을 물어보시면 바로 안내해 드릴게요!';
+    }
+
+    if ((ctx.mode === 'admin' && !getConfig().hasDirectKey) || (ctx.mode !== 'admin' && !String(ctx.proxyUrl || '').trim())) {
+      return Promise.resolve(localAnswer());
+    }
+
+    var sys = [
+      '당신은 고마워톡 공식 매뉴얼 기반 친절한 기능 상담원입니다.',
+      '아래 [고마워톡 공식 매뉴얼]과 [지원 불가 및 대안 규칙]에만 근거하여 사실대로 정확히 답변하세요.',
+      '불가능한 기능이면 먼저 "대표님, 고마워톡에서는 ~ 기능은 지원하지 않아요."라고 명확히 말한 뒤, 고마워톡에서 가능한 스마트 대안 2가지를 쉽게 알려주세요.',
+      '내부 전문용어(뜰채, 시트 정수 더하기, ' + TOSS_BANNED_LIT + ')는 쉬운 일상 언어로 바꿔서 4~6문장 이내로 깔끔하게 답하세요.',
+      '',
+      '[지원 불가 및 대안 규칙]\n' + CONSULT.buildGuardrailManualSummary(),
+      ragSnippet ? ('\n[관련 공식 매뉴얼 발췌]\n' + ragSnippet) : ''
+    ].join('\n');
+
+    return TOSS.callAI({
+      mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
+      system: sys, user: '파트너 질문: ' + q, temperature: 0.25, maxOutputTokens: 700
+    }).then(function (raw) {
+      var s = String(raw || '').trim();
+      // 혹시 JSON으로 오면 텍스트 추출
+      if (s.charAt(0) === '{') {
+        var j = extractJson(s);
+        s = (j && (j.answer || j.reply || j.text)) || s;
+      }
+      return CONSULT.cleanPartnerText(s || localAnswer());
+    }).catch(function () {
+      return localAnswer();
+    });
+  };
+
+  // ── 5) Step 5: 최종 요약 카드 생성 (5대 답변 + 분야 + 흐름)
+  CONSULT.localSummary = function (ctx) {
+    ctx = ctx || {};
+    var sec = CONSULT.getSector(ctx.sectorId);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
+    var A = ctx.answers || {};
+    var flowTxt = String(A[5] || (flow ? flow.title : ''));
+    return {
+      sectorLine: (sec ? (sec.icon + ' ' + sec.title) : '') + (ctx.subIndustry ? (' · ' + ctx.subIndustry) : ''),
+      flowTitle: flow ? flow.title : '맞춤 카카오 운영 흐름',
+      goalTopic: tFirst(A[1] || ctx.subIndustry || '맞춤 캠페인', 75),
+      targetPain: tFirst(A[2] || '핵심 타겟 고객 및 주요 고민', 80),
+      firstGift: tFirst(A[3] || '신청 즉시 발송되는 첫 무료 혜택', 75),
+      trustProof: tFirst(A[4] || '대표님만의 검증된 강점·성과', 75),
+      formAndFlow: tFirst(flowTxt || '신청폼 분류 질문 및 자동 후속 카톡', 80),
+      useWebzine: flow ? !!flow.useWebzine : /연재|칼럼|챌린지|웹진|주보/.test(flowTxt)
+    };
+  };
+
+  CONSULT.summarize = function (ctx, revisionText) {
+    var local = CONSULT.localSummary(ctx);
+    if ((ctx.mode === 'admin' && !getConfig().hasDirectKey) || (ctx.mode !== 'admin' && !String(ctx.proxyUrl || '').trim())) {
+      if (revisionText) {
+        local.goalTopic = tFirst(local.goalTopic + ' · ' + revisionText, 85);
+      }
+      return Promise.resolve(local);
+    }
+
+    var sys = [
+      '당신은 고마워톡 마케팅 컨설턴트입니다. 대표님의 분야·선택 흐름·5가지 심층 답변을 모바일 최종 확인 카드용으로 깔끔히 요약하세요.',
+      '내부 전문용어(뜰채, 시트 정수 더하기, ' + TOSS_BANNED_LIT + ')는 절대 쓰지 말고 쉬운 일상 언어로 각 항목을 50~80자 이내로 정리하세요.',
+      '출력 JSON만: {"goalTopic":"","targetPain":"","firstGift":"","trustProof":"","formAndFlow":"","useWebzine":true}'
+    ].join('\n');
+
+    var user = '[분야/세부업종] ' + local.sectorLine +
+      '\n[선택 운영 흐름] ' + local.flowTitle +
+      '\n[5대 심층 답변]\n' + CONSULT.formatConsultAnswers(ctx.answers) +
+      (ctx.notes && ctx.notes.length ? ('\n[수정 메모]\n' + ctx.notes.join('\n')) : '') +
+      (revisionText ? ('\n[방금 요청한 수정 사항 — 반드시 반영]\n' + revisionText) : '') +
+      '\n\nJSON만 출력하세요.';
+
+    return TOSS.callAI({
+      mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
+      system: sys, user: user, temperature: 0.3, maxOutputTokens: 1024
+    }).then(function (raw) {
+      var o = extractJson(raw);
+      if (!o || !o.goalTopic) return local;
+      return {
+        sectorLine: local.sectorLine,
+        flowTitle: local.flowTitle,
+        goalTopic: CONSULT.cleanPartnerText(o.goalTopic),
+        targetPain: CONSULT.cleanPartnerText(o.targetPain || local.targetPain),
+        firstGift: CONSULT.cleanPartnerText(o.firstGift || local.firstGift),
+        trustProof: CONSULT.cleanPartnerText(o.trustProof || local.trustProof),
+        formAndFlow: CONSULT.cleanPartnerText(o.formAndFlow || local.formAndFlow),
+        useWebzine: typeof o.useWebzine === 'boolean' ? o.useWebzine : local.useWebzine
+      };
+    }).catch(function () {
+      return local;
+    });
+  };
+
+  // ── 6) 100% 제로베이스 CampaignMaster.json V2.0 생성 + 브랜드 에셋(로고·컬러·실사 최대 3장) 우선 배치 연동
+  CONSULT.assembleCampaign = function (aiJson, ctx) {
+    ctx = ctx || {};
+    var A = ctx.answers || {};
+    var partner = ctx.partner || {};
+    var sec = CONSULT.getSector(ctx.sectorId);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
+    var brand = ctx.brandAssets || {};
+    var photos = Array.isArray(brand.photos) ? brand.photos.filter(Boolean).slice(0, 3) : [];
+    var photoMode = (brand.photoMode === 'ai_auto' || !photos.length) ? 'ai_auto' : 'uploaded';
+
+    // 기존 TOSS.assembleCampaign의 탄탄한 구조 조립기를 재활용하되 5단계 컨설턴트 답변으로 매핑
+    var mappedAnswers = {
+      1: A[1] || ctx.subIndustry || (sec ? sec.title : '맞춤 캠페인'),
+      2: A[2] || (ctx.subIndustry ? ctx.subIndustry + ' 핵심 고객' : '핵심 타겟 고객'),
+      3: A[5] || '신뢰감 있고 친근한 존댓말',
+      4: A[2] || '현실적인 핵심 고민',
+      5: A[3] || '신청 즉시 발송되는 첫 무료 혜택',
+      6: A[4] || '대표님만의 검증된 경력·성과',
+      7: A[5] || '현재 어떤 상황이 가장 고민이신가요?',
+      8: (flow ? flow.title + ' — ' : '') + (A[5] || '')
+    };
+
+    var master = TOSS.assembleCampaign(aiJson, mappedAnswers, partner);
+
+    // 메타 & 파트너 정보 강화
+    master.meta.source = 'partner_bot_consult5';
+    master.meta.auto_generate_visuals = true;
+    if (ctx.summary && typeof ctx.summary.useWebzine === 'boolean') {
+      master.meta.use_webzine = ctx.summary.useWebzine;
+    } else if (flow && typeof flow.useWebzine === 'boolean') {
+      master.meta.use_webzine = flow.useWebzine;
+    }
+
+    master.partner_info.sector_id = ctx.sectorId || '';
+    master.partner_info.sector_label = sec ? sec.title : '';
+    master.partner_info.sub_industry = ctx.subIndustry || '';
+    master.partner_info.flow_id = flow ? flow.id : '';
+    master.partner_info.flow_title = flow ? flow.title : '';
+    master.partner_info.track_id = flow ? flow.trackId : '';
+    master.partner_info.industry_code = 'custom_ai';
+
+    // Step 4 브랜드 컬러 / 로고 / 실사 사진 정확히 주입
+    var defColor = CONSULT.getDefaultColorForSector(ctx.sectorId, ctx.subIndustry || A[1]);
+    var primary = brand.primaryColor || (defColor && defColor.primary) || '#182232';
+    var secondary = brand.secondaryColor || (defColor && defColor.secondary) || '#F6F7F9';
+
+    master.brand_assets.primary_color = primary;
+    master.brand_assets.secondary_color = secondary;
+    master.brand_assets.color_theme_id = brand.colorThemeId || (defColor && defColor.id) || 'charcoal';
+    master.brand_assets.color_theme_label = brand.colorThemeLabel || (defColor && defColor.label) || '';
+    master.brand_assets.logo_base64 = brand.logoBase64 || null;
+    master.brand_assets.photo_mode = photoMode;
+    master.brand_assets.partner_photos = photos.slice();
+    master.tab2_landing_content.bg_color = secondary;
+
+    // ★ 파트너 첨부 실사 우선 배치 규칙:
+    //   사진 1 -> 1단 Hero 비주얼 슬롯(및 탭 1 썸네일 비주얼)
+    //   사진 2 -> 3단 Solution 비주얼 슬롯
+    //   사진 3 -> 4단 Trust 비주얼 슬롯
+    //   비어 있는 슬롯(또는 ai_auto 선택 시)은 visual_image = null로 두어 조종석에서 AI 자동 생성!
+    var blocks = master.tab2_landing_content.blocks_1000px || [];
+    if (photoMode === 'uploaded' && photos.length > 0) {
+      if (photos[0]) {
+        master.tab1_basic_settings.thumbnail_500x280.visual_image = photos[0];
+        master.tab1_basic_settings.thumbnail_500x280.visual_source = 'partner_upload';
+        if (blocks[0]) { blocks[0].visual_image = photos[0]; blocks[0].visual_source = 'partner_upload'; }
+      }
+      if (photos[1] && blocks[2]) {
+        blocks[2].visual_image = photos[1];
+        blocks[2].visual_source = 'partner_upload';
+      }
+      if (photos[2] && blocks[3]) {
+        blocks[3].visual_image = photos[2];
+        blocks[3].visual_source = 'partner_upload';
+      }
+    } else {
+      master.tab1_basic_settings.thumbnail_500x280.visual_image = null;
+      [0, 2, 3].forEach(function (idx) {
+        if (blocks[idx]) blocks[idx].visual_image = null;
+      });
+    }
+
+    return sanitizeObject(master);
+  };
+
+  CONSULT.generateCampaign = function (ctx) {
+    ctx = ctx || {};
+    var sec = CONSULT.getSector(ctx.sectorId);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId);
+    var A = ctx.answers || {};
+
+    var mappedAnswers = {
+      1: '[' + (sec ? sec.shortTitle : '') + ' · ' + (ctx.subIndustry || '') + '] ' + (A[1] || ''),
+      2: A[2] || '',
+      3: A[5] || '',
+      4: A[2] || '',
+      5: A[3] || '',
+      6: A[4] || '',
+      7: A[5] || '',
+      8: (flow ? (flow.title + ' (' + flow.summary + ') — ') : '') + (A[5] || '')
+    };
+
+    var p = TOSS.buildGenerationPrompt({
+      answers: mappedAnswers,
+      notes: (ctx.notes || []).concat([
+        '선택 분야: ' + (sec ? sec.title : '') + ' / 세부 업종: ' + (ctx.subIndustry || ''),
+        '선택 운영 흐름: ' + (flow ? flow.title : '')
+      ]),
+      summary: ctx.summary
+    });
+
+    return TOSS.callAI({
+      mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
+      system: p.system, user: p.user, temperature: 0.55, maxOutputTokens: 8192
+    }).then(function (raw) {
+      var obj = extractJson(raw);
+      if (!obj) throw new Error('AI 제작 결과를 읽지 못했어요.');
+      return CONSULT.assembleCampaign(obj, ctx);
+    });
+  };
+
   // 정적 헬퍼 노출
   RagInterviewEngine.DEFAULT_MODEL = DEFAULT_MODEL;
   RagInterviewEngine.getConfig = getConfig;
@@ -1349,6 +2016,7 @@
   RagInterviewEngine.searchKnowledge = searchKnowledge;
   RagInterviewEngine.normalizePhone = TOSS.normalizePhone;
   RagInterviewEngine.Toss = TOSS;
+  RagInterviewEngine.Consult = CONSULT;
 
   global.RagInterviewEngine = RagInterviewEngine;
 })(typeof window !== 'undefined' ? window : this);

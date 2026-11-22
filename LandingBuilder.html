@@ -252,6 +252,9 @@ body.capturing .panel{display:block !important}
 
 /* 섹션 1: HERO (마켓컬리·29CM·토스 에디토리얼 톤: 좌우 패딩 56px / 내부 폭 888px / 타이틀 88px / 서브 48px / 요약 46px) */
 .lb.hero{min-height:820px;padding:112px 56px 104px;background:linear-gradient(180deg,var(--brand) 0%,var(--brand-dk) 100%);color:#FFFFFF}
+.hero-logo-wrap{display:flex;align-items:center;margin-bottom:36px}
+.hero-logo-wrap[hidden]{display:none!important}
+.hero-brand-logo{max-height:78px;max-width:300px;object-fit:contain;background:rgba(255,255,255,.96);padding:12px 24px;border-radius:18px;box-shadow:0 8px 24px rgba(15,23,42,.18)}
 .lb.hero .sec-eyebrow-txt{color:rgba(255,255,255,.78)}
 .lb-title{font-family:var(--font-head);font-size:70px;font-weight:800;line-height:1.28;letter-spacing:-0.03em;word-break:keep-all;width:100%}
 .lb.hero .lb-title{font-size:88px;line-height:1.25;letter-spacing:-0.03em;color:#FFFFFF}
@@ -1180,6 +1183,7 @@ function normalizeBlocks(arr) {
       t.imagePrompt = b.imagePrompt || '';
       t.stock_index = Number(b.stock_index || 0);
       t.visual_image = b.visual_image || null;
+      t.visual_source = b.visual_source || '';
     }
     if (step === 2) {
       t.title = b.title || ''; t.items = (b.items && b.items.length ? b.items : ['']).slice();
@@ -1191,6 +1195,7 @@ function normalizeBlocks(arr) {
       t.imagePrompt = b.imagePrompt || '';
       t.stock_index = Number(b.stock_index || 0);
       t.visual_image = b.visual_image || null;
+      t.visual_source = b.visual_source || '';
     }
     if (step === 4) {
       t.title = b.title || ''; t.stat_highlight = b.stat_highlight || '';
@@ -1200,6 +1205,7 @@ function normalizeBlocks(arr) {
       t.imagePrompt = b.imagePrompt || '';
       t.stock_index = Number(b.stock_index || 0);
       t.visual_image = b.visual_image || null;
+      t.visual_source = b.visual_source || '';
     }
     if (step === 5) {
       t.notice = b.notice || '카카오 로그인 한 번으로 별도 입력 없이 즉시 접수됩니다';
@@ -1315,28 +1321,50 @@ function stateFromData(d, keep) {
   if (ba.primary_color) s.brand.primary = ba.primary_color; if (ba.secondary_color) s.brand.secondary = ba.secondary_color;
   if (ba.logo_base64) s.brand.logo = ba.logo_base64;
   if (ba.font_theme) s.brand.font_theme = ba.font_theme;
+  s.brand.color_theme_id = ba.color_theme_id || '';
+  s.brand.photo_mode = ba.photo_mode || '';
+  s.brand.partner_photos = Array.isArray(ba.partner_photos) ? ba.partner_photos.filter(Boolean).slice(0, 3) : [];
 
   const t1 = d.tab1_basic_settings || {}, th = t1.thumbnail_500x280 || {};
   s.t1 = { badge: th.badge || '', headline: th.headline || '', subtext: th.subtext || '', title: t1.title_30chars || '', desc: t1.description || '',
            apply: t1.apply_btn_text || '', cancel: t1.cancel_btn_text || '', bg_image: null, form_only_mode: !!t1.form_only_mode,
-           show_visual: th.show_visual !== false, imagePrompt: th.imagePrompt || '', stock_index: Number(th.stock_index || 0), visual_image: th.visual_image || null, visual_loading: false };
+           show_visual: th.show_visual !== false, imagePrompt: th.imagePrompt || '', stock_index: Number(th.stock_index || 0),
+           visual_image: th.visual_image || null, visual_source: th.visual_source || '', visual_loading: false };
 
   const t2 = d.tab2_landing_content || {};
   const blocks = normalizeBlocks(t2.blocks_1000px || t2.blocks || d.tab2_landing_blocks);
   const imgs = ba.block_images_base64 || {};
   blocks.forEach(b => { if (imgs['block_' + b.step]) b.image = imgs['block_' + b.step]; b.visual_loading = false; });
+
+  // ★ 파트너 인터뷰 Step 4에서 첨부한 실제 사진(최대 3장) 최우선 슬롯 배치 (비어 있는 슬롯만 이후 AI 자동 생성)
+  if (s.brand.photo_mode !== 'ai_auto' && s.brand.partner_photos.length > 0) {
+    const pp = s.brand.partner_photos;
+    if (pp[0]) {
+      if (!s.t1.visual_image) { s.t1.visual_image = pp[0]; s.t1.visual_source = 'partner_upload'; }
+      if (blocks[0] && !blocks[0].visual_image) { blocks[0].visual_image = pp[0]; blocks[0].visual_source = 'partner_upload'; }
+    }
+    if (pp[1] && blocks[2] && !blocks[2].visual_image) {
+      blocks[2].visual_image = pp[1]; blocks[2].visual_source = 'partner_upload';
+    }
+    if (pp[2] && blocks[3] && !blocks[3].visual_image) {
+      blocks[3].visual_image = pp[2]; blocks[3].visual_source = 'partner_upload';
+    }
+  }
+
   s.t2.blocks = blocks; s.t2.output_mode = t2.output_mode === 'SPLIT' ? 'SPLIT' : 'FULL';
-  if (t2.bg_color) s.t2.bg_color = t2.bg_color; s.t2.use_shorts = !!t2.use_shorts_landing; s.t2.shorts_url = t2.shorts_youtube_url || '';
+  if (t2.bg_color) s.t2.bg_color = t2.bg_color;
+  else if (ba.secondary_color) s.t2.bg_color = ba.secondary_color;
+  s.t2.use_shorts = !!t2.use_shorts_landing; s.t2.shorts_url = t2.shorts_youtube_url || '';
   if (Array.isArray(t2.branch_links)) s.t2.branch_links = [0, 1, 2, 3, 4].map(i => t2.branch_links[i] || '');
 
   // 커스텀/신규 캠페인에 기본 인디고(#4F46E5)만 남아있거나 색상이 미지정이면 주제 맞춤 에디토리얼 컬러 자동 매칭
-  if ((!ba.primary_color || (s.meta.industry_code === 'custom_ai' && ba.primary_color.toUpperCase() === '#4F46E5')) && window.RagInterviewEngine && window.RagInterviewEngine.detectSmartEditorialTheme) {
+  if ((!ba.primary_color || (s.meta.industry_code === 'custom_ai' && !ba.color_theme_id && ba.primary_color.toUpperCase() === '#4F46E5')) && window.RagInterviewEngine && window.RagInterviewEngine.detectSmartEditorialTheme) {
     const ctxText = [s.partner.channel_name, s.t1.title, s.t1.headline, s.t1.desc, blocks[0] && blocks[0].title, blocks[0] && blocks[0].subtitle].join(' ');
     const smartTheme = window.RagInterviewEngine.detectSmartEditorialTheme(ctxText);
     if (smartTheme) {
       s.brand.primary = smartTheme.primary;
       s.brand.secondary = smartTheme.secondary;
-      if (!t2.bg_color || t2.bg_color.toUpperCase() === '#F8FAFC') s.t2.bg_color = smartTheme.bg;
+      if (!t2.bg_color || t2.bg_color.toUpperCase() === '#F8FAFC') s.t2.bg_color = smartTheme.secondary;
     }
   }
 
@@ -1522,6 +1550,11 @@ function renderBrand() {
   $('#c-primary').value = p; $('#c-primary-hex').value = p; $('#c-secondary').value = sc; $('#c-secondary-hex').value = sc;
   const logo = $('#t-logo');
   if (S.brand.logo) { logo.src = S.brand.logo; logo.hidden = false; } else { logo.removeAttribute('src'); logo.hidden = true; }
+  const heroLogoWrap = $('#lc-hero-logo-wrap'), heroLogo = $('#lc-hero-logo');
+  if (heroLogoWrap && heroLogo) {
+    if (S.brand.logo) { heroLogo.src = S.brand.logo; heroLogoWrap.hidden = false; }
+    else { heroLogo.removeAttribute('src'); heroLogoWrap.hidden = true; }
+  }
 }
 function renderSidebar() {
   $('#p-channel').value = S.partner.channel_name; $('#p-owner').value = S.partner.owner_name; $('#p-chid').value = S.partner.channel_id_num;
@@ -1822,7 +1855,11 @@ function blockHTML(b) {
   const add = '<button class="bt" data-act="item-add" data-step="' + b.step + '">＋ 항목 추가</button>';
   const wrap = (cls, inner, tools) => '<section class="lb ' + cls + (b.image ? ' has-img' : '') + '" data-block-step="' + b.step + '" data-block-type="' + b.type + '">' + tools + inner + '</section>';
   if (b.step === 1) {
+    const heroLogoHtml = '<div class="hero-logo-wrap" id="lc-hero-logo-wrap"' + (S.brand && S.brand.logo ? '' : ' hidden') + '>' +
+      '<img id="lc-hero-logo" class="hero-brand-logo" crossorigin="anonymous"' + (S.brand && S.brand.logo ? (' src="' + esc(S.brand.logo) + '"') : '') + ' alt="">' +
+    '</div>';
     return wrap('hero',
+      heroLogoHtml +
       E('tag', b.tag || '핵심 혜택 안내', 'sec-eyebrow-txt', true) +
       E('title', b.title, 'lb-title') +
       E('subtitle', b.subtitle, 'lb-sub') +
@@ -2734,19 +2771,31 @@ async function autoGenerateCampaignVisuals(forceRegen) {
   const Eng = window.RagInterviewEngine;
   const cfg = Eng && Eng.getConfig ? Eng.getConfig() : { isConnected: false };
   const slots = ['thumb', 1, 3, 4];
+  const partnerFilled = [1, 3, 4].filter(st => {
+    const b = S.t2 && S.t2.blocks && S.t2.blocks[st - 1];
+    return b && b.visual_image && b.visual_source === 'partner_upload';
+  }).length;
   const pending = slots.filter(slot => {
     const obj = slot === 'thumb' ? S.t1 : (S.t2 && S.t2.blocks && S.t2.blocks[slot - 1]);
     return obj && obj.show_visual !== false && (forceRegen || !obj.visual_image);
   });
-  if (!pending.length) return { generated: 0, mode: 'cached' };
+  if (!pending.length) {
+    if (partnerFilled > 0) {
+      toast('📸 파트너가 첨부한 실제 사진 ' + partnerFilled + '장이 비주얼 슬롯에 최우선 배치되었습니다!', { type: 'ok', ms: 4500 });
+    }
+    return { generated: 0, mode: partnerFilled > 0 ? 'partner_photos_all' : 'cached' };
+  }
 
-  // API 키/프록시 미연결 시: 엉뚱한 학원 스톡 대신 주제 키워드 매칭 스톡을 즉시 표시
+  // API 키/프록시 미연결 시: 파트너 사진은 유지하고 빈 슬롯에만 주제 키워드 매칭 스톡 즉시 표시
   if (!cfg.isConnected || !Eng || typeof Eng.generateImage !== 'function') {
     pending.forEach(slot => {
       const obj = slot === 'thumb' ? S.t1 : S.t2.blocks[slot - 1];
       if (obj) obj.visual_loading = false;
     });
     renderT1(); renderT2();
+    if (partnerFilled > 0) {
+      toast('📸 파트너 첨부 실사 ' + partnerFilled + '장 우선 배치 완료 (빈 슬롯은 주제 맞춤 추천 이미지 적용)', { type: 'ok', ms: 5000 });
+    }
     return { generated: 0, mode: 'topic_stock' };
   }
 
@@ -2756,7 +2805,12 @@ async function autoGenerateCampaignVisuals(forceRegen) {
     if (obj) { obj.show_visual = true; obj.visual_loading = true; }
   });
   renderT1(); renderT2();
-  toast('🎨 캠페인 문구에 맞는 실사 비주얼 ' + pending.length + '장을 AI로 자동 생성하고 있습니다…', { type: 'ok', ms: 4500 });
+  toast(
+    partnerFilled > 0
+      ? ('📸 파트너 첨부 실사 ' + partnerFilled + '장 우선 배치 · 빈 슬롯 ' + pending.length + '장 AI 실사 자동 생성 중…')
+      : ('🎨 캠페인 문구에 맞는 실사 비주얼 ' + pending.length + '장을 AI로 자동 생성하고 있습니다…'),
+    { type: 'ok', ms: 4500 }
+  );
 
   let okCount = 0;
   for (let i = 0; i < pending.length; i++) {

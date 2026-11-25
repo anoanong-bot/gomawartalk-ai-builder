@@ -1,41 +1,42 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-25 14:17 (KST · Phase V2.3-3 `Proposal.html` 모바일 세로형 4단 매출 시뮬레이션 제안서 & 무인 확정 폼 신규 구축 완료)
-- **기준 버전:** Master PRD V2.3 (`PRD.md` V2.2 As-Built 100% 보존 + 9장 V2.3-1 ~ V2.3-3 구현 동기화 완료)
+- **최종 갱신일시:** 2026-11-25 14:43 (KST · **Master PRD V2.3 전 단계 Phase V2.3-1 ~ V2.3-4 코드 시공 및 E2E 검증 완료**)
+- **기준 버전:** Master PRD V2.3 Final (V2.2 As-Built 100% 무손실 보존 + V2.3 카카오싱크 퍼널 · 모바일 제안서 · 유료 조종석 필터 & 포스트잇 전 단계 완결)
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
-- **코드 기준 상태:** Phase V2.3-1 (`Backend_Proxy.gs`), Phase V2.3-2 (`InterviewBot.html`, `engines/RagInterviewEngine.js`), Phase V2.3-3 (`Proposal.html`) 완료 및 V8/E2E 검증 전원 통과
+- **코드 기준 상태:** V2.3 전 단계 코드 완료 · 전 파일(10/10) V8 구문/보안(비밀키 0건, 금지어 0건, 구형 모델 0건, GAS 백틱 0건)/4단계 E2E 통합 검증 **전원 PASS**
 
 ---
 
-## 1. 완료된 기능 요약 (V2.2 As-Built + Phase V2.3-1 ~ V2.3-3 완료)
+## 1. 완료된 기능 요약 (Master PRD V2.3 전 단계 완료)
 
-### ① Phase V2.3-3 완료 (`Proposal.html` 신규 구축)
-- **3중 데이터 로더 (추가 AI 호출 0원):**
-  1. 실서버: `?fileId=...` ➔ `Backend_Proxy.gs` `doGet(action=load_proposal&fileId=...)` (전화번호·이메일·식별자 PII 제거)
-  2. 로컬 브릿지: `InterviewBot.html`에서 생성해 `localStorage`(`gmt_bridge_campaign`)에 저장된 최신 캠페인 즉시 연동
-  3. 단독 데모 폴백: 파라미터 없이 열거나 `?demo=1` 접속 시 내장 고퀄리티 샘플 캠페인 JSON 즉시 렌더링
-- **모바일 퍼스트 풀스크린 에디토리얼 UI & 인터랙션:**
-  - Pretendard 웹폰트, `max-width: 520px` 모바일 최적화 + PC 좌측 미니 섹션 점프 레일(`.pc-rail`), `IntersectionObserver` 스크롤 순차 등장, 고객 `brand_assets.primary_color` 동적 적용, 상단 `[🔗 제안서 링크 복사]` 공유 버튼.
-- **4단 매출 시뮬레이션 (`CampaignMaster.json` 실데이터 100% 주입):**
-  - **[도입 커버]:** 상호명·업종·브랜드 로고/텍스트 로고 개인화
-  - **[1단]:** `tab1`·`tab2` 신청페이지 프리뷰 + `tab3` 객관식 터치 시 `[태그]`·`@시트.필드` 실시간 부착 및 2·3단 변수 실시간 동기화
-  - **[2단]:** 실제 카카오톡 채팅방(`#B2C7DA`) + 1회차 `#FEE500` 알림톡(`[+ 채널 추가]`·익일 09시 자동 구제 2회 루프 강조) + D+1 친구톡 + D+3 가로 스와이프 캐러셀
-  - **[3단]:** `tab5` 날짜발송 핀셋 타격 프리뷰 + 일반 문자/수동 채널 vs 고마워톡 3대 독점 가치 비교
-  - **[4단]:** 그라데이션 블러 3슬롯 + `✨ 전문가 전담 디자인 & 세팅 포함` 배지
-- **채팅 응대 0초 무인 확정 폼:** 하단 Sticky CTA ➔ `Starter`(연 24만) vs `Pro [BEST 추천]`(연 40만) 선택 + `그대로 세팅`(`AS_IS`) vs `1칸 수정 메모`(`EDIT_ONCE`) 라디오 분기 ➔ `Backend_Proxy.gs` `doPost(action=confirm_proposal)` 전송(로컬/데모 시뮬레이션 지원).
-
-### ② Phase V2.3-1 & V2.3-2 완료
-- `Backend_Proxy.gs`: `setupV23ControlTowerSheet()` 15컬럼 통합 관제탑 시트 초기화, `verifyUserAndQuota` 카카오싱크·서버단 횟수 제한, `load_proposal` / `list_paid` / `confirm_proposal` (`HUMAN_QA_READY` + `CIRCUIT_BREAKER`).
-- `InterviewBot.html` & `engines/RagInterviewEngine.js`: 카카오싱크 등급·잔여 횟수 배지, 0회 한도 초과 차단 게이트, `skip_image_gen: true` 텍스트 5대 탭 전용 생성, 가망고객(제안서 링크) vs 유료 파트너(즉시 접수) 완료 화면 분기.
+1. **Phase V2.3-1 — `Backend_Proxy.gs` & 통합 관제탑 시트 스키마 구축 *(완료)*:**
+   - `setupV23ControlTowerSheet()` 15컬럼 통합 관제탑 시트·상단 모바일 리모컨(1~3행)·드롭다운(`등급`, `세팅확정상태`) 자동 초기화
+   - `verifyUserAndQuota`: 카카오싱크(`KAKAO_REST_API_KEY`) 검증, 시트 자동 기록, 등급별 서버단 횟수 강제 카운트(가망고객 누적 2회 / Starter 월 2회 / Pro 월 10회, `YYYY-MM` 자동 리셋)
+   - `doGet(action=load_proposal)`(PII 제거), `doGet(action=list_paid)`(`paidOnly=1` 호환, 유료 등급 전용 필터), `doPost(action=confirm_proposal)`(`결제·세팅요청` + 1회 수정메모 + Google Chat `HUMAN_QA_READY` 즉시 알림 + 3회 연속 오류 `CIRCUIT_BREAKER` 로그)
+2. **Phase V2.3-2 — `InterviewBot.html` & `engines/RagInterviewEngine.js` *(완료)*:**
+   - 카카오싱크 OAuth `?code=` 콜백 자동 감지 & 상단 등급·잔여 횟수 배지(`🎯 무료 체험` / `⭐ Starter` / `👑 Pro`) + 잔여 `0`회 한도 초과 차단 게이트
+   - `skip_image_gen: true` 텍스트 5대 탭 전용 생성(이미지 생성 비용 0원) + 등급별 듀얼 트랙 완료 화면 분기(가망고객: 제안서 바로 보기/링크 복사 vs 유료 파트너: 즉시 제작 접수 완료)
+3. **Phase V2.3-3 — `Proposal.html` *(신규 구축 완료)*:**
+   - 3중 데이터 로더(실서버 `load_proposal` ➔ 로컬 `localStorage` 브릿지 ➔ 단독 데모 `?demo=1`), 모바일 풀스크린 세로형(`520px`) + PC 좌측 미니 내비 + `IntersectionObserver` 순차 등장
+   - 4단 매출 시뮬레이션(신청페이지·인터랙티브 설문 태그/시트 실시간 부착 ➔ 실제 카톡 `#B2C7DA`/`#FEE500` 알림톡·친구톡·스와이프 캐러셀 ➔ 날짜발송 핀셋 타격·3대 비교 ➔ 이미지 고급 블러·전문가 100% 세팅 배지)
+   - 채팅 응대 0초 무인 확정 폼(`Starter`/`Pro` + `AS_IS` vs `EDIT_ONCE` 1칸 메모 ➔ `confirm_proposal` + `localStorage['gmt_proposal_confirm']` 로컬 브릿지 저장)
+4. **Phase V2.3-4 — `LandingBuilder.html` 유료 전용 필터링 & 수정메모 포스트잇 *(완료)*:**
+   - 접수 목록 `doGet(action=list_paid&paidOnly=1)` 유료 등급(`Starter`/`Pro`) 전용 필터링 + 등급/확정상태/수정메모 배지 표시(미결제 `가망고객` 숨김)
+   - 상단 `[🚩 95:5 검수 요약 & 고객 1회 수정메모 포스트잇]` 배너 탑재(`AS_IS` 안내 vs `EDIT_ONCE` 강조 포스트잇 + `[☑️ 수정사항 반영 확인]` 체크 토글)
+   - 텍스트 전용 JSON(`skip_image_gen: true`) 무오류 로드 + 원클릭 `[🎨 AI 실사 이미지 자동 채우기]` 연결 + `InterviewBot ➔ Proposal ➔ LandingBuilder` 로컬 `localStorage` E2E 브릿지 완결
+   - V2.2 조종석 코어(탭 1~5, 탭 2 `1,000px`/`44px+`/`36px+`, `1400px` 캡처, 150KB 압축, ZIP, `@시트` 검증) 100% 무손실 보존
 
 ---
 
-## 2. 다음 최우선 작업 순서 (마지막 Phase V2.3-4 & 실전 온라인 개통)
+## 2. 다음 작업 순서 (실전 온라인 개통 및 배포 체크리스트)
 
-1. **Phase V2.3-4 — `LandingBuilder.html` 유료 등급 필터링 & 수정메모 포스트잇 연동:**
-   - [ ] 조종석 클라우드 접수 목록 조회를 `doGet?action=list_paid` 유료 등급(`Starter`/`Pro`) 전용 필터링으로 연동 (가망고객 행 숨김)
-   - [ ] 상단 `[🚩 레드플래그 요약 뷰 + 고객 수정메모 포스트잇]` 패널 추가하여 `revisionMemo`·`tier`·`confirmStatus`를 한눈에 확인하며 검수·AI 실사 이미지 생성
-   - [ ] 기존 탭 2(`1,000px` 1열 풀와이드, 최소 폰트 `36px+`, 에디토리얼 디자인, AI 실사 자동 생성) 무결성 100% 회귀 검증
-2. **실전 온라인 개통 체크리스트:**
-   - [ ] 구글 시트/드라이브·`Backend_Proxy.gs` 웹앱 배포(`setupV23ControlTowerSheet` 1회 실행 및 스크립트 속성 등록)
-   - [ ] `InterviewBot.html`(`KAKAO_JS_KEY`, `BACKEND_PROXY_URL`) & `Proposal.html`(`BACKEND_PROXY_URL`) & `LandingBuilder.html` 실배포 주소 연결 ➔ 카카오 디벨로퍼스 도메인 등록 & GitHub Pages 개통
+1. **Google Apps Script (`Backend_Proxy.gs`) 배포 & 시트 초기화:**
+   - [ ] 구글 스프레드시트 생성 후 Apps Script 편집기에 `Backend_Proxy.gs` 붙여넣기
+   - [ ] `[프로젝트 설정] ➔ [스크립트 속성]`에 `GEMINI_API_KEY`, `KAKAO_REST_API_KEY`, `SPREADSHEET_ID`, `GOOGLE_CHAT_WEBHOOK_URL`, `PROPOSAL_URL`, `BUILDER_URL` 등록
+   - [ ] 편집기에서 `setupV23ControlTowerSheet` 함수 1회 실행해 15컬럼 시트·모바일 리모컨·드롭다운 생성
+   - [ ] `[배포] ➔ [새 배포] ➔ [웹 앱]` (실행 주체: 나 / 액세스 권한: 모든 사용자) 배포 후 `/exec` URL 복사
+2. **프론트엔드 실배포 URL 연결 & GitHub Pages 개통:**
+   - [ ] `InterviewBot.html` 상단 `PARTNER_BOT_CONFIG`에 `KAKAO_JS_KEY`, `BACKEND_PROXY_URL`, `UPGRADE_INQUIRY_URL` 입력
+   - [ ] `Proposal.html` 상단 `PROPOSAL_CONFIG`에 `BACKEND_PROXY_URL` 입력
+   - [ ] 카카오 디벨로퍼스 `[플랫폼 > Web 도메인]` 및 `[카카오 로그인 > Redirect URI]`에 GitHub Pages 배포 주소 등록
+   - [ ] 실전 스마트폰에서 카카오싱크 로그인 ➔ 무료 체험 2회 제출 ➔ `Proposal.html` 수정메모 확정 ➔ Google Chat `HUMAN_QA_READY` 수신 ➔ 시트 등급 `Pro` 승격 ➔ `LandingBuilder.html` 포스트잇·AI 이미지 채우기 최종 라이브 QA

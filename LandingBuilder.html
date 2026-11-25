@@ -127,10 +127,48 @@ body.ws-webzine #tabbar{display:none}
 .sbtn.pri{background:var(--purple-lt);border-color:var(--purple-bd);color:var(--purple)}
 .sbtn.pri:hover{background:#EDE9FE}
 .hint{font-size:11px;color:var(--g500);line-height:1.5}
-#intake{max-height:140px;overflow:auto;border:1px solid var(--g200);border-radius:8px;background:#fff}
+#intake{max-height:190px;overflow:auto;border:1px solid var(--g200);border-radius:8px;background:#fff}
 .intake-empty{padding:14px 10px;text-align:center;color:var(--g400);font-size:11px;line-height:1.6}
-.intake-item{padding:8px 10px;border-bottom:1px solid var(--g100);cursor:pointer;font-size:12px}
-.intake-item:hover{background:var(--purple-lt)} .intake-item b{display:block;color:var(--g900)} .intake-item span{color:var(--g400);font-size:11px}
+.intake-item{padding:9px 10px;border-bottom:1px solid var(--g100);cursor:pointer;font-size:12px;transition:background .12s}
+.intake-item:hover{background:var(--purple-lt)}
+.intake-item.active{background:#EEF2FF;border-left:3px solid var(--purple)}
+.intake-item b{display:block;color:var(--g900);margin-bottom:3px;word-break:break-all}
+.intake-item span{color:var(--g500);font-size:11px}
+.intake-badges{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;align-items:center}
+.ibadge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:800;line-height:1.3}
+.ibadge.pro{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
+.ibadge.starter{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE}
+.ibadge.req{background:#FEE2E2;color:#B91C1C;border:1px solid #FCA5A5}
+.ibadge.done{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
+.ibadge.wait{background:var(--g100);color:var(--g500);border:1px solid var(--g200)}
+.ibadge.memo{background:#FEF9C3;color:#854D0E;border:1px solid #FDE047}
+.intake-memo-snip{margin-top:4px;padding:4px 7px;border-radius:6px;background:#FFFBEB;border:1px solid #FDE68A;color:#78350F;font-size:10.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* V2.3-4 상단 [🚩 95:5 검수 요약 & 고객 1회 수정메모 포스트잇] 배너 */
+#qa-postit-banner{margin-bottom:18px;border-radius:16px;overflow:hidden;border:1.5px solid var(--g200);background:#fff;box-shadow:var(--shadow-card)}
+.qa-top-strip{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 18px;background:linear-gradient(90deg,#0F172A,#1E293B);color:#fff}
+.qa-top-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qa-top-title{font-size:13.5px;font-weight:800;color:#fff;letter-spacing:-.2px}
+.qa-flag-pills{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.qa-flag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:800}
+.qa-flag.ok{background:rgba(16,185,129,.2);color:#A7F3D0;border:1px solid rgba(16,185,129,.35)}
+.qa-flag.warn{background:rgba(245,158,11,.24);color:#FDE68A;border:1px solid rgba(245,158,11,.45)}
+.qa-flag.red{background:rgba(239,68,68,.26);color:#FECACA;border:1px solid rgba(239,68,68,.5)}
+.qa-top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qa-fill-btn{padding:7px 13px;border-radius:9px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;font-size:12px;font-weight:800;box-shadow:0 3px 10px rgba(16,185,129,.3)}
+.qa-fill-btn:hover{filter:brightness(1.06)}
+.qa-fill-btn:disabled{opacity:.65;cursor:not-allowed}
+.qa-memo-body{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.qa-memo-body.asis{background:linear-gradient(90deg,#ECFDF5,#F0FDF4);border-top:1px solid #A7F3D0;color:#065F46}
+.qa-memo-body.edit{background:linear-gradient(135deg,#FEF9C3 0%,#FEF3C7 100%);border-top:2px solid #F59E0B;color:#78350F}
+.qa-memo-body.edit.checked{background:linear-gradient(135deg,#ECFDF5 0%,#F0FDF4 100%);border-top:2px solid #10B981;color:#065F46}
+.qa-memo-content{flex:1;min-width:260px}
+.qa-memo-kicker{font-size:11.5px;font-weight:900;letter-spacing:.2px;margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.qa-memo-quote{font-size:14.5px;font-weight:800;line-height:1.5;color:#111827;background:rgba(255,255,255,.78);padding:10px 14px;border-radius:10px;border:1px solid rgba(217,119,6,.32);white-space:pre-wrap;word-break:break-word}
+.qa-memo-body.edit.checked .qa-memo-quote{border-color:rgba(16,185,129,.35);text-decoration:line-through;opacity:.78}
+.qa-check-toggle{flex-shrink:0;display:inline-flex;align-items:center;gap:7px;padding:10px 15px;border-radius:11px;background:#FFFFFF;border:2px solid #D97706;color:#92400E;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(217,119,6,.16)}
+.qa-check-toggle:hover{background:#FFFBEB}
+.qa-check-toggle.checked{background:#059669;border-color:#059669;color:#FFFFFF;box-shadow:0 3px 10px rgba(5,150,105,.25)}
 .color-row{display:flex;gap:8px}
 .color-cell{flex:1;display:flex;flex-direction:column;gap:4px}
 .color-cell .row input[type=color]{width:34px;height:32px;border:1px solid var(--g200);border-radius:7px;padding:2px;background:#fff;cursor:pointer}
@@ -453,7 +491,7 @@ body:not(.wz-on) .wz-only{display:none}
 
 <!-- ═════════ 상단 글로벌 네비게이션 ═════════ -->
 <nav id="nav">
-  <div class="brand"><span class="brand-mark">🎯</span>고마워톡 조종석 <small>V2.0 Final</small></div>
+  <div class="brand"><span class="brand-mark">🎯</span>고마워톡 조종석 <small>V2.3 Final</small></div>
   <div class="menus">
     <button class="menu-btn on" id="menu-admin" data-menu="admin">📋 고마워톡 어드민 세팅 (5대 탭 미러링)</button>
     <button class="menu-btn" id="menu-webzine" data-menu="webzine">✨ 모바일 웹진 스튜디오</button>
@@ -501,10 +539,10 @@ body:not(.wz-on) .wz-only{display:none}
   </div>
 
   <div class="sec">
-    <div class="sec-h"><span>📥 신규 접수 목록</span></div>
-    <input class="in" id="proxy-url" placeholder="Backend_Proxy.gs 웹앱 URL (Phase 4 연동)">
-    <div class="row"><button class="sbtn pri" data-act="intake-refresh">🔄 신규 접수 목록 새로고침</button></div>
-    <div id="intake"><div class="intake-empty">Backend_Proxy.gs URL 입력 후 새로고침하면<br>구글 드라이브 [파트너접수함] 목록이 표시됩니다.</div></div>
+    <div class="sec-h"><span>📥 유료 파트너 접수 목록</span><span class="badge g" style="font-size:9.5px;padding:1px 6px">Starter·Pro 전용</span></div>
+    <input class="in" id="proxy-url" placeholder="Backend_Proxy.gs 웹앱 URL">
+    <div class="row"><button class="sbtn pri" data-act="intake-refresh">🔄 유료 접수 목록 새로고침</button></div>
+    <div id="intake"><div class="intake-empty">구글 시트에서 <b>Starter / Pro</b> 등급으로<br>설정된 유료 고객 건만 안전하게 표시됩니다.</div></div>
     <div class="row"><button class="sbtn" data-act="json-open">📂 .json 불러오기</button><button class="sbtn" data-act="json-save">💾 .json 저장하기</button></div>
     <input type="file" id="json-file" accept=".json,application/json" hidden>
   </div>
@@ -545,6 +583,9 @@ body:not(.wz-on) .wz-only{display:none}
 
 <!-- ########## 대메뉴 1: 어드민 세팅 ########## -->
 <section id="ws-admin">
+
+  <!-- ───── V2.3-4 상단 [🚩 95:5 검수 요약 & 고객 1회 수정메모 포스트잇] 배너 ───── -->
+  <div id="qa-postit-banner" hidden></div>
 
   <!-- ───── 탭 1: 기본 설정 ───── -->
   <div class="panel on" id="tab1">
@@ -1050,6 +1091,8 @@ let S = null;
 let viewZoom = 0.75;
 const AI_LOG = { tab1: [], tab2: [], tab3: [], tab4: [], tab5: [] };
 let currentTab = 'tab1';
+let PAID_INTAKE_LIST = [];
+let ACTIVE_QA_META = null;
 
 /* ═══════════════ 알림톡 템플릿 레지스트리 ═══════════════ */
 function getActiveTemplates() {
@@ -1318,6 +1361,8 @@ function stateFromData(d, keep) {
   const s = blankState();
   const m = d.meta || {}, pi = d.partner_info || {}, ba = d.brand_assets || {};
   s.meta.use_webzine = !!m.use_webzine; s.meta.webzine_base_url = m.webzine_base_url || s.meta.webzine_base_url; s.meta.industry_code = (d.industry_code || pi.industry_code || m.industry_code || '');
+  s.meta.skip_image_gen = !!m.skip_image_gen;
+  s.meta.generation_mode = m.generation_mode || '';
   s.meta.auto_generate_visuals = !!m.auto_generate_visuals;
   if (keep) { s.partner = clone(keep.partner); s.brand.primary = keep.brand.primary; s.brand.secondary = keep.brand.secondary; s.brand.logo = keep.brand.logo; s.brand.font_theme = keep.brand.font_theme || 'modern'; s.meta.use_webzine = keep.meta.use_webzine; s.meta.webzine_base_url = keep.meta.webzine_base_url; s.passthrough = clone(keep.passthrough); s.t2.bg_color = keep.t2.bg_color; }
   if (d.partner_info) {
@@ -2267,7 +2312,192 @@ function renderWebzine() {
   $('#wz-base-url').value = S.meta.webzine_base_url; $('#wz-base-url2').value = S.meta.webzine_base_url;
 }
 function renderAI() { $('#ai-log').innerHTML = (AI_LOG[currentTab] || []).map(x => '<div class="ai-item">⏳ ' + esc(x) + '</div>').join(''); }
-function renderAll() { renderBrand(); renderSidebar(); renderT1(); renderT2(); renderT3(); renderT4(); renderT5(); renderWebzine(); renderAI(); syncWebzineIframe(); }
+function renderAll() { renderBrand(); renderSidebar(); renderT1(); renderT2(); renderT3(); renderT4(); renderT5(); renderWebzine(); renderAI(); renderQaPostItBanner(); syncWebzineIframe(); }
+
+/* ═══════════════ V2.3-4 유료 등급 검수 요약 & 고객 1회 수정메모 포스트잇 ═══════════════ */
+function normalizePaidTier(raw) {
+  const s = String(raw == null ? '' : raw).trim().toLowerCase();
+  if (s === 'pro') return 'Pro';
+  if (s === 'starter') return 'Starter';
+  return '';
+}
+
+function readLocalProposalConfirm() {
+  try {
+    const raw = localStorage.getItem('gmt_proposal_confirm');
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    return (obj && typeof obj === 'object') ? obj : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function classifyQaMemo(meta) {
+  const m = meta || {};
+  const rawMemo = String(m.rawMemo || '').trim();
+  const revMemo = String(m.revisionMemo || '').trim();
+  const mode = String(m.settingMode || '').trim().toUpperCase();
+  const isAsIsText = !revMemo || /그대로\s*세팅/.test(revMemo);
+  const isEditMemo = (mode === 'EDIT_ONCE') || (rawMemo.length > 0) || (!isAsIsText && revMemo.length > 0);
+  const displayMemo = rawMemo || revMemo;
+  return { isEditMemo, displayMemo };
+}
+
+function getMemoCheckedKey(fileId) {
+  return 'gmt_memo_checked_' + String(fileId || 'active');
+}
+
+function isMemoChecked(fileId) {
+  try { return localStorage.getItem(getMemoCheckedKey(fileId)) === '1'; } catch (e) { return false; }
+}
+
+function setMemoChecked(fileId, checked) {
+  try {
+    if (checked) localStorage.setItem(getMemoCheckedKey(fileId), '1');
+    else localStorage.removeItem(getMemoCheckedKey(fileId));
+  } catch (e) {}
+}
+
+function computeRedFlags() {
+  let bannedCount = 0;
+  let missingAtCount = 0;
+  const checkMsg = m => {
+    if (!m || !Array.isArray(m.branches)) return;
+    m.branches.forEach(br => {
+      if (m.template_type === 'ALIMTALK') {
+        Object.values(br.variables || {}).forEach(v => { bannedCount += findBannedWords(v).length; });
+      }
+      Object.values(br.variables || {}).forEach(v => { missingAtCount += fixSheetVars(v).count; });
+      missingAtCount += fixSheetVars(br.body_text_400chars || '').count;
+      (br.cards_800x600 || []).forEach(c => { missingAtCount += fixSheetVars(c.body_180chars || '').count; });
+    });
+  };
+  ((S && S.t4 && S.t4.sequence) || []).forEach(checkMsg);
+  ((S && S.t5 && S.t5.items) || []).forEach(checkMsg);
+
+  const visualSlots = ['thumb', 1, 3, 4];
+  let emptyVisualCount = 0;
+  visualSlots.forEach(slot => {
+    const obj = slot === 'thumb' ? (S && S.t1) : (S && S.t2 && S.t2.blocks && S.t2.blocks[slot - 1]);
+    if (obj && obj.show_visual !== false && !obj.visual_image) emptyVisualCount++;
+  });
+  return { bannedCount, missingAtCount, emptyVisualCount };
+}
+
+function renderQaPostItBanner() {
+  const el = $('#qa-postit-banner');
+  if (!el || !S) return;
+  const meta = ACTIVE_QA_META;
+  const isDeferredTextOnly = !!(S.meta && S.meta.skip_image_gen);
+
+  if (!meta && !isDeferredTextOnly) {
+    el.hidden = true;
+    return;
+  }
+
+  const tier = normalizePaidTier((meta && meta.tier) || (S.partner && S.partner.current_plan)) || 'Starter';
+  const confirmStatus = (meta && meta.confirmStatus) || '결제·세팅요청';
+  const fileId = (meta && meta.fileId) || 'local_preview';
+  const { isEditMemo, displayMemo } = classifyQaMemo(meta);
+  const checked = isMemoChecked(fileId);
+  const flags = computeRedFlags();
+
+  const tierBadgeHtml = tier === 'Pro'
+    ? '<span class="ibadge pro">👑 Pro · 영업일 1일 패스트트랙</span>'
+    : '<span class="ibadge starter">⭐ Starter · 영업일 3일 이내</span>';
+  const statusBadgeHtml = confirmStatus === '결제·세팅요청'
+    ? '<span class="ibadge req">🔥 결제·세팅요청</span>'
+    : (confirmStatus === '세팅완료'
+      ? '<span class="ibadge done">✅ 세팅완료</span>'
+      : '<span class="ibadge wait">' + esc(confirmStatus) + '</span>');
+
+  const flagPillsHtml =
+    '<span class="qa-flag ' + (flags.bannedCount ? 'red' : 'ok') + '">' + (flags.bannedCount ? ('⚠️ 알림톡 금지어 ' + flags.bannedCount + '건') : '✓ 알림톡 규정 안전') + '</span>' +
+    '<span class="qa-flag ' + (flags.missingAtCount ? 'warn' : 'ok') + '">' + (flags.missingAtCount ? ('⚠️ @시트 누락 ' + flags.missingAtCount + '건') : '✓ 시트 변수 정상') + '</span>' +
+    '<span class="qa-flag ' + (flags.emptyVisualCount ? 'warn' : 'ok') + '">' +
+      (flags.emptyVisualCount
+        ? ('🖼️ 빈 비주얼 슬롯 ' + flags.emptyVisualCount + '장' + (isDeferredTextOnly ? ' (이미지 보류 상태)' : ''))
+        : '✓ 비주얼 슬롯 완료') +
+    '</span>';
+
+  const fillBtnHtml = flags.emptyVisualCount > 0
+    ? '<button type="button" class="qa-fill-btn" id="btn-qa-fill-visuals" data-act="qa-fill-visuals">🎨 AI 실사 이미지 자동 채우기 (' + flags.emptyVisualCount + '장)</button>'
+    : '';
+
+  let memoBodyHtml = '';
+  if (isEditMemo) {
+    memoBodyHtml =
+      '<div class="qa-memo-body edit' + (checked ? ' checked' : '') + '">' +
+        '<div class="qa-memo-content">' +
+          '<div class="qa-memo-kicker">' +
+            '<span>📌 [고객 1회 수정 요청 메모 — 누락 주의!]</span>' +
+            (checked ? '<span class="ibadge done">☑️ 반영 확인 완료</span>' : '<span class="ibadge req">미확인</span>') +
+          '</div>' +
+          '<div class="qa-memo-quote">' + esc(displayMemo) + '</div>' +
+        '</div>' +
+        '<button type="button" class="qa-check-toggle' + (checked ? ' checked' : '') + '" data-act="qa-memo-toggle" data-file-id="' + esc(fileId) + '">' +
+          (checked ? '☑️ 수정사항 반영 완료' : '☐ 수정사항 반영 확인') +
+        '</button>' +
+      '</div>';
+  } else {
+    memoBodyHtml =
+      '<div class="qa-memo-body asis">' +
+        '<div class="qa-memo-content" style="font-size:13.5px;font-weight:800">' +
+          '✅ [시나리오 그대로 세팅 요청] 추가 문구 수정 요청 없음 — AI 실사 이미지만 생성 후 바로 어드민에 세팅하세요.' +
+        '</div>' +
+      '</div>';
+  }
+
+  el.hidden = false;
+  el.innerHTML =
+    '<div class="qa-top-strip">' +
+      '<div class="qa-top-left">' +
+        '<span class="qa-top-title">🚩 95:5 검수 요약 · ' + esc((S.partner && S.partner.channel_name) || (meta && meta.ownerName) || '유료 파트너') + '</span>' +
+        tierBadgeHtml +
+        statusBadgeHtml +
+      '</div>' +
+      '<div class="qa-top-actions">' +
+        '<div class="qa-flag-pills">' + flagPillsHtml + '</div>' +
+        fillBtnHtml +
+      '</div>' +
+    '</div>' +
+    memoBodyHtml;
+}
+
+async function fillDeferredAiVisuals() {
+  const btn = $('#btn-qa-fill-visuals');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ AI 실사 이미지 생성 중…'; }
+  try {
+    const Eng = window.RagInterviewEngine;
+    const cfg = Eng && Eng.getConfig ? Eng.getConfig() : { isConnected: false };
+    if (cfg.isConnected && Eng && typeof Eng.generateImage === 'function') {
+      await autoGenerateCampaignVisuals(false);
+    } else {
+      // 오프라인/키 미설정 환경에서도 빈 슬롯(thumb, 1, 3, 4)을 주제 맞춤 고화질 비주얼로 안전 채움
+      const IC = window.ImageCapturer;
+      const slots = ['thumb', 1, 3, 4];
+      for (let i = 0; i < slots.length; i++) {
+        const slot = slots[i];
+        const obj = slot === 'thumb' ? S.t1 : (S.t2 && S.t2.blocks && S.t2.blocks[slot - 1]);
+        if (!obj || obj.show_visual === false || obj.visual_image) continue;
+        const dim = getSlotDimensions(slot);
+        const pool = getStockPool(dim.slotKey);
+        const url = (pool.stocks || [])[Number(obj.stock_index || 0) % Math.max(1, (pool.stocks || []).length)];
+        if (IC && IC.urlToSafeDataUrl && url) {
+          obj.visual_image = await IC.urlToSafeDataUrl(url, { width: dim.w, height: dim.h, primary: S.brand.primary, variant: i + 1 });
+        }
+      }
+      renderT1(); renderT2();
+      toast('🎨 보류되었던 빈 비주얼 슬롯에 맞춤 고화질 이미지를 채웠습니다! (실제 AI 생성은 상단 [🔑 AI 엔진 설정] 연결 시 작동)', { type: 'ok', ms: 5500 });
+    }
+    if (S && S.meta) S.meta.skip_image_gen = false;
+    renderQaPostItBanner();
+  } finally {
+    const b2 = $('#btn-qa-fill-visuals');
+    if (b2) { b2.disabled = false; }
+  }
+}
 
 /* ═══════════════ 배율 / 캡처 / ZIP ═══════════════ */
 function applyZoom() {
@@ -2461,27 +2691,154 @@ function saveJson() {
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   toast('💾 CampaignMaster.json 저장 완료', { type: 'ok' });
 }
+function renderPaidIntakeList(items) {
+  const box = $('#intake');
+  if (!box) return;
+  const activeId = ACTIVE_QA_META ? String(ACTIVE_QA_META.fileId || '') : '';
+  if (!items || !items.length) {
+    box.innerHTML = '<div class="intake-empty">유료 등급(<b>Starter / Pro</b>)으로 전환된 접수 건이 없습니다.<br><span style="font-size:10.5px">(미결제 가망고객은 구글 시트에서 관리됩니다)</span></div>';
+    return;
+  }
+  box.innerHTML = items.map((f, idx) => {
+    const id = String(f.fileId || f.id || '');
+    const tier = normalizePaidTier(f.tier) || 'Starter';
+    const status = String(f.confirmStatus || '미확인').trim();
+    const { isEditMemo, displayMemo } = classifyQaMemo(f);
+    const tierBadge = tier === 'Pro'
+      ? '<span class="ibadge pro">👑 Pro</span>'
+      : '<span class="ibadge starter">⭐ Starter</span>';
+    const statusBadge = status === '결제·세팅요청'
+      ? '<span class="ibadge req">🔥 결제·세팅요청</span>'
+      : (status === '세팅완료'
+        ? '<span class="ibadge done">✅ 세팅완료</span>'
+        : '<span class="ibadge wait">' + esc(status) + '</span>');
+    const memoBadge = isEditMemo ? '<span class="ibadge memo">📝 수정메모</span>' : '';
+    const actName = f._demoCode ? 'intake-demo-load' : (f._localBridge ? 'intake-bridge-load' : 'intake-load');
+    const extraAttr = f._demoCode
+      ? (' data-code="' + esc(f._demoCode) + '" data-idx="' + idx + '"')
+      : (' data-id="' + esc(id) + '" data-idx="' + idx + '"');
+    return '<div class="intake-item' + (activeId && activeId === id ? ' active' : '') + '" data-act="' + actName + '"' + extraAttr + '>' +
+      '<div class="intake-badges">' + tierBadge + statusBadge + memoBadge + '</div>' +
+      '<b>' + esc(f.name || f.ownerName || '(이름 없음)') + '</b>' +
+      '<span>' + esc(f.createdTime || '') + (f.industry ? (' · ' + esc(f.industry)) : '') + '</span>' +
+      (isEditMemo ? ('<div class="intake-memo-snip">📌 ' + esc(displayMemo) + '</div>') : '') +
+    '</div>';
+  }).join('');
+}
+
 async function refreshIntake() {
   const url = $('#proxy-url').value.trim(), box = $('#intake');
   try { localStorage.setItem('gmt_proxy_url', url); } catch (e) {}
   if (!url) {
-    box.innerHTML = '<div class="intake-empty">Backend_Proxy.gs URL 미설정 — 로컬 데모 모드로 테스트할 수 있습니다.<br><button class="sbtn pri" style="margin-top:7px" data-act="intake-demo">🧪 샘플 접수 2건 불러오기</button></div>';
+    loadDemoIntakeList(true);
     return;
   }
-  box.innerHTML = '<div class="intake-empty">구글 드라이브 [파트너접수함] 조회 중…</div>';
+  box.innerHTML = '<div class="intake-empty">구글 시트 유료 등급(Starter/Pro) 접수 목록 조회 중…</div>';
   try {
-    const res = await fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + 'action=list'); const d = await res.json();
-    const list = Array.isArray(d) ? d : (d.files || d.list || []);
-    box.innerHTML = list.length ? list.map(f => '<div class="intake-item" data-act="intake-load" data-id="' + esc(f.id || f.fileId) + '"><b>' + esc(f.name || '(이름 없음)') + '</b><span>' + esc(f.createdTime || '') + '</span></div>').join('') : '<div class="intake-empty">접수된 캠페인이 없습니다.</div>';
-  } catch (e) { box.innerHTML = '<div class="intake-empty" style="color:var(--red)">연결 실패: ' + esc(e.message) + '<br><button class="sbtn" style="margin-top:6px" data-act="intake-demo">🧪 로컬 샘플로 테스트</button></div>'; }
+    const sep = url.indexOf('?') > -1 ? '&' : '?';
+    const res = await fetch(url + sep + 'action=list_paid&paidOnly=1');
+    const d = await res.json();
+    const rawList = Array.isArray(d) ? d : (d.files || d.list || []);
+    // 클라이언트 이중 방어: Starter / Pro 유료 등급만 조종석에 노출 (가망고객 차단)
+    PAID_INTAKE_LIST = rawList.filter(f => !!normalizePaidTier(f && f.tier));
+    renderPaidIntakeList(PAID_INTAKE_LIST);
+  } catch (e) {
+    box.innerHTML = '<div class="intake-empty" style="color:var(--red)">연결 실패: ' + esc(e.message) + '<br><button class="sbtn pri" style="margin-top:6px" data-act="intake-demo">🧪 로컬 유료 샘플로 테스트</button></div>';
+  }
 }
-function loadDemoIntakeList() {
-  const demos = [
-    { code: 'academy', name: '20261121_장희지수학학원_장희지.json', createdTime: '로컬 샘플 · Pro 신청' },
-    { code: 'pro_ngo_church', name: '20261121_바른세무컨설팅_김세무.json', createdTime: '로컬 샘플 · Starter' }
-  ];
-  $('#intake').innerHTML = demos.map(f => '<div class="intake-item" data-act="intake-demo-load" data-code="' + esc(f.code) + '"><b>' + esc(f.name) + '</b><span>' + esc(f.createdTime) + '</span></div>').join('');
-  toast('🧪 로컬 테스트용 접수 목록 2건을 표시했습니다. 클릭하면 즉시 로드됩니다.', { type: 'ok' });
+
+function loadDemoIntakeList(silent) {
+  const Eng = window.RagInterviewEngine;
+  const bridged = Eng && Eng.getBridgeCampaign ? Eng.getBridgeCampaign(false) : null;
+  const localConf = readLocalProposalConfirm();
+  const list = [];
+
+  if (bridged && bridged.tab1_basic_settings) {
+    const bCh = (bridged.partner_info && bridged.partner_info.channel_name) || (localConf && localConf.channelName) || '로컬 인터뷰 캠페인';
+    const bTier = normalizePaidTier((localConf && (localConf.tier || localConf.selectedPlan)) || (bridged.partner_info && bridged.partner_info.tier)) || 'Pro';
+    list.push({
+      id: (localConf && localConf.fileId) || 'local_preview',
+      fileId: (localConf && localConf.fileId) || 'local_preview',
+      name: '[로컬 E2E] ' + bCh,
+      ownerName: (bridged.partner_info && bridged.partner_info.owner_name) || (localConf && localConf.ownerName) || '대표님',
+      industry: (bridged.partner_info && (bridged.partner_info.sub_industry || bridged.partner_info.sector_label)) || (localConf && localConf.industry) || '',
+      createdTime: localConf ? 'Proposal 확정 연동' : 'InterviewBot 연동',
+      tier: bTier,
+      confirmStatus: (localConf && localConf.confirmStatus) || '결제·세팅요청',
+      settingMode: (localConf && localConf.settingMode) || 'AS_IS',
+      revisionMemo: (localConf && localConf.revisionMemo) || '',
+      rawMemo: (localConf && localConf.rawMemo) || '',
+      _localBridge: true
+    });
+  }
+
+  list.push(
+    {
+      id: 'demo_paid_pro_edit',
+      fileId: 'demo_paid_pro_edit',
+      name: '20261125_장희지수학학원_장희지.json',
+      ownerName: '장희지',
+      industry: '중·고등 수학학원',
+      createdTime: '로컬 샘플 · 1회 수정메모 포함',
+      tier: 'Pro',
+      confirmStatus: '결제·세팅요청',
+      settingMode: 'EDIT_ONCE',
+      revisionMemo: '[희망플랜: Pro] 1단 문구에 "선착순 10명 1:1 무료 오답노트 진단"을 추가하고, 2회차 발송 시간을 오전 10시로 조정해 주세요.',
+      rawMemo: '1단 문구에 "선착순 10명 1:1 무료 오답노트 진단"을 추가하고, 2회차 발송 시간을 오전 10시로 조정해 주세요.',
+      _demoCode: 'academy'
+    },
+    {
+      id: 'demo_paid_starter_asis',
+      fileId: 'demo_paid_starter_asis',
+      name: '20261125_바른세무컨설팅_김세무.json',
+      ownerName: '김세무',
+      industry: '세무·회계 컨설팅',
+      createdTime: '로컬 샘플 · 그대로 세팅 요청',
+      tier: 'Starter',
+      confirmStatus: '결제·세팅요청',
+      settingMode: 'AS_IS',
+      revisionMemo: '[희망플랜: Starter] 제안서 시나리오 그대로 세팅 요청',
+      rawMemo: '',
+      _demoCode: 'pro_ngo_church'
+    }
+  );
+
+  PAID_INTAKE_LIST = list;
+  renderPaidIntakeList(PAID_INTAKE_LIST);
+  if (!silent) {
+    toast('🧪 유료 파트너(Starter/Pro) 테스트 목록 ' + list.length + '건을 표시했습니다. 클릭하면 상단 포스트잇 배너와 함께 로드됩니다.', { type: 'ok' });
+  }
+}
+
+function loadLocalBridgeToCockpit(metaOverride) {
+  const Eng = window.RagInterviewEngine;
+  const bridged = Eng && Eng.getBridgeCampaign ? Eng.getBridgeCampaign(false) : null;
+  if (!bridged || !bridged.tab1_basic_settings) {
+    toast('로컬 InterviewBot 브릿지 데이터가 없습니다. InterviewBot.html에서 먼저 캠페인을 제출해 주세요.', { type: 'warn' });
+    return;
+  }
+  const localConf = readLocalProposalConfirm();
+  S = stateFromData(bridged, null);
+  const resolvedTier = normalizePaidTier(
+    (metaOverride && metaOverride.tier) ||
+    (localConf && (localConf.tier || localConf.selectedPlan)) ||
+    (bridged.partner_info && bridged.partner_info.tier)
+  ) || 'Pro';
+  S.partner.current_plan = resolvedTier === 'Pro' ? 'PRO' : 'STARTER';
+  S.partner.pro_upgrade_requested = (resolvedTier === 'Pro');
+  ACTIVE_QA_META = Object.assign({
+    fileId: (localConf && localConf.fileId) || 'local_preview',
+    tier: resolvedTier,
+    confirmStatus: (localConf && localConf.confirmStatus) || '결제·세팅요청',
+    settingMode: (localConf && localConf.settingMode) || 'AS_IS',
+    revisionMemo: (localConf && localConf.revisionMemo) || '',
+    rawMemo: (localConf && localConf.rawMemo) || '',
+    ownerName: S.partner.owner_name || '',
+    industry: (bridged.partner_info && (bridged.partner_info.sub_industry || bridged.partner_info.sector_label)) || ''
+  }, metaOverride || {});
+  renderAll();
+  renderPaidIntakeList(PAID_INTAKE_LIST);
+  toast('✅ 로컬 E2E 브릿지 캠페인 및 고객 수정메모 포스트잇을 불러왔습니다.', { type: 'ok' });
 }
 function updateAiKeyBadge() {
   if (!window.RagInterviewEngine || !window.RagInterviewEngine.getConfig) return;
@@ -2575,10 +2932,32 @@ async function runPinpointAi(instruction) {
 }
 async function loadIntake(id) {
   const url = $('#proxy-url').value.trim();
+  const rowMeta = PAID_INTAKE_LIST.find(x => String(x.fileId || x.id) === String(id)) || null;
   try {
     const res = await fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + 'action=load&fileId=' + encodeURIComponent(id));
-    S = stateFromData(await res.json(), null); renderAll(); toast('✅ 접수 건을 불러왔습니다.', { type: 'ok' });
-    if (S.meta.auto_generate_visuals || S.meta.industry_code === 'custom_ai') autoGenerateCampaignVisuals(false);
+    const data = await res.json();
+    S = stateFromData(data, null);
+    const resolvedTier = normalizePaidTier((rowMeta && rowMeta.tier) || (data && data.partner_info && data.partner_info.tier)) || 'Starter';
+    S.partner.current_plan = resolvedTier === 'Pro' ? 'PRO' : 'STARTER';
+    S.partner.pro_upgrade_requested = (resolvedTier === 'Pro');
+    ACTIVE_QA_META = {
+      fileId: String(id || ''),
+      tier: resolvedTier,
+      confirmStatus: (rowMeta && rowMeta.confirmStatus) || '결제·세팅요청',
+      settingMode: (rowMeta && rowMeta.settingMode) || '',
+      revisionMemo: (rowMeta && rowMeta.revisionMemo) || '',
+      rawMemo: (rowMeta && rowMeta.rawMemo) || '',
+      ownerName: (rowMeta && rowMeta.ownerName) || S.partner.owner_name || '',
+      industry: (rowMeta && rowMeta.industry) || ''
+    };
+    renderAll();
+    renderPaidIntakeList(PAID_INTAKE_LIST);
+    if (S.meta.skip_image_gen) {
+      toast('✅ 유료 접수 건 로드 완료 (이미지 보류 상태) — 상단 [🎨 AI 실사 이미지 자동 채우기]로 빈 슬롯을 바로 채울 수 있습니다.', { type: 'ok', ms: 6000 });
+    } else {
+      toast('✅ 유료 접수 건을 불러왔습니다.', { type: 'ok' });
+      if (S.meta.auto_generate_visuals || S.meta.industry_code === 'custom_ai') autoGenerateCampaignVisuals(false);
+    }
   }
   catch (e) { toast('불러오기 실패: ' + e.message, { type: 'err' }); }
 }
@@ -2907,8 +3286,35 @@ function bind() {
         case 'json-save': return saveJson();
         case 'intake-refresh': return refreshIntake();
         case 'intake-demo': return loadDemoIntakeList();
-        case 'intake-demo-load': return loadPreset(a.dataset.code);
+        case 'intake-bridge-load': {
+          const item = PAID_INTAKE_LIST[+a.dataset.idx] || null;
+          return loadLocalBridgeToCockpit(item);
+        }
+        case 'intake-demo-load': {
+          const item = PAID_INTAKE_LIST[+a.dataset.idx] || null;
+          loadPreset(a.dataset.code);
+          if (item) {
+            S.meta.skip_image_gen = true;
+            // 데모 유료 건의 빈 슬롯 테스트를 위해 visual_image 초기화
+            S.t1.visual_image = null;
+            [0, 2, 3].forEach(i => { if (S.t2.blocks[i]) S.t2.blocks[i].visual_image = null; });
+            S.partner.current_plan = item.tier === 'Pro' ? 'PRO' : 'STARTER';
+            S.partner.pro_upgrade_requested = (item.tier === 'Pro');
+            ACTIVE_QA_META = clone(item);
+            renderAll();
+            renderPaidIntakeList(PAID_INTAKE_LIST);
+          }
+          return;
+        }
         case 'intake-load': return loadIntake(a.dataset.id);
+        case 'qa-fill-visuals': return await fillDeferredAiVisuals();
+        case 'qa-memo-toggle': {
+          const fid = a.dataset.fileId || (ACTIVE_QA_META && ACTIVE_QA_META.fileId) || 'active';
+          const next = !isMemoChecked(fid);
+          setMemoChecked(fid, next);
+          renderQaPostItBanner();
+          return toast(next ? '☑️ 고객 1회 수정사항 반영 확인을 완료했습니다!' : '☐ 수정사항 반영 확인을 해제했습니다.', { type: 'ok' });
+        }
         case 'logo-clear': S.brand.logo = null; return renderBrand();
         case 'thumb-bg-clear': S.t1.bg_image = null; return renderT1();
         case 'thumb-png': await doThumbPng(); return toast('📸 썸네일 PNG(500×280)를 저장했습니다.', { type: 'ok' });
@@ -3226,10 +3632,24 @@ function init() {
   const presets = window.IndustryPresets || window.GOMAWARTALK_INDUSTRY_PRESETS;
   const Eng = window.RagInterviewEngine;
   const fromBot = /[?&]from=bot\b/.test(location.search);
-  const bridged = Eng && Eng.getBridgeCampaign ? Eng.getBridgeCampaign(fromBot) : null;
+  const bridged = Eng && Eng.getBridgeCampaign ? Eng.getBridgeCampaign(false) : null;
+  const localConf = readLocalProposalConfirm();
 
   if (bridged && bridged.tab1_basic_settings) {
     S = stateFromData(bridged, null);
+    const resolvedTier = normalizePaidTier((localConf && (localConf.tier || localConf.selectedPlan)) || (bridged.partner_info && bridged.partner_info.tier)) || 'Pro';
+    S.partner.current_plan = resolvedTier === 'Pro' ? 'PRO' : 'STARTER';
+    S.partner.pro_upgrade_requested = (resolvedTier === 'Pro');
+    ACTIVE_QA_META = {
+      fileId: (localConf && localConf.fileId) || 'local_preview',
+      tier: resolvedTier,
+      confirmStatus: (localConf && localConf.confirmStatus) || '결제·세팅요청',
+      settingMode: (localConf && localConf.settingMode) || 'AS_IS',
+      revisionMemo: (localConf && localConf.revisionMemo) || '',
+      rawMemo: (localConf && localConf.rawMemo) || '',
+      ownerName: S.partner.owner_name || (localConf && localConf.ownerName) || '',
+      industry: (bridged.partner_info && (bridged.partner_info.sub_industry || bridged.partner_info.sector_label)) || (localConf && localConf.industry) || ''
+    };
   } else {
     S = presets && presets.academy ? stateFromData(presets.academy, null) : blankState();
     if (presets && presets.academy) S.meta.industry_code = '';
@@ -3237,15 +3657,23 @@ function init() {
 
   try { $('#proxy-url').value = localStorage.getItem('gmt_proxy_url') || ''; } catch (e) {}
   bind(); renderAll(); updateAiKeyBadge();
+  // 로컬 테스트 환경에서 Proxy 미설정 시 유료 샘플 + 로컬 E2E 브릿지 목록 자동 세팅
+  if (!$('#proxy-url').value.trim()) {
+    loadDemoIntakeList(true);
+  }
 
   if (fromBot && bridged) {
-    toast('🚀 인터뷰 봇에서 생성한 100% 맞춤형 캠페인이 탭 1~5 전체에 자동 세팅되었습니다!', { type: 'ok', ms: 6000 });
-    autoGenerateCampaignVisuals(false);
-  } else if (bridged && (S.meta.auto_generate_visuals || S.meta.industry_code === 'custom_ai')) {
+    if (S.meta.skip_image_gen) {
+      toast('🚀 인터뷰 봇 텍스트 5대 탭 기획안이 로드되었습니다! 상단 [🎨 AI 실사 이미지 자동 채우기]로 이미지를 바로 생성할 수 있습니다.', { type: 'ok', ms: 6500 });
+    } else {
+      toast('🚀 인터뷰 봇에서 생성한 100% 맞춤형 캠페인이 탭 1~5 전체에 자동 세팅되었습니다!', { type: 'ok', ms: 6000 });
+      autoGenerateCampaignVisuals(false);
+    }
+  } else if (bridged && !S.meta.skip_image_gen && (S.meta.auto_generate_visuals || S.meta.industry_code === 'custom_ai')) {
     autoGenerateCampaignVisuals(false);
   }
 
-  // 다른 탭(InterviewBot.html)에서 브릿지 캠페인이나 API 키가 갱신되면 실시간 연동
+  // 다른 탭(InterviewBot.html / Proposal.html)에서 브릿지 캠페인·확정 메모·API 키가 갱신되면 실시간 연동
   window.addEventListener('storage', e => {
     if (e.key === 'gmt_gemini_api_key' || e.key === 'gmt_gemini_model' || e.key === 'gmt_proxy_url') {
       updateAiKeyBadge();
@@ -3253,9 +3681,20 @@ function init() {
     if (e.key === 'gmt_bridge_campaign' && e.newValue && Eng && Eng.getBridgeCampaign) {
       const next = Eng.getBridgeCampaign(false);
       if (next && next.tab1_basic_settings) {
-        S = stateFromData(next, null); renderAll();
-        toast('🚀 인터뷰 봇에서 새로 생성한 캠페인이 실시간 동기화되었습니다!', { type: 'ok', ms: 5000 });
-        autoGenerateCampaignVisuals(false);
+        loadLocalBridgeToCockpit();
+        if (!$('#proxy-url').value.trim()) loadDemoIntakeList(true);
+      }
+    }
+    if (e.key === 'gmt_proposal_confirm' && e.newValue) {
+      const conf = readLocalProposalConfirm();
+      if (conf) {
+        const t = normalizePaidTier(conf.tier || conf.selectedPlan) || 'Pro';
+        ACTIVE_QA_META = Object.assign({}, ACTIVE_QA_META || {}, conf, { tier: t });
+        S.partner.current_plan = t === 'Pro' ? 'PRO' : 'STARTER';
+        S.partner.pro_upgrade_requested = (t === 'Pro');
+        renderSidebar(); renderQaPostItBanner();
+        if (!$('#proxy-url').value.trim()) loadDemoIntakeList(true);
+        toast('📌 Proposal.html에서 제출된 고객 확정·수정 메모가 포스트잇 배너에 실시간 반영되었습니다!', { type: 'ok', ms: 5500 });
       }
     }
   });
@@ -3263,8 +3702,9 @@ function init() {
   const h = location.hash.replace('#', '');
   if (h === 'webzine') switchMenu('webzine'); else if (/^tab[1-5]$/.test(h)) switchTab(h);
 
-  window.LB = { state: () => { syncFromDom(); return S; }, toCampaignMaster, fixUrlSpacing, fixSheetVars, findBannedWords, loadPreset,
-                openState: d => { S = stateFromData(d, null); renderAll(); if (S.meta.auto_generate_visuals || S.meta.industry_code === 'custom_ai') autoGenerateCampaignVisuals(false); },
+  window.LB = { state: () => { syncFromDom(); return S; }, qaMeta: () => ACTIVE_QA_META, paidList: () => PAID_INTAKE_LIST, toCampaignMaster, fixUrlSpacing, fixSheetVars, findBannedWords, loadPreset,
+                openState: d => { S = stateFromData(d, null); renderAll(); if (!S.meta.skip_image_gen && (S.meta.auto_generate_visuals || S.meta.industry_code === 'custom_ai')) autoGenerateCampaignVisuals(false); },
+                refreshIntake, loadIntake, loadDemoIntakeList, loadLocalBridgeToCockpit, renderQaPostItBanner, fillDeferredAiVisuals, classifyQaMemo,
                 doThumbPng, doLandingPng, doFriendtalkJpg, doCarouselPng, doZip, switchTab, switchMenu, setWebzine, setZoom, runPinpointAi, toggleSlotVisual, cycleSlotStock, openAiImgModal, translateAiImgPrompt, generateSlotAiImage, runBatchVisualAi, autoGenerateCampaignVisuals, withCapture, compressFile, updateAiKeyBadge };
   console.log('✅ 고마워톡 조종석 초기화 완료');
   if (/[?&]selftest\b/.test(location.search)) { const s = document.createElement('script'); s.src = 'tests/phase1_selftest.js'; document.body.appendChild(s); }

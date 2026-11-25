@@ -2562,6 +2562,24 @@ async function submitConfirmProposal() {
   submitBtn.disabled = false;
   submitBtn.textContent = '✅ 세팅 확정 신청하기';
 
+  // 로컬 테스트 브릿지: LandingBuilder.html 조종석 포스트잇 배너와 즉시 연동
+  try {
+    const campInfo = (STATE.campaign && STATE.campaign.partner_info) || {};
+    localStorage.setItem('gmt_proposal_confirm', JSON.stringify({
+      fileId: payload.fileId || 'local_preview',
+      tier: payload.selectedPlan || 'Pro',
+      selectedPlan: payload.selectedPlan || 'Pro',
+      settingMode: payload.settingMode || 'AS_IS',
+      confirmStatus: serverResult.confirmStatus || '결제·세팅요청',
+      revisionMemo: serverResult.revisionMemo || '',
+      rawMemo: payload.revisionMemo || '',
+      channelName: campInfo.channel_name || '',
+      ownerName: campInfo.owner_name || '',
+      industry: campInfo.sub_industry || campInfo.sector_label || '',
+      confirmedAt: new Date().toISOString()
+    }));
+  } catch (e) {}
+
   $('#confirm-form-card').hidden = true;
   $('#sticky-bottom-bar').hidden = true;
   const doneCard = $('#confirm-done-card');

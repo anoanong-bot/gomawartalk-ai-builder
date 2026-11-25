@@ -2129,10 +2129,12 @@ function handleKakaoLoginClick() {
   }
 
   // 카카오 JS SDK v2 표준 인가 코드(Kakao Sync OAuth) 리다이렉트 우선
+  // (현재 앱 활성 필수 동의 항목 5종만 요청 — 이메일 및 미사용 항목 미요청)
+  const KAKAO_ACTIVE_SCOPES = 'profile_nickname,profile_image,name,phone_number,plusfriends';
   if (window.Kakao.Auth && typeof window.Kakao.Auth.authorize === 'function') {
     window.Kakao.Auth.authorize({
       redirectUri: getKakaoRedirectUri(),
-      scope: 'profile_nickname,account_email,name,phone_number'
+      scope: KAKAO_ACTIVE_SCOPES
     });
     return;
   }
@@ -2140,7 +2142,7 @@ function handleKakaoLoginClick() {
   // 구형 SDK 팝업 로그인 폴백 (액세스 토큰을 백엔드 verifyUserAndQuota로 전달)
   if (window.Kakao.Auth && typeof window.Kakao.Auth.login === 'function') {
     window.Kakao.Auth.login({
-      scope: 'profile_nickname,account_email,name,phone_number',
+      scope: KAKAO_ACTIVE_SCOPES,
       success: function (authObj) {
         const accessToken = (authObj && authObj.access_token) ||
           (window.Kakao.Auth.getAccessToken && window.Kakao.Auth.getAccessToken()) || '';

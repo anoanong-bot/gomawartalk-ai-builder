@@ -1,40 +1,108 @@
 /**
  * Backend_Proxy.gs
- * [클라우드 보안 배관] 고마워톡 AI 캠페인 빌더 Google Apps Script 웹앱 백엔드
+ * [클라우드 보안 배관] 고마워톡 AI 캠페인 빌더 Google Apps Script 웹앱 백엔드 (V2.3-1)
  *
  * 주요 기능:
- *   1) doPost(e)
- *      - action === "verifyPartner"  : 카카오 로그인 파트너 선인증 ([승인파트너명단] 시트 대조 및 비인증자 AI 토큰 차단)
- *      - action === "chat"           : 파트너 챗봇 AI 대화 프록시 (API 키 100% 서버 은닉, gemini-3.8-flash 기본 + 실시간 동적 모델 탐색 폴백)
- *      - action === "generate_image" : 비주얼 슬롯 AI 이미지 생성 프록시 (imagen-4 / imagen-3 / 이미지 지원 gemini 동적 폴백)
- *      - action === "pinpoint_edit"  : 대표님 조종석(LandingBuilder.html) 탭별 핀셋 AI 수정 프록시
- *      - action === "submit_campaign": 구글 드라이브 [파트너접수함] JSON 저장 + 구글 시트 관제탑 기록 + 구글 챗 즉시 알림 (침묵형 회로 차단기 적용)
- *      - action === "lookup_partner" : 파트너 시트 매칭 (성함 + 휴대폰 번호 → 채널명/채널ID/플랜 조회)
- *   2) doGet(e)
- *      - action === "list"           : [파트너접수함] 최신 .json 목록 조회
- *      - action === "load"           : fileId 기준 캠페인 JSON 본문 즉시 로드
- *      - action === "ping"           : 서버 상태 헬스체크
+ *   1) 통합 관제탑 시트 자동 초기화 (GAS 편집기에서 관리자 1회 실행)
+ *      - setupV23ControlTowerSheet() : 상단 모바일 리모컨(1~3행) + 15컬럼 표준 헤더(4행) + 등급/확정상태 드롭다운 자동 세팅
  *
- * 설정 방법:
- *   Apps Script 좌측 [프로젝트 설정] -> [스크립트 속성]에 아래 키를 등록하세요.
- *   - GEMINI_API_KEY          : Google AI Studio에서 발급받은 Gemini API 키
- *   - DRIVE_FOLDER_ID         : (선택) 구글 드라이브 [파트너접수함] 폴더 ID (비워두면 자동 생성)
- *   - SPREADSHEET_ID          : (선택) 구글 시트 관제탑 스프레드시트 ID (바인딩 스크립트면 자동 인식)
- *   - GOOGLE_CHAT_WEBHOOK_URL : (선택) 대표님 구글 챗 스페이스 수신 웹훅 URL
- *   - BUILDER_URL             : (선택) GitHub Pages로 배포된 LandingBuilder.html 주소
+ *   2) doPost(e)
+ *      - action === "verifyUserAndQuota" : 카카오싱크(인가코드/토큰) 검증 + 통합 관제탑 자동 기록 + 등급별 서버단 횟수 강제 검증 (로컬/관리자 프리패스 유지)
+ *      - action === "verifyPartner"      : (V2.2 하위 호환) [승인파트너명단] 시트 선인증
+ *      - action === "chat"               : 파트너 챗봇 AI 대화 프록시 (API 키 100% 서버 은닉, gemini-3.8-flash 기본 + 실시간 동적 모델 탐색 폴백)
+ *      - action === "generate_image"     : 비주얼 슬롯 AI 이미지 생성 프록시 (imagen-4 / imagen-3 폴백)
+ *      - action === "pinpoint_edit"      : 대표님 조종석(LandingBuilder.html) 탭별 핀셋 AI 수정 프록시
+ *      - action === "submit_campaign"    : 서버단 횟수 검증 -> 드라이브 [파트너접수함] JSON 저장 -> 관제탑 시트 기록 & 횟수 차감 -> 제안서 고유 URL 생성 -> 구글 챗 알림
+ *      - action === "confirm_proposal"   : Proposal.html 하단 무인 확정 폼 접수 (세팅확정상태="결제·세팅요청", 1회 수정메모 저장 + Google Chat HUMAN_QA_READY 즉시 알림)
+ *      - action === "lookup_partner"     : (V2.2 하위 호환) 파트너 시트 간편 조회
  *
- * 주의: Apps Script 구문 안전성을 위해 백틱 문자 없이 일반 문자열 결합만 사용합니다.
+ *   3) doGet(e)
+ *      - action === "ping"               : 서버 상태 헬스체크
+ *      - action === "list"               : [파트너접수함] 최신 .json 목록 조회 (paidOnly=1 전달 시 유료 고객 전용 필터링)
+ *      - action === "list_paid"          : 조종석(LandingBuilder.html) 전용 — 시트 등급이 Starter/Pro인 유료 고객 행만 필터링 + 고객1회수정메모 포함 반환
+ *      - action === "load"               : fileId 기준 캠페인 JSON 원문 로드 (조종석용)
+ *      - action === "load_proposal"      : Proposal.html 전용 — 드라이브 JSON 로드 후 전화번호/이메일/식별자 등 민감 개인정보 제거 후 반환
+ *
+ * 스크립트 속성(PropertiesService) 설정 키:
+ *   - GEMINI_API_KEY          : (필수) Google AI Studio Gemini API 키
+ *   - KAKAO_REST_API_KEY      : (필수) 고마워브라더 카카오싱크 REST API 키
+ *   - KAKAO_CLIENT_SECRET     : (선택) 카카오 디벨로퍼스 Client Secret 사용 시 등록
+ *   - KAKAO_REDIRECT_URI      : (선택) 카카오싱크 기본 Redirect URI 폴백
+ *   - SPREADSHEET_ID          : (필수/권장) 통합 관제탑 구글 스프레드시트 ID (바인딩 스크립트면 자동 인식)
+ *   - DRIVE_FOLDER_ID         : (선택) 구글 드라이브 [파트너접수함] 폴더 ID (미설정 시 자동 생성)
+ *   - GOOGLE_CHAT_WEBHOOK_URL : (필수/권장) 대표님 구글 챗 스페이스 수신 웹훅 URL
+ *   - BUILDER_URL             : (선택) GitHub Pages 배포된 LandingBuilder.html URL
+ *   - PROPOSAL_URL            : (필수/권장) GitHub Pages 배포된 Proposal.html 베이스 URL
+ *   - ALERT_ON_LEAD_SUBMIT    : (선택) 가망고객 무료 제출 시에도 구글 챗 알림 발송 여부 ("true" | 기본 "false" 침묵 원칙)
+ *
+ * 주의: Apps Script 구문 안전성을 위해 백틱 문자를 절대 사용하지 않으며, 표준 큰따옴표(")와 + 문자열 결합만 사용합니다.
  */
 
-var FOLDER_NAME_DEFAULT = '파트너접수함';
-var SHEET_NAME_CONTROL = '파트너캠페인관제탑';
-var SHEET_NAME_APPROVED_PARTNERS = '승인파트너명단';
-var SHEET_NAME_PARTNERS = '파트너목록';
-var DEFAULT_GEMINI_MODEL = 'models/gemini-3.8-flash';
+var FOLDER_NAME_DEFAULT = "파트너접수함";
+var SHEET_NAME_CONTROL = "파트너캠페인관제탑";
+var SHEET_NAME_APPROVED_PARTNERS = "승인파트너명단";
+var SHEET_NAME_PARTNERS = "파트너목록";
+var DEFAULT_GEMINI_MODEL = "models/gemini-3.8-flash";
 
+var TIER_LEAD = "가망고객";
+var TIER_STARTER = "Starter";
+var TIER_PRO = "Pro";
+
+var CONFIRM_UNCHECKED = "미확인";
+var CONFIRM_REQUESTED = "결제·세팅요청";
+var CONFIRM_DONE = "세팅완료";
+
+var QUOTA_LIMIT_LEAD_TOTAL = 2;
+var QUOTA_LIMIT_STARTER_MONTHLY = 2;
+var QUOTA_LIMIT_PRO_MONTHLY = 10;
+
+var CIRCUIT_BREAKER_THRESHOLD = 3;
+
+var CONTROL_HEADERS_V23 = [
+  "접수일시",
+  "kakao_user_id",
+  "실명",
+  "전화번호",
+  "업종",
+  "등급",
+  "누적사용횟수",
+  "당월사용횟수",
+  "최근사용월(YYYY-MM)",
+  "제안서고유URL",
+  "세팅확정상태",
+  "고객1회수정메모",
+  "드라이브JSON링크",
+  "파일ID",
+  "진행상태·회로차단로그"
+];
+
+// 0-based 컬럼 인덱스 상수
+var COL_CREATED_AT = 0;       // A: 접수일시
+var COL_KAKAO_ID = 1;         // B: kakao_user_id
+var COL_REAL_NAME = 2;        // C: 실명
+var COL_PHONE = 3;            // D: 전화번호
+var COL_INDUSTRY = 4;         // E: 업종
+var COL_TIER = 5;             // F: 등급 (가망고객 / Starter / Pro)
+var COL_TOTAL_USED = 6;       // G: 누적사용횟수
+var COL_MONTHLY_USED = 7;     // H: 당월사용횟수
+var COL_LAST_MONTH = 8;       // I: 최근사용월(YYYY-MM)
+var COL_PROPOSAL_URL = 9;     // J: 제안서고유URL
+var COL_CONFIRM_STATUS = 10;  // K: 세팅확정상태 (미확인 / 결제·세팅요청 / 세팅완료)
+var COL_REVISION_MEMO = 11;   // L: 고객1회수정메모
+var COL_DRIVE_LINK = 12;      // M: 드라이브JSON링크
+var COL_FILE_ID = 13;         // N: 파일ID
+var COL_STATUS_LOG = 14;      // O: 진행상태·회로차단로그
+
+/* =========================================================================
+ * 공통 유틸리티
+ * ========================================================================= */
 function getProp_(key, fallback) {
   var val = PropertiesService.getScriptProperties().getProperty(key);
-  return (val !== null && val !== undefined && String(val).trim() !== '') ? String(val).trim() : (fallback || '');
+  return (val !== null && val !== undefined && String(val).trim() !== "") ? String(val).trim() : (fallback || "");
+}
+
+function setProp_(key, val) {
+  PropertiesService.getScriptProperties().setProperty(key, String(val));
 }
 
 function jsonResponse_(obj) {
@@ -43,144 +111,955 @@ function jsonResponse_(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// 카카오 전화번호(+82 10-1234-5678 / +82 1012345678 / 010-1234-5678) → 01012345678 정규화
+function getCurrentYearMonth_() {
+  return Utilities.formatDate(new Date(), "Asia/Seoul", "yyyy-MM");
+}
+
+function getNowDisplay_() {
+  return Utilities.formatDate(new Date(), "Asia/Seoul", "yyyy-MM-dd HH:mm:ss");
+}
+
+function getShortNowDisplay_() {
+  return Utilities.formatDate(new Date(), "Asia/Seoul", "yyyy-MM-dd HH:mm");
+}
+
+// 카카오 전화번호(+82 10-1234-5678 / +82 1012345678 / 010-1234-5678) -> 01012345678 정규화
 function normalizePhone_(raw) {
-  var s = String(raw === null || raw === undefined ? '' : raw).trim();
-  var digits = s.replace(/[^0-9]/g, '');
-  if (!digits) return '';
-  if (/^\+?\s*82/.test(s) || digits.indexOf('8210') === 0) {
-    digits = digits.replace(/^82/, '');
+  var s = String(raw === null || raw === undefined ? "" : raw).trim();
+  var digits = s.replace(/[^0-9]/g, "");
+  if (!digits) return "";
+  if (/^\+?\s*82/.test(s) || digits.indexOf("8210") === 0) {
+    digits = digits.replace(/^82/, "");
   }
-  if (digits.charAt(0) !== '0') {
-    digits = '0' + digits;
+  if (digits.charAt(0) !== "0") {
+    digits = "0" + digits;
   }
   return digits;
 }
 
+// 시트 날짜 자동 변환 방지용 YYYY-MM 정규화
+function normalizeYearMonth_(val) {
+  if (!val) return "";
+  if (Object.prototype.toString.call(val) === "[object Date]" && !isNaN(val.getTime())) {
+    return Utilities.formatDate(val, "Asia/Seoul", "yyyy-MM");
+  }
+  var s = String(val).trim();
+  var m = s.match(/^(\d{4})[-\/\.](\d{1,2})/);
+  if (m) {
+    var mm = m[2].length === 1 ? ("0" + m[2]) : m[2];
+    return m[1] + "-" + mm;
+  }
+  return s;
+}
+
+function normalizeTier_(raw) {
+  var s = String(raw === null || raw === undefined ? "" : raw).trim().toLowerCase();
+  if (s === "pro") return TIER_PRO;
+  if (s === "starter") return TIER_STARTER;
+  return TIER_LEAD;
+}
+
+function isPaidTier_(tier) {
+  var t = normalizeTier_(tier);
+  return (t === TIER_STARTER || t === TIER_PRO);
+}
+
+function tierRank_(tier) {
+  var t = normalizeTier_(tier);
+  if (t === TIER_PRO) return 3;
+  if (t === TIER_STARTER) return 2;
+  return 1;
+}
+
+function formatCellTimestamp_(val) {
+  if (!val) return "";
+  if (Object.prototype.toString.call(val) === "[object Date]" && !isNaN(val.getTime())) {
+    return Utilities.formatDate(val, "Asia/Seoul", "yyyy-MM-dd HH:mm");
+  }
+  return String(val).trim();
+}
+
+function isLocalOrAdminBypass_(obj) {
+  if (!obj) return false;
+  if (obj.adminBypass === true || obj.isAdminBypass === true || obj.isLocalTest === true) {
+    return true;
+  }
+  var adminFlag = String(obj.admin || "").trim().toLowerCase();
+  if (adminFlag === "1" || adminFlag === "true") {
+    return true;
+  }
+  var origin = String(obj.origin || obj.clientOrigin || obj.href || "").trim().toLowerCase();
+  if (origin && (origin.indexOf("file://") === 0 || origin.indexOf("localhost") !== -1 || origin.indexOf("127.0.0.1") !== -1)) {
+    if (obj.bypassAuth === true || obj.localBypass === true) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function getTokenSigningSecret_() {
+  return getProp_("USER_TOKEN_SECRET", "") ||
+    getProp_("KAKAO_REST_API_KEY", "") ||
+    getProp_("GEMINI_API_KEY", "") ||
+    "GOMAWARTALK_V23_DEFAULT_SECRET";
+}
+
+function signUserToken_(kakaoUserId, name, phone) {
+  var payloadObj = {
+    uid: String(kakaoUserId || ""),
+    name: String(name || ""),
+    phone: normalizePhone_(phone || ""),
+    ym: getCurrentYearMonth_()
+  };
+  var payloadB64 = Utilities.base64EncodeWebSafe(JSON.stringify(payloadObj));
+  var sigBytes = Utilities.computeHmacSha256Signature(payloadB64, getTokenSigningSecret_());
+  var sigB64 = Utilities.base64EncodeWebSafe(sigBytes);
+  return payloadB64 + "." + sigB64;
+}
+
+function verifyUserToken_(tokenStr) {
+  try {
+    var s = String(tokenStr || "").trim();
+    var dotIdx = s.indexOf(".");
+    if (dotIdx <= 0) return null;
+    var payloadB64 = s.slice(0, dotIdx);
+    var sigB64 = s.slice(dotIdx + 1);
+    var expectedBytes = Utilities.computeHmacSha256Signature(payloadB64, getTokenSigningSecret_());
+    var expectedSig = Utilities.base64EncodeWebSafe(expectedBytes);
+    if (sigB64 !== expectedSig) return null;
+    var decodedBytes = Utilities.base64DecodeWebSafe(payloadB64);
+    var jsonText = Utilities.newBlob(decodedBytes).getDataAsString("UTF-8");
+    return JSON.parse(jsonText);
+  } catch (e) {
+    Logger.log("[verifyUserToken_ ERROR] " + e);
+    return null;
+  }
+}
+
+function buildProposalUrl_(fileId) {
+  var base = getProp_("PROPOSAL_URL", "");
+  if (!base) {
+    var builderUrl = getProp_("BUILDER_URL", "");
+    if (builderUrl && builderUrl.indexOf("LandingBuilder.html") !== -1) {
+      base = builderUrl.replace("LandingBuilder.html", "Proposal.html");
+    } else {
+      base = "Proposal.html";
+    }
+  }
+  var sep = (base.indexOf("?") === -1) ? "?" : "&";
+  return base + sep + "fileId=" + encodeURIComponent(String(fileId || ""));
+}
+
+function appendLogEntry_(existingLog, entryText) {
+  var prev = String(existingLog || "").trim();
+  var line = "[" + getShortNowDisplay_() + "] " + String(entryText || "").trim();
+  if (!prev) return line;
+  var combined = prev + "\n" + line;
+  if (combined.length > 2000) {
+    combined = combined.slice(combined.length - 2000);
+  }
+  return combined;
+}
+
 /* =========================================================================
- * doGet(e) — 대표님 조종석 클라우드 직결 조회 (목록 / 파일 본문 / 핑)
+ * 0. 통합 관제탑 시트 스키마 자동 초기화 함수 (관리자 GAS 편집기 1회 실행)
+ *    - 1~3행: 상단 모바일 리모컨 호환 대시보드
+ *    - 4행: V2.3 표준 15컬럼 헤더
+ *    - 5~1000행: 등급(가망고객/Starter/Pro) & 세팅확정상태(미확인/결제·세팅요청/세팅완료) 드롭다운
+ * ========================================================================= */
+function setupV23ControlTowerSheet() {
+  var ss = getControlSpreadsheet_();
+  if (!ss) {
+    throw new Error("연결된 구글 스프레드시트를 찾을 수 없습니다. 스크립트 속성에 SPREADSHEET_ID를 설정하거나 시트에 바인딩된 스크립트에서 실행해 주세요.");
+  }
+
+  var sheet = ss.getSheetByName(SHEET_NAME_CONTROL);
+  var isExistingV23 = false;
+
+  if (sheet) {
+    var lastRow = sheet.getLastRow();
+    if (lastRow >= 4) {
+      var r4Check = String(sheet.getRange(4, 2).getValue() || "").trim();
+      if (r4Check === "kakao_user_id") {
+        isExistingV23 = true;
+      }
+    }
+    if (!isExistingV23 && lastRow >= 1) {
+      var r1Col1 = String(sheet.getRange(1, 1).getValue() || "").trim();
+      var r1Col2 = String(sheet.getRange(1, 2).getValue() || "").trim();
+      if (r1Col1 !== "" && r1Col2 !== "kakao_user_id") {
+        var backupName = SHEET_NAME_CONTROL + "_V22백업_" + Utilities.formatDate(new Date(), "Asia/Seoul", "yyyyMMdd_HHmm");
+        sheet.setName(backupName);
+        sheet = ss.insertSheet(SHEET_NAME_CONTROL);
+      }
+    }
+  } else {
+    sheet = ss.insertSheet(SHEET_NAME_CONTROL);
+  }
+
+  var maxCols = CONTROL_HEADERS_V23.length; // 15
+  if (sheet.getMaxColumns() < maxCols) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), maxCols - sheet.getMaxColumns());
+  }
+  if (sheet.getMaxRows() < 1000) {
+    sheet.insertRowsAfter(sheet.getMaxRows(), 1000 - sheet.getMaxRows());
+  }
+
+  // 1~3행: 상단 모바일 리모컨 호환 구조 (스마트폰 요약 지표 + 운영 안내)
+  var remoteRows = [
+    [
+      "고마워톡 AI 캠페인 통합 관제탑 (V2.3)",
+      "총 유입",
+      "=COUNTA(B5:B)",
+      "가망고객",
+      "=COUNTIF(F5:F,\"가망고객\")",
+      "Starter",
+      "=COUNTIF(F5:F,\"Starter\")",
+      "Pro",
+      "=COUNTIF(F5:F,\"Pro\")",
+      "결제·세팅요청",
+      "=COUNTIF(K5:K,\"결제·세팅요청\")",
+      "세팅완료",
+      "=COUNTIF(K5:K,\"세팅완료\")",
+      "기준월",
+      "=TEXT(TODAY(),\"yyyy-mm\")"
+    ],
+    [
+      "모바일 리모컨 안내",
+      "입금 확인 시 [F열 등급]을 Starter/Pro로 변경 -> 조종석 자동 노출",
+      "",
+      "세팅 완료 시 [K열 세팅확정상태]를 세팅완료로 변경",
+      "",
+      "당월 총 생성",
+      "=SUMIF(I5:I,TEXT(TODAY(),\"yyyy-mm\"),H5:H)",
+      "누적 총 생성",
+      "=SUM(G5:G)",
+      "회로차단 경고",
+      "=COUNTIF(O5:O,\"*CIRCUIT_BREAKER*\")",
+      "한도 기준",
+      "가망:누적2 / Starter:월2 / Pro:월10",
+      "버전",
+      "V2.3-1"
+    ],
+    [
+      "빠른 필터/메모 구역",
+      "F열 드롭다운: 가망고객 / Starter / Pro",
+      "",
+      "K열 드롭다운: 미확인 / 결제·세팅요청 / 세팅완료",
+      "",
+      "주의: 4행 헤더 삭제 금지",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  ];
+
+  sheet.getRange(1, 1, 3, maxCols).setValues(remoteRows);
+  sheet.getRange(1, 1, 1, maxCols)
+    .setBackground("#0F172A")
+    .setFontColor("#FFFFFF")
+    .setFontWeight("bold")
+    .setVerticalAlignment("middle");
+  sheet.getRange(2, 1, 1, maxCols)
+    .setBackground("#EEF2FF")
+    .setFontColor("#1E293B")
+    .setFontSize(9)
+    .setVerticalAlignment("middle");
+  sheet.getRange(3, 1, 1, maxCols)
+    .setBackground("#F8FAFC")
+    .setFontColor("#475569")
+    .setFontSize(9)
+    .setVerticalAlignment("middle");
+
+  // 4행: 필수 15컬럼 표준 헤더
+  sheet.getRange(4, 1, 1, maxCols)
+    .setValues([CONTROL_HEADERS_V23])
+    .setBackground("#182232")
+    .setFontColor("#FFFFFF")
+    .setFontWeight("bold")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+
+  sheet.setRowHeight(1, 32);
+  sheet.setRowHeight(2, 26);
+  sheet.setRowHeight(3, 22);
+  sheet.setRowHeight(4, 30);
+  sheet.setFrozenRows(4);
+
+  // 데이터 행(5~1000행) 서식 및 드롭다운 유효성 검사 적용
+  var validationEndRow = Math.max(1000, sheet.getMaxRows());
+  var dataRowCount = validationEndRow - 4;
+
+  // 텍스트 서식 강제 (전화번호 앞자리 0 손실 방지, YYYY-MM 날짜 오변환 방지, kakao_user_id 지수표기 방지)
+  sheet.getRange(5, COL_KAKAO_ID + 1, dataRowCount, 1).setNumberFormat("@");
+  sheet.getRange(5, COL_PHONE + 1, dataRowCount, 1).setNumberFormat("@");
+  sheet.getRange(5, COL_LAST_MONTH + 1, dataRowCount, 1).setNumberFormat("@");
+  sheet.getRange(5, COL_TOTAL_USED + 1, dataRowCount, 2).setNumberFormat("0");
+
+  // F열(등급) 드롭다운: 가망고객 / Starter / Pro
+  var tierRule = SpreadsheetApp.newDataValidation()
+    .requireValueInList([TIER_LEAD, TIER_STARTER, TIER_PRO], true)
+    .setAllowInvalid(false)
+    .setHelpText("등급을 선택하세요: 가망고객 / Starter / Pro")
+    .build();
+  sheet.getRange(5, COL_TIER + 1, dataRowCount, 1).setDataValidation(tierRule);
+
+  // K열(세팅확정상태) 드롭다운: 미확인 / 결제·세팅요청 / 세팅완료
+  var confirmRule = SpreadsheetApp.newDataValidation()
+    .requireValueInList([CONFIRM_UNCHECKED, CONFIRM_REQUESTED, CONFIRM_DONE], true)
+    .setAllowInvalid(false)
+    .setHelpText("세팅 확정 상태를 선택하세요: 미확인 / 결제·세팅요청 / 세팅완료")
+    .build();
+  sheet.getRange(5, COL_CONFIRM_STATUS + 1, dataRowCount, 1).setDataValidation(confirmRule);
+
+  // 컬럼 폭 및 줄바꿈 정리
+  var colWidths = [155, 130, 95, 125, 130, 100, 95, 95, 120, 220, 125, 260, 220, 200, 280];
+  for (var c = 0; c < colWidths.length; c++) {
+    sheet.setColumnWidth(c + 1, colWidths[c]);
+  }
+  sheet.getRange(5, COL_REVISION_MEMO + 1, dataRowCount, 1).setWrap(true);
+  sheet.getRange(5, COL_STATUS_LOG + 1, dataRowCount, 1).setWrap(true);
+
+  Logger.log("[setupV23ControlTowerSheet] 통합 관제탑 시트 초기화 완료: " + sheet.getName());
+  return {
+    ok: true,
+    sheetName: sheet.getName(),
+    headerRow: 4,
+    columns: CONTROL_HEADERS_V23.length,
+    existingPreserved: isExistingV23
+  };
+}
+
+function getControlSpreadsheet_() {
+  var ssId = getProp_("SPREADSHEET_ID", "");
+  if (ssId) {
+    return SpreadsheetApp.openById(ssId);
+  }
+  return SpreadsheetApp.getActiveSpreadsheet();
+}
+
+function getOrInitControlSheet_() {
+  var ss = getControlSpreadsheet_();
+  if (!ss) return null;
+  var sheet = ss.getSheetByName(SHEET_NAME_CONTROL);
+  if (!sheet) {
+    setupV23ControlTowerSheet();
+    sheet = ss.getSheetByName(SHEET_NAME_CONTROL);
+  }
+  return sheet;
+}
+
+function detectControlHeaderRow_(sheet) {
+  if (!sheet) return 4;
+  var lastRow = sheet.getLastRow();
+  var scanLimit = Math.min(lastRow, 10);
+  if (scanLimit < 1) return 4;
+  var vals = sheet.getRange(1, 1, scanLimit, 2).getValues();
+  for (var i = 0; i < vals.length; i++) {
+    var colB = String(vals[i][1] || "").trim();
+    if (colB === "kakao_user_id") {
+      return i + 1;
+    }
+  }
+  return 4;
+}
+
+function ensureRowDropdowns_(sheet, rowNumber) {
+  var tierRule = SpreadsheetApp.newDataValidation()
+    .requireValueInList([TIER_LEAD, TIER_STARTER, TIER_PRO], true)
+    .setAllowInvalid(false)
+    .build();
+  var confirmRule = SpreadsheetApp.newDataValidation()
+    .requireValueInList([CONFIRM_UNCHECKED, CONFIRM_REQUESTED, CONFIRM_DONE], true)
+    .setAllowInvalid(false)
+    .build();
+  sheet.getRange(rowNumber, COL_KAKAO_ID + 1).setNumberFormat("@");
+  sheet.getRange(rowNumber, COL_PHONE + 1).setNumberFormat("@");
+  sheet.getRange(rowNumber, COL_LAST_MONTH + 1).setNumberFormat("@");
+  sheet.getRange(rowNumber, COL_TIER + 1).setDataValidation(tierRule);
+  sheet.getRange(rowNumber, COL_CONFIRM_STATUS + 1).setDataValidation(confirmRule);
+}
+
+/* =========================================================================
+ * doGet(e) — 조종석 직결 조회 / 유료 전용 목록 / 제안서 안전 로드 / 헬스체크
  * ========================================================================= */
 function doGet(e) {
   try {
     var params = (e && e.parameter) ? e.parameter : {};
-    var action = params.action || 'ping';
+    var action = String(params.action || "ping").trim();
 
-    if (action === 'ping') {
+    if (action === "ping") {
       return jsonResponse_({
         ok: true,
-        service: 'Gomawartalk Backend_Proxy',
+        service: "Gomawartalk Backend_Proxy",
+        version: "V2.3-1",
         defaultModel: DEFAULT_GEMINI_MODEL,
+        currentMonth: getCurrentYearMonth_(),
         timestamp: new Date().toISOString()
       });
     }
 
-    if (action === 'list') {
+    if (action === "list_paid") {
+      return jsonResponse_(listPaidCampaigns_());
+    }
+
+    if (action === "list") {
+      var paidOnly = String(params.paidOnly || "").trim().toLowerCase();
+      if (paidOnly === "1" || paidOnly === "true") {
+        return jsonResponse_(listPaidCampaigns_());
+      }
       return jsonResponse_(listCampaignFiles_());
     }
 
-    if (action === 'load') {
-      var fileId = params.fileId || '';
+    if (action === "load") {
+      var fileId = String(params.fileId || "").trim();
       if (!fileId) {
-        return jsonResponse_({ error: 'fileId 파라미터가 필요합니다.' });
+        return jsonResponse_({ ok: false, error: "fileId 파라미터가 필요합니다." });
       }
       var file = DriveApp.getFileById(fileId);
-      var raw = file.getBlob().getDataAsString('UTF-8');
+      var raw = file.getBlob().getDataAsString("UTF-8");
       return ContentService.createTextOutput(raw).setMimeType(ContentService.MimeType.JSON);
     }
 
-    return jsonResponse_({ error: '지원하지 않는 GET action입니다: ' + action });
+    if (action === "load_proposal") {
+      var propFileId = String(params.fileId || "").trim();
+      if (!propFileId) {
+        return jsonResponse_({ ok: false, error: "fileId 파라미터가 필요합니다." });
+      }
+      return jsonResponse_(handleLoadProposal_(propFileId));
+    }
+
+    return jsonResponse_({ ok: false, error: "지원하지 않는 GET action입니다: " + action });
   } catch (err) {
-    Logger.log('[doGet ERROR] ' + err);
-    return jsonResponse_({ error: String(err.message || err) });
+    Logger.log("[doGet ERROR] " + err);
+    return jsonResponse_({ ok: false, error: String(err.message || err) });
   }
 }
 
 /* =========================================================================
- * doPost(e) — 파트너 선인증 / AI 프록시 / 핀셋 수정 / 캠페인 접수 & 구글 챗 알림
+ * doPost(e) — 카카오싱크 인증·횟수검증 / AI 프록시 / 캠페인 접수 / 무인 확정 폼
  * ========================================================================= */
 function doPost(e) {
   try {
-    var rawBody = (e && e.postData && e.postData.contents) ? e.postData.contents : '{}';
+    var rawBody = (e && e.postData && e.postData.contents) ? e.postData.contents : "{}";
     var body = JSON.parse(rawBody);
-    var action = body.action || '';
+    var action = String(body.action || "").trim();
 
-    if (action === 'verifyPartner') {
+    if (action === "verifyUserAndQuota" || action === "verify_user_and_quota") {
+      return jsonResponse_(verifyUserAndQuota(body));
+    }
+
+    if (action === "verifyPartner") {
       return jsonResponse_(handleVerifyPartner_(body));
     }
 
-    if (action === 'chat') {
+    if (action === "chat") {
       return jsonResponse_(handleChatProxy_(body));
     }
 
-    if (action === 'generate_image') {
+    if (action === "generate_image") {
       return jsonResponse_(handleGenerateImageProxy_(body));
     }
 
-    if (action === 'pinpoint_edit') {
+    if (action === "pinpoint_edit") {
       return jsonResponse_(handlePinpointEdit_(body));
     }
 
-    if (action === 'submit_campaign') {
-      return jsonResponse_(handleSubmitCampaign_(body.payload || body));
+    if (action === "submit_campaign") {
+      return jsonResponse_(handleSubmitCampaign_(body));
     }
 
-    if (action === 'lookup_partner') {
+    if (action === "confirm_proposal") {
+      return jsonResponse_(handleConfirmProposal_(body));
+    }
+
+    if (action === "lookup_partner") {
       return jsonResponse_(handleLookupPartner_(body));
     }
 
-    return jsonResponse_({ error: '지원하지 않는 POST action입니다: ' + action });
+    return jsonResponse_({ ok: false, error: "지원하지 않는 POST action입니다: " + action });
   } catch (err) {
-    Logger.log('[doPost ERROR] ' + err);
-    return jsonResponse_({ error: String(err.message || err) });
+    Logger.log("[doPost ERROR] " + err);
+    return jsonResponse_({ ok: false, error: String(err.message || err) });
   }
 }
 
 /* =========================================================================
- * 0. 선(先) 파트너 인증 게이트: [승인파트너명단] 시트 대조 (비인증자 AI 토큰 차단)
- *    컬럼 규격: [상호명, 대표자명, 전화번호, 이메일, 승인상태]
+ * 1. 카카오싱크(Kakao Sync) 인증 & 등급별 횟수 서버단 강제 검증
+ * ========================================================================= */
+function exchangeKakaoCodeForToken_(authCode, redirectUri) {
+  var restApiKey = getProp_("KAKAO_REST_API_KEY", "");
+  if (!restApiKey) {
+    throw new Error("스크립트 속성에 KAKAO_REST_API_KEY가 설정되지 않았습니다.");
+  }
+  var resolvedRedirect = String(redirectUri || "").trim() || getProp_("KAKAO_REDIRECT_URI", "");
+  if (!resolvedRedirect) {
+    throw new Error("카카오싱크 인가 코드 교환에 필요한 redirectUri가 없습니다.");
+  }
+
+  var formPayload = {
+    grant_type: "authorization_code",
+    client_id: restApiKey,
+    redirect_uri: resolvedRedirect,
+    code: String(authCode || "").trim()
+  };
+  var clientSecret = getProp_("KAKAO_CLIENT_SECRET", "");
+  if (clientSecret) {
+    formPayload.client_secret = clientSecret;
+  }
+
+  var res = UrlFetchApp.fetch("https://kauth.kakao.com/oauth/token", {
+    method: "post",
+    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+    payload: formPayload,
+    muteHttpExceptions: true
+  });
+
+  var code = res.getResponseCode();
+  var text = res.getContentText();
+  if (code !== 200) {
+    throw new Error("카카오 토큰 교환 실패 (HTTP " + code + "): " + text.slice(0, 200));
+  }
+  var parsed = JSON.parse(text);
+  if (!parsed.access_token) {
+    throw new Error("카카오 응답에 access_token이 없습니다.");
+  }
+  return String(parsed.access_token);
+}
+
+function fetchKakaoProfileByAccessToken_(accessToken) {
+  var token = String(accessToken || "").trim();
+  if (!token) {
+    throw new Error("카카오 accessToken이 비어 있습니다.");
+  }
+  var res = UrlFetchApp.fetch("https://kapi.kakao.com/v2/user/me", {
+    method: "get",
+    headers: {
+      Authorization: "Bearer " + token
+    },
+    muteHttpExceptions: true
+  });
+
+  var code = res.getResponseCode();
+  var text = res.getContentText();
+  if (code !== 200) {
+    throw new Error("카카오 사용자 정보 조회 실패 (HTTP " + code + "): " + text.slice(0, 200));
+  }
+
+  var data = JSON.parse(text);
+  var account = data.kakao_account || {};
+  var profile = account.profile || {};
+  var props = data.properties || {};
+
+  var kakaoUserId = String(data.id || "").trim();
+  if (!kakaoUserId) {
+    throw new Error("카카오 사용자 고유 ID(kakao_user_id)를 확인할 수 없습니다.");
+  }
+
+  var realName = String(account.name || profile.nickname || props.nickname || "").trim() || "고객님";
+  var phone = normalizePhone_(account.phone_number || "");
+  var email = String(account.email || "").trim().toLowerCase();
+
+  return {
+    kakao_user_id: kakaoUserId,
+    name: realName,
+    phone: phone,
+    email: email
+  };
+}
+
+function lookupLegacyApprovedTier_(phone, email) {
+  try {
+    var ss = getControlSpreadsheet_();
+    if (!ss) return null;
+    var sheet = ss.getSheetByName(SHEET_NAME_APPROVED_PARTNERS);
+    if (!sheet) return null;
+    var rows = sheet.getDataRange().getValues();
+    var normPhone = normalizePhone_(phone || "");
+    var normEmail = String(email || "").trim().toLowerCase();
+
+    for (var i = 1; i < rows.length; i++) {
+      var rPhone = normalizePhone_(rows[i][2] || "");
+      var rEmail = String(rows[i][3] || "").trim().toLowerCase();
+      var rStatus = String(rows[i][4] || "").trim().toUpperCase();
+      var isApproved = (rStatus === "Y" || rStatus === "승인" || rStatus === "APPROVED" || rStatus === "O");
+      if (!isApproved) continue;
+      if ((normPhone && rPhone && normPhone === rPhone) || (normEmail && rEmail && normEmail === rEmail)) {
+        var planCol = rows[i].length > 5 ? normalizeTier_(rows[i][5]) : TIER_STARTER;
+        return (planCol === TIER_PRO) ? TIER_PRO : TIER_STARTER;
+      }
+    }
+  } catch (err) {
+    Logger.log("[lookupLegacyApprovedTier_ Warning] " + err);
+  }
+  return null;
+}
+
+function evaluateQuota_(tier, totalUsed, storedMonthlyUsed, lastUsedMonth, currentMonth) {
+  var normTier = normalizeTier_(tier);
+  var normTotal = parseInt(totalUsed, 10);
+  if (isNaN(normTotal) || normTotal < 0) normTotal = 0;
+
+  var normStoredMonthly = parseInt(storedMonthlyUsed, 10);
+  if (isNaN(normStoredMonthly) || normStoredMonthly < 0) normStoredMonthly = 0;
+
+  var normLastMonth = normalizeYearMonth_(lastUsedMonth);
+  var monthResetApplied = (normLastMonth !== "" && normLastMonth !== currentMonth);
+  var effectiveMonthly = (normLastMonth === currentMonth) ? normStoredMonthly : 0;
+
+  var limit = QUOTA_LIMIT_LEAD_TOTAL;
+  var used = normTotal;
+  var quotaType = "TOTAL";
+  var allowed = false;
+  var remaining = 0;
+  var blockMessage = "";
+  var ctaType = "";
+
+  if (normTier === TIER_PRO) {
+    limit = QUOTA_LIMIT_PRO_MONTHLY;
+    used = effectiveMonthly;
+    quotaType = "MONTHLY";
+    allowed = (effectiveMonthly < limit);
+    remaining = Math.max(0, limit - effectiveMonthly);
+    if (!allowed) {
+      blockMessage = "이번 달(" + currentMonth + ") Pro 플랜 제작 한도(월 " + limit + "회)를 모두 사용하셨습니다. 다음 달 1일에 이용 횟수가 자동으로 초기화됩니다.";
+      ctaType = "WAIT_NEXT_MONTH";
+    }
+  } else if (normTier === TIER_STARTER) {
+    limit = QUOTA_LIMIT_STARTER_MONTHLY;
+    used = effectiveMonthly;
+    quotaType = "MONTHLY";
+    allowed = (effectiveMonthly < limit);
+    remaining = Math.max(0, limit - effectiveMonthly);
+    if (!allowed) {
+      blockMessage = "이번 달(" + currentMonth + ") Starter 플랜 제작 한도(월 " + limit + "회)를 모두 사용하셨습니다. Pro 플랜(월 10회 · 영업일 1일 패스트트랙)으로 업그레이드하거나 다음 달 1일에 이용해 주세요.";
+      ctaType = "UPGRADE_TO_PRO";
+    }
+  } else {
+    limit = QUOTA_LIMIT_LEAD_TOTAL;
+    used = normTotal;
+    quotaType = "TOTAL";
+    allowed = (normTotal < limit);
+    remaining = Math.max(0, limit - normTotal);
+    if (!allowed) {
+      blockMessage = "가망고객 무료 캠페인 설계 체험(누적 " + limit + "회)을 모두 사용하셨습니다. 고마워톡 Starter 또는 Pro 플랜을 도입하시면 매월 전문가 세팅을 이용하실 수 있습니다.";
+      ctaType = "UPGRADE_FROM_LEAD";
+    }
+  }
+
+  return {
+    tier: normTier,
+    quotaType: quotaType,
+    limit: limit,
+    used: used,
+    remaining: remaining,
+    allowed: allowed,
+    totalUsed: normTotal,
+    monthlyUsed: effectiveMonthly,
+    lastUsedMonth: normLastMonth || currentMonth,
+    currentMonth: currentMonth,
+    monthResetApplied: monthResetApplied,
+    message: allowed ? "이용 가능합니다." : blockMessage,
+    ctaType: ctaType
+  };
+}
+
+function findUserRowsInControlSheet_(sheet, headerRow, kakaoUserId, normPhone) {
+  var result = {
+    matchedIndices: [],
+    latestRowNumber: -1,
+    openEmptyFileRowNumber: -1,
+    bestTier: TIER_LEAD,
+    maxTotalUsed: 0,
+    latestMonthlyUsed: 0,
+    latestLastMonth: "",
+    latestRowValues: null
+  };
+
+  var lastRow = sheet.getLastRow();
+  if (lastRow <= headerRow) {
+    return result;
+  }
+
+  var numRows = lastRow - headerRow;
+  var values = sheet.getRange(headerRow + 1, 1, numRows, CONTROL_HEADERS_V23.length).getValues();
+  var targetUid = String(kakaoUserId || "").trim();
+  var targetPhone = normalizePhone_(normPhone || "");
+
+  for (var i = 0; i < values.length; i++) {
+    var row = values[i];
+    var rUid = String(row[COL_KAKAO_ID] || "").trim();
+    var rPhone = normalizePhone_(row[COL_PHONE] || "");
+
+    var uidMatch = (targetUid !== "" && rUid !== "" && rUid === targetUid);
+    var phoneMatch = (targetPhone !== "" && rPhone !== "" && rPhone === targetPhone);
+    if (!uidMatch && !phoneMatch) continue;
+
+    var sheetRowNum = headerRow + 1 + i;
+    result.matchedIndices.push(sheetRowNum);
+    result.latestRowNumber = sheetRowNum;
+    result.latestRowValues = row;
+
+    var rFileId = String(row[COL_FILE_ID] || "").trim();
+    if (!rFileId && result.openEmptyFileRowNumber === -1) {
+      result.openEmptyFileRowNumber = sheetRowNum;
+    }
+
+    var rTier = normalizeTier_(row[COL_TIER]);
+    if (tierRank_(rTier) > tierRank_(result.bestTier)) {
+      result.bestTier = rTier;
+    }
+
+    var rTotal = parseInt(row[COL_TOTAL_USED], 10);
+    if (!isNaN(rTotal) && rTotal > result.maxTotalUsed) {
+      result.maxTotalUsed = rTotal;
+    }
+
+    var rMonth = normalizeYearMonth_(row[COL_LAST_MONTH]);
+    var rMonthly = parseInt(row[COL_MONTHLY_USED], 10);
+    if (isNaN(rMonthly) || rMonthly < 0) rMonthly = 0;
+
+    if (!result.latestLastMonth || rMonth > result.latestLastMonth) {
+      result.latestLastMonth = rMonth;
+      result.latestMonthlyUsed = rMonthly;
+    } else if (rMonth === result.latestLastMonth && rMonthly > result.latestMonthlyUsed) {
+      result.latestMonthlyUsed = rMonthly;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * 카카오싱크 인증 & 등급별 횟수 서버단 강제 검증 엔트리포인트
+ * 지원 입력:
+ *  - 로컬/관리자 프리패스: adminBypass=true / isLocalTest=true / admin="1"
+ *  - 카카오 인가 코드: code + redirectUri (KAKAO_REST_API_KEY로 토큰 교환 -> 사용자 조회)
+ *  - 카카오 액세스 토큰: accessToken (kapi /v2/user/me 검증)
+ *  - 기발급 서명 세션 토큰: userToken (재진입 시 한도 재조회)
+ */
+function verifyUserAndQuota(body) {
+  var req = body || {};
+  var currentMonth = getCurrentYearMonth_();
+
+  // 1) 기존 로컬 테스트용 localhost / file:// / ?admin=1 프리패스 우회 유지
+  if (isLocalOrAdminBypass_(req)) {
+    var adminName = String(req.name || req.owner_name || "관리자(로컬테스트)").trim();
+    var adminPhone = normalizePhone_(req.phone || "01000000000");
+    var adminUid = "ADMIN_LOCAL_TEST";
+    return {
+      ok: true,
+      verified: true,
+      isAdminBypass: true,
+      allowed: true,
+      userToken: signUserToken_(adminUid, adminName, adminPhone),
+      user: {
+        kakao_user_id: adminUid,
+        name: adminName,
+        phone: adminPhone,
+        email: ""
+      },
+      quota: {
+        tier: TIER_PRO,
+        quotaType: "MONTHLY",
+        limit: 999,
+        used: 0,
+        remaining: 999,
+        allowed: true,
+        totalUsed: 0,
+        monthlyUsed: 0,
+        lastUsedMonth: currentMonth,
+        currentMonth: currentMonth,
+        monthResetApplied: false,
+        message: "관리자/로컬 테스트 프리패스로 인증되었습니다.",
+        ctaType: ""
+      }
+    };
+  }
+
+  // 2) 카카오싱크 인가 코드 / 액세스 토큰 / 서명 세션 토큰에서 사용자 신원 확보
+  var profile = null;
+  if (req.code) {
+    var exchangedToken = exchangeKakaoCodeForToken_(req.code, req.redirectUri);
+    profile = fetchKakaoProfileByAccessToken_(exchangedToken);
+  } else if (req.accessToken) {
+    profile = fetchKakaoProfileByAccessToken_(req.accessToken);
+  } else if (req.userToken) {
+    var decoded = verifyUserToken_(req.userToken);
+    if (!decoded || !decoded.uid) {
+      return {
+        ok: false,
+        verified: false,
+        allowed: false,
+        error: "세션 토큰이 유효하지 않습니다. 카카오싱크로 다시 로그인해 주세요."
+      };
+    }
+    profile = {
+      kakao_user_id: String(decoded.uid),
+      name: String(decoded.name || "고객님"),
+      phone: normalizePhone_(decoded.phone || ""),
+      email: ""
+    };
+  } else {
+    return {
+      ok: false,
+      verified: false,
+      allowed: false,
+      error: "카카오싱크 인증 정보(code 또는 accessToken)가 필요합니다."
+    };
+  }
+
+  // 3) 통합 관제탑 시트 조회/자동 기록 및 서버단 횟수 계산
+  var lock = LockService.getScriptLock();
+  var locked = lock.tryLock(10000);
+  try {
+    var sheet = getOrInitControlSheet_();
+    if (!sheet) {
+      return {
+        ok: false,
+        verified: false,
+        allowed: false,
+        error: "통합 관제탑 구글 시트가 연결되지 않았습니다. SPREADSHEET_ID를 확인해 주세요."
+      };
+    }
+
+    var headerRow = detectControlHeaderRow_(sheet);
+    var lookup = findUserRowsInControlSheet_(sheet, headerRow, profile.kakao_user_id, profile.phone);
+    var nowStr = getNowDisplay_();
+    var tier = TIER_LEAD;
+    var totalUsed = 0;
+    var monthlyUsed = 0;
+    var lastMonth = currentMonth;
+
+    if (lookup.matchedIndices.length === 0) {
+      // 신규 유입자 -> 기존 [승인파트너명단] 이력이 있으면 해당 유료 등급 승계, 없으면 가망고객
+      var legacyTier = lookupLegacyApprovedTier_(profile.phone, profile.email);
+      tier = legacyTier || TIER_LEAD;
+      var newRowNum = Math.max(headerRow + 1, sheet.getLastRow() + 1);
+      var initialRow = [
+        nowStr,
+        profile.kakao_user_id,
+        profile.name,
+        profile.phone,
+        String(req.industry || "").trim(),
+        tier,
+        0,
+        0,
+        currentMonth,
+        "",
+        CONFIRM_UNCHECKED,
+        "",
+        "",
+        "",
+        appendLogEntry_("", "카카오싱크 최초 인증 (" + tier + ")")
+      ];
+      sheet.getRange(newRowNum, 1, 1, CONTROL_HEADERS_V23.length).setValues([initialRow]);
+      ensureRowDropdowns_(sheet, newRowNum);
+    } else {
+      tier = lookup.bestTier;
+      totalUsed = lookup.maxTotalUsed;
+      monthlyUsed = lookup.latestMonthlyUsed;
+      lastMonth = lookup.latestLastMonth || currentMonth;
+
+      // 실명/전화번호/kakao_user_id 보강 및 월 변경 시 당월사용횟수 0 자동 리셋 반영
+      var targetRowNum = lookup.latestRowNumber;
+      var latestRow = lookup.latestRowValues;
+      if (!String(latestRow[COL_KAKAO_ID] || "").trim() && profile.kakao_user_id) {
+        sheet.getRange(targetRowNum, COL_KAKAO_ID + 1).setNumberFormat("@").setValue(profile.kakao_user_id);
+      }
+      if (profile.name && (!String(latestRow[COL_REAL_NAME] || "").trim() || String(latestRow[COL_REAL_NAME]).trim() === "고객님")) {
+        sheet.getRange(targetRowNum, COL_REAL_NAME + 1).setValue(profile.name);
+      }
+      if (profile.phone && !normalizePhone_(latestRow[COL_PHONE] || "")) {
+        sheet.getRange(targetRowNum, COL_PHONE + 1).setNumberFormat("@").setValue(profile.phone);
+      }
+
+      if (lastMonth !== currentMonth && isPaidTier_(tier)) {
+        for (var m = 0; m < lookup.matchedIndices.length; m++) {
+          var rNum = lookup.matchedIndices[m];
+          sheet.getRange(rNum, COL_MONTHLY_USED + 1).setValue(0);
+          sheet.getRange(rNum, COL_LAST_MONTH + 1).setNumberFormat("@").setValue(currentMonth);
+        }
+        monthlyUsed = 0;
+        lastMonth = currentMonth;
+      }
+    }
+
+    var quota = evaluateQuota_(tier, totalUsed, monthlyUsed, lastMonth, currentMonth);
+    var userToken = signUserToken_(profile.kakao_user_id, profile.name, profile.phone);
+
+    return {
+      ok: true,
+      verified: true,
+      isAdminBypass: false,
+      allowed: quota.allowed,
+      userToken: userToken,
+      user: {
+        kakao_user_id: profile.kakao_user_id,
+        name: profile.name,
+        phone: profile.phone,
+        email: profile.email
+      },
+      quota: quota
+    };
+  } finally {
+    if (locked) {
+      lock.releaseLock();
+    }
+  }
+}
+
+/* =========================================================================
+ * 2. V2.2 하위 호환: [승인파트너명단] 시트 선인증 게이트
  * ========================================================================= */
 function handleVerifyPartner_(body) {
-  var normPhone = normalizePhone_(body.phone || '');
-  var normEmail = String(body.email || '').trim().toLowerCase();
-  var nickname = String(body.nickname || '').trim();
+  var normPhone = normalizePhone_(body.phone || "");
+  var normEmail = String(body.email || "").trim().toLowerCase();
+  var nickname = String(body.nickname || "").trim();
 
   var ss = getControlSpreadsheet_();
   if (!ss) {
     return {
       verified: false,
-      message: '관제탑 구글 시트가 연결되지 않았습니다. 관리자에게 SPREADSHEET_ID 설정을 요청해 주세요.'
+      message: "관제탑 구글 시트가 연결되지 않았습니다. 관리자에게 SPREADSHEET_ID 설정을 요청해 주세요."
     };
   }
 
   var sheet = ss.getSheetByName(SHEET_NAME_APPROVED_PARTNERS);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME_APPROVED_PARTNERS);
-    sheet.appendRow(['상호명', '대표자명', '전화번호', '이메일', '승인상태']);
+    sheet.appendRow(["상호명", "대표자명", "전화번호", "이메일", "승인상태"]);
   }
 
   var rows = sheet.getDataRange().getValues();
   for (var i = 1; i < rows.length; i++) {
-    var rBizName = String(rows[i][0] || '').trim();
-    var rOwnerName = String(rows[i][1] || '').trim();
-    var rPhone = normalizePhone_(rows[i][2] || '');
-    var rEmail = String(rows[i][3] || '').trim().toLowerCase();
-    var rStatus = String(rows[i][4] || '').trim().toUpperCase();
+    var rBizName = String(rows[i][0] || "").trim();
+    var rOwnerName = String(rows[i][1] || "").trim();
+    var rPhone = normalizePhone_(rows[i][2] || "");
+    var rEmail = String(rows[i][3] || "").trim().toLowerCase();
+    var rStatus = String(rows[i][4] || "").trim().toUpperCase();
 
-    var isApproved = (rStatus === 'Y' || rStatus === '승인' || rStatus === 'APPROVED' || rStatus === 'O');
+    var isApproved = (rStatus === "Y" || rStatus === "승인" || rStatus === "APPROVED" || rStatus === "O");
     if (!isApproved) continue;
 
-    var phoneMatch = (normPhone !== '' && rPhone !== '' && normPhone === rPhone);
-    var emailMatch = (normEmail !== '' && rEmail !== '' && normEmail === rEmail);
+    var phoneMatch = (normPhone !== "" && rPhone !== "" && normPhone === rPhone);
+    var emailMatch = (normEmail !== "" && rEmail !== "" && normEmail === rEmail);
 
     if (phoneMatch || emailMatch) {
-      var tokenRaw = (rPhone || rEmail) + '|' + rBizName + '|' + Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyyMMdd');
+      var tokenRaw = (rPhone || rEmail) + "|" + rBizName + "|" + Utilities.formatDate(new Date(), "Asia/Seoul", "yyyyMMdd");
       var token = Utilities.base64EncodeWebSafe(tokenRaw);
       return {
         verified: true,
         partnerToken: token,
         partnerInfo: {
-          businessName: rBizName || (nickname ? nickname + ' 채널' : '고마워톡 파트너'),
-          ownerName: rOwnerName || nickname || '대표님',
+          businessName: rBizName || (nickname ? nickname + " 채널" : "고마워톡 파트너"),
+          ownerName: rOwnerName || nickname || "대표님",
           phone: rPhone || normPhone,
           email: rEmail || normEmail
         }
@@ -190,20 +1069,20 @@ function handleVerifyPartner_(body) {
 
   return {
     verified: false,
-    message: '사전 승인된 고마워톡 파트너 전용 서비스입니다. 담당자에게 파트너 등록을 요청해 주세요.'
+    message: "사전 승인된 고마워톡 파트너 전용 서비스입니다. 담당자에게 파트너 등록을 요청해 주세요."
   };
 }
 
 /* =========================================================================
- * 1. 드라이브 [파트너접수함] 폴더 확보 & 파일 목록 조회
+ * 3. 드라이브 [파트너접수함] 폴더 확보 & 파일 목록 조회 (전체 / 유료 전용)
  * ========================================================================= */
 function getOrCreateIntakeFolder_() {
-  var folderId = getProp_('DRIVE_FOLDER_ID', '');
+  var folderId = getProp_("DRIVE_FOLDER_ID", "");
   if (folderId) {
     try {
       return DriveApp.getFolderById(folderId);
     } catch (e) {
-      Logger.log('[DRIVE_FOLDER_ID 조회 실패, 기본 폴더 탐색] ' + e);
+      Logger.log("[DRIVE_FOLDER_ID 조회 실패, 기본 폴더 탐색] " + e);
     }
   }
   var iter = DriveApp.getFoldersByName(FOLDER_NAME_DEFAULT);
@@ -220,142 +1099,614 @@ function listCampaignFiles_() {
   while (files.hasNext()) {
     var f = files.next();
     var name = f.getName();
-    if (name.slice(-5).toLowerCase() !== '.json') continue;
+    if (name.slice(-5).toLowerCase() !== ".json") continue;
     var created = f.getDateCreated();
     list.push({
       id: f.getId(),
       fileId: f.getId(),
       name: name,
-      createdTime: Utilities.formatDate(created, 'Asia/Seoul', 'yyyy-MM-dd HH:mm'),
+      createdTime: Utilities.formatDate(created, "Asia/Seoul", "yyyy-MM-dd HH:mm"),
       ts: created.getTime()
     });
   }
   list.sort(function (a, b) { return b.ts - a.ts; });
   return {
     ok: true,
+    paidOnly: false,
     folderName: folder.getName(),
     files: list.slice(0, 50)
   };
 }
 
-/* =========================================================================
- * 2. 캠페인 접수 처리: 드라이브 JSON 저장 + 시트 기록 + 구글 챗 즉시 알림
- * ========================================================================= */
-function handleSubmitCampaign_(payload) {
-  var partner = payload.partner_info || {};
-  var meta = payload.meta || {};
-  var now = new Date();
-  var tsFile = Utilities.formatDate(now, 'Asia/Seoul', 'yyyyMMdd_HHmmss');
-  var tsDisplay = Utilities.formatDate(now, 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
-
-  var chName = String(partner.channel_name || '미지정채널').replace(/[\\\/:*?"<>|\s]+/g, '_');
-  var owner = String(partner.owner_name || '대표님').replace(/[\\\/:*?"<>|\s]+/g, '_');
-  var fileName = tsFile + '_' + chName + '_' + owner + '.json';
-
-  // (1) 구글 드라이브 [파트너접수함]에 .json 파일 저장
-  var folder = getOrCreateIntakeFolder_();
-  var jsonStr = JSON.stringify(payload, null, 2);
-  var savedFile = folder.createFile(fileName, jsonStr, MimeType.PLAIN_TEXT);
-
-  // (2) 구글 시트 [파트너캠페인관제탑]에 요약 행 기록
-  try {
-    appendControlSheetRow_([
-      tsDisplay,
-      partner.channel_name || '',
-      partner.owner_name || '',
-      partner.phone || '',
-      partner.current_plan || 'STARTER',
-      partner.pro_upgrade_requested ? 'PRO 신청' : '유지',
-      partner.industry_code || '',
-      partner.track_id || '',
-      meta.use_webzine ? '웹진 ON' : '웹진 OFF',
-      savedFile.getId(),
-      fileName,
-      '접수완료'
-    ]);
-  } catch (sheetErr) {
-    Logger.log('[Sheet Log Warning] ' + sheetErr);
+/**
+ * doGet(action=list_paid) 및 doGet(action=list&paidOnly=1)
+ * 조종석(LandingBuilder.html) 전용: 시트에서 등급이 Starter 또는 Pro인 유료 고객 행만 필터링하여
+ * 고객1회수정메모, 세팅확정상태, 등급 등과 함께 반환
+ */
+function listPaidCampaigns_() {
+  var sheet = getOrInitControlSheet_();
+  if (!sheet) {
+    return {
+      ok: false,
+      paidOnly: true,
+      error: "통합 관제탑 시트를 찾을 수 없습니다.",
+      files: []
+    };
   }
 
-  // (3) 구글 챗(Google Chat) 즉시 알림 — 독립 try-catch 침묵형 회로 차단기 적용
-  sendGoogleChatAlert_(partner, meta, fileName, savedFile.getId());
+  var headerRow = detectControlHeaderRow_(sheet);
+  var lastRow = sheet.getLastRow();
+  if (lastRow <= headerRow) {
+    return {
+      ok: true,
+      paidOnly: true,
+      count: 0,
+      files: []
+    };
+  }
+
+  // 드라이브 파일명/생성시각 매핑을 1회 패스로 구축 (N+1 조회 방지)
+  var fileMetaMap = {};
+  try {
+    var folder = getOrCreateIntakeFolder_();
+    var iter = folder.getFiles();
+    while (iter.hasNext()) {
+      var f = iter.next();
+      var fId = f.getId();
+      fileMetaMap[fId] = {
+        name: f.getName(),
+        ts: f.getDateCreated().getTime(),
+        createdTime: Utilities.formatDate(f.getDateCreated(), "Asia/Seoul", "yyyy-MM-dd HH:mm")
+      };
+    }
+  } catch (driveErr) {
+    Logger.log("[listPaidCampaigns_ Drive Map Warning] " + driveErr);
+  }
+
+  var rows = sheet.getRange(headerRow + 1, 1, lastRow - headerRow, CONTROL_HEADERS_V23.length).getValues();
+  var paidList = [];
+
+  for (var i = 0; i < rows.length; i++) {
+    var row = rows[i];
+    var tier = normalizeTier_(row[COL_TIER]);
+    if (!isPaidTier_(tier)) continue;
+
+    var fileId = String(row[COL_FILE_ID] || "").trim();
+    if (!fileId) continue;
+
+    var fMeta = fileMetaMap[fileId] || null;
+    var realName = String(row[COL_REAL_NAME] || "").trim();
+    var industry = String(row[COL_INDUSTRY] || "").trim();
+    var createdDisplay = formatCellTimestamp_(row[COL_CREATED_AT]) || (fMeta ? fMeta.createdTime : "");
+    var fallbackName = "[" + tier + "] " + (realName || "파트너") + (industry ? ("_" + industry) : "") + ".json";
+    var tsVal = fMeta ? fMeta.ts : (new Date(createdDisplay.replace(" ", "T")).getTime() || (i + 1));
+
+    paidList.push({
+      id: fileId,
+      fileId: fileId,
+      name: fMeta ? fMeta.name : fallbackName,
+      createdTime: createdDisplay,
+      ts: tsVal,
+      tier: tier,
+      ownerName: realName,
+      phone: normalizePhone_(row[COL_PHONE] || ""),
+      industry: industry,
+      totalUsed: parseInt(row[COL_TOTAL_USED], 10) || 0,
+      monthlyUsed: parseInt(row[COL_MONTHLY_USED], 10) || 0,
+      lastUsedMonth: normalizeYearMonth_(row[COL_LAST_MONTH]),
+      proposalUrl: String(row[COL_PROPOSAL_URL] || "").trim(),
+      confirmStatus: String(row[COL_CONFIRM_STATUS] || CONFIRM_UNCHECKED).trim(),
+      revisionMemo: String(row[COL_REVISION_MEMO] || "").trim(),
+      driveLink: String(row[COL_DRIVE_LINK] || "").trim(),
+      statusLog: String(row[COL_STATUS_LOG] || "").trim(),
+      sheetRow: headerRow + 1 + i
+    });
+  }
+
+  paidList.sort(function (a, b) { return b.ts - a.ts; });
+
+  return {
+    ok: true,
+    paidOnly: true,
+    count: paidList.length,
+    files: paidList.slice(0, 100)
+  };
+}
+
+/* =========================================================================
+ * 4. Proposal.html 전용 안전 로드 (doGet?action=load_proposal&fileId=...)
+ *    드라이브 JSON에서 고객 전화번호/이메일/식별자 등 민감 개인정보 제거 후 반환
+ * ========================================================================= */
+function sanitizeProposalCampaignJson_(campaignObj) {
+  var cloned = JSON.parse(JSON.stringify(campaignObj || {}));
+  var piiKeys = [
+    "phone", "phone_number", "phoneNumber", "mobile", "tel", "contact",
+    "email", "kakao_user_id", "kakaoUserId", "userToken", "partnerToken"
+  ];
+
+  for (var i = 0; i < piiKeys.length; i++) {
+    var k = piiKeys[i];
+    if (cloned.hasOwnProperty(k)) {
+      delete cloned[k];
+    }
+    if (cloned.partner_info && cloned.partner_info.hasOwnProperty(k)) {
+      delete cloned.partner_info[k];
+    }
+    if (cloned.meta && cloned.meta.hasOwnProperty(k)) {
+      delete cloned.meta[k];
+    }
+    if (cloned.auth && cloned.auth.hasOwnProperty(k)) {
+      delete cloned.auth[k];
+    }
+  }
+
+  if (cloned.auth) {
+    delete cloned.auth;
+  }
+
+  return cloned;
+}
+
+function handleLoadProposal_(fileId) {
+  var file = DriveApp.getFileById(fileId);
+  var rawText = file.getBlob().getDataAsString("UTF-8");
+  var parsed = JSON.parse(rawText);
+  var sanitized = sanitizeProposalCampaignJson_(parsed);
+
+  // 시트에서 비민감 제안서 상태 메타데이터 보강
+  var proposalMeta = {
+    fileId: fileId,
+    tier: TIER_LEAD,
+    confirmStatus: CONFIRM_UNCHECKED,
+    hasRevisionMemo: false,
+    createdAt: Utilities.formatDate(file.getDateCreated(), "Asia/Seoul", "yyyy-MM-dd HH:mm")
+  };
+
+  try {
+    var sheet = getOrInitControlSheet_();
+    if (sheet) {
+      var headerRow = detectControlHeaderRow_(sheet);
+      var lastRow = sheet.getLastRow();
+      if (lastRow > headerRow) {
+        var rows = sheet.getRange(headerRow + 1, 1, lastRow - headerRow, CONTROL_HEADERS_V23.length).getValues();
+        for (var i = 0; i < rows.length; i++) {
+          if (String(rows[i][COL_FILE_ID] || "").trim() === fileId) {
+            proposalMeta.tier = normalizeTier_(rows[i][COL_TIER]);
+            proposalMeta.confirmStatus = String(rows[i][COL_CONFIRM_STATUS] || CONFIRM_UNCHECKED).trim();
+            proposalMeta.hasRevisionMemo = (String(rows[i][COL_REVISION_MEMO] || "").trim() !== "");
+            proposalMeta.createdAt = formatCellTimestamp_(rows[i][COL_CREATED_AT]) || proposalMeta.createdAt;
+            break;
+          }
+        }
+      }
+    }
+  } catch (metaErr) {
+    Logger.log("[handleLoadProposal_ Meta Warning] " + metaErr);
+  }
+
+  return {
+    ok: true,
+    fileId: fileId,
+    campaign: sanitized,
+    proposalMeta: proposalMeta
+  };
+}
+
+/* =========================================================================
+ * 5. 캠페인 접수 처리: 서버단 횟수 강제 검증 -> 드라이브 저장 -> 시트 기록 -> 알림
+ * ========================================================================= */
+function handleSubmitCampaign_(body) {
+  var req = body || {};
+  var payload = req.payload ? req.payload : req;
+  var partner = payload.partner_info || {};
+  var meta = payload.meta || {};
+  var authInfo = req.auth || payload.auth || {};
+
+  var isAdminBypass = isLocalOrAdminBypass_(req) || isLocalOrAdminBypass_(payload) || isLocalOrAdminBypass_(authInfo);
+
+  // 서명 토큰 또는 전달 필드에서 사용자 식별자 해석
+  var kakaoUserId = String(req.kakao_user_id || authInfo.kakao_user_id || partner.kakao_user_id || "").trim();
+  var ownerName = String(req.name || authInfo.name || partner.owner_name || "대표님").trim();
+  var normPhone = normalizePhone_(req.phone || authInfo.phone || partner.phone || "");
+
+  if (req.userToken || authInfo.userToken) {
+    var decoded = verifyUserToken_(req.userToken || authInfo.userToken);
+    if (decoded) {
+      if (decoded.uid) kakaoUserId = String(decoded.uid);
+      if (decoded.name && (!ownerName || ownerName === "대표님")) ownerName = String(decoded.name);
+      if (decoded.phone && !normPhone) normPhone = normalizePhone_(decoded.phone);
+      if (kakaoUserId === "ADMIN_LOCAL_TEST") {
+        isAdminBypass = true;
+      }
+    }
+  }
+
+  if (!kakaoUserId && isAdminBypass) {
+    kakaoUserId = "ADMIN_LOCAL_TEST";
+  }
+
+  var now = new Date();
+  var tsFile = Utilities.formatDate(now, "Asia/Seoul", "yyyyMMdd_HHmmss");
+  var tsDisplay = Utilities.formatDate(now, "Asia/Seoul", "yyyy-MM-dd HH:mm:ss");
+  var currentMonth = getCurrentYearMonth_();
+
+  var lock = LockService.getScriptLock();
+  var locked = lock.tryLock(10000);
+  var savedFile = null;
+  var fileName = "";
+  var proposalUrl = "";
+  var driveUrl = "";
+  var userTier = TIER_LEAD;
+  var updatedQuota = null;
+
+  try {
+    var sheet = getOrInitControlSheet_();
+    var headerRow = sheet ? detectControlHeaderRow_(sheet) : 4;
+    var lookup = (sheet && (kakaoUserId || normPhone))
+      ? findUserRowsInControlSheet_(sheet, headerRow, kakaoUserId, normPhone)
+      : null;
+
+    var currentTotalUsed = lookup ? lookup.maxTotalUsed : 0;
+    var currentMonthlyUsed = lookup ? lookup.latestMonthlyUsed : 0;
+    var lastUsedMonth = lookup ? lookup.latestLastMonth : "";
+
+    if (lookup && lookup.matchedIndices.length > 0) {
+      userTier = lookup.bestTier;
+    } else if (isAdminBypass) {
+      userTier = TIER_PRO;
+    } else {
+      var legacyTier = lookupLegacyApprovedTier_(normPhone, partner.email || "");
+      userTier = legacyTier || TIER_LEAD;
+    }
+
+    // (1) 서버단 등급별 횟수 강제 검증 (관리자 로컬 프리패스 제외)
+    if (!isAdminBypass) {
+      var preQuota = evaluateQuota_(userTier, currentTotalUsed, currentMonthlyUsed, lastUsedMonth, currentMonth);
+      if (!preQuota.allowed) {
+        return {
+          ok: false,
+          quotaExceeded: true,
+          tier: preQuota.tier,
+          quota: preQuota,
+          error: preQuota.message,
+          ctaType: preQuota.ctaType
+        };
+      }
+    }
+
+    // (2) 구글 드라이브 [파트너접수함]에 .json 파일 저장 (구글 시트 50,000자 셀 한계 우회)
+    var chName = String(partner.channel_name || "미지정채널").replace(/[\\\/:*?"<>|\s]+/g, "_");
+    var safeOwner = String(ownerName || "대표님").replace(/[\\\/:*?"<>|\s]+/g, "_");
+    fileName = tsFile + "_" + chName + "_" + safeOwner + ".json";
+
+    var folder = getOrCreateIntakeFolder_();
+    var jsonStr = JSON.stringify(payload, null, 2);
+    savedFile = folder.createFile(fileName, jsonStr, MimeType.PLAIN_TEXT);
+    var fileId = savedFile.getId();
+    driveUrl = savedFile.getUrl();
+    proposalUrl = buildProposalUrl_(fileId);
+
+    // (3) 횟수 차감 및 통합 관제탑 15컬럼 시트 기록
+    var nextTotalUsed = currentTotalUsed + 1;
+    var effectivePrevMonthly = (normalizeYearMonth_(lastUsedMonth) === currentMonth) ? currentMonthlyUsed : 0;
+    var nextMonthlyUsed = effectivePrevMonthly + 1;
+    var industryDisplay = String(
+      partner.sub_industry || partner.industry_label || partner.industry_code || ""
+    ).trim();
+
+    if (sheet) {
+      try {
+        var logText = appendLogEntry_(
+          "",
+          "캠페인 JSON 저장 완료 (" + userTier + " / 누적 " + nextTotalUsed + "회 · 당월 " + nextMonthlyUsed + "회)"
+        );
+
+        var rowData = [
+          tsDisplay,
+          kakaoUserId || ("LEGACY_" + (normPhone || tsFile)),
+          ownerName,
+          normPhone || String(partner.phone || ""),
+          industryDisplay,
+          userTier,
+          nextTotalUsed,
+          nextMonthlyUsed,
+          currentMonth,
+          proposalUrl,
+          CONFIRM_UNCHECKED,
+          "",
+          driveUrl,
+          fileId,
+          logText
+        ];
+
+        var writeRowNum = -1;
+        if (lookup && lookup.openEmptyFileRowNumber !== -1) {
+          // 최초 인증 후 아직 제출 이력이 없는 빈 행을 재사용 (1유입자 1행 유지)
+          writeRowNum = lookup.openEmptyFileRowNumber;
+          var existingLog = String(sheet.getRange(writeRowNum, COL_STATUS_LOG + 1).getValue() || "");
+          rowData[COL_STATUS_LOG] = appendLogEntry_(
+            existingLog,
+            "캠페인 JSON 저장 완료 (" + userTier + " / 누적 " + nextTotalUsed + "회 · 당월 " + nextMonthlyUsed + "회)"
+          );
+          sheet.getRange(writeRowNum, 1, 1, CONTROL_HEADERS_V23.length).setValues([rowData]);
+        } else {
+          writeRowNum = Math.max(headerRow + 1, sheet.getLastRow() + 1);
+          sheet.getRange(writeRowNum, 1, 1, CONTROL_HEADERS_V23.length).setValues([rowData]);
+        }
+        ensureRowDropdowns_(sheet, writeRowNum);
+
+        // 동일 사용자의 이전 행이 있으면 사용횟수/최근사용월 동기화
+        if (lookup && lookup.matchedIndices.length > 0) {
+          for (var idx = 0; idx < lookup.matchedIndices.length; idx++) {
+            var prevRowNum = lookup.matchedIndices[idx];
+            if (prevRowNum === writeRowNum) continue;
+            sheet.getRange(prevRowNum, COL_TOTAL_USED + 1).setValue(nextTotalUsed);
+            sheet.getRange(prevRowNum, COL_MONTHLY_USED + 1).setValue(nextMonthlyUsed);
+            sheet.getRange(prevRowNum, COL_LAST_MONTH + 1).setNumberFormat("@").setValue(currentMonth);
+          }
+        }
+      } catch (sheetErr) {
+        Logger.log("[Sheet Log Warning] " + sheetErr);
+      }
+    }
+
+    updatedQuota = evaluateQuota_(userTier, nextTotalUsed, nextMonthlyUsed, currentMonth, currentMonth);
+  } finally {
+    if (locked) {
+      lock.releaseLock();
+    }
+  }
+
+  // (4) 구글 챗 알림 — 유료 파트너(Starter/Pro)는 즉시 알림, 가망고객은 침묵 원칙(ALERT_ON_LEAD_SUBMIT="true"일 때만 발송)
+  var alertOnLead = (getProp_("ALERT_ON_LEAD_SUBMIT", "false").toLowerCase() === "true");
+  if (isPaidTier_(userTier) || alertOnLead) {
+    sendGoogleChatAlert_(partner, meta, fileName, savedFile.getId(), userTier, proposalUrl);
+  }
 
   return {
     ok: true,
     fileId: savedFile.getId(),
     fileName: fileName,
-    createdAt: tsDisplay
+    driveUrl: driveUrl,
+    proposalUrl: proposalUrl,
+    createdAt: tsDisplay,
+    tier: userTier,
+    isPaid: isPaidTier_(userTier),
+    quota: updatedQuota
   };
 }
 
-function getControlSpreadsheet_() {
-  var ssId = getProp_('SPREADSHEET_ID', '');
-  if (ssId) {
-    return SpreadsheetApp.openById(ssId);
+/* =========================================================================
+ * 6. Proposal.html 하단 무인 확정 폼 처리 (doPost action="confirm_proposal")
+ *    - 시트 해당 행을 "결제·세팅요청"으로 업데이트 & 1회 수정 메모 저장
+ *    - 침묵 원칙을 깨고 Google Chat 스페이스 웹훅(HUMAN_QA_READY) 즉시 알림 발송
+ * ========================================================================= */
+function handleConfirmProposal_(body) {
+  var req = body || {};
+  var fileId = String(req.fileId || "").trim();
+  if (!fileId) {
+    return { ok: false, error: "fileId가 필요합니다." };
   }
-  return SpreadsheetApp.getActiveSpreadsheet();
-}
 
-function appendControlSheetRow_(rowValues) {
-  var ss = getControlSpreadsheet_();
-  if (!ss) return;
-  var sheet = ss.getSheetByName(SHEET_NAME_CONTROL);
-  if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME_CONTROL);
-    sheet.appendRow([
-      '접수일시', '채널명', '대표자명', '연락처', '현재플랜',
-      'Pro업그레이드', '업종코드', '트랙ID', '웹진여부', '드라이브FileID', '파일명', '상태'
-    ]);
-  }
-  sheet.appendRow(rowValues);
-}
+  var rawPlan = String(req.selectedPlan || req.plan || req.requestedPlan || TIER_STARTER).trim();
+  var selectedPlan = (rawPlan.toLowerCase().indexOf("pro") !== -1) ? TIER_PRO : TIER_STARTER;
 
-/* 침묵형 회로 차단기(Silent Circuit Breaker): 웹훅 오류가 나도 캠페인 저장은 100% 성공 */
-function sendGoogleChatAlert_(partner, meta, fileName, fileId) {
+  var rawMode = String(req.settingMode || req.mode || "AS_IS").trim().toUpperCase();
+  var memoInput = String(req.revisionMemo || req.memo || req.editMemo || "").trim();
+  var isEditMode = (rawMode === "EDIT_ONCE" || rawMode === "EDIT" || rawMode === "MODIFY" || memoInput !== "");
+  var modeLabel = isEditMode ? "1회 수정 메모 포함" : "제안서 시나리오 그대로 세팅";
+
+  var storedMemo = isEditMode
+    ? ("[희망플랜: " + selectedPlan + "] " + (memoInput || "일부 문구 수정 요청"))
+    : ("[희망플랜: " + selectedPlan + "] 제안서 시나리오 그대로 세팅 요청");
+
+  var customerName = String(req.name || req.ownerName || "").trim();
+  var customerPhone = normalizePhone_(req.phone || "");
+  var customerIndustry = String(req.industry || "").trim();
+  var currentTier = TIER_LEAD;
+  var proposalUrl = buildProposalUrl_(fileId);
+  var driveLink = "";
+  var matchedRowNum = -1;
+
+  var lock = LockService.getScriptLock();
+  var locked = lock.tryLock(10000);
   try {
-    var webhookUrl = getProp_('GOOGLE_CHAT_WEBHOOK_URL', '');
-    if (!webhookUrl) {
-      Logger.log('[GoogleChat] GOOGLE_CHAT_WEBHOOK_URL 미설정 — 알림 생략');
-      return;
+    var sheet = getOrInitControlSheet_();
+    if (!sheet) {
+      return { ok: false, error: "통합 관제탑 시트를 찾을 수 없습니다." };
     }
-    var builderUrl = getProp_('BUILDER_URL', 'LandingBuilder.html');
-    var planBadge = partner.pro_upgrade_requested
-      ? (String(partner.current_plan || 'STARTER') + ' -> PRO 업그레이드 신청!')
-      : String(partner.current_plan || 'STARTER');
 
-    var text =
-      '🚀 [신규 캠페인 접수] ' + (partner.channel_name || '채널명 미입력') + '\n' +
-      '• 대표자: ' + (partner.owner_name || '-') + ' (' + (partner.phone || '-') + ')\n' +
-      '• 플랜: ' + planBadge + '\n' +
-      '• 업종 / 트랙: ' + (partner.industry_code || '-') + ' / ' + (partner.track_id || '-') + '\n' +
-      '• 모바일 웹진: ' + (meta.use_webzine ? '함께 제작 (ON)' : '미사용 (OFF)') + '\n' +
-      '• 저장 파일: ' + fileName + ' (ID: ' + fileId + ')\n' +
-      '👉 조종석 바로가기: ' + builderUrl;
+    var headerRow = detectControlHeaderRow_(sheet);
+    var lastRow = sheet.getLastRow();
+    if (lastRow > headerRow) {
+      var rows = sheet.getRange(headerRow + 1, 1, lastRow - headerRow, CONTROL_HEADERS_V23.length).getValues();
+      for (var i = 0; i < rows.length; i++) {
+        if (String(rows[i][COL_FILE_ID] || "").trim() === fileId) {
+          matchedRowNum = headerRow + 1 + i;
+          customerName = String(rows[i][COL_REAL_NAME] || "").trim() || customerName || "고객님";
+          customerPhone = normalizePhone_(rows[i][COL_PHONE] || "") || customerPhone;
+          customerIndustry = String(rows[i][COL_INDUSTRY] || "").trim() || customerIndustry;
+          currentTier = normalizeTier_(rows[i][COL_TIER]);
+          proposalUrl = String(rows[i][COL_PROPOSAL_URL] || "").trim() || proposalUrl;
+          driveLink = String(rows[i][COL_DRIVE_LINK] || "").trim();
 
-    UrlFetchApp.fetch(webhookUrl, {
-      method: 'post',
-      contentType: 'application/json; charset=UTF-8',
-      payload: JSON.stringify({ text: text }),
+          var prevLog = String(rows[i][COL_STATUS_LOG] || "");
+          var nextLog = appendLogEntry_(
+            prevLog,
+            "HUMAN_QA_READY 확정 접수 (" + selectedPlan + " / " + modeLabel + ")"
+          );
+
+          sheet.getRange(matchedRowNum, COL_CONFIRM_STATUS + 1).setValue(CONFIRM_REQUESTED);
+          sheet.getRange(matchedRowNum, COL_REVISION_MEMO + 1).setValue(storedMemo);
+          sheet.getRange(matchedRowNum, COL_STATUS_LOG + 1).setValue(nextLog);
+          break;
+        }
+      }
+    }
+
+    if (matchedRowNum === -1) {
+      return {
+        ok: false,
+        error: "해당 fileId(" + fileId + ")에 일치하는 관제탑 접수 행을 찾을 수 없습니다."
+      };
+    }
+  } finally {
+    if (locked) {
+      lock.releaseLock();
+    }
+  }
+
+  // 침묵 원칙 해제 -> 대표님 Google Chat 스페이스 웹훅(HUMAN_QA_READY) 즉시 알림 발송
+  var webhookResult = sendHumanQaReadyAlert_({
+    fileId: fileId,
+    sheetRow: matchedRowNum,
+    customerName: customerName,
+    customerPhone: customerPhone,
+    industry: customerIndustry,
+    currentTier: currentTier,
+    selectedPlan: selectedPlan,
+    modeLabel: modeLabel,
+    revisionMemo: storedMemo,
+    proposalUrl: proposalUrl,
+    driveLink: driveLink
+  });
+
+  return {
+    ok: true,
+    fileId: fileId,
+    confirmStatus: CONFIRM_REQUESTED,
+    selectedPlan: selectedPlan,
+    settingMode: isEditMode ? "EDIT_ONCE" : "AS_IS",
+    revisionMemo: storedMemo,
+    webhookNotified: webhookResult.ok
+  };
+}
+
+/* =========================================================================
+ * 7. Google Chat 웹훅 & 3회 연속 에러 회로 차단기 (Silent Circuit Breaker)
+ *    웹훅 오류가 발생해도 시트/드라이브 저장은 100% 성공 처리
+ * ========================================================================= */
+function postGoogleChatWebhook_(textMessage, sheetRowForLog) {
+  try {
+    var webhookUrl = getProp_("GOOGLE_CHAT_WEBHOOK_URL", "");
+    if (!webhookUrl) {
+      Logger.log("[GoogleChat] GOOGLE_CHAT_WEBHOOK_URL 미설정 — 알림 생략");
+      return { ok: false, skipped: true };
+    }
+
+    var res = UrlFetchApp.fetch(webhookUrl, {
+      method: "post",
+      contentType: "application/json; charset=UTF-8",
+      payload: JSON.stringify({ text: textMessage }),
       muteHttpExceptions: true
     });
+
+    var code = res.getResponseCode();
+    if (code >= 200 && code < 300) {
+      setProp_("WEBHOOK_CONSECUTIVE_ERRORS", "0");
+      return { ok: true, code: code };
+    }
+
+    return recordCircuitBreakerError_("WEBHOOK", "HTTP " + code + " " + res.getContentText().slice(0, 120), sheetRowForLog);
   } catch (chatErr) {
-    Logger.log('[GoogleChat Circuit Breaker] 웹훅 발송 실패(무시됨): ' + chatErr);
+    Logger.log("[GoogleChat Circuit Breaker] 웹훅 발송 실패(무시됨): " + chatErr);
+    return recordCircuitBreakerError_("WEBHOOK", String(chatErr.message || chatErr), sheetRowForLog);
+  }
+}
+
+function recordCircuitBreakerError_(channelName, errSummary, sheetRowForLog) {
+  try {
+    var propKey = channelName + "_CONSECUTIVE_ERRORS";
+    var prevCount = parseInt(getProp_(propKey, "0"), 10);
+    if (isNaN(prevCount) || prevCount < 0) prevCount = 0;
+    var nextCount = prevCount + 1;
+    setProp_(propKey, String(nextCount));
+
+    var isTripped = (nextCount >= CIRCUIT_BREAKER_THRESHOLD);
+    var logLabel = isTripped
+      ? ("CIRCUIT_BREAKER [" + channelName + "] " + nextCount + "회 연속 오류: " + errSummary)
+      : ("WARN [" + channelName + "] 오류(" + nextCount + "/" + CIRCUIT_BREAKER_THRESHOLD + "): " + errSummary);
+
+    Logger.log("[" + channelName + " ERROR TRACKER] " + logLabel);
+
+    if (sheetRowForLog && sheetRowForLog > 0) {
+      var sheet = getOrInitControlSheet_();
+      if (sheet) {
+        var prevCell = String(sheet.getRange(sheetRowForLog, COL_STATUS_LOG + 1).getValue() || "");
+        sheet.getRange(sheetRowForLog, COL_STATUS_LOG + 1).setValue(appendLogEntry_(prevCell, logLabel));
+      }
+    }
+
+    return { ok: false, tripped: isTripped, consecutiveErrors: nextCount };
+  } catch (trackerErr) {
+    Logger.log("[recordCircuitBreakerError_ ERROR] " + trackerErr);
+    return { ok: false, tripped: false };
+  }
+}
+
+function sendGoogleChatAlert_(partner, meta, fileName, fileId, tier, proposalUrl) {
+  try {
+    var builderUrl = getProp_("BUILDER_URL", "LandingBuilder.html");
+    var tierLabel = tier ? ("[" + tier + "] ") : "";
+    var planBadge = partner.pro_upgrade_requested
+      ? (String(partner.current_plan || tier || "Starter") + " -> Pro 업그레이드 신청!")
+      : String(partner.current_plan || tier || "Starter");
+
+    var text =
+      "[신규 캠페인 접수] " + tierLabel + (partner.channel_name || "채널명 미입력") + "\n" +
+      "- 대표자: " + (partner.owner_name || "-") + " (" + (partner.phone || "-") + ")\n" +
+      "- 등급 / 플랜: " + (tier || TIER_LEAD) + " / " + planBadge + "\n" +
+      "- 업종 / 트랙: " + (partner.sub_industry || partner.industry_code || "-") + " / " + (partner.track_id || "-") + "\n" +
+      "- 모바일 웹진: " + (meta.use_webzine ? "함께 제작 (ON)" : "미사용 (OFF)") + "\n" +
+      "- 저장 파일: " + fileName + " (ID: " + fileId + ")\n" +
+      "- 제안서 URL: " + (proposalUrl || buildProposalUrl_(fileId)) + "\n" +
+      "- 조종석 바로가기: " + builderUrl;
+
+    postGoogleChatWebhook_(text, -1);
+  } catch (chatErr) {
+    Logger.log("[sendGoogleChatAlert_ Circuit Breaker] " + chatErr);
+  }
+}
+
+function sendHumanQaReadyAlert_(info) {
+  try {
+    var builderUrl = getProp_("BUILDER_URL", "LandingBuilder.html");
+    var ss = getControlSpreadsheet_();
+    var sheetUrl = ss ? ss.getUrl() : "";
+
+    var text =
+      "[HUMAN_QA_READY] 가망고객 결제·세팅 요청 도착!\n" +
+      "- 고객명: " + (info.customerName || "-") + " (" + (info.customerPhone || "-") + ")\n" +
+      "- 업종: " + (info.industry || "-") + "\n" +
+      "- 현재 시트 등급: " + (info.currentTier || TIER_LEAD) + " -> 희망 요금제: " + (info.selectedPlan || TIER_STARTER) + "\n" +
+      "- 세팅 방식: " + (info.modeLabel || "-") + "\n" +
+      "- 고객 1회 수정 메모: " + (info.revisionMemo || "-") + "\n" +
+      "- 제안서 URL: " + (info.proposalUrl || "-") + "\n" +
+      "- 드라이브 JSON: " + (info.driveLink || info.fileId || "-") + "\n" +
+      "- 조치 안내: 입금 확인 후 시트 " + info.sheetRow + "행 [등급]을 " + info.selectedPlan + "(으)로 변경하면 조종석에 즉시 노출됩니다.\n" +
+      "- 관제탑 시트: " + (sheetUrl || "스프레드시트 직접 열기") + "\n" +
+      "- 대표님 조종석: " + builderUrl;
+
+    return postGoogleChatWebhook_(text, info.sheetRow);
+  } catch (err) {
+    Logger.log("[sendHumanQaReadyAlert_ Circuit Breaker] " + err);
+    return { ok: false };
   }
 }
 
 /* =========================================================================
- * 3. 파트너 시트 간편 조회
+ * 8. V2.2 하위 호환: 파트너 시트 간편 조회
  * ========================================================================= */
 function handleLookupPartner_(body) {
-  var name = String(body.owner_name || '').trim();
-  var phone = normalizePhone_(body.phone || '');
+  var name = String(body.owner_name || "").trim();
+  var phone = normalizePhone_(body.phone || "");
   try {
     var ss = getControlSpreadsheet_();
     var sheet = ss ? (ss.getSheetByName(SHEET_NAME_APPROVED_PARTNERS) || ss.getSheetByName(SHEET_NAME_PARTNERS)) : null;
     if (sheet) {
       var rows = sheet.getDataRange().getValues();
       for (var i = 1; i < rows.length; i++) {
-        var rPhone = normalizePhone_(rows[i][2] || rows[i][1] || '');
+        var rPhone = normalizePhone_(rows[i][2] || rows[i][1] || "");
         if ((phone && rPhone === phone) || (name && String(rows[i][1] || rows[i][0]).trim() === name)) {
           return {
             ok: true,
@@ -363,31 +1714,31 @@ function handleLookupPartner_(body) {
             owner_name: rows[i][1] || rows[i][0],
             phone: rPhone,
             channel_name: rows[i][0] || rows[i][2],
-            channel_id_num: String(rows[i][3] || ''),
-            current_plan: 'STARTER'
+            channel_id_num: String(rows[i][3] || ""),
+            current_plan: "STARTER"
           };
         }
       }
     }
   } catch (err) {
-    Logger.log('[lookup_partner] ' + err);
+    Logger.log("[lookup_partner] " + err);
   }
   return {
     ok: true,
     found: false,
     owner_name: name,
-    phone: body.phone || '',
-    channel_name: name ? (name + ' 채널') : '신규 파트너 채널',
-    channel_id_num: '',
-    current_plan: 'STARTER'
+    phone: body.phone || "",
+    channel_name: name ? (name + " 채널") : "신규 파트너 채널",
+    channel_id_num: "",
+    current_plan: "STARTER"
   };
 }
 
 /* =========================================================================
- * 4. Gemini API 프록시 (gemini-3.8-flash 기본 + 실시간 /v1beta/models 동적 탐색 폴백)
+ * 9. Gemini API 프록시 (gemini-3.8-flash 기본 + 실시간 /v1beta/models 동적 탐색 폴백)
  * ========================================================================= */
 function fetchAvailableGeminiModel_(apiKey) {
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models?key=' + encodeURIComponent(apiKey);
+  var url = "https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(apiKey);
   var res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
   if (res.getResponseCode() !== 200) {
     return DEFAULT_GEMINI_MODEL;
@@ -397,9 +1748,9 @@ function fetchAvailableGeminiModel_(apiKey) {
   var candidates = [];
 
   for (var i = 0; i < models.length; i++) {
-    var mName = String(models[i].name || '');
+    var mName = String(models[i].name || "");
     var methods = models[i].supportedGenerationMethods || [];
-    if (mName.indexOf('gemini') === -1 || methods.indexOf('generateContent') === -1) continue;
+    if (mName.indexOf("gemini") === -1 || methods.indexOf("generateContent") === -1) continue;
     if (/embedding|aqa|tts|audio|robotics|image-generation/i.test(mName)) continue;
     candidates.push(mName);
   }
@@ -421,10 +1772,10 @@ function fetchAvailableGeminiModel_(apiKey) {
 }
 
 function invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, maxTokens) {
-  var cleanName = modelName.indexOf('models/') === 0 ? modelName : ('models/' + modelName);
-  var endpoint = 'https://generativelanguage.googleapis.com/v1beta/' + cleanName + ':generateContent?key=' + encodeURIComponent(apiKey);
+  var cleanName = modelName.indexOf("models/") === 0 ? modelName : ("models/" + modelName);
+  var endpoint = "https://generativelanguage.googleapis.com/v1beta/" + cleanName + ":generateContent?key=" + encodeURIComponent(apiKey);
   var payload = {
-    contents: [{ role: 'user', parts: [{ text: promptText }] }],
+    contents: [{ role: "user", parts: [{ text: promptText }] }],
     generationConfig: {
       temperature: temperature !== undefined ? temperature : 0.4,
       maxOutputTokens: maxTokens || 2048
@@ -434,17 +1785,17 @@ function invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temp
     payload.systemInstruction = { parts: [{ text: systemPrompt }] };
   }
   return UrlFetchApp.fetch(endpoint, {
-    method: 'post',
-    contentType: 'application/json; charset=UTF-8',
+    method: "post",
+    contentType: "application/json; charset=UTF-8",
     payload: JSON.stringify(payload),
     muteHttpExceptions: true
   });
 }
 
 function callGemini_(promptText, systemPrompt, temperature, maxTokens) {
-  var apiKey = getProp_('GEMINI_API_KEY', '');
+  var apiKey = getProp_("GEMINI_API_KEY", "");
   if (!apiKey) {
-    throw new Error('스크립트 속성에 GEMINI_API_KEY가 설정되지 않았습니다.');
+    throw new Error("스크립트 속성에 GEMINI_API_KEY가 설정되지 않았습니다.");
   }
   // 1차: gemini-3.8-flash 기본 호출 -> 404/미지원 시 실시간 /v1beta/models 조회로 활성 모델 자동 폴백
   var res = invokeGeminiEndpoint_(apiKey, DEFAULT_GEMINI_MODEL, promptText, systemPrompt, temperature, maxTokens);
@@ -455,28 +1806,36 @@ function callGemini_(promptText, systemPrompt, temperature, maxTokens) {
   var code = res.getResponseCode();
   var text = res.getContentText();
   if (code !== 200) {
-    throw new Error('Gemini API 오류 (HTTP ' + code + '): ' + text.slice(0, 200));
+    var cb = recordCircuitBreakerError_("GEMINI", "HTTP " + code + " " + text.slice(0, 120), -1);
+    if (cb && cb.tripped) {
+      postGoogleChatWebhook_(
+        "[CIRCUIT_BREAKER] Gemini API 3회 연속 오류 감지!\n- HTTP " + code + ": " + text.slice(0, 160),
+        -1
+      );
+    }
+    throw new Error("Gemini API 오류 (HTTP " + code + "): " + text.slice(0, 200));
   }
+  setProp_("GEMINI_CONSECUTIVE_ERRORS", "0");
   var parsed = JSON.parse(text);
   var cand = parsed.candidates && parsed.candidates[0];
   var part = cand && cand.content && cand.content.parts && cand.content.parts[0];
-  return part ? String(part.text || '') : '';
+  return part ? String(part.text || "") : "";
 }
 
 function handleGenerateImageProxy_(body) {
-  var apiKey = getProp_('GEMINI_API_KEY', '');
+  var apiKey = getProp_("GEMINI_API_KEY", "");
   if (!apiKey) {
-    return { ok: false, error: '스크립트 속성에 GEMINI_API_KEY가 설정되지 않았습니다.' };
+    return { ok: false, error: "스크립트 속성에 GEMINI_API_KEY가 설정되지 않았습니다." };
   }
-  var promptText = String(body.prompt || '');
-  var aspectRatio = String(body.aspectRatio || '16:9');
-  var imagenModels = ['models/imagen-4.0-generate-001', 'models/imagen-3.0-generate-002'];
+  var promptText = String(body.prompt || "");
+  var aspectRatio = String(body.aspectRatio || "16:9");
+  var imagenModels = ["models/imagen-4.0-generate-001", "models/imagen-3.0-generate-002"];
 
   for (var i = 0; i < imagenModels.length; i++) {
-    var ep = 'https://generativelanguage.googleapis.com/v1beta/' + imagenModels[i] + ':predict?key=' + encodeURIComponent(apiKey);
+    var ep = "https://generativelanguage.googleapis.com/v1beta/" + imagenModels[i] + ":predict?key=" + encodeURIComponent(apiKey);
     var res = UrlFetchApp.fetch(ep, {
-      method: 'post',
-      contentType: 'application/json; charset=UTF-8',
+      method: "post",
+      contentType: "application/json; charset=UTF-8",
       payload: JSON.stringify({
         instances: [{ prompt: promptText }],
         parameters: { sampleCount: 1, aspectRatio: aspectRatio }
@@ -488,17 +1847,17 @@ function handleGenerateImageProxy_(body) {
       var pred = (d.predictions && d.predictions[0]) || (d.generatedImages && d.generatedImages[0]);
       var b64 = pred && (pred.bytesBase64Encoded || (pred.image && (pred.image.bytesBase64Encoded || pred.image.imageBytes)));
       if (b64) {
-        return { ok: true, dataUrl: 'data:image/png;base64,' + b64, engine: imagenModels[i] };
+        return { ok: true, dataUrl: "data:image/png;base64," + b64, engine: imagenModels[i] };
       }
     }
   }
-  return { ok: false, error: '사용 가능한 이미지 생성 모델을 찾을 수 없습니다.' };
+  return { ok: false, error: "사용 가능한 이미지 생성 모델을 찾을 수 없습니다." };
 }
 
 function extractJsonSafe_(rawText) {
-  var s = String(rawText || '');
-  var start = s.indexOf('{');
-  var end = s.lastIndexOf('}');
+  var s = String(rawText || "");
+  var start = s.indexOf("{");
+  var end = s.lastIndexOf("}");
   if (start === -1 || end === -1 || end <= start) return null;
   try {
     return JSON.parse(s.slice(start, end + 1));
@@ -508,22 +1867,22 @@ function extractJsonSafe_(rawText) {
 }
 
 function handleChatProxy_(body) {
-  var userText = String(body.userText || '');
-  var sys = String(body.systemPrompt || '당신은 고마워톡 전문 컨설턴트입니다. 카카오 알림톡 규정을 준수하여 친절하게 답변하세요.');
+  var userText = String(body.userText || "");
+  var sys = String(body.systemPrompt || "당신은 고마워톡 전문 컨설턴트입니다. 카카오 알림톡 규정을 준수하여 친절하게 답변하세요.");
   var reply = callGemini_(userText, sys, body.temperature, body.maxOutputTokens);
   return { ok: true, reply: reply };
 }
 
 function handlePinpointEdit_(body) {
-  var tabId = String(body.tabId || 'tab1');
-  var instruction = String(body.instruction || '');
+  var tabId = String(body.tabId || "tab1");
+  var instruction = String(body.instruction || "");
   var currentTabJson = JSON.stringify(body.currentData || {});
-  var sys = '당신은 고마워톡 캠페인 카피라이터입니다. 사용자의 수정 지시를 반영해 입력된 JSON과 동일한 구조의 JSON만 반환하세요. 알림톡 금지어(할인, 특가, 이벤트, 무료증정)는 알림톡 영역에 절대 넣지 마세요.';
-  var prompt = '현재 탭(' + tabId + ') 데이터:\n' + currentTabJson + '\n\n수정 지시:\n' + instruction + '\n\n수정된 JSON만 중괄호로 감싸서 출력하세요.';
+  var sys = "당신은 고마워톡 캠페인 카피라이터입니다. 사용자의 수정 지시를 반영해 입력된 JSON과 동일한 구조의 JSON만 반환하세요. 알림톡 금지어(할인, 특가, 이벤트, 무료증정)는 알림톡 영역에 절대 넣지 마세요.";
+  var prompt = "현재 탭(" + tabId + ") 데이터:\n" + currentTabJson + "\n\n수정 지시:\n" + instruction + "\n\n수정된 JSON만 중괄호로 감싸서 출력하세요.";
   var raw = callGemini_(prompt, sys, 0.4, 4096);
   var updated = extractJsonSafe_(raw);
   if (!updated) {
-    return { ok: false, error: 'AI 응답에서 JSON을 추출하지 못했습니다.', raw: raw };
+    return { ok: false, error: "AI 응답에서 JSON을 추출하지 못했습니다.", raw: raw };
   }
   return { ok: true, updatedData: updated };
 }

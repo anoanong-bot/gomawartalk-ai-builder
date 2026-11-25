@@ -1,6 +1,6 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-25 14:43 (KST · **Master PRD V2.3 전 단계 Phase V2.3-1 ~ V2.3-4 코드 시공 및 E2E 검증 완료**)
+- **최종 갱신일시:** 2026-11-25 14:56 (KST · **`Proposal.html` 시각 도식화·Y자 분기 플로우차트·블러 스마트폰 목업 전면 리디자인 완료**)
 - **기준 버전:** Master PRD V2.3 Final (V2.2 As-Built 100% 무손실 보존 + V2.3 카카오싱크 퍼널 · 모바일 제안서 · 유료 조종석 필터 & 포스트잇 전 단계 완결)
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
 - **코드 기준 상태:** V2.3 전 단계 코드 완료 · 전 파일(10/10) V8 구문/보안(비밀키 0건, 금지어 0건, 구형 모델 0건, GAS 백틱 0건)/4단계 E2E 통합 검증 **전원 PASS**
@@ -16,10 +16,9 @@
 2. **Phase V2.3-2 — `InterviewBot.html` & `engines/RagInterviewEngine.js` *(완료)*:**
    - 카카오싱크 OAuth `?code=` 콜백 자동 감지 & 상단 등급·잔여 횟수 배지(`🎯 무료 체험` / `⭐ Starter` / `👑 Pro`) + 잔여 `0`회 한도 초과 차단 게이트
    - `skip_image_gen: true` 텍스트 5대 탭 전용 생성(이미지 생성 비용 0원) + 등급별 듀얼 트랙 완료 화면 분기(가망고객: 제안서 바로 보기/링크 복사 vs 유료 파트너: 즉시 제작 접수 완료)
-3. **Phase V2.3-3 — `Proposal.html` *(신규 구축 완료)*:**
-   - 3중 데이터 로더(실서버 `load_proposal` ➔ 로컬 `localStorage` 브릿지 ➔ 단독 데모 `?demo=1`), 모바일 풀스크린 세로형(`520px`) + PC 좌측 미니 내비 + `IntersectionObserver` 순차 등장
-   - 4단 매출 시뮬레이션(신청페이지·인터랙티브 설문 태그/시트 실시간 부착 ➔ 실제 카톡 `#B2C7DA`/`#FEE500` 알림톡·친구톡·스와이프 캐러셀 ➔ 날짜발송 핀셋 타격·3대 비교 ➔ 이미지 고급 블러·전문가 100% 세팅 배지)
-   - 채팅 응대 0초 무인 확정 폼(`Starter`/`Pro` + `AS_IS` vs `EDIT_ONCE` 1칸 메모 ➔ `confirm_proposal` + `localStorage['gmt_proposal_confirm']` 로컬 브릿지 저장)
+3. **Phase V2.3-3 — `Proposal.html` *(신규 구축 및 클래스101 도식화 리디자인 완료)*:**
+   - 3중 데이터 로더(실서버 `load_proposal` ➔ 로컬 `localStorage` 브릿지 ➔ 단독 데모 `?demo=1`), 영어 라벨 전면 삭제·텍스트 60% 압축·원형 숫자 배지(`1~4`)
+   - 도입 커버(세로 3단 빅 아이콘 화살표 도식도) ➔ ① 블러 대표 이미지 포함 스마트폰 신청페이지 목업 ➔ ② `tab3` 설문 연동 인터랙티브 **Y자 두 갈래 태그 분기 플로우차트** ➔ ③ 세로 스마트폰 미니 타임라인 + 회차별 탭 전환 카톡 말풍선(`#B2C7DA`/`#FEE500`) ➔ ④ 3줄 아이콘 비교 카드 + 무인 확정 폼(`confirm_proposal` + `gmt_proposal_confirm` 브릿지)
 4. **Phase V2.3-4 — `LandingBuilder.html` 유료 전용 필터링 & 수정메모 포스트잇 *(완료)*:**
    - 접수 목록 `doGet(action=list_paid&paidOnly=1)` 유료 등급(`Starter`/`Pro`) 전용 필터링 + 등급/확정상태/수정메모 배지 표시(미결제 `가망고객` 숨김)
    - 상단 `[🚩 95:5 검수 요약 & 고객 1회 수정메모 포스트잇]` 배너 탑재(`AS_IS` 안내 vs `EDIT_ONCE` 강조 포스트잇 + `[☑️ 수정사항 반영 확인]` 체크 토글)

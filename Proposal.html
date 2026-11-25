@@ -3,14 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>고마워톡 맞춤 자동화 제안서</title>
+<title>고마워톡 맞춤 카톡 자동화 설계안</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root {
   --brand: #182232;
   --brand-soft: #EEF2FF;
-  --brand-accent: #2563EB;
-  --brand-accent-dk: #1D4ED8;
+  --purple: #7C3AED;
+  --purple-lt: #F5F3FF;
+  --blue: #2563EB;
+  --blue-dk: #1D4ED8;
+  --blue-lt: #EFF6FF;
   --kakao-bg: #B2C7DA;
   --kakao-yellow: #FEE500;
   --kakao-ink: #191919;
@@ -30,7 +33,7 @@
   --g500: #64748B;
   --g700: #334155;
   --g900: #0F172A;
-  --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 10px 28px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
   --shadow-soft: 0 4px 16px rgba(15, 23, 42, 0.05);
 }
 
@@ -38,19 +41,19 @@
 
 html {
   scroll-behavior: smooth;
-  background: #E8EEF5;
+  background: #EDF1F7;
 }
 
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 18% 10%, rgba(37, 99, 235, 0.08), transparent 36%),
-    radial-gradient(circle at 85% 30%, rgba(15, 23, 42, 0.07), transparent 40%),
-    linear-gradient(180deg, #E7EDF5 0%, #EEF2F7 55%, #E3EAF3 100%);
+    radial-gradient(circle at 18% 8%, rgba(124, 58, 237, 0.07), transparent 36%),
+    radial-gradient(circle at 84% 28%, rgba(37, 99, 235, 0.07), transparent 40%),
+    linear-gradient(180deg, #EDF1F7 0%, #F4F7FB 60%, #EAEFF7 100%);
   color: var(--g900);
   font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   font-size: 15px;
-  line-height: 1.58;
+  line-height: 1.54;
   letter-spacing: -0.02em;
   word-break: keep-all;
   -webkit-font-smoothing: antialiased;
@@ -60,34 +63,31 @@ button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; border: none; background: none; }
 [hidden] { display: none !important; }
 
-/* ═════════ PC 좌측 미니 섹션 점프 내비게이션 (960px 이상에서만 노출) ═════════ */
-.pc-rail {
-  display: none;
-}
+/* ═════════ PC 좌측 미니 섹션 점프 내비게이션 (980px 이상) ═════════ */
+.pc-rail { display: none; }
 @media (min-width: 980px) {
   .pc-rail {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
     position: fixed;
-    top: 96px;
+    top: 92px;
     left: max(24px, calc(50% - 260px - 224px));
     width: 196px;
-    padding: 16px 14px;
+    padding: 15px 13px;
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.84);
+    background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(15, 23, 42, 0.07);
     box-shadow: var(--shadow-card);
     z-index: 30;
   }
   .pc-rail-title {
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 800;
     color: var(--g500);
-    letter-spacing: 0.02em;
-    padding: 0 8px 6px;
+    padding: 0 8px 7px;
     border-bottom: 1px solid var(--g200);
     margin-bottom: 2px;
   }
@@ -103,62 +103,58 @@ button { cursor: pointer; border: none; background: none; }
     text-decoration: none;
     transition: all 0.16s ease;
   }
-  .pc-rail-link:hover {
-    background: var(--g100);
-    color: var(--g900);
-  }
+  .pc-rail-link:hover { background: var(--g100); color: var(--g900); }
   .pc-rail-link.active {
-    background: var(--brand);
+    background: var(--purple);
     color: #FFFFFF;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.24);
   }
   .pc-rail-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
     background: currentColor;
-    opacity: 0.65;
+    opacity: 0.7;
     flex-shrink: 0;
   }
 }
 
-/* ═════════ 모바일 풀스크린 세로형 메인 셸 (max-width: 520px) ═════════ */
+/* ═════════ 모바일 퍼스트 중앙 컨테이너 (max-width: 520px) ═════════ */
 .proposal-shell {
   width: 100%;
   max-width: 520px;
   min-height: 100vh;
   margin: 0 auto;
-  background: #F7F9FC;
+  background: #FFFFFF;
   position: relative;
-  box-shadow: 0 0 48px rgba(15, 23, 42, 0.12);
-  padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 0 48px rgba(15, 23, 42, 0.1);
+  padding-bottom: calc(102px + env(safe-area-inset-bottom, 0px));
 }
 
-/* ═════════ 상단 고정 헤더 바 ═════════ */
+/* ═════════ 상단 고정 바 ═════════ */
 .top-bar {
   position: sticky;
   top: 0;
   z-index: 40;
-  height: 58px;
+  height: 56px;
   padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(15, 23, 42, 0.07);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
 }
 .top-brand-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
-  padding: 5px 11px 5px 7px;
+  padding: 5px 11px 5px 6px;
   border-radius: 99px;
   background: var(--g100);
-  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 .top-brand-dot {
   width: 22px;
@@ -173,11 +169,7 @@ button { cursor: pointer; border: none; background: none; }
   flex-shrink: 0;
   overflow: hidden;
 }
-.top-brand-dot img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.top-brand-dot img { width: 100%; height: 100%; object-fit: cover; }
 .top-brand-text {
   font-size: 12.5px;
   font-weight: 800;
@@ -197,15 +189,13 @@ button { cursor: pointer; border: none; background: none; }
   color: #FFFFFF;
   font-size: 12px;
   font-weight: 800;
-  transition: transform 0.12s ease, opacity 0.15s ease;
 }
 .btn-top-share:active { transform: scale(0.96); }
 
-/* 토스트 알림 */
 .floating-toast {
   position: fixed;
   left: 50%;
-  top: 68px;
+  top: 66px;
   transform: translateX(-50%) translateY(-8px);
   z-index: 120;
   background: rgba(15, 23, 42, 0.94);
@@ -223,17 +213,13 @@ button { cursor: pointer; border: none; background: none; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.floating-toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
+.floating-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* 데이터 소스 안내 리본 (로컬/데모 모드일 때만 미묘하게 표시) */
 .source-ribbon {
   padding: 8px 16px;
-  background: #EFF6FF;
-  border-bottom: 1px solid #DBEAFE;
-  color: #1E40AF;
+  background: #F5F3FF;
+  border-bottom: 1px solid #EDE9FE;
+  color: #5B21B6;
   font-size: 12px;
   font-weight: 700;
   display: flex;
@@ -242,7 +228,6 @@ button { cursor: pointer; border: none; background: none; }
   gap: 8px;
 }
 
-/* 로딩 오버레이 */
 .loading-screen {
   min-height: 70vh;
   display: flex;
@@ -254,414 +239,678 @@ button { cursor: pointer; border: none; background: none; }
   text-align: center;
 }
 .spinner {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: 3.5px solid var(--g200);
-  border-top-color: var(--brand-accent);
+  border-top-color: var(--purple);
   animation: spin 0.75s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ═════════ 스크롤 순차 등장 (IntersectionObserver) ═════════ */
+/* ═════════ 스크롤 순차 등장 ═════════ */
 .reveal {
   opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.58s cubic-bezier(0.22, 1, 0.36, 1), transform 0.58s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(20px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.reveal.in {
-  opacity: 1;
-  transform: translateY(0);
-}
+.reveal.in { opacity: 1; transform: translateY(0); }
 .reveal.delay-1 { transition-delay: 0.08s; }
 .reveal.delay-2 { transition-delay: 0.16s; }
 .reveal.delay-3 { transition-delay: 0.24s; }
 
-/* ═════════ 도입 커버 (Hero Cover) ═════════ */
+/* ═════════ [도입 커버] 참고 이미지 1 스타일: 깔끔한 한글 타이틀 + 세로 3단 빅 아이콘 도식도 ═════════ */
 .cover-section {
-  position: relative;
-  padding: 34px 22px 32px;
-  background: linear-gradient(155deg, var(--brand) 0%, #0F172A 100%);
-  color: #FFFFFF;
-  overflow: hidden;
+  padding: 34px 22px 36px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+  border-bottom: 8px solid #F1F5F9;
 }
-.cover-section::after {
-  content: "";
-  position: absolute;
-  right: -60px;
-  top: -60px;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.14), transparent 70%);
-  pointer-events: none;
-}
-.cover-brand-row {
+.cover-meta-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 8px;
+  margin-bottom: 14px;
 }
-.cover-logo-box {
+.cover-logo-chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.13);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  font-size: 13px;
+  gap: 7px;
+  padding: 5px 11px;
+  border-radius: 99px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 12px;
   font-weight: 800;
-  color: #FFFFFF;
 }
-.cover-logo-box img {
-  height: 22px;
-  max-width: 90px;
+.cover-logo-chip img {
+  height: 18px;
+  max-width: 78px;
   object-fit: contain;
-  background: #FFFFFF;
-  padding: 2px 5px;
-  border-radius: 5px;
+  border-radius: 3px;
 }
-.cover-industry-chip {
+.cover-ind-chip {
   padding: 5px 10px;
   border-radius: 99px;
-  background: rgba(254, 229, 0, 0.18);
-  color: #FEF08A;
-  border: 1px solid rgba(254, 229, 0, 0.32);
+  background: var(--g100);
+  color: var(--g700);
   font-size: 11.5px;
   font-weight: 800;
 }
-.cover-eyebrow {
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.78);
-  margin-bottom: 8px;
-}
 .cover-title {
   font-size: 26px;
-  font-weight: 800;
-  line-height: 1.33;
-  letter-spacing: -0.028em;
-  color: #FFFFFF;
+  font-weight: 900;
+  line-height: 1.32;
+  color: var(--g900);
+  letter-spacing: -0.03em;
 }
-.cover-title .hl {
-  color: #FEF08A;
-}
+.cover-title .hl { color: var(--brand); }
 .cover-sub {
-  margin-top: 12px;
+  margin-top: 9px;
   font-size: 14.5px;
-  color: rgba(255, 255, 255, 0.84);
-  line-height: 1.56;
-}
-.cover-pipeline-strip {
-  margin-top: 22px;
-  padding: 14px 14px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-.cover-pipe-item {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.cover-pipe-step {
-  font-size: 10.5px;
-  font-weight: 800;
-  color: #93C5FD;
-}
-.cover-pipe-label {
-  font-size: 12.5px;
-  font-weight: 800;
-  color: #FFFFFF;
-  line-height: 1.3;
-}
-.cover-scroll-cue {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--g500);
+  line-height: 1.52;
 }
 
-/* ═════════ 공통 섹션 레이아웃 ═════════ */
-.stage-section {
-  padding: 34px 18px 10px;
+/* 세로 3단 빅 아이콘 화살표 도식도 (참고 이미지 1번 스타일) */
+.big-flow-diagram {
+  margin-top: 26px;
+  padding: 24px 18px;
+  border-radius: 24px;
+  background: #FFFFFF;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  gap: 8px;
 }
-.sec-eyebrow {
-  font-size: 12.5px;
-  font-weight: 800;
-  color: var(--brand);
-  letter-spacing: 0.01em;
+.big-flow-step {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 6px 8px;
+}
+.big-flow-svg {
+  width: 82px;
+  height: 76px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 8px 14px rgba(15, 23, 42, 0.14));
+}
+.big-flow-copy {
+  flex: 1;
+  min-width: 0;
+}
+.big-flow-copy h3 {
+  font-size: 17.5px;
+  font-weight: 900;
+  color: var(--g900);
+  line-height: 1.3;
+}
+.big-flow-copy p {
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--g500);
+}
+.big-flow-arrow {
+  width: 82px;
+  margin-right: auto;
+  margin-left: calc(50% - 180px + 8px);
+  display: flex;
+  justify-content: center;
+  padding: 1px 0;
+}
+@media (max-width: 410px) {
+  .big-flow-arrow { margin-left: 8px; }
+}
+
+/* ═════════ 공통 섹션 헤더 (영어 삭제 · 원형 숫자 배지 1~4 + 쉬운 한글 제목) ═════════ */
+.stage-section {
+  padding: 38px 20px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border-bottom: 8px solid #F1F5F9;
+  background: #FFFFFF;
+}
+.stage-section.alt-bg {
+  background: #F7F9FC;
+}
+.sec-head-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+.sec-num-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.28);
 }
 .sec-title {
-  margin-top: 4px;
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 21.5px;
+  font-weight: 900;
   line-height: 1.34;
   color: var(--g900);
   letter-spacing: -0.025em;
 }
 .sec-desc {
-  margin-top: 6px;
   font-size: 14px;
   color: var(--g500);
-  line-height: 1.54;
+  line-height: 1.5;
+  max-width: 390px;
 }
 
-.e-card {
+/* ═════════ [섹션 ①] 스마트폰 목업 + 블러 대표 이미지 슬롯 ═════════ */
+.phone-mockup-wrap {
+  width: 100%;
+  max-width: 344px;
+  margin: 2px auto 0;
+  padding: 9px;
+  border-radius: 36px;
+  background: linear-gradient(160deg, #1E293B 0%, #0F172A 100%);
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+.phone-screen {
   background: #FFFFFF;
-  border-radius: 22px;
-  padding: 20px 18px;
-  border: 1px solid rgba(15, 23, 42, 0.06);
-  box-shadow: var(--shadow-card);
+  border-radius: 28px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 14px;
 }
-
-/* ═════════ [1단] 맞춤 신청페이지 & 인터랙티브 설문 태그 시뮬레이션 ═════════ */
-.phone-preview-card {
-  border-radius: 22px;
-  overflow: hidden;
+.phone-notch-bar {
+  height: 24px;
   background: #FFFFFF;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.phone-topbar {
-  padding: 11px 16px;
-  background: #FFFFFF;
+.phone-notch-pill {
+  width: 72px;
+  height: 6px;
+  border-radius: 99px;
+  background: #E2E8F0;
+}
+.phone-app-bar {
+  padding: 6px 14px 10px;
   border-bottom: 1px solid var(--g100);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 800;
   color: var(--g700);
 }
-.phone-live-dot {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+.phone-app-bar .live-tag {
   color: var(--green);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
 }
-.phone-live-dot::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--green);
-}
-.landing-hero-preview {
-  padding: 22px 18px;
-  background: linear-gradient(180deg, var(--brand-soft) 0%, #FFFFFF 100%);
+
+/* 블러(BLUR) 대표 이미지 슬롯 */
+.blur-hero-slot {
+  position: relative;
+  height: 162px;
+  overflow: hidden;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
 }
-.lp-tag {
+.blur-visual-art {
+  position: absolute;
+  inset: -14px;
+  background:
+    radial-gradient(circle at 22% 26%, #FDE047 0%, transparent 44%),
+    radial-gradient(circle at 78% 28%, #60A5FA 0%, transparent 48%),
+    radial-gradient(circle at 52% 84%, #A78BFA 0%, transparent 50%),
+    linear-gradient(135deg, var(--brand) 0%, #334155 100%);
+  filter: blur(14px) saturate(1.25);
+  transform: scale(1.1);
+}
+.blur-visual-shapes {
+  position: absolute;
+  inset: 0;
+  opacity: 0.42;
+  filter: blur(6px);
+  pointer-events: none;
+}
+.blur-hero-pill {
+  position: relative;
+  z-index: 2;
+  padding: 9px 15px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--g900);
   font-size: 12px;
   font-weight: 800;
-  color: var(--brand);
+  text-align: center;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  line-height: 1.35;
 }
-.lp-title {
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.36;
+
+.phone-copy-area {
+  padding: 16px 15px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.phone-headline {
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.35;
   color: var(--g900);
   white-space: pre-line;
 }
-.lp-sub {
-  font-size: 13.5px;
-  color: var(--g700);
-  line-height: 1.5;
-}
-.lp-points {
-  margin-top: 4px;
+.phone-check-list {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
 }
-.lp-point-item {
+.phone-check-item {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 13px;
-  background: #F8FAFC;
-  border: 1px solid rgba(15, 23, 42, 0.05);
-  font-size: 13px;
-  font-weight: 600;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--g50);
+  font-size: 12.5px;
+  font-weight: 700;
   color: var(--g900);
-  line-height: 1.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.lp-check {
-  color: var(--brand);
+.phone-check-icon {
+  color: var(--purple);
   font-weight: 900;
   flex-shrink: 0;
 }
-.lp-cta-mock {
-  margin: 0 18px 18px;
-  padding: 13px 16px;
-  border-radius: 13px;
-  background: var(--brand);
-  color: #FFFFFF;
-  font-size: 14px;
-  font-weight: 800;
-  text-align: center;
-}
 
-/* 인터랙티브 설문 ➔ 태그 & 시트 자동 부착 카드 */
-.sim-form-head {
+/* 중간 BLUR 시각 자료 슬롯 */
+.blur-mid-slot {
+  position: relative;
+  height: 82px;
+  border-radius: 12px;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: center;
+  padding: 10px;
 }
-.sim-touch-badge {
-  padding: 4px 10px;
+.blur-mid-art {
+  position: absolute;
+  inset: -12px;
+  background:
+    radial-gradient(circle at 25% 50%, #34D399 0%, transparent 50%),
+    radial-gradient(circle at 75% 40%, #818CF8 0%, transparent 55%),
+    linear-gradient(120deg, #1E293B 0%, var(--brand) 100%);
+  filter: blur(14px) saturate(1.2);
+}
+.blur-mid-pill {
+  position: relative;
+  z-index: 2;
+  padding: 6px 12px;
   border-radius: 99px;
-  background: #EFF6FF;
-  color: var(--brand-accent-dk);
-  font-size: 11.5px;
-  font-weight: 800;
-}
-.sim-q-title {
-  font-size: 15.5px;
-  font-weight: 800;
+  background: rgba(255, 255, 255, 0.9);
   color: var(--g900);
-  line-height: 1.42;
-}
-.sim-options-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.sim-opt-btn {
-  width: 100%;
-  padding: 13px 14px;
-  border-radius: 14px;
-  border: 1.5px solid var(--g200);
-  background: var(--g50);
-  text-align: left;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  transition: all 0.16s ease;
-}
-.sim-opt-btn:hover { border-color: #93C5FD; }
-.sim-opt-btn.selected {
-  border-color: var(--brand-accent);
-  background: #EFF6FF;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
-}
-.sim-opt-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--g900);
-}
-.sim-radio {
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  border: 2px solid var(--g300);
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  background: #FFFFFF;
-}
-.sim-opt-btn.selected .sim-radio {
-  border-color: var(--brand-accent);
-}
-.sim-opt-btn.selected .sim-radio::after {
-  content: "";
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--brand-accent);
-}
-.sim-opt-hint {
   font-size: 11px;
   font-weight: 800;
-  color: var(--g400);
-  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.16);
 }
-.sim-opt-btn.selected .sim-opt-hint { color: var(--brand-accent-dk); }
 
-.tag-snap-result {
-  padding: 14px;
-  border-radius: 15px;
-  background: #0F172A;
-  color: #FFFFFF;
+.phone-kakao-cta {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: var(--kakao-yellow);
+  color: var(--kakao-ink);
+  font-size: 13.5px;
+  font-weight: 900;
+  text-align: center;
+  box-shadow: 0 5px 14px rgba(254, 229, 0, 0.45);
+}
+
+/* ═════════ [섹션 ②] Y자 두 갈래 분기 플로우차트 (참고 이미지 3번 스타일 100% 구현) ═════════ */
+.y-chart-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 24px 14px 22px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  animation: snapPop 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-}
-@keyframes snapPop {
-  from { opacity: 0.4; transform: scale(0.97); }
-  to { opacity: 1; transform: scale(1); }
-}
-.tag-snap-caption {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #94A3B8;
-}
-.tag-snap-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-.snap-chip {
-  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 11px;
-  border-radius: 99px;
-  font-size: 12.5px;
+}
+.y-node-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: var(--g50);
+  border: 1.5px solid var(--g200);
+  max-width: 310px;
+}
+.y-node-top b {
+  font-size: 14.5px;
+  font-weight: 900;
+  color: var(--g900);
+  line-height: 1.32;
+}
+.y-arrow-down {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+.y-q-node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: #FFFBEB;
+  border: 1.5px solid #FDE68A;
+  max-width: 340px;
+  text-align: left;
+}
+.y-q-node .yq-kicker {
+  display: block;
+  font-size: 11px;
   font-weight: 800;
+  color: #B45309;
 }
-.snap-chip.tag {
-  background: rgba(254, 229, 0, 0.18);
-  color: #FEF08A;
-  border: 1px solid rgba(254, 229, 0, 0.35);
+.y-q-node b {
+  display: block;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--g900);
+  line-height: 1.32;
 }
-.snap-chip.sheet {
-  background: rgba(96, 165, 250, 0.2);
-  color: #BFDBFE;
-  border: 1px solid rgba(96, 165, 250, 0.35);
-}
-.tag-snap-note {
-  font-size: 12px;
-  color: #CBD5E1;
-  line-height: 1.48;
+.y-split-svg {
+  width: 100%;
+  max-width: 320px;
+  height: 36px;
+  display: block;
 }
 
-/* ═════════ [2단] 실제 카카오톡 채팅방 UI 시뮬레이션 (#B2C7DA & #FEE500) ═════════ */
-.kakao-phone-frame {
+.y-branches-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.y-branch-col {
+  border-radius: 18px;
+  padding: 13px 10px 14px;
+  border: 2px solid var(--g200);
+  background: #FAFCFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.y-branch-col:hover { border-color: #C4B5FD; }
+.y-branch-col.selected {
+  border-color: var(--purple);
+  background: #F5F3FF;
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.16);
+  transform: translateY(-2px);
+}
+.y-branch-pick-pill {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 800;
+  background: var(--g200);
+  color: var(--g500);
+}
+.y-branch-col.selected .y-branch-pick-pill {
+  background: var(--purple);
+  color: #FFFFFF;
+}
+.y-branch-title {
+  font-size: 13.5px;
+  font-weight: 900;
+  color: var(--g900);
+  line-height: 1.3;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.y-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 9px;
+  border-radius: 99px;
+  background: #0F172A;
+  color: #FEF08A;
+  font-size: 11.5px;
+  font-weight: 800;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.y-mini-arrow {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--g700);
+  line-height: 1;
+}
+.y-msg-box {
+  width: 100%;
+  padding: 9px 8px;
+  border-radius: 12px;
+  background: #FFFFFF;
+  border: 1px solid var(--g200);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.y-msg-box span {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--g700);
+  line-height: 1.34;
+}
+
+.y-merge-svg {
+  width: 100%;
+  max-width: 320px;
+  height: 38px;
+  display: block;
+}
+.y-goal-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #FEF9C3 0%, #FFFBEB 100%);
+  border: 2px solid #FACC15;
+  text-align: center;
+  width: 100%;
+  max-width: 310px;
+}
+.y-goal-node b {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--g900);
+  line-height: 1.34;
+}
+.y-goal-node small {
+  font-size: 12px;
+  font-weight: 700;
+  color: #92400E;
+}
+.y-extra-opts {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+.y-extra-btn {
+  padding: 5px 11px;
+  border-radius: 99px;
+  font-size: 11.5px;
+  font-weight: 800;
+  background: var(--g100);
+  color: var(--g700);
+  border: 1px solid var(--g200);
+}
+.y-extra-btn.selected {
+  background: var(--purple);
+  color: #FFFFFF;
+  border-color: var(--purple);
+}
+.y-live-hint {
+  margin-top: 12px;
+  padding: 8px 13px;
+  border-radius: 11px;
+  background: #F5F3FF;
+  color: #5B21B6;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  width: 100%;
+}
+
+/* ═════════ [섹션 ③] 시간순 스마트폰 타임라인 도식 (참고 이미지 2번) + 카톡 말풍선 탭 ═════════ */
+.phone-timeline-card {
+  background: #FFFFFF;
   border-radius: 24px;
+  padding: 22px 18px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.tl-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 6px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.tl-row:hover { background: var(--g50); }
+.tl-row.active { background: #F5F3FF; }
+.tl-phone-col {
+  width: 112px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.tl-time-badge {
+  font-size: 11.5px;
+  font-weight: 900;
+  color: var(--g900);
+  background: var(--g100);
+  padding: 2px 9px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+.tl-row.active .tl-time-badge {
+  background: var(--purple);
+  color: #FFFFFF;
+}
+.tl-copy-col {
+  flex: 1;
+  min-width: 0;
+}
+.tl-copy-col h4 {
+  font-size: 15.5px;
+  font-weight: 900;
+  color: var(--g900);
+  line-height: 1.32;
+}
+.tl-copy-col p {
+  margin-top: 3px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--g500);
+  line-height: 1.44;
+}
+.tl-arrow-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 48px;
+  gap: 8px;
+}
+.tl-arrow-tag {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--purple);
+}
+
+/* 카톡 말풍선 3회차 탭 전환 */
+.kk-tab-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+.kk-tab-btn {
+  padding: 11px 6px;
+  border-radius: 13px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--g200);
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--g500);
+  text-align: center;
+  transition: all 0.15s ease;
+}
+.kk-tab-btn.active {
+  background: var(--g900);
+  border-color: var(--g900);
+  color: #FFFFFF;
+  box-shadow: 0 5px 14px rgba(15, 23, 42, 0.16);
+}
+
+/* 실제 카카오톡 채팅방 프레임 (#B2C7DA & #FEE500) */
+.kakao-phone-frame {
+  border-radius: 22px;
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.12);
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.13);
   background: var(--kakao-bg);
 }
 .kakao-chat-header {
-  height: 52px;
+  height: 48px;
   padding: 0 14px;
   background: rgba(178, 199, 218, 0.96);
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
@@ -673,8 +922,8 @@ button { cursor: pointer; border: none; background: none; }
 .kk-head-left {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 15px;
+  gap: 8px;
+  font-size: 14.5px;
   font-weight: 800;
   min-width: 0;
 }
@@ -682,32 +931,27 @@ button { cursor: pointer; border: none; background: none; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #2563EB;
   color: #FFFFFF;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 900;
   flex-shrink: 0;
 }
-.kk-head-right {
-  font-size: 12px;
-  font-weight: 700;
-  color: rgba(25, 25, 25, 0.65);
-}
 .kakao-chat-body {
-  padding: 16px 13px 20px;
+  padding: 15px 13px 18px;
   background: var(--kakao-bg);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 .kk-date-divider {
   align-self: center;
-  padding: 4px 12px;
+  padding: 4px 11px;
   border-radius: 99px;
-  background: rgba(15, 23, 42, 0.18);
+  background: rgba(15, 23, 42, 0.2);
   color: #FFFFFF;
   font-size: 11px;
   font-weight: 700;
@@ -718,18 +962,17 @@ button { cursor: pointer; border: none; background: none; }
   gap: 8px;
 }
 .kk-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 13px;
   background: var(--brand);
   color: #FFFFFF;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 800;
   display: grid;
   place-items: center;
   flex-shrink: 0;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
 }
 .kk-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .kk-msg-col {
@@ -759,11 +1002,9 @@ button { cursor: pointer; border: none; background: none; }
   white-space: nowrap;
   flex-shrink: 0;
 }
-
-/* 알림톡 카드 (#FEE500 노란 헤더 + 채널추가 버튼) */
-.kk-alimtalk-card {
+.kk-alimtalk-card, .kk-friend-card {
   width: 100%;
-  max-width: 286px;
+  max-width: 288px;
   border-radius: 14px;
   overflow: hidden;
   background: #FFFFFF;
@@ -778,13 +1019,7 @@ button { cursor: pointer; border: none; background: none; }
   justify-content: space-between;
   gap: 8px;
 }
-.kk-alimtalk-label {
-  font-size: 12px;
-  font-weight: 800;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
+.kk-alimtalk-label { font-size: 12px; font-weight: 800; }
 .kk-ch-add-pill {
   padding: 3px 8px;
   border-radius: 99px;
@@ -792,27 +1027,21 @@ button { cursor: pointer; border: none; background: none; }
   color: var(--kakao-yellow);
   font-size: 10.5px;
   font-weight: 800;
-  white-space: nowrap;
 }
 .kk-card-body {
-  padding: 13px 13px 12px;
+  padding: 13px 13px 11px;
   font-size: 13px;
-  line-height: 1.54;
+  line-height: 1.52;
   color: #191919;
   white-space: pre-line;
 }
-.kk-card-title {
-  font-size: 14px;
-  font-weight: 800;
-  color: #111827;
-  margin-bottom: 6px;
-}
+.kk-card-title { font-size: 14px; font-weight: 800; color: #111827; margin-bottom: 5px; }
 .kk-var {
   display: inline;
   padding: 1px 5px;
   border-radius: 5px;
-  background: #EFF6FF;
-  color: #1D4ED8;
+  background: #F5F3FF;
+  color: #5B21B6;
   font-weight: 800;
 }
 .kk-card-btns {
@@ -823,7 +1052,7 @@ button { cursor: pointer; border: none; background: none; }
 }
 .kk-btn-mock {
   width: 100%;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border-radius: 9px;
   background: #F3F4F6;
   border: 1px solid #E5E7EB;
@@ -832,22 +1061,12 @@ button { cursor: pointer; border: none; background: none; }
   font-weight: 800;
   text-align: center;
 }
-
-/* 친구톡 카드 */
-.kk-friend-card {
-  width: 100%;
-  max-width: 286px;
-  border-radius: 14px;
-  overflow: hidden;
-  background: #FFFFFF;
-  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
-}
 .kk-friend-banner {
   position: relative;
-  height: 134px;
-  padding: 14px;
+  height: 118px;
+  padding: 12px;
   background:
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.25), transparent 50%),
+    radial-gradient(circle at 20% 20%, rgba(254, 229, 0, 0.35), transparent 50%),
     linear-gradient(135deg, var(--brand) 0%, #334155 100%);
   color: #FFFFFF;
   display: flex;
@@ -861,17 +1080,10 @@ button { cursor: pointer; border: none; background: none; }
   inset: 0;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background: rgba(15, 23, 42, 0.18);
+  background: rgba(15, 23, 42, 0.22);
 }
 .kk-friend-banner > * { position: relative; z-index: 1; }
-.kk-ad-badge {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--g500);
-  padding: 10px 13px 0;
-}
-
-/* 가로 스와이프 가능한 브랜드 캐러셀 */
+.kk-ad-badge { font-size: 10.5px; font-weight: 700; color: var(--g500); padding: 9px 13px 0; }
 .kk-carousel-track {
   display: flex;
   gap: 10px;
@@ -880,10 +1092,8 @@ button { cursor: pointer; border: none; background: none; }
   padding: 2px 2px 8px;
   -webkit-overflow-scrolling: touch;
 }
-.kk-carousel-track::-webkit-scrollbar { height: 5px; }
-.kk-carousel-track::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.2); border-radius: 99px; }
 .kk-carousel-card {
-  flex: 0 0 236px;
+  flex: 0 0 232px;
   scroll-snap-align: start;
   border-radius: 14px;
   overflow: hidden;
@@ -893,314 +1103,148 @@ button { cursor: pointer; border: none; background: none; }
   flex-direction: column;
 }
 .kk-carousel-thumb {
-  height: 112px;
-  padding: 12px;
+  height: 98px;
+  padding: 11px;
   background: linear-gradient(135deg, #1E293B 0%, var(--brand) 100%);
   color: #FFFFFF;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
 }
 .kk-carousel-body {
   padding: 11px 12px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
-.kk-carousel-body h4 {
-  font-size: 13.5px;
-  font-weight: 800;
-  color: #111827;
-  line-height: 1.32;
-}
-.kk-carousel-body p {
-  font-size: 12px;
-  color: #4B5563;
-  line-height: 1.46;
-}
-.kk-swipe-hint {
-  font-size: 11px;
-  font-weight: 800;
-  color: #1E3A5F;
-  margin-top: -2px;
-}
-
-/* 도달 보장 강조 배너 */
-.rescue-callout {
-  padding: 14px 15px;
-  border-radius: 16px;
-  background: #FFFBEB;
-  border: 1.5px solid #FDE68A;
-  color: #78350F;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.52;
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-}
-.rescue-callout strong { color: #92400E; font-weight: 900; }
-
-/* ═════════ [3단] 날짜발송 핀셋 타격 & 고마워톡 독점 가치 비교 ═════════ */
-.pinpoint-card {
-  background: linear-gradient(160deg, #0F172A 0%, #1E293B 100%);
-  color: #FFFFFF;
-  border-radius: 22px;
-  padding: 20px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
-}
-.pinpoint-meta-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.pin-pill {
-  padding: 4px 10px;
+.kk-carousel-body h4 { font-size: 13.5px; font-weight: 800; color: #111827; line-height: 1.3; }
+.kk-carousel-body p { font-size: 12px; color: #4B5563; line-height: 1.44; }
+.kk-blur-pill {
+  align-self: flex-start;
+  padding: 3px 8px;
   border-radius: 99px;
-  font-size: 11.5px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #0F172A;
+  font-size: 10px;
   font-weight: 800;
 }
-.pin-pill.date { background: rgba(96, 165, 250, 0.22); color: #BFDBFE; }
-.pin-pill.target { background: rgba(254, 229, 0, 0.2); color: #FEF08A; }
-.pinpoint-msg-box {
-  padding: 14px;
+.rescue-mini-box {
+  padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  color: #78350F;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.48;
+  text-align: center;
 }
-.pinpoint-msg-box h4 { font-size: 15px; font-weight: 800; color: #FFFFFF; }
-.pinpoint-msg-box p { font-size: 13px; color: #E2E8F0; line-height: 1.52; }
 
-.compare-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 11px;
-}
-.compare-item {
-  background: #FFFFFF;
-  border-radius: 18px;
-  padding: 16px;
-  border: 1px solid rgba(15, 23, 42, 0.06);
-  box-shadow: var(--shadow-soft);
+/* ═════════ [섹션 ④] 3줄 아이콘 카드 + 무인 확정 폼 ═════════ */
+.diff-cards {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.compare-num {
-  font-size: 12px;
-  font-weight: 900;
-  color: var(--brand-accent);
-}
-.compare-title {
-  font-size: 15.5px;
-  font-weight: 800;
-  color: var(--g900);
-  line-height: 1.36;
-}
-.compare-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 7px;
-}
-.cmp-row {
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-size: 12.5px;
-  line-height: 1.46;
-}
-.cmp-row.old {
-  background: var(--g100);
-  color: var(--g500);
-}
-.cmp-row.old b { color: var(--g700); }
-.cmp-row.gmt {
-  background: #EFF6FF;
-  color: #1E3A8A;
-  border: 1px solid #BFDBFE;
-  font-weight: 700;
-}
-.cmp-row.gmt b { color: #1D4ED8; }
-
-/* ═════════ [4단] 이미지 슬롯 고급 블러 & 전문가 100% 세팅 가치 ═════════ */
-.blur-showcase-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.blur-slot-card {
-  position: relative;
-  height: 162px;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow: var(--shadow-soft);
+.diff-card {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 18px;
+  gap: 14px;
+  padding: 16px 15px;
+  border-radius: 18px;
+  background: #FFFFFF;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: var(--shadow-soft);
 }
-.blur-bg-mesh {
-  position: absolute;
-  inset: -14px;
-  filter: blur(18px) saturate(1.15);
-  transform: scale(1.08);
+.diff-icon-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 24px;
 }
-.blur-bg-mesh.s1 {
-  background:
-    radial-gradient(circle at 22% 28%, rgba(254, 229, 0, 0.35), transparent 46%),
-    radial-gradient(circle at 78% 72%, rgba(96, 165, 250, 0.45), transparent 50%),
-    linear-gradient(135deg, var(--brand) 0%, #334155 100%);
+.diff-icon-badge.c1 { background: #FEF9C3; border: 1px solid #FDE047; }
+.diff-icon-badge.c2 { background: #F5F3FF; border: 1px solid #DDD6FE; }
+.diff-icon-badge.c3 { background: #ECFDF5; border: 1px solid #A7F3D0; }
+.diff-copy h4 {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--g900);
+  line-height: 1.32;
 }
-.blur-bg-mesh.s2 {
-  background:
-    radial-gradient(circle at 74% 25%, rgba(167, 243, 208, 0.48), transparent 48%),
-    radial-gradient(circle at 25% 75%, rgba(129, 140, 248, 0.45), transparent 52%),
-    linear-gradient(145deg, #1E293B 0%, var(--brand) 100%);
-}
-.blur-bg-mesh.s3 {
-  background:
-    radial-gradient(circle at 30% 30%, rgba(253, 230, 138, 0.44), transparent 45%),
-    radial-gradient(circle at 80% 65%, rgba(147, 197, 253, 0.45), transparent 50%),
-    linear-gradient(135deg, #0F172A 0%, #475569 100%);
-}
-.blur-glass-overlay {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 15px;
-  background: rgba(15, 23, 42, 0.56);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  color: #FFFFFF;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.blur-lock-pill {
-  align-self: flex-start;
-  padding: 3px 9px;
-  border-radius: 99px;
-  background: rgba(254, 229, 0, 0.22);
-  color: #FEF08A;
-  border: 1px solid rgba(254, 229, 0, 0.38);
-  font-size: 11px;
-  font-weight: 800;
-}
-.blur-slot-title {
-  font-size: 14.5px;
-  font-weight: 800;
-  color: #FFFFFF;
-}
-.blur-slot-sub {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.84);
+.diff-copy p {
+  margin-top: 3px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--g500);
   line-height: 1.44;
 }
-.expert-promise-box {
-  padding: 16px 18px;
-  border-radius: 18px;
-  background: var(--green-lt);
-  border: 1.5px solid var(--green-bd);
-  color: #065F46;
-  font-size: 13.5px;
-  font-weight: 700;
-  line-height: 1.56;
-}
 
-/* ═════════ [무인 확정 폼] 채팅 응대 0초 결제·세팅 확정 섹션 ═════════ */
+/* 무인 확정 폼 */
 .confirm-section {
-  padding: 34px 18px 28px;
+  padding: 36px 20px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #F7F9FC;
+}
+.e-card {
+  background: #FFFFFF;
+  border-radius: 22px;
+  padding: 20px 18px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 .already-confirmed-banner {
-  padding: 14px 16px;
-  border-radius: 16px;
+  padding: 13px 15px;
+  border-radius: 15px;
   background: var(--green-lt);
   border: 1.5px solid var(--green-bd);
   color: #065F46;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 800;
-  line-height: 1.5;
+  line-height: 1.48;
 }
-.plan-select-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.plan-select-stack { display: flex; flex-direction: column; gap: 10px; }
 .plan-option-card {
   width: 100%;
-  padding: 16px;
-  border-radius: 18px;
+  padding: 15px;
+  border-radius: 16px;
   border: 2px solid var(--g200);
   background: #FFFFFF;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  transition: all 0.16s ease;
+  gap: 6px;
+  transition: all 0.15s ease;
 }
-.plan-option-card:hover { border-color: #93C5FD; }
 .plan-option-card.selected {
-  border-color: var(--brand-accent);
-  background: #F4F9FF;
-  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.14);
+  border-color: var(--purple);
+  background: #FAF5FF;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.14);
 }
-.plan-head-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.plan-name-wrap {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--g900);
-}
+.plan-head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.plan-name-wrap { display: flex; align-items: center; gap: 6px; font-size: 15.5px; font-weight: 900; color: var(--g900); }
 .plan-best-badge {
   padding: 3px 8px;
   border-radius: 99px;
-  background: var(--brand-accent);
+  background: var(--purple);
   color: #FFFFFF;
   font-size: 10.5px;
   font-weight: 800;
 }
-.plan-price-tag {
-  font-size: 15.5px;
-  font-weight: 900;
-  color: var(--brand-accent-dk);
-}
-.plan-feats {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 13px;
-  color: var(--g700);
-  line-height: 1.46;
-}
-.mode-radio-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
+.plan-price-tag { font-size: 15px; font-weight: 900; color: var(--purple); }
+.plan-feats { font-size: 12.5px; color: var(--g700); line-height: 1.5; display: flex; flex-direction: column; gap: 2px; }
+.mode-radio-stack { display: flex; flex-direction: column; gap: 8px; }
 .mode-radio-card {
   width: 100%;
-  padding: 13px 14px;
+  padding: 12px 14px;
   border-radius: 14px;
   border: 1.5px solid var(--g200);
   background: var(--g50);
@@ -1208,105 +1252,74 @@ button { cursor: pointer; border: none; background: none; }
   align-items: flex-start;
   gap: 10px;
   cursor: pointer;
-  transition: all 0.15s ease;
 }
-.mode-radio-card.selected {
-  border-color: var(--brand-accent);
-  background: #EFF6FF;
-}
-.mode-radio-card input[type="radio"] {
-  margin-top: 3px;
-  accent-color: var(--brand-accent);
-  width: 17px;
-  height: 17px;
-  flex-shrink: 0;
-}
-.mode-radio-text b {
-  display: block;
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--g900);
-}
-.mode-radio-text small {
-  display: block;
-  font-size: 12px;
-  color: var(--g500);
-  margin-top: 2px;
-}
-.memo-box-wrap {
-  margin-top: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  animation: snapPop 0.2s ease;
-}
+.mode-radio-card.selected { border-color: var(--purple); background: #F5F3FF; }
+.mode-radio-card input[type="radio"] { margin-top: 3px; accent-color: var(--purple); width: 17px; height: 17px; flex-shrink: 0; }
+.mode-radio-text b { display: block; font-size: 13.5px; font-weight: 800; color: var(--g900); }
+.mode-radio-text small { display: block; font-size: 12px; color: var(--g500); margin-top: 2px; }
+.memo-box-wrap { margin-top: 4px; display: flex; flex-direction: column; gap: 6px; }
 .memo-textarea {
   width: 100%;
-  min-height: 104px;
-  padding: 13px 14px;
-  border-radius: 14px;
-  border: 1.5px solid var(--brand-accent);
+  min-height: 98px;
+  padding: 12px 14px;
+  border-radius: 13px;
+  border: 1.5px solid var(--purple);
   background: #FFFFFF;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.48;
   resize: vertical;
   outline: none;
 }
-.memo-textarea:focus {
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
-}
 .btn-confirm-submit {
   width: 100%;
-  min-height: 56px;
-  padding: 15px 18px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  min-height: 54px;
+  padding: 14px 18px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
   color: #FFFFFF;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 15.5px;
+  font-weight: 900;
   text-align: center;
-  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
-  transition: transform 0.12s ease, opacity 0.15s ease;
+  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.28);
 }
 .btn-confirm-submit:active { transform: scale(0.985); }
 .btn-confirm-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 .confirm-err-box {
-  padding: 11px 13px;
-  border-radius: 12px;
+  padding: 10px 13px;
+  border-radius: 11px;
   background: var(--red-lt);
   color: var(--red);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
 }
-
 .confirm-done-card {
   background: #FFFFFF;
   border: 2px solid var(--green);
   border-radius: 22px;
-  padding: 24px 20px;
+  padding: 22px 18px;
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 11px;
 }
 .done-check-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   background: var(--green-lt);
   color: var(--green);
-  font-size: 26px;
+  font-size: 24px;
   display: grid;
   place-items: center;
 }
 .done-meta-box {
-  padding: 13px 14px;
-  border-radius: 14px;
+  padding: 12px 14px;
+  border-radius: 13px;
   background: var(--g50);
   border: 1px solid var(--g200);
   font-size: 13px;
   color: var(--g700);
-  line-height: 1.56;
+  line-height: 1.55;
 }
 .done-meta-box b { color: var(--g900); }
 
@@ -1320,7 +1333,7 @@ button { cursor: pointer; border: none; background: none; }
   max-width: 520px;
   z-index: 45;
   padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 0px));
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-top: 1px solid rgba(15, 23, 42, 0.08);
@@ -1337,12 +1350,12 @@ button { cursor: pointer; border: none; background: none; }
   min-height: 52px;
   padding: 14px 18px;
   border-radius: 14px;
-  background: var(--brand);
+  background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
   color: #FFFFFF;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 900;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.28);
 }
 .btn-sticky-go:active { transform: scale(0.985); }
 
@@ -1352,6 +1365,7 @@ button { cursor: pointer; border: none; background: none; }
   font-size: 11.5px;
   color: var(--g400);
   line-height: 1.55;
+  background: #F7F9FC;
 }
 </style>
 </head>
@@ -1359,262 +1373,422 @@ button { cursor: pointer; border: none; background: none; }
 
 <div class="floating-toast" id="floating-toast" role="status" aria-live="polite"></div>
 
-<!-- PC 전용 좌측 미니 섹션 점프 내비게이션 -->
-<nav class="pc-rail" id="pc-rail" aria-label="제안서 섹션 이동">
-  <div class="pc-rail-title">맞춤 제안서 목차</div>
-  <a class="pc-rail-link active" href="#sec-cover" data-rail="sec-cover"><span class="pc-rail-dot"></span>도입 커버</a>
-  <a class="pc-rail-link" href="#sec-1" data-rail="sec-1"><span class="pc-rail-dot"></span>1단 · 신청 & 태그 자동화</a>
-  <a class="pc-rail-link" href="#sec-2" data-rail="sec-2"><span class="pc-rail-dot"></span>2단 · 카톡 말풍선 시뮬레이션</a>
-  <a class="pc-rail-link" href="#sec-3" data-rail="sec-3"><span class="pc-rail-dot"></span>3단 · 핀셋 타격 & 독점 가치</a>
-  <a class="pc-rail-link" href="#sec-4" data-rail="sec-4"><span class="pc-rail-dot"></span>4단 · 전문가 100% 세팅</a>
+<!-- PC 전용 좌측 미니 목차 -->
+<nav class="pc-rail" id="pc-rail" aria-label="제안서 목차">
+  <div class="pc-rail-title">맞춤 설계안 목차</div>
+  <a class="pc-rail-link active" href="#sec-cover" data-rail="sec-cover"><span class="pc-rail-dot"></span>한눈에 보는 구조</a>
+  <a class="pc-rail-link" href="#sec-1" data-rail="sec-1"><span class="pc-rail-dot"></span>① 맞춤 신청페이지</a>
+  <a class="pc-rail-link" href="#sec-2" data-rail="sec-2"><span class="pc-rail-dot"></span>② 설문 자동 태그 분기</a>
+  <a class="pc-rail-link" href="#sec-3" data-rail="sec-3"><span class="pc-rail-dot"></span>③ 시간차 카톡 시리즈</a>
+  <a class="pc-rail-link" href="#sec-4" data-rail="sec-4"><span class="pc-rail-dot"></span>④ 고마워톡 핵심 차이</a>
   <a class="pc-rail-link" href="#sec-confirm" data-rail="sec-confirm"><span class="pc-rail-dot"></span>세팅 확정 신청</a>
 </nav>
 
 <main class="proposal-shell">
 
-  <!-- 상단 고정 헤더 바 -->
+  <!-- 상단 고정 바 -->
   <header class="top-bar">
     <div class="top-brand-pill">
       <span class="top-brand-dot" id="top-brand-dot">G</span>
-      <span class="top-brand-text" id="top-brand-badge">맞춤 제안서</span>
+      <span class="top-brand-text" id="top-brand-badge">맞춤 설계안</span>
     </div>
-    <button type="button" class="btn-top-share" id="btn-share-link">🔗 제안서 링크 복사</button>
+    <button type="button" class="btn-top-share" id="btn-share-link">🔗 링크 복사</button>
   </header>
 
   <div class="source-ribbon" id="source-ribbon" hidden>
     <span id="source-ribbon-text">미리보기 모드</span>
-    <span style="opacity:0.75">추가 AI 비용 0원</span>
+    <span style="opacity:0.75">맞춤 자동화 시안</span>
   </div>
 
-  <!-- 로딩 상태 -->
+  <!-- 로딩 화면 -->
   <section class="loading-screen" id="loading-screen">
     <div class="spinner"></div>
-    <div style="font-size:15px;font-weight:800;color:var(--g900)">대표님 맞춤 고마워톡 제안서를 불러오고 있어요…</div>
-    <div style="font-size:13px;color:var(--g500)">신청페이지부터 카톡 자동 발송 흐름까지 바로 시뮬레이션해 드립니다.</div>
+    <div style="font-size:15px;font-weight:800;color:var(--g900)">대표님 맞춤 설계안을 불러오고 있어요…</div>
   </section>
 
   <!-- 메인 제안서 컨텐츠 -->
   <div id="proposal-content" hidden>
 
-    <!-- ═════════ [도입 커버] ═════════ -->
+    <!-- ═════════ [상단 커버] 세로 3단 빅 아이콘 화살표 도식도 (참고 이미지 1) ═════════ -->
     <section class="cover-section" id="sec-cover">
-      <div class="cover-brand-row">
-        <div class="cover-logo-box" id="cover-logo-box">✦ 고마워톡 맞춤 채널</div>
-        <span class="cover-industry-chip" id="cover-industry-chip">업종 맞춤 자동화</span>
+      <div class="cover-meta-row">
+        <div class="cover-logo-chip" id="cover-logo-box">✦ 맞춤 채널</div>
+        <span class="cover-ind-chip" id="cover-industry-chip">업종 맞춤</span>
       </div>
-      <div class="cover-eyebrow" id="cover-eyebrow">오직 대표님 비즈니스만을 위해 설계된</div>
-      <h1 class="cover-title" id="cover-title">
-        <span class="hl" id="cover-channel-name">대표님 채널</span> 전용<br>카카오톡 자동화 매출 파이프라인
+      <h1 class="cover-title">
+        <span class="hl" id="cover-channel-name">대표님 채널</span> 맞춤<br>카톡 자동화 설계안
       </h1>
       <p class="cover-sub" id="cover-sub">
-        고객이 신청하는 순간부터 설문 자동 분류, 100% 도달 첫 알림톡, 후속 친구톡·핀셋 타격까지 실제로 어떻게 매출로 이어지는지 지금 바로 눌러보며 확인하세요.
+        신청페이지로 유입된 고객에게 시나리오별 카톡을 자동 발송해 상담·결제로 연결합니다.
       </p>
 
-      <div class="cover-pipeline-strip">
-        <div class="cover-pipe-item">
-          <span class="cover-pipe-step">STEP 01</span>
-          <span class="cover-pipe-label">1초 신청 &<br>태그 자동 분류</span>
+      <div class="big-flow-diagram reveal in">
+        <!-- 1. 웹 신청창 아이콘 -->
+        <div class="big-flow-step">
+          <div class="big-flow-svg" aria-hidden="true">
+            <svg width="78" height="72" viewBox="0 0 80 74" fill="none">
+              <rect x="6" y="10" width="66" height="54" rx="12" fill="#1E293B"/>
+              <rect x="10" y="21" width="58" height="39" rx="7" fill="#F8FAFC"/>
+              <circle cx="16" cy="15.5" r="2.2" fill="#FB7185"/>
+              <circle cx="23" cy="15.5" r="2.2" fill="#FACC15"/>
+              <circle cx="30" cy="15.5" r="2.2" fill="#34D399"/>
+              <rect x="15" y="26" width="22" height="28" rx="5" fill="#CBD5E1"/>
+              <rect x="41" y="27" width="22" height="6" rx="3" fill="#334155"/>
+              <rect x="41" y="36" width="17" height="4" rx="2" fill="#94A3B8"/>
+              <rect x="41" y="45" width="22" height="10" rx="5" fill="#FEE500"/>
+              <rect x="46" y="49" width="12" height="2.4" rx="1.2" fill="#191919"/>
+            </svg>
+          </div>
+          <div class="big-flow-copy">
+            <h3>맞춤 신청페이지 유입</h3>
+            <p>이름·번호 1초 수집</p>
+          </div>
         </div>
-        <div class="cover-pipe-item">
-          <span class="cover-pipe-step">STEP 02</span>
-          <span class="cover-pipe-label">즉시 알림톡 &<br>자동 연재 발송</span>
-        </div>
-        <div class="cover-pipe-item">
-          <span class="cover-pipe-step">STEP 03</span>
-          <span class="cover-pipe-label">날짜 핀셋 타격 &<br>전문가 100% 세팅</span>
-        </div>
-      </div>
 
-      <div class="cover-scroll-cue">
-        <span>👇 아래로 내려 실제 카톡 작동 화면을 체험해 보세요</span>
-        <span id="cover-created-at"></span>
-      </div>
-    </section>
-
-    <!-- ═════════ [1단] 맞춤 신청페이지 & 설문 태그 자동 분류 시뮬레이션 ═════════ -->
-    <section class="stage-section" id="sec-1">
-      <div class="reveal">
-        <div class="sec-eyebrow">01 · FIRST IMPRESSION & AUTO-TAGGING</div>
-        <h2 class="sec-title">맞춤 신청페이지와<br>설문 [태그] 자동 분류</h2>
-        <p class="sec-desc">카카오 원클릭 로그인으로 실명과 발송 번호가 자동 수집되고, 고객이 고른 답변에 따라 태그와 고객 데이터가 실시간으로 분류됩니다.</p>
-      </div>
-
-      <!-- 실제 tab1 + tab2 헤드카피 모바일 프리뷰 -->
-      <div class="phone-preview-card reveal delay-1">
-        <div class="phone-topbar">
-          <span id="lp-topbar-title">[신청] 맞춤 캠페인</span>
-          <span class="phone-live-dot">카카오 1초 신청</span>
+        <!-- 굵은 화살표 -->
+        <div class="big-flow-arrow" aria-hidden="true">
+          <svg width="26" height="28" viewBox="0 0 26 28" fill="none">
+            <path d="M13 2V22M13 22L5.5 14.5M13 22L20.5 14.5" stroke="#1E293B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-        <div class="landing-hero-preview">
-          <span class="lp-tag" id="lp-hero-tag">핵심 타겟 안내</span>
-          <h3 class="lp-title" id="lp-hero-title">메인 헤드카피</h3>
-          <p class="lp-sub" id="lp-hero-sub">서브카피 안내 문구</p>
-          <div class="lp-points" id="lp-points-list"></div>
-        </div>
-        <div class="lp-cta-mock" id="lp-apply-btn">1초 만에 신청하기</div>
-      </div>
 
-      <!-- 실제 tab3 객관식 설문 터치 시뮬레이션 -->
-      <div class="e-card reveal delay-2">
-        <div class="sim-form-head">
-          <span style="font-size:13px;font-weight:800;color:var(--g500)">📋 신청폼 자동 분류 체험</span>
-          <span class="sim-touch-badge">👆 보기를 직접 눌러보세요</span>
+        <!-- 2. 노란·흰 카톡 말풍선 아이콘 -->
+        <div class="big-flow-step">
+          <div class="big-flow-svg" aria-hidden="true">
+            <svg width="78" height="72" viewBox="0 0 80 74" fill="none">
+              <rect x="26" y="32" width="46" height="28" rx="11" fill="#E2E8F0"/>
+              <path d="M62 58L68 66L54 60H62Z" fill="#E2E8F0"/>
+              <rect x="35" y="41" width="26" height="4.5" rx="2.2" fill="#64748B"/>
+              <rect x="35" y="49" width="18" height="4" rx="2" fill="#94A3B8"/>
+              <rect x="6" y="8" width="52" height="32" rx="12" fill="#FEE500"/>
+              <path d="M18 38L11 47L27 40H18Z" fill="#FEE500"/>
+              <circle cx="19" cy="24" r="6" fill="#422006"/>
+              <circle cx="17" cy="24" r="1.1" fill="#FEE500"/>
+              <circle cx="19" cy="24" r="1.1" fill="#FEE500"/>
+              <circle cx="21" cy="24" r="1.1" fill="#FEE500"/>
+              <rect x="29" y="18" width="21" height="4.5" rx="2.2" fill="#FFFFFF"/>
+              <rect x="29" y="26" width="15" height="4" rx="2" fill="#FEF08A"/>
+            </svg>
+          </div>
+          <div class="big-flow-copy">
+            <h3>시나리오별 카톡 자동 발송</h3>
+            <p>알림톡·친구톡 시리즈</p>
+          </div>
         </div>
-        <div class="sim-q-title" id="sim-q-title">고객 분류 질문을 불러오는 중…</div>
-        <div class="sim-options-list" id="sim-options-list"></div>
-        <div class="tag-snap-result" id="tag-snap-result">
-          <div class="tag-snap-caption">⚡ 고객이 위 보기를 선택하는 즉시 고마워톡 DB에 자동 기록되는 값</div>
-          <div class="tag-snap-chips" id="tag-snap-chips"></div>
-          <div class="tag-snap-note" id="tag-snap-note">
-            이 태그와 시트 값이 아래 [2단 카톡 말풍선]과 [3단 핀셋 발송]에 자동으로 꽂혀 고객별 맞춤 메시지가 발송됩니다.
+
+        <!-- 굵은 화살표 -->
+        <div class="big-flow-arrow" aria-hidden="true">
+          <svg width="26" height="28" viewBox="0 0 26 28" fill="none">
+            <path d="M13 2V22M13 22L5.5 14.5M13 22L20.5 14.5" stroke="#1E293B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- 3. 자석 + 하트 말풍선 아이콘 -->
+        <div class="big-flow-step">
+          <div class="big-flow-svg" aria-hidden="true">
+            <svg width="78" height="72" viewBox="0 0 80 74" fill="none">
+              <g transform="rotate(-35 34 45)">
+                <path d="M18 28V48C18 57.9 26.1 66 36 66C45.9 66 54 57.9 54 48V28H43V48C43 51.9 39.9 55 36 55C32.1 55 29 51.9 29 48V28H18Z" fill="#1E293B"/>
+                <rect x="18" y="22" width="11" height="9" rx="2" fill="#CBD5E1"/>
+                <rect x="43" y="22" width="11" height="9" rx="2" fill="#CBD5E1"/>
+              </g>
+              <circle cx="56" cy="22" r="15" fill="#FEE500"/>
+              <path d="M56 29.5C56 29.5 47.5 24.4 47.5 19.2C47.5 16.5 49.6 14.5 52.1 14.5C53.8 14.5 55.2 15.4 56 16.7C56.8 15.4 58.2 14.5 59.9 14.5C62.4 14.5 64.5 16.5 64.5 19.2C64.5 24.4 56 29.5 56 29.5Z" fill="#E11D48"/>
+              <path d="M35 16L38 22M61 41L66 44" stroke="#475569" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="big-flow-copy">
+            <h3>상담·결제 자동 전환</h3>
+            <p>놓치는 고객 0명</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═════════ [2단] 실제 카카오톡 말풍선 시리즈 시뮬레이션 (간격발송) ═════════ -->
-    <section class="stage-section" id="sec-2">
-      <div class="reveal">
-        <div class="sec-eyebrow">02 · KAKAOTALK AUTOMATION SIMULATION</div>
-        <h2 class="sec-title">실제 고객 카톡방에서<br>이렇게 자동으로 발송됩니다</h2>
-        <p class="sec-desc">한 번 신청한 고객을 놓치지 않고, 신청 즉시 1회차 알림톡부터 D+1·D+3 후속 카톡까지 자동으로 이어집니다.</p>
+    <!-- ═════════ [섹션 ①] 블러 대표 이미지가 들어간 실물 스마트폰 프리뷰 ═════════ -->
+    <section class="stage-section alt-bg" id="sec-1">
+      <div class="sec-head-center reveal">
+        <div class="sec-num-circle">1</div>
+        <h2 class="sec-title">고객이 처음 만나는<br>맞춤 신청페이지</h2>
+        <p class="sec-desc">카카오 1초 로그인만으로 실명과 연락처가 자동 수집됩니다.</p>
       </div>
 
-      <div class="kakao-phone-frame reveal delay-1">
+      <div class="phone-mockup-wrap reveal delay-1">
+        <div class="phone-screen">
+          <div class="phone-notch-bar"><span class="phone-notch-pill"></span></div>
+          <div class="phone-app-bar">
+            <span id="lp-topbar-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">[신청] 맞춤 캠페인</span>
+            <span class="live-tag">● 카카오 1초</span>
+          </div>
+
+          <!-- 상단 블러(BLUR) 대표 이미지 슬롯 -->
+          <div class="blur-hero-slot">
+            <div class="blur-visual-art"></div>
+            <svg class="blur-visual-shapes" viewBox="0 0 320 160" preserveAspectRatio="none">
+              <circle cx="70" cy="40" r="56" fill="#FFFFFF"/>
+              <rect x="170" y="24" width="120" height="90" rx="22" fill="#FEF08A"/>
+              <circle cx="250" cy="126" r="48" fill="#60A5FA"/>
+            </svg>
+            <div class="blur-hero-pill" id="blur-hero-badge">✨ 도입 시 대표님 채널 맞춤<br>고화질 배너 디자인 포함</div>
+          </div>
+
+          <!-- 핵심 헤드카피 1줄 + 체크 3줄 + 중간 블러 슬롯 + 노란 카카오 버튼 -->
+          <div class="phone-copy-area">
+            <h3 class="phone-headline" id="lp-hero-title">핵심 헤드카피</h3>
+            <div class="phone-check-list" id="lp-points-list"></div>
+
+            <div class="blur-mid-slot">
+              <div class="blur-mid-art"></div>
+              <span class="blur-mid-pill">✨ 업종 맞춤 실사 · 자료 목업 포함</span>
+            </div>
+
+            <div class="phone-kakao-cta" id="lp-apply-btn">💬 카카오로 1초 만에 신청하기</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════ [섹션 ②] Y자 두 갈래 분기 플로우차트 (참고 이미지 3번 스타일 100% 구현) ═════════ -->
+    <section class="stage-section" id="sec-2">
+      <div class="sec-head-center reveal">
+        <div class="sec-num-circle">2</div>
+        <h2 class="sec-title">고객 설문 답변에 따라<br>자동 태그 부여 &amp; 맞춤 메시지 발송</h2>
+        <p class="sec-desc">아래 두 갈래 카드를 눌러보세요. 답변에 맞춰 태그와 카톡 내용이 바뀝니다.</p>
+      </div>
+
+      <div class="y-chart-card reveal delay-1">
+        <!-- 상단 출발: 신청 완료 -->
+        <div class="y-node-top">
+          <svg width="36" height="36" viewBox="0 0 40 40" fill="none" style="flex-shrink:0">
+            <rect x="6" y="4" width="24" height="30" rx="5" fill="#1E293B"/>
+            <rect x="9" y="8" width="18" height="22" rx="3" fill="#FFFFFF"/>
+            <rect x="12" y="12" width="12" height="3" rx="1.5" fill="#94A3B8"/>
+            <rect x="12" y="18" width="10" height="3" rx="1.5" fill="#CBD5E1"/>
+            <circle cx="29" cy="28" r="8" fill="#FACC15" stroke="#1E293B" stroke-width="2"/>
+            <path d="M25.5 28L28 30.5L32.8 25.5" stroke="#1E293B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <b id="y-start-label">대표님 채널 신청 완료</b>
+        </div>
+
+        <div class="y-arrow-down" aria-hidden="true">
+          <svg width="20" height="22" viewBox="0 0 20 22" fill="none">
+            <path d="M10 2V18M10 18L4.5 12.5M10 18L15.5 12.5" stroke="#1E293B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- 분기 질문 노드 -->
+        <div class="y-q-node">
+          <svg width="34" height="34" viewBox="0 0 36 36" fill="none" style="flex-shrink:0">
+            <circle cx="18" cy="18" r="16" fill="#FEF08A" stroke="#F59E0B" stroke-width="2"/>
+            <path d="M13.8 14C13.8 11.7 15.6 10 18.1 10C20.6 10 22.3 11.5 22.3 13.7C22.3 15.6 21.1 16.5 19.6 17.5C18.5 18.2 18 18.9 18 20.3V21" stroke="#1E293B" stroke-width="3.2" stroke-linecap="round"/>
+            <circle cx="18" cy="25.8" r="2.1" fill="#1E293B"/>
+          </svg>
+          <div>
+            <span class="yq-kicker">자동 태그 질문</span>
+            <b id="y-question-label">고객 맞춤 분류 질문</b>
+          </div>
+        </div>
+
+        <!-- Y자 좌우 갈라짐 SVG 화살표 -->
+        <svg class="y-split-svg" viewBox="0 0 320 38" fill="none" aria-hidden="true">
+          <path d="M160 2V10C160 15 156 18 150 18H86C80 18 76 21 76 26V33" stroke="#1E293B" stroke-width="3" stroke-linecap="round"/>
+          <path d="M160 2V10C160 15 164 18 170 18H234C240 18 244 21 244 26V33" stroke="#1E293B" stroke-width="3" stroke-linecap="round"/>
+          <path d="M70 27L76 34L82 27" stroke="#1E293B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M238 27L244 34L250 27" stroke="#1E293B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        <!-- 좌우 두 갈래 인터랙티브 분기 카드 -->
+        <div class="y-branches-grid" id="y-branches-grid">
+          <!-- JS 동적 주입 (좌측 보기1 / 우측 보기2) -->
+        </div>
+
+        <!-- 3번째 이상 추가 보기가 있을 때 선택 칩 -->
+        <div class="y-extra-opts" id="y-extra-opts" hidden></div>
+
+        <!-- 하단 합류 SVG 화살표 -->
+        <svg class="y-merge-svg" viewBox="0 0 320 40" fill="none" aria-hidden="true">
+          <path d="M76 2V16C76 21 80 24 86 24H122" stroke="#1E293B" stroke-width="3" stroke-linecap="round"/>
+          <path d="M244 2V16C244 21 240 24 234 24H198" stroke="#1E293B" stroke-width="3" stroke-linecap="round"/>
+          <path d="M116 18L124 24L116 30" stroke="#1E293B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M204 18L196 24L204 30" stroke="#1E293B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        <!-- 하단 합류 최종 전환 노드 -->
+        <div class="y-goal-node">
+          <svg width="50" height="44" viewBox="0 0 54 46" fill="none">
+            <rect x="11" y="2" width="32" height="24" rx="8" fill="#FEE500" stroke="#1E293B" stroke-width="2.2"/>
+            <text x="27" y="18" text-anchor="middle" font-size="9.5" font-weight="900" fill="#191919">TALK</text>
+            <path d="M15 35C18 31 23 31 27 34C31 31 36 31 39 35L35 42H19L15 35Z" fill="#FDE68A" stroke="#1E293B" stroke-width="2.2" stroke-linejoin="round"/>
+          </svg>
+          <b id="y-goal-label">최종 전환: 1:1 맞춤 상담 예약 · 등록</b>
+          <small>내 상황에 맞는 정보를 받은 고객이 스스로 문의합니다</small>
+        </div>
+
+        <div class="y-live-hint" id="y-live-hint">👆 위 갈래를 누르면 아래 카톡 말풍선 내용도 실시간으로 바뀝니다</div>
+      </div>
+    </section>
+
+    <!-- ═════════ [섹션 ③] 시간순 스마트폰 타임라인 (참고 이미지 2) + 카톡 말풍선 탭 전환 ═════════ -->
+    <section class="stage-section alt-bg" id="sec-3">
+      <div class="sec-head-center reveal">
+        <div class="sec-num-circle">3</div>
+        <h2 class="sec-title">놓치지 않고 신뢰를 쌓는<br>시간차 카톡 시리즈</h2>
+        <p class="sec-desc">고객이 필요로 하는 타이밍에 맞춰 카톡이 자동으로 이어집니다.</p>
+      </div>
+
+      <!-- 참고 이미지 2번 스타일: 세로 스마트폰 미니 목업 타임라인 -->
+      <div class="phone-timeline-card reveal delay-1" id="phone-timeline-card">
+        <div class="tl-row active" data-tl-tab="0">
+          <div class="tl-phone-col">
+            <span class="tl-time-badge">신청 즉시 발송</span>
+            <svg width="96" height="62" viewBox="0 0 110 72" fill="none" aria-hidden="true">
+              <g transform="rotate(-18 55 36)">
+                <rect x="24" y="4" width="62" height="64" rx="10" fill="#0F172A"/>
+                <rect x="28" y="8" width="54" height="56" rx="7" fill="#B2C7DA"/>
+                <rect x="33" y="15" width="42" height="12" rx="4" fill="#FEE500"/>
+                <rect x="33" y="31" width="42" height="24" rx="5" fill="#FFFFFF"/>
+                <rect x="37" y="36" width="22" height="3.5" rx="1.5" fill="#334155"/>
+                <rect x="37" y="43" width="30" height="3" rx="1.5" fill="#94A3B8"/>
+                <circle cx="66" cy="48" r="4.5" fill="#FACC15"/>
+              </g>
+            </svg>
+          </div>
+          <div class="tl-copy-col">
+            <h4>환영 인사 &amp; 신청 혜택 전달</h4>
+            <p>미친추 고객도 100% 도착 + 구제 알림톡 자동 작동</p>
+          </div>
+        </div>
+
+        <div class="tl-arrow-row" aria-hidden="true">
+          <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+            <path d="M8 1V16M8 16L3.5 11.5M8 16L12.5 11.5" stroke="#334155" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="tl-arrow-tag">1일 후 자동 발송</span>
+        </div>
+
+        <div class="tl-row" data-tl-tab="1">
+          <div class="tl-phone-col">
+            <span class="tl-time-badge">신뢰 쌓기</span>
+            <svg width="96" height="62" viewBox="0 0 110 72" fill="none" aria-hidden="true">
+              <g transform="rotate(-18 55 36)">
+                <rect x="24" y="4" width="62" height="64" rx="10" fill="#0F172A"/>
+                <rect x="28" y="8" width="54" height="56" rx="7" fill="#B2C7DA"/>
+                <rect x="33" y="13" width="42" height="18" rx="4" fill="#334155"/>
+                <polygon points="51,18 51,26 59,22" fill="#FFFFFF"/>
+                <rect x="33" y="34" width="42" height="22" rx="5" fill="#FFFFFF"/>
+                <rect x="37" y="39" width="28" height="3.5" rx="1.5" fill="#334155"/>
+                <rect x="37" y="46" width="22" height="3" rx="1.5" fill="#94A3B8"/>
+              </g>
+            </svg>
+          </div>
+          <div class="tl-copy-col">
+            <h4>핵심 노하우 &amp; 성공 사례 공유</h4>
+            <p>설문 태그에 맞춘 전문 칼럼으로 신뢰 확보</p>
+          </div>
+        </div>
+
+        <div class="tl-arrow-row" aria-hidden="true">
+          <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+            <path d="M8 1V16M8 16L3.5 11.5M8 16L12.5 11.5" stroke="#334155" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="tl-arrow-tag">3~7일 후 자동 발송</span>
+        </div>
+
+        <div class="tl-row" data-tl-tab="2">
+          <div class="tl-phone-col">
+            <span class="tl-time-badge">전환 유도</span>
+            <svg width="96" height="62" viewBox="0 0 110 72" fill="none" aria-hidden="true">
+              <g transform="rotate(-18 55 36)">
+                <rect x="24" y="4" width="62" height="64" rx="10" fill="#0F172A"/>
+                <rect x="28" y="8" width="54" height="56" rx="7" fill="#B2C7DA"/>
+                <rect x="33" y="15" width="42" height="11" rx="4" fill="#FEE500"/>
+                <rect x="33" y="30" width="42" height="26" rx="5" fill="#FEF9C3"/>
+                <rect x="38" y="36" width="20" height="3.5" rx="1.5" fill="#92400E"/>
+                <rect x="38" y="43" width="28" height="3" rx="1.5" fill="#B45309"/>
+                <rect x="61" y="43" width="10" height="9" rx="2" fill="#F59E0B"/>
+              </g>
+            </svg>
+          </div>
+          <div class="tl-copy-col">
+            <h4>맞춤 혜택 &amp; 상담·결제 유도</h4>
+            <p>관심 태그 고객에게 마감·특별 혜택 핀셋 전달</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3회차 카톡 말풍선 탭 전환 -->
+      <div class="kk-tab-bar reveal delay-2" id="kk-tab-bar">
+        <button type="button" class="kk-tab-btn active" data-kk-tab="0">신청 즉시 알림톡</button>
+        <button type="button" class="kk-tab-btn" data-kk-tab="1">1일 후 메시지</button>
+        <button type="button" class="kk-tab-btn" data-kk-tab="2">3일 후 메시지</button>
+      </div>
+
+      <div class="kakao-phone-frame reveal delay-2">
         <div class="kakao-chat-header">
           <div class="kk-head-left">
             <span>‹</span>
             <span id="kk-channel-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">대표님 채널</span>
-            <span class="kk-verified-mark" title="카카오 비즈니스 인증 채널">✓</span>
+            <span class="kk-verified-mark" title="인증 채널">✓</span>
           </div>
-          <span class="kk-head-right">자동화 미리보기</span>
+          <span style="font-size:11.5px;font-weight:700;color:rgba(25,25,25,.65)" id="kk-active-label">1회차 미리보기</span>
         </div>
-
-        <div class="kakao-chat-body" id="kakao-chat-body">
-          <!-- JS로 1회차 알림톡 / 2회차 친구톡 / 3회차 캐러셀 실데이터 주입 -->
-        </div>
+        <div class="kakao-chat-body" id="kakao-chat-body"></div>
       </div>
 
-      <div class="rescue-callout reveal delay-2">
-        <span style="font-size:18px;flex-shrink:0">🛡️</span>
-        <div>
-          <strong>도달률 극대화 이중 안전장치:</strong> 1회차 알림톡은 <strong>채널 미추가 고객에게도 100% 도달</strong>하며 상단 노란색 <strong>[채널 추가]</strong> 버튼이 자동 노출됩니다. 이후 친구톡 발송 시 미친추로 실패하더라도 <strong>익일 09시 자동 구제 알림톡 2회 루프</strong>가 작동해 고객 이탈을 막습니다.
-        </div>
+      <div class="rescue-mini-box reveal">
+        🛡️ 미친추 고객도 1회차 알림톡 100% 도착 · 친구톡 실패 시 익일 09시 자동 구제 2회 루프 작동
       </div>
     </section>
 
-    <!-- ═════════ [3단] 날짜발송 핀셋 타격 & 고마워톡 독점 가치 비교 ═════════ -->
-    <section class="stage-section" id="sec-3">
-      <div class="reveal">
-        <div class="sec-eyebrow">03 · PINPOINT CONVERSION & WHY GOMAWARTALK</div>
-        <h2 class="sec-title">모아둔 [태그] 고객만 골라<br>매출 시점에 핀셋 타격합니다</h2>
-        <p class="sec-desc">전체 고객에게 스팸처럼 뿌리는 것이 아니라, 특정 관심 태그를 가진 고객에게만 마감·이벤트·재방문 알림을 꽂아 매출로 전환합니다.</p>
-      </div>
-
-      <!-- 실제 tab5 날짜발송 시나리오 -->
-      <div class="pinpoint-card reveal delay-1">
-        <div class="pinpoint-meta-row">
-          <span class="pin-pill date" id="pin-datetime">📅 예약 발송 시나리오</span>
-          <span class="pin-pill target" id="pin-target-tag">🎯 타겟: 전체 신청자</span>
-        </div>
-        <div class="pinpoint-msg-box">
-          <h4 id="pin-title">특정 일정·마감 핀셋 안내</h4>
-          <p id="pin-body">모아둔 고객 태그에 맞춘 특별 안내와 재방문 혜택을 원하는 날짜·시간에 원클릭으로 발송합니다.</p>
-        </div>
-        <div style="font-size:12px;color:#94A3B8;line-height:1.48">
-          💡 채널 친구는 물론, 마케팅 수신 동의 고객까지 포괄하는 브랜드메시지(M형) 타겟팅으로 결정적 매출 타이밍을 놓치지 않습니다.
-        </div>
-      </div>
-
-      <!-- 일반 단체문자/수동 카톡 채널 vs 고마워톡 3대 핵심 비교 -->
-      <div class="compare-stack">
-        <div class="compare-item reveal delay-1">
-          <span class="compare-num">WHY 01 · 수집과 도달의 격차</span>
-          <div class="compare-title">카카오싱크 원클릭 수집 & 미친추 2회 자동 구제 루프</div>
-          <div class="compare-grid">
-            <div class="cmp-row old"><b>일반 문자 · 수동 카톡 채널:</b> 이름·번호를 일일이 타이핑하게 해 이탈률이 높고, 채널 추가를 안 한 고객은 후속 메시지를 못 받습니다.</div>
-            <div class="cmp-row gmt"><b>고마워톡 자동화:</b> 카카오 1초 로그인으로 즉시 접수되며, 1회차 100% 알림톡 + 미친추 실패 시 익일 09시 자동 구제 알림톡 2회 루프로 끝까지 도달합니다.</div>
-          </div>
-        </div>
-
-        <div class="compare-item reveal delay-2">
-          <span class="compare-num">WHY 02 · 정밀 타겟팅의 격차</span>
-          <div class="compare-title">설문 응답별 [태그] · @시트 조건 분기 맞춤 발송</div>
-          <div class="compare-grid">
-            <div class="cmp-row old"><b>일반 문자 · 수동 카톡 채널:</b> 모든 고객에게 똑같은 문구를 일괄 발송해 스팸으로 인식되고 채널 차단율이 급증합니다.</div>
-            <div class="cmp-row gmt"><b>고마워톡 자동화:</b> 신청폼 답변에 따라 [태그]와 @시트가 자동 부여되어 고객 상황·유형에 딱 맞는 맞춤 메시지만 정밀하게 발송합니다.</div>
-          </div>
-        </div>
-
-        <div class="compare-item reveal delay-3">
-          <span class="compare-num">WHY 03 · 운영 리소스의 격차</span>
-          <div class="compare-title">한 번 세팅으로 365일 무인 작동하는 간격발송</div>
-          <div class="compare-grid">
-            <div class="cmp-row old"><b>일반 문자 · 수동 카톡 채널:</b> 신규 문의가 들어올 때마다 대표님이나 직원이 수동으로 날짜를 세어 카톡을 보내야 합니다.</div>
-            <div class="cmp-row gmt"><b>고마워톡 자동화:</b> 고객별 신청 시점을 기준으로 즉시 ➔ D+1 ➔ D+3 자동 간격발송이 365일 무인으로 돌아가며 상담·결제를 만들어냅니다.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ═════════ [4단] 이미지 슬롯 고급 블러 & 전문가 100% 세팅 가치 부여 ═════════ -->
+    <!-- ═════════ [섹션 ④] 문자·수동 카톡과 무엇이 다른가요? (3줄 아이콘 카드) ═════════ -->
     <section class="stage-section" id="sec-4">
-      <div class="reveal">
-        <div class="sec-eyebrow">04 · PREMIUM DESIGN & 100% DONE-FOR-YOU</div>
-        <h2 class="sec-title">복잡한 디자인과 어드민 세팅,<br>전담 전문가가 100% 끝내드립니다</h2>
-        <p class="sec-desc">대표님은 복잡한 고마워톡 어드민 설정이나 디자인 툴을 다룰 필요가 없습니다. 기획안 확정 즉시 전문가가 아래 비주얼까지 완성해 납품합니다.</p>
+      <div class="sec-head-center reveal">
+        <div class="sec-num-circle">4</div>
+        <h2 class="sec-title">문자·수동 카톡과<br>무엇이 다른가요?</h2>
+        <p class="sec-desc">한 번 세팅하면 365일 자동으로 돌아가는 3가지 핵심 차이입니다.</p>
       </div>
 
-      <div class="blur-showcase-grid">
-        <div class="blur-slot-card reveal delay-1">
-          <div class="blur-bg-mesh s1"></div>
-          <div class="blur-glass-overlay">
-            <span class="blur-lock-pill">✨ 전문가 전담 디자인 & 세팅 포함</span>
-            <div class="blur-slot-title" id="blur-slot1-title">1단 대표 썸네일 & Hero 메인 비주얼 (1,000px)</div>
-            <div class="blur-slot-sub">대표님 업종과 브랜드 컬러에 맞춘 고화질 상업 사진 · 에디토리얼 타이포그래피 완성</div>
+      <div class="diff-cards">
+        <div class="diff-card reveal delay-1">
+          <div class="diff-icon-badge c1">⚡</div>
+          <div class="diff-copy">
+            <h4>카카오 1초 실명 수집 &amp; 미친추 자동 구제</h4>
+            <p>번거로운 입력 없이 1초 접수되고, 채널 미추가 고객도 구제 알림톡으로 끝까지 도달합니다.</p>
           </div>
         </div>
 
-        <div class="blur-slot-card reveal delay-2">
-          <div class="blur-bg-mesh s2"></div>
-          <div class="blur-glass-overlay">
-            <span class="blur-lock-pill">✨ 전문가 전담 디자인 & 세팅 포함</span>
-            <div class="blur-slot-title">3단 제공 혜택 목업 & 4단 신뢰 증거 비주얼</div>
-            <div class="blur-slot-sub">고객이 3초 만에 신청을 결심하는 모바일 1열 풀와이드 전환 레이아웃 풀세팅</div>
+        <div class="diff-card reveal delay-2">
+          <div class="diff-icon-badge c2">🎯</div>
+          <div class="diff-copy">
+            <h4>설문 태그별 핀셋 타겟팅</h4>
+            <p>전체 단체 발송 대신 고객이 고른 관심 태그에만 딱 맞는 메시지와 마감 알림을 보냅니다.</p>
           </div>
         </div>
 
-        <div class="blur-slot-card reveal delay-3">
-          <div class="blur-bg-mesh s3"></div>
-          <div class="blur-glass-overlay">
-            <span class="blur-lock-pill">✨ 전문가 전담 디자인 & 세팅 포함</span>
-            <div class="blur-slot-title">친구톡 배너(800×400) & 브랜드 캐러셀(800×600)</div>
-            <div class="blur-slot-sub">카카오 알림톡 규정 준수 검수 · 신청폼 액션 · 간격/날짜발송 5대 탭 어드민 완결 세팅</div>
+        <div class="diff-card reveal delay-3">
+          <div class="diff-icon-badge c3">✨</div>
+          <div class="diff-copy">
+            <h4>전문가 100% 디자인·세팅 대행</h4>
+            <p>도입 즉시 전담 전문가가 업종 맞춤 고화질 이미지 제작과 5대 탭 어드민 세팅을 끝내드립니다.</p>
           </div>
         </div>
-      </div>
-
-      <div class="expert-promise-box reveal">
-        ✅ 고마워톡 시작 즉시 전담 전문가가 대표님 업종에 맞춘 고화질 실사 이미지 생성부터 5대 탭 채널 세팅까지 100% 대행해 드립니다.
       </div>
     </section>
 
-    <!-- ═════════ [무인 확정 폼] 채팅 응대 0초 요금제 선택 & 1회 수정 메모 ═════════ -->
+    <!-- ═════════ [하단 무인 세팅 확정 폼] (confirm_proposal 100% 연동 유지) ═════════ -->
     <section class="confirm-section" id="sec-confirm">
-      <div class="reveal">
-        <div class="sec-eyebrow">05 · ZERO-CHAT INSTANT START</div>
+      <div class="sec-head-center reveal">
         <h2 class="sec-title">채팅 기다림 없이 30초 만에<br>세팅 확정 신청하기</h2>
-        <p class="sec-desc">원하시는 요금제와 세팅 방식을 선택해 제출해 주시면 담당 전문가가 즉시 확인 후 세팅을 시작합니다.</p>
+        <p class="sec-desc">요금제와 세팅 방식을 골라 제출하면 담당 전문가가 바로 시작합니다.</p>
       </div>
 
       <div class="already-confirmed-banner" id="already-confirmed-banner" hidden>
-        ✅ 이미 세팅 확정 신청이 접수된 제안서입니다. 추가 수정이나 진행 상태는 담당자가 확인 후 안내해 드립니다.
+        ✅ 이미 세팅 확정 신청이 접수된 설계안입니다.
       </div>
 
       <div class="e-card reveal" id="confirm-form-card">
-        <!-- ① 요금제 선택 -->
         <div>
-          <div style="font-size:13.5px;font-weight:800;color:var(--g900);margin-bottom:10px">1. 이용하실 요금제를 선택해 주세요</div>
+          <div style="font-size:13.5px;font-weight:800;color:var(--g900);margin-bottom:9px">1. 요금제를 선택해 주세요</div>
           <div class="plan-select-stack" id="plan-select-stack">
             <button type="button" class="plan-option-card selected" data-plan="Pro">
               <div class="plan-head-row">
@@ -1625,39 +1799,32 @@ button { cursor: pointer; border: none; background: none; }
                 <span class="plan-price-tag">연 40만 원</span>
               </div>
               <div class="plan-feats">
-                <span>• 매월 <strong>10회</strong> 캠페인 전문가 제작 지원</span>
-                <span>• <strong>영업일 1일 이내</strong> 패스트트랙 우선 세팅</span>
-                <span>• <strong>내 브랜드 로고 맞춤 알림톡</strong> 템플릿 지원</span>
-                <span>• 발송 단가 할인 (알림톡 13원 / 친구톡 20원)</span>
+                <span>• 매월 <strong>10회</strong> 캠페인 제작 · <strong>영업일 1일</strong> 패스트트랙 세팅</span>
+                <span>• <strong>내 브랜드 로고 맞춤 알림톡</strong> 지원 · 발송 단가 할인</span>
               </div>
             </button>
 
             <button type="button" class="plan-option-card" data-plan="Starter">
               <div class="plan-head-row">
-                <div class="plan-name-wrap">
-                  <span>⭐ Starter 플랜</span>
-                </div>
+                <div class="plan-name-wrap"><span>⭐ Starter 플랜</span></div>
                 <span class="plan-price-tag">연 24만 원</span>
               </div>
               <div class="plan-feats">
-                <span>• 매월 <strong>2회</strong> 캠페인 전문가 제작 지원</span>
-                <span>• <strong>영업일 3일 이내</strong> 어드민 세팅 완료</span>
+                <span>• 매월 <strong>2회</strong> 캠페인 제작 · <strong>영업일 3일 이내</strong> 세팅 완료</span>
                 <span>• 공용 승인 알림톡 · 친구톡 · 브랜드 캐러셀 풀지원</span>
-                <span>• 기본 발송 단가 (알림톡 15원 / 친구톡 23원)</span>
               </div>
             </button>
           </div>
         </div>
 
-        <!-- ② 세팅 방식 라디오 선택 -->
         <div>
-          <div style="font-size:13.5px;font-weight:800;color:var(--g900);margin-bottom:10px">2. 세팅 진행 방식을 선택해 주세요</div>
+          <div style="font-size:13.5px;font-weight:800;color:var(--g900);margin-bottom:9px">2. 세팅 방식을 선택해 주세요</div>
           <div class="mode-radio-stack">
             <label class="mode-radio-card selected" id="mode-card-asis">
               <input type="radio" name="setting_mode" value="AS_IS" checked>
               <div class="mode-radio-text">
                 <b>제안서 시나리오 그대로 세팅해 주세요 (가장 빠름)</b>
-                <small>별도 수정 없이 위 제안서 구성대로 고화질 이미지 생성 후 즉시 세팅에 들어갑니다.</small>
+                <small>고화질 이미지 제작 후 위 설계안 그대로 즉시 세팅합니다.</small>
               </div>
             </label>
 
@@ -1665,48 +1832,43 @@ button { cursor: pointer; border: none; background: none; }
               <input type="radio" name="setting_mode" value="EDIT_ONCE">
               <div class="mode-radio-text">
                 <b>일부 문구 수정 후 세팅해 주세요</b>
-                <small>변경할 날짜·금액·혜택 문구를 아래 한 칸에 적어주시면 반영해 세팅해 드립니다.</small>
+                <small>변경할 날짜·금액·혜택을 아래 한 칸에 적어주세요.</small>
               </div>
             </label>
           </div>
 
           <div class="memo-box-wrap" id="memo-box-wrap" hidden>
-            <label for="confirm-memo-input" style="font-size:12.5px;font-weight:800;color:var(--brand-accent-dk)">✏️ 수정할 핵심 내용 (1회 요약 메모)</label>
-            <textarea class="memo-textarea" id="confirm-memo-input" placeholder="예) 행사 날짜를 12월 14일(토) 오전 11시로 변경하고, 첫 무료 혜택 문구에 '1:1 무료 진단 포함'을 추가해 주세요."></textarea>
+            <label for="confirm-memo-input" style="font-size:12.5px;font-weight:800;color:var(--purple)">✏️ 수정할 핵심 내용 (1회 요약 메모)</label>
+            <textarea class="memo-textarea" id="confirm-memo-input" placeholder="예) 행사 날짜를 12월 14일로 바꾸고, 2회차 발송을 오전 10시로 맞춰주세요."></textarea>
           </div>
         </div>
 
         <div class="confirm-err-box" id="confirm-err-box" hidden></div>
 
         <button type="button" class="btn-confirm-submit" id="btn-confirm-submit">✅ 세팅 확정 신청하기</button>
-        <div style="font-size:12px;color:var(--g500);text-align:center;line-height:1.48">
-          제출 즉시 전담 담당자에게 알림이 전송되며, 입금 확인 후 세팅이 완료되면 비공개 상태로 바로 검수·오픈하실 수 있도록 안내해 드립니다.
-        </div>
       </div>
 
-      <!-- 제출 완료 화면 -->
       <div class="confirm-done-card" id="confirm-done-card" hidden>
         <div class="done-check-icon">✅</div>
-        <h3 style="font-size:20px;font-weight:800;color:var(--g900);line-height:1.36" id="done-title">세팅 확정 신청이 완벽히 접수되었습니다!</h3>
-        <p style="font-size:14px;color:var(--g700);line-height:1.55" id="done-desc">
-          담당 전문가에게 즉시 알림이 전송되었습니다. 결제(입금) 확인 즉시 위 기획안과 수정 메모를 반영해 고화질 이미지 제작 및 고마워톡 어드민 세팅을 진행해 드립니다.
+        <h3 style="font-size:19px;font-weight:900;color:var(--g900);line-height:1.35" id="done-title">세팅 확정 신청이 접수되었습니다!</h3>
+        <p style="font-size:13.5px;color:var(--g700);line-height:1.52" id="done-desc">
+          담당 전문가에게 즉시 알림이 전송되었습니다. 입금 확인 즉시 고화질 이미지 제작 및 어드민 세팅을 진행합니다.
         </p>
         <div class="done-meta-box" id="done-meta-box"></div>
-        <button type="button" class="btn-top-share" id="btn-done-copy-link" style="justify-content:center;padding:12px 16px;border-radius:12px;font-size:13.5px">🔗 이 제안서 링크 복사해 두기</button>
+        <button type="button" class="btn-top-share" id="btn-done-copy-link" style="justify-content:center;padding:12px 16px;border-radius:12px;font-size:13.5px">🔗 이 설계안 링크 복사해 두기</button>
       </div>
     </section>
 
     <footer class="footer-note">
-      고마워브라더(주) · 고마워톡 AI 캠페인 자동화 시스템<br>
-      본 제안서는 대표님 인터뷰 응답을 기반으로 추가 비용 없이 생성된 전용 시뮬레이션입니다.
+      고마워브라더(주) · 고마워톡 AI 캠페인 자동화 시스템
     </footer>
   </div>
 
 </main>
 
-<!-- 하단 고정 Sticky CTA 바 -->
+<!-- 하단 고정 Sticky CTA -->
 <div class="sticky-bottom-bar" id="sticky-bottom-bar" hidden>
-  <button type="button" class="btn-sticky-go" id="btn-sticky-go">🚀 이 기획안 그대로 내 채널에 세팅 신청하기</button>
+  <button type="button" class="btn-sticky-go" id="btn-sticky-go">🚀 이 설계안 그대로 내 채널에 세팅 신청하기</button>
 </div>
 
 <script>
@@ -1734,6 +1896,10 @@ const BANNED_RE = new RegExp('\\uB274\\uC2A4\\uB808\\uD130', 'g');
 function cleanText(s) {
   return String(s == null ? '' : s).replace(BANNED_RE, '정기 소식');
 }
+function shortText(s, max) {
+  const arr = Array.from(cleanText(s || '').replace(/\s+/g, ' ').trim());
+  return arr.length > max ? (arr.slice(0, max).join('') + '…') : arr.join('');
+}
 
 /* ═══════════════ 내장 고퀄리티 데모 캠페인 JSON (단독 열람 / ?demo=1 폴백) ═══════════════ */
 const DEMO_CAMPAIGN = {
@@ -1748,8 +1914,8 @@ const DEMO_CAMPAIGN = {
   partner_info: {
     owner_name: '장희지',
     channel_name: '장희지 수학학원',
-    sector_label: '학원 · 교육기관 · 공부방',
-    sub_industry: '중·고등 내신·입시 수학 전문',
+    sector_label: '학원 · 교육기관',
+    sub_industry: '중·고등 내신·입시 수학',
     flow_title: '자가진단 & 학년별 맞춤 학습 처방 자동화',
     tier: '가망고객'
   },
@@ -1761,13 +1927,13 @@ const DEMO_CAMPAIGN = {
   },
   tab1_basic_settings: {
     thumbnail_500x280: {
-      badge: '겨울방학 한정 무료배포',
-      headline: '중3 겨울방학, 고등수학 1등급을 결정짓는 오답노트 비법',
+      badge: '겨울방학 무료배포',
+      headline: '고등수학 1등급을 결정짓는 오답노트 비법',
       subtext: '장희지 수학학원 원장 직강 시크릿 자료집'
     },
-    title_30chars: '[신청] 고등수학 1등급 오답노트 자료집 & 맞춤 진단',
+    title_30chars: '[신청] 고등수학 1등급 오답노트 & 맞춤 진단',
     description: '우리 아이 학년에 딱 맞는 겨울방학 수학 학습 로드맵과 오답노트 양식을 카톡으로 바로 받아보세요.',
-    apply_btn_text: '1초 만에 자료집 & 맞춤 진단 신청하기',
+    apply_btn_text: '💬 카카오로 1초 만에 자료집 신청하기',
     cancel_btn_text: '소식 그만 받기 (신청취소)',
     friendtalk_rescue_2times: true,
     marketing_consent_popup: true
@@ -1777,77 +1943,49 @@ const DEMO_CAMPAIGN = {
       {
         step: 1,
         type: 'HERO',
-        tag: '예비 중3 · 고1 학부모님 필독',
-        title: '학원을 다녀도 수학 점수가 그대로라면?\n원인은 \'오답노트\'에 있습니다',
-        subtitle: '학년별 맞춤 겨울방학 수학 로드맵과 1등급 오답노트 양식을 카카오 신청 즉시 보내드립니다.',
-        spec_1: '학년별 필수 단원 체크리스트 PDF 즉시 발송',
-        spec_2: '시험 시간 15분 단축하는 실전 오답노트 공식',
-        spec_3: '카카오 1초 신청 · 원장 1:1 학습 진단 예약 연결'
+        tag: '예비 중3 · 고1 학부모 필독',
+        title: '학원을 다녀도 수학 점수가 그대로라면?\n원인은 오답노트에 있습니다',
+        subtitle: '학년별 맞춤 겨울방학 수학 로드맵과 1등급 오답노트 양식을 신청 즉시 보내드립니다.',
+        spec_1: '학년별 필수 단원 체크리스트 즉시 발송',
+        spec_2: '시험 시간 15분 줄이는 실전 오답노트 공식',
+        spec_3: '원장 1:1 학습 진단 예약 바로 연결'
       },
-      {
-        step: 2,
-        type: 'PAIN_POINT',
-        title: '혹시 우리 아이도 이런 상태인가요?',
-        items: [
-          '문제집은 많이 푸는데 시험만 보면 아는 문제를 계속 틀려요',
-          '오답노트를 쓰라고 해도 베껴 적기만 하고 다시 보지 않아요',
-          '이번 겨울방학에 선행을 해야 할지 복습을 해야 할지 막막해요'
-        ]
-      },
-      {
-        step: 3,
-        type: 'SOLUTION',
-        title: '장희지 원장이 10년간 검증한 학년별 맞춤 처방전',
-        points: [
-          '1편. 우리 아이 학년별 겨울방학 필수 단원 체크리스트',
-          '2편. 시험 시간 15분 단축하는 실전 오답노트 작성 공식',
-          '3편. 중하위권에서 1등급 도약한 학생들의 실제 노트 공개'
-        ]
-      },
-      {
-        step: 4,
-        type: 'TRUST_PROOF',
-        title: '이미 300명의 학부모님이 성적 향상으로 증명했습니다',
-        stat_highlight: '수강생 평균 +24점 상승 · 내신 1등급 배출률 82%'
-      },
-      {
-        step: 5,
-        type: 'BOTTOM_CUE',
-        notice: '카카오 로그인 한 번으로 별도 입력 없이 즉시 접수됩니다',
-        arrow_text: '아래 [신청하기] 버튼을 눌러 지금 바로 신청하세요'
-      }
+      { step: 2, type: 'PAIN_POINT', title: '혹시 우리 아이도 이런 상태인가요?', items: ['아는 문제를 시험에서 계속 틀려요', '오답노트를 베껴 적기만 해요', '겨울방학 선행·복습 비중이 막막해요'] },
+      { step: 3, type: 'SOLUTION', title: '10년 검증 학년별 맞춤 처방전', points: ['1편. 학년별 필수 단원 체크리스트', '2편. 15분 단축 오답노트 공식', '3편. 1등급 도약 학생 실제 노트'] },
+      { step: 4, type: 'TRUST_PROOF', title: '300명 학부모가 성적으로 증명', stat_highlight: '평균 +24점 상승 · 1등급 82%' },
+      { step: 5, type: 'BOTTOM_CUE', notice: '카카오 1초 로그인으로 즉시 접수', arrow_text: '아래 [신청하기] 버튼을 눌러 신청하세요' }
     ]
   },
   tab3_application_form: {
     is_active: true,
-    form_title: '우리 아이 학년별 맞춤 자료 발송을 위한 10초 설문',
-    form_guide_text: '선택하신 학년에 맞춰 딱 맞는 겨울방학 수학 로드맵과 오답노트 양식을 보내드립니다.',
+    form_title: '학년별 맞춤 자료 발송을 위한 10초 설문',
+    form_guide_text: '선택하신 학년에 맞춰 겨울방학 로드맵을 보내드립니다.',
     questions: [
       {
         order: 1,
         type: 'MULTIPLE_CHOICE',
         required: true,
-        question_text: '현재 자녀분의 학년은 어떻게 되나요?',
+        question_text: '현재 자녀분의 학년은?',
         options: [
           {
-            answer_text: '중학교 1~2학년 (기초·개념 다지기)',
+            answer_text: '중등 기초 (중1~2)',
             actions_after_save: [
-              { action_type: 'TAG', operation: 'ATTACH', target: '중1_2학부모' },
+              { action_type: 'TAG', operation: 'ATTACH', target: '중등기초' },
               { action_type: 'SHEET', data_type: 'STRING', operation: 'ATTACH', field_name: '고객진단.학년', value: '중1~2학년' }
             ]
           },
           {
-            answer_text: '중학교 3학년 (예비 고1 집중 대비)',
+            answer_text: '예비 고1·고등 내신',
             actions_after_save: [
-              { action_type: 'TAG', operation: 'ATTACH', target: '예비고1학부모' },
-              { action_type: 'SHEET', data_type: 'STRING', operation: 'ATTACH', field_name: '고객진단.학년', value: '예비고1' }
+              { action_type: 'TAG', operation: 'ATTACH', target: '고등내신' },
+              { action_type: 'SHEET', data_type: 'STRING', operation: 'ATTACH', field_name: '고객진단.학년', value: '예비고1·고등' }
             ]
           },
           {
-            answer_text: '고등학교 1~2학년 (내신 1등급 도약)',
+            answer_text: '수능 집중 대비 (고3)',
             actions_after_save: [
-              { action_type: 'TAG', operation: 'ATTACH', target: '고등내신학부모' },
-              { action_type: 'SHEET', data_type: 'STRING', operation: 'ATTACH', field_name: '고객진단.학년', value: '고1~2학년' }
+              { action_type: 'TAG', operation: 'ATTACH', target: '수능집중' },
+              { action_type: 'SHEET', data_type: 'STRING', operation: 'ATTACH', field_name: '고객진단.학년', value: '고3 수능' }
             ]
           }
         ]
@@ -1866,11 +2004,11 @@ const DEMO_CAMPAIGN = {
           priority: 1,
           condition_desc: '모두 (전체 신청자)',
           variables: {
-            '콘텐츠 제목': '고등수학 1등급 오답노트 자료집 접수 확인',
-            '콘텐츠 소개': '#{@고객진단.학년} 맞춤 겨울방학 수학 로드맵 안내가 준비되었습니다.\n(내일 오전 9시 발송되는 2편 심화 칼럼 수신을 위해 상단 노란색 [채널 추가]를 꼭 눌러두세요!)'
+            '콘텐츠 제목': '1등급 오답노트 자료집 접수 확인',
+            '콘텐츠 소개': '#{@고객진단.학년} 맞춤 겨울방학 수학 로드맵이 준비되었습니다.\n(내일 오전 9시 2편 칼럼 수신을 위해 상단 노란색 [채널 추가]를 눌러두세요!)'
           },
           sheet_fallback_strings: { '고객진단.학년': '우리 아이' },
-          buttons: [{ name: '1편 핵심 로드맵 & 자료집 보기', link_type: 'WL' }]
+          buttons: [{ name: '1편 로드맵 & 자료집 보기', link_type: 'WL' }]
         }]
       },
       {
@@ -1882,14 +2020,14 @@ const DEMO_CAMPAIGN = {
           condition_desc: '설문 태그 맞춤 분기',
           image_copy: {
             badge: '학년별 맞춤 심화 칼럼',
-            headline: '고등 첫 중간고사, 왜 중학교 90점대 아이들이 흔들릴까요?',
-            subtext: '장희지 원장의 킬러 단원 분석 리포트'
+            headline: '왜 중학교 90점대 아이가 첫 중간고사에서 흔들릴까요?',
+            subtext: '킬러 단원 분석 리포트'
           },
-          body_text_400chars: '#{이름} 학부모님! 어제 확인하신 #{@고객진단.학년} 로드맵에 이어 오늘은 고등 수학 핵심 킬러 단원 분석 칼럼과 레벨테스트 일정을 보내드립니다.',
-          sheet_fallback_strings: { '고객진단.학년': '예비고1' },
+          body_text_400chars: '#{이름} 학부모님! 어제 확인하신 #{@고객진단.학년} 로드맵에 이어 핵심 킬러 단원 분석 칼럼과 레벨테스트 일정을 보내드립니다.',
+          sheet_fallback_strings: { '고객진단.학년': '예비고1·고등' },
           buttons: [
-            { name: '킬러 단원 분석 칼럼 보기', link_type: 'WL' },
-            { name: '원장 1:1 레벨테스트 예약', link_type: 'WL' }
+            { name: '킬러 단원 분석 보기', link_type: 'WL' },
+            { name: '원장 1:1 진단 예약', link_type: 'WL' }
           ]
         }]
       },
@@ -1903,20 +2041,20 @@ const DEMO_CAMPAIGN = {
           cards_800x600: [
             {
               card_index: 1,
-              header_20chars: '겨울방학 집중반 커리큘럼',
-              body_180chars: '#{이름} 학부모님, #{@고객진단.학년} 학생을 위한 8주 완성 핵심 커리큘럼과 시간표를 확인해 보세요.',
+              header_20chars: '겨울방학 집중반 안내',
+              body_180chars: '#{이름} 학부모님, #{@고객진단.학년} 학생을 위한 8주 완성 커리큘럼을 확인해 보세요.',
               button_8chars: '커리큘럼보기'
             },
             {
               card_index: 2,
-              header_20chars: '실제 성적 향상 후기 모음',
-              body_180chars: '오답노트 시스템 적용 후 1학기 만에 평균 +24점 상승한 수강생들의 생생한 변화 사례입니다.',
+              header_20chars: '실제 성적 향상 후기',
+              body_180chars: '오답노트 시스템 적용 후 1학기 만에 평균 +24점 상승한 수강생 사례입니다.',
               button_8chars: '후기확인하기'
             },
             {
               card_index: 3,
-              header_20chars: '1:1 학습진단 마감 임박',
-              body_180chars: '이번 주 금요일까지 방문 진단 예약 시 1등급 오답노트 실물 바인더를 현장에서 증정합니다.',
+              header_20chars: '1:1 학습진단 마감임박',
+              body_180chars: '이번 주 금요일까지 예약 시 오답노트 실물 바인더를 현장에서 증정합니다.',
               button_8chars: '진단예약하기'
             }
           ]
@@ -1927,11 +2065,11 @@ const DEMO_CAMPAIGN = {
   tab5_date_messages: [
     {
       send_datetime: '2026-12-05 10:00',
-      title: '겨울방학 집중반 잔여석 마감 임박 핀셋 안내',
+      title: '1:1 맞춤 학습 진단 예약',
       template_type: 'BRAND_CAROUSEL',
       branches: [{
-        condition_desc: '태그 = 예비고1학부모',
-        body_text_400chars: '#{이름} 학부모님! 신청하셨던 #{@고객진단.학년} 겨울방학 집중반 잔여석이 단 3자리 남았습니다. 무료 학습 진단 후 결정하실 수 있으니 마감 전 일정을 확보해 보세요.'
+        condition_desc: '태그 = 고등내신',
+        body_text_400chars: '#{이름} 학부모님! #{@고객진단.학년} 겨울방학 집중반 잔여석이 3자리 남았습니다.'
       }]
     }
   ]
@@ -1947,6 +2085,7 @@ const STATE = {
   selectedTag: '',
   selectedSheetField: '',
   selectedSheetValue: '',
+  activeKakaoTab: 0, // 0: 신청 즉시 알림톡, 1: 1일 후, 2: 3일 후
   selectedPlan: 'Pro',
   settingMode: 'AS_IS',
   isSubmitting: false,
@@ -1974,7 +2113,7 @@ function showToast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(showToast._timer);
-  showToast._timer = setTimeout(() => el.classList.remove('show'), 2600);
+  showToast._timer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
 async function copyText(text) {
@@ -2014,7 +2153,6 @@ function computeSoftBg(hex) {
 function sanitizeLocalCampaign(rawObj) {
   if (!rawObj || typeof rawObj !== 'object') return null;
   const copy = JSON.parse(cleanText(JSON.stringify(rawObj)));
-  // 로컬 브릿지 로드 시에도 전화번호·이메일 등 민감 정보 제거
   if (copy.partner_info) {
     delete copy.partner_info.phone;
     delete copy.partner_info.email;
@@ -2036,15 +2174,14 @@ function loadLocalBridgeCampaign() {
   }
 }
 
-/* ═══════════════ 1. 3중 데이터 로더 (실서버 ➔ 로컬 브릿지 ➔ 내장 데모) ═══════════════ */
+/* ═══════════════ 1. 3중 데이터 로더 (실서버 ➔ 로컬 브릿지 ➔ 데모) ═══════════════ */
 async function loadProposalData() {
   const qs = new URLSearchParams(location.search);
   const fileId = (qs.get('fileId') || '').trim();
   const forceDemo = qs.get('demo') === '1';
-  const proxyUrl = (qs.get('proxy') || '').trim() || getProxyUrl();
+  const proxyUrl = getProxyUrl();
   STATE.fileId = fileId;
 
-  // (1) 실서버 load_proposal 호출 (?fileId=... & not local_preview & proxyUrl 설정 시)
   if (!forceDemo && fileId && fileId !== 'local_preview' && proxyUrl) {
     try {
       const sep = proxyUrl.indexOf('?') === -1 ? '?' : '&';
@@ -2059,12 +2196,9 @@ async function loadProposalData() {
           return;
         }
       }
-    } catch (err) {
-      // 실서버 호출 실패 시 로컬 브릿지 / 데모로 안전 폴백
-    }
+    } catch (err) {}
   }
 
-  // (2) 로컬 연동: InterviewBot.html에서 방금 생성해 localStorage에 저장된 최신 캠페인
   if (!forceDemo) {
     const localCamp = loadLocalBridgeCampaign();
     if (localCamp) {
@@ -2077,28 +2211,24 @@ async function loadProposalData() {
     }
   }
 
-  // (3) 단독 열람 / ?demo=1 데모 폴백
   STATE.sourceMode = 'demo';
   STATE.campaign = sanitizeLocalCampaign(DEMO_CAMPAIGN);
-  STATE.proposalMeta.createdAt = '데모 시뮬레이션';
+  STATE.proposalMeta.createdAt = '샘플 미리보기';
 }
 
-/* ═══════════════ 변수 치환 하이라이트 (선택된 설문 태그/시트 값 실시간 반영!) ═══════════════ */
+/* ═══════════════ 변수 치환 하이라이트 ═══════════════ */
 function renderKakaoTextWithVars(rawText, fallbackMap) {
   const safe = esc(cleanText(rawText || ''));
-  const sampleName = '김지현';
   const fb = fallbackMap || {};
   const dynamicVal = STATE.selectedSheetValue || '';
-
   return safe
-    .replace(/#\{이름\}/g, '<span class="kk-var">' + esc(sampleName) + '</span>')
+    .replace(/#\{이름\}/g, '<span class="kk-var">김지현</span>')
     .replace(/#\{@?([^}]+)\}/g, function (_, fieldKey) {
       const val = dynamicVal || fb[fieldKey] || fb[fieldKey.replace(/^@/, '')] || '맞춤 유형';
       return '<span class="kk-var">' + esc(val) + '</span>';
     });
 }
 
-/* ═══════════════ 2. 4단 제안서 렌더링 ═══════════════ */
 function applyBrandTheme(camp) {
   const ba = camp.brand_assets || {};
   const primary = /^#[0-9a-f]{6}$/i.test(ba.primary_color || '') ? ba.primary_color : '#182232';
@@ -2109,9 +2239,7 @@ function applyBrandTheme(camp) {
 
 function extractOptionMapping(opt, idx) {
   const actions = Array.isArray(opt.actions_after_save) ? opt.actions_after_save : [];
-  let tag = '';
-  let sheetField = '';
-  let sheetVal = '';
+  let tag = '', sheetField = '', sheetVal = '';
   actions.forEach(a => {
     if (!a) return;
     if (a.action_type === 'TAG' && a.target) tag = String(a.target);
@@ -2121,13 +2249,14 @@ function extractOptionMapping(opt, idx) {
     }
   });
   return {
-    answerText: cleanText(opt.answer_text || ('선택지 ' + (idx + 1))),
-    tag: cleanText(tag || ('맞춤유형_' + (idx + 1))),
+    answerText: cleanText(opt.answer_text || ('유형 ' + (idx + 1))),
+    tag: cleanText(tag || ('유형_' + (idx + 1))),
     sheetField: cleanText(sheetField || '고객진단.유형'),
     sheetVal: cleanText(sheetVal || opt.answer_text || ('유형 ' + (idx + 1)))
   };
 }
 
+/* ═══════════════ 2. 시각화 중심 제안서 렌더링 ═══════════════ */
 function renderProposal() {
   const camp = STATE.campaign || DEMO_CAMPAIGN;
   applyBrandTheme(camp);
@@ -2142,12 +2271,12 @@ function renderProposal() {
   const t3 = camp.tab3_application_form || {};
 
   const channelName = cleanText(p.channel_name || (p.owner_name ? (p.owner_name + ' 채널') : '대표님 브랜드'));
-  const industryLabel = cleanText(p.sub_industry || p.sector_label || '업종 맞춤 자동화');
+  const industryLabel = cleanText(p.sub_industry || p.sector_label || '업종 맞춤');
 
-  document.title = channelName + ' · 고마워톡 맞춤 자동화 제안서';
+  document.title = channelName + ' · 고마워톡 맞춤 카톡 자동화 설계안';
 
-  // 상단 헤더 바
-  $('#top-brand-badge').textContent = channelName + ' 맞춤 제안서';
+  // 상단 헤더
+  $('#top-brand-badge').textContent = channelName + ' 설계안';
   const dot = $('#top-brand-dot');
   if (ba.logo_base64) {
     dot.innerHTML = '<img src="' + ba.logo_base64 + '" alt="로고">';
@@ -2155,100 +2284,152 @@ function renderProposal() {
     dot.textContent = channelName.trim().charAt(0) || 'G';
   }
 
-  // 데이터 소스 안내 리본 (로컬 브릿지 / 데모 모드에서만 표시)
   const ribbon = $('#source-ribbon');
   if (STATE.sourceMode === 'local_bridge') {
     ribbon.hidden = false;
-    $('#source-ribbon-text').textContent = '🔗 방금 인터뷰 봇에서 생성한 최신 기획안이 실시간 연동되었습니다.';
+    $('#source-ribbon-text').textContent = '🔗 방금 인터뷰에서 만든 최신 설계안이 연동되었습니다.';
   } else if (STATE.sourceMode === 'demo') {
     ribbon.hidden = false;
-    $('#source-ribbon-text').textContent = '✨ 샘플 데모 제안서로 시뮬레이션 중입니다. (실제 링크 접속 시 고객 JSON 자동 주입)';
+    $('#source-ribbon-text').textContent = '✨ 샘플 설계안으로 미리보기 중입니다.';
   } else {
     ribbon.hidden = true;
   }
 
-  // [도입 커버]
+  // [커버]
   const coverLogo = $('#cover-logo-box');
   if (ba.logo_base64) {
-    coverLogo.innerHTML = '<img src="' + ba.logo_base64 + '" alt="브랜드 로고"><span>' + esc(channelName) + '</span>';
+    coverLogo.innerHTML = '<img src="' + ba.logo_base64 + '" alt="로고"><span>' + esc(channelName) + '</span>';
   } else {
     coverLogo.textContent = '✦ ' + channelName;
   }
-  $('#cover-industry-chip').textContent = industryLabel;
+  $('#cover-industry-chip').textContent = shortText(industryLabel, 14);
   $('#cover-channel-name').textContent = channelName;
-  $('#cover-eyebrow').textContent = p.owner_name
-    ? (cleanText(p.owner_name) + ' 대표님만을 위해 설계된')
-    : '오직 대표님 비즈니스만을 위해 설계된';
-  if (p.flow_title) {
-    $('#cover-sub').textContent = '선택하신 [' + cleanText(p.flow_title) + '] 시나리오를 바탕으로, 고객 신청부터 태그 자동 분류·실제 카톡 자동 발송·핀셋 타격까지 매출 흐름을 미리 체험해 보세요.';
-  }
-  $('#cover-created-at').textContent = STATE.proposalMeta.createdAt || '';
 
-  // [1단] 신청페이지 프리뷰
-  $('#lp-topbar-title').textContent = cleanText(t1.title_30chars || ('[신청] ' + channelName));
-  $('#lp-hero-tag').textContent = cleanText(heroBlock.tag || (t1.thumbnail_500x280 && t1.thumbnail_500x280.badge) || industryLabel);
-  $('#lp-hero-title').textContent = cleanText(heroBlock.title || (t1.thumbnail_500x280 && t1.thumbnail_500x280.headline) || channelName + ' 맞춤 신청 안내');
-  $('#lp-hero-sub').textContent = cleanText(heroBlock.subtitle || t1.description || '');
-  $('#lp-apply-btn').textContent = cleanText(t1.apply_btn_text || '카카오로 1초 만에 신청하기');
+  // [섹션 ①] 스마트폰 목업 + 블러 대표 이미지
+  $('#lp-topbar-title').textContent = shortText(t1.title_30chars || ('[신청] ' + channelName), 24);
+  $('#blur-hero-badge').innerHTML = '✨ 도입 시 ' + esc(channelName) + ' 맞춤<br>고화질 배너 디자인 포함';
+  $('#lp-hero-title').textContent = shortText(heroBlock.title || (t1.thumbnail_500x280 && t1.thumbnail_500x280.headline) || (channelName + ' 맞춤 신청'), 40);
+  const rawApplyBtn = cleanText(t1.apply_btn_text || '카카오로 1초 만에 신청하기');
+  $('#lp-apply-btn').textContent = rawApplyBtn.indexOf('💬') === 0 ? rawApplyBtn : ('💬 ' + rawApplyBtn);
 
-  const points = [];
-  if (heroBlock.spec_1) points.push(heroBlock.spec_1);
-  if (heroBlock.spec_2) points.push(heroBlock.spec_2);
-  if (heroBlock.spec_3) points.push(heroBlock.spec_3);
-  if (!points.length && Array.isArray(solBlock.points)) {
-    solBlock.points.slice(0, 3).forEach(pt => points.push(pt));
+  const pts = [];
+  if (heroBlock.spec_1) pts.push(heroBlock.spec_1);
+  if (heroBlock.spec_2) pts.push(heroBlock.spec_2);
+  if (heroBlock.spec_3) pts.push(heroBlock.spec_3);
+  if (!pts.length && Array.isArray(solBlock.points)) {
+    solBlock.points.slice(0, 3).forEach(x => pts.push(x));
   }
-  $('#lp-points-list').innerHTML = points.slice(0, 3).map(pt =>
-    '<div class="lp-point-item"><span class="lp-check">✓</span><span>' + esc(cleanText(pt)) + '</span></div>'
+  $('#lp-points-list').innerHTML = pts.slice(0, 3).map(pt =>
+    '<div class="phone-check-item"><span class="phone-check-icon">✓</span><span>' + esc(shortText(pt, 24)) + '</span></div>'
   ).join('');
 
-  // [1단] 설문 객관식 인터랙티브 시뮬레이션
+  // [섹션 ②] Y자 두 갈래 분기 플로우차트 데이터 바인딩
+  $('#y-start-label').textContent = channelName + ' 신청 완료';
   const qsList = Array.isArray(t3.questions) ? t3.questions : [];
   const mcQuestion = qsList.find(q => q && Array.isArray(q.options) && q.options.length) || DEMO_CAMPAIGN.tab3_application_form.questions[0];
-  $('#sim-q-title').textContent = 'Q. ' + cleanText(mcQuestion.question_text || '현재 가장 관심 있는 항목을 선택해 주세요.');
+  $('#y-question-label').textContent = shortText(mcQuestion.question_text || '고객 유형 분류 질문', 26);
+
   const mappedOpts = (mcQuestion.options || []).slice(0, 5).map((op, i) => extractOptionMapping(op, i));
+  if (mappedOpts.length < 2) {
+    mappedOpts.push({ answerText: '심화 상담 희망', tag: '심화상담', sheetField: '고객진단.유형', sheetVal: '심화 상담' });
+  }
   STATE.selectedOptIdx = 0;
 
-  function renderSurveySimulation() {
-    const optWrap = $('#sim-options-list');
-    optWrap.innerHTML = mappedOpts.map((m, idx) => {
-      const isSel = idx === STATE.selectedOptIdx;
-      return '<button type="button" class="sim-opt-btn' + (isSel ? ' selected' : '') + '" data-opt-idx="' + idx + '">' +
-        '<span class="sim-opt-left"><span class="sim-radio"></span><span>' + esc(m.answerText) + '</span></span>' +
-        '<span class="sim-opt-hint">' + (isSel ? '선택됨' : '터치 체험') + '</span>' +
-      '</button>';
+  const t5First = (Array.isArray(camp.tab5_date_messages) && camp.tab5_date_messages[0]) || DEMO_CAMPAIGN.tab5_date_messages[0];
+  const goalTitle = shortText((t5First && t5First.title) || '1:1 맞춤 상담 예약 · 등록', 24);
+  $('#y-goal-label').textContent = '최종 전환: ' + goalTitle;
+
+  const personSvgLeft =
+    '<svg width="42" height="42" viewBox="0 0 44 44" fill="none">' +
+      '<circle cx="22" cy="14" r="7" fill="#334155"/>' +
+      '<path d="M11 36C11 29.5 15.8 25 22 25C28.2 25 33 29.5 33 36V38H11V36Z" fill="#FACC15" stroke="#1E293B" stroke-width="2"/>' +
+      '<circle cx="22" cy="14" r="6" fill="#FDE68A" stroke="#1E293B" stroke-width="2"/>' +
+      '<path d="M16 12C17 7.5 27 7.5 28 12" stroke="#1E293B" stroke-width="3.2" stroke-linecap="round"/>' +
+    '</svg>';
+
+  const personSvgRight =
+    '<svg width="46" height="42" viewBox="0 0 48 44" fill="none">' +
+      '<circle cx="17" cy="15" r="5.5" fill="#FDE68A" stroke="#1E293B" stroke-width="1.8"/>' +
+      '<path d="M8 36C8 30.5 11.8 26.5 17 26.5C22.2 26.5 26 30.5 26 36V38H8V36Z" fill="#60A5FA" stroke="#1E293B" stroke-width="1.8"/>' +
+      '<circle cx="31" cy="14" r="5.5" fill="#FDE68A" stroke="#1E293B" stroke-width="1.8"/>' +
+      '<path d="M22 36C22 30.5 25.8 26.5 31 26.5C36.2 26.5 40 30.5 40 36V38H22V36Z" fill="#A78BFA" stroke="#1E293B" stroke-width="1.8"/>' +
+    '</svg>';
+
+  const docIconLeft =
+    '<svg width="26" height="26" viewBox="0 0 28 28" fill="none">' +
+      '<rect x="4" y="3" width="20" height="22" rx="4" fill="#EFF6FF" stroke="#1E293B" stroke-width="1.8"/>' +
+      '<rect x="8" y="8" width="12" height="2.6" rx="1.3" fill="#2563EB"/>' +
+      '<rect x="8" y="13.5" width="9" height="2.2" rx="1.1" fill="#64748B"/>' +
+      '<rect x="8" y="18.5" width="11" height="2.2" rx="1.1" fill="#94A3B8"/>' +
+    '</svg>';
+
+  const starIconRight =
+    '<svg width="26" height="26" viewBox="0 0 28 28" fill="none">' +
+      '<rect x="4" y="3" width="20" height="22" rx="4" fill="#FEF9C3" stroke="#1E293B" stroke-width="1.8"/>' +
+      '<path d="M14 8L15.8 11.8L20 12.4L17 15.3L17.7 19.4L14 17.5L10.3 19.4L11 15.3L8 12.4L12.2 11.8L14 8Z" fill="#F59E0B"/>' +
+    '</svg>';
+
+  function renderYBranchFlowchart() {
+    const cur = mappedOpts[STATE.selectedOptIdx] || mappedOpts[0];
+    STATE.selectedTag = cur.tag;
+    STATE.selectedSheetField = cur.sheetField;
+    STATE.selectedSheetValue = cur.sheetVal;
+
+    const twoBranches = [mappedOpts[0], mappedOpts[1]];
+    const grid = $('#y-branches-grid');
+    grid.innerHTML = twoBranches.map((m, idx) => {
+      const isSel = STATE.selectedOptIdx === idx;
+      const guideTitle = idx === 0
+        ? (shortText(m.sheetVal, 10) + ' 맞춤 핵심 가이드')
+        : (shortText(m.sheetVal, 10) + ' 전용 심화 안내');
+      return '<div class="y-branch-col' + (isSel ? ' selected' : '') + '" data-opt-idx="' + idx + '" role="button" tabindex="0">' +
+        '<span class="y-branch-pick-pill">' + (isSel ? '✓ 선택 체험 중' : ('갈래 ' + (idx + 1) + ' 눌러보기')) + '</span>' +
+        (idx === 0 ? personSvgLeft : personSvgRight) +
+        '<div class="y-branch-title">' + esc(shortText(m.answerText, 16)) + '</div>' +
+        '<span class="y-mini-arrow">↓</span>' +
+        '<span class="y-tag-pill">🏷️ #' + esc(shortText(m.tag, 12)) + '</span>' +
+        '<span class="y-mini-arrow">↓</span>' +
+        '<div class="y-msg-box">' +
+          (idx === 0 ? docIconLeft : starIconRight) +
+          '<span>' + esc(guideTitle) + '</span>' +
+        '</div>' +
+      '</div>';
     }).join('');
 
-    const cur = mappedOpts[STATE.selectedOptIdx] || mappedOpts[0];
-    if (cur) {
-      STATE.selectedTag = cur.tag;
-      STATE.selectedSheetField = cur.sheetField;
-      STATE.selectedSheetValue = cur.sheetVal;
-
-      const snapBox = $('#tag-snap-result');
-      snapBox.style.animation = 'none';
-      void snapBox.offsetWidth;
-      snapBox.style.animation = '';
-
-      $('#tag-snap-chips').innerHTML =
-        '<span class="snap-chip tag">🏷️ 태그: #' + esc(cur.tag) + '</span>' +
-        '<span class="snap-chip sheet">📊 @' + esc(cur.sheetField) + ' = ' + esc(cur.sheetVal) + '</span>';
-      $('#tag-snap-note').textContent = '방금 고르신 [' + cur.sheetVal + '] 값이 아래 [2단 카톡 말풍선]과 [3단 핀셋 발송] 문구에 실시간 반영되었습니다!';
+    const extraWrap = $('#y-extra-opts');
+    if (mappedOpts.length > 2) {
+      extraWrap.hidden = false;
+      extraWrap.innerHTML = mappedOpts.slice(2).map((m, i) => {
+        const realIdx = i + 2;
+        const isSel = STATE.selectedOptIdx === realIdx;
+        return '<button type="button" class="y-extra-btn' + (isSel ? ' selected' : '') + '" data-opt-idx="' + realIdx + '">+ ' + esc(shortText(m.answerText, 14)) + ' (#' + esc(m.tag) + ')</button>';
+      }).join('');
+    } else {
+      extraWrap.hidden = true;
     }
 
-    $$('[data-opt-idx]', optWrap).forEach(btn => {
-      btn.onclick = () => {
-        STATE.selectedOptIdx = Number(btn.dataset.optIdx);
-        renderSurveySimulation();
-        renderKakaoChatSimulation();
-        renderPinpointStage3();
+    $('#y-live-hint').textContent = '🏷️ 선택된 [#' + cur.tag + ' · ' + cur.sheetVal + '] 값이 아래 카톡 말풍선에 실시간 반영되었습니다!';
+
+    $$('[data-opt-idx]', $('#sec-2')).forEach(el => {
+      el.onclick = () => {
+        STATE.selectedOptIdx = Number(el.dataset.optIdx);
+        renderYBranchFlowchart();
+        renderKakaoActiveTab();
       };
     });
   }
 
-  // [2단] 실제 카카오톡 말풍선 시리즈 시뮬레이션
-  function renderKakaoChatSimulation() {
+  // [섹션 ③] 카톡 말풍선 탭 전환 렌더링 (선택된 1회차만 집중 노출)
+  function renderKakaoActiveTab() {
     $('#kk-channel-title').textContent = channelName;
+    const tabIdx = STATE.activeKakaoTab;
+
+    $$('[data-kk-tab]').forEach(b => b.classList.toggle('active', Number(b.dataset.kkTab) === tabIdx));
+    $$('[data-tl-tab]').forEach(r => r.classList.toggle('active', Number(r.dataset.tlTab) === tabIdx));
+
+    const tabLabels = ['신청 즉시 · 1회차', '1일 후 · 2회차', '3일 후 · 3회차'];
+    $('#kk-active-label').textContent = tabLabels[tabIdx] || '미리보기';
+
     const avatarHtml = ba.logo_base64
       ? '<div class="kk-avatar"><img src="' + ba.logo_base64 + '" alt="채널"></div>'
       : '<div class="kk-avatar">' + esc(channelName.trim().charAt(0) || 'G') + '</div>';
@@ -2257,144 +2438,135 @@ function renderProposal() {
       ? camp.tab4_interval_messages.sequence
       : DEMO_CAMPAIGN.tab4_interval_messages.sequence;
 
-    const step1 = seq[0] || DEMO_CAMPAIGN.tab4_interval_messages.sequence[0];
-    const b1 = (step1.branches && step1.branches[0]) || {};
-    const v1 = b1.variables || {};
-    const s1Title = cleanText(v1['콘텐츠 제목'] || (t1.title_30chars || channelName + ' 접수 확인'));
-    const s1Intro = cleanText(v1['콘텐츠 소개'] || '신청이 정상 접수되었습니다. 안내 자료를 아래 버튼에서 바로 확인해 주세요.');
-    const s1Btn = (b1.buttons && b1.buttons[0] && b1.buttons[0].name) ? cleanText(b1.buttons[0].name) : '첫 안내 자료 확인하기';
+    let html = '';
 
-    const step2 = seq[1] || DEMO_CAMPAIGN.tab4_interval_messages.sequence[1];
-    const b2 = (step2.branches && step2.branches[0]) || {};
-    const imgCopy2 = b2.image_copy || {};
-    const s2Body = cleanText(b2.body_text_400chars || '#{이름}님! 어제 확인하신 내용에 이어 맞춤형 후속 안내를 보내드립니다.');
-    const s2Btns = (Array.isArray(b2.buttons) && b2.buttons.length) ? b2.buttons.slice(0, 2) : [{ name: '맞춤 안내 이어서 보기' }];
+    if (tabIdx === 0) {
+      const step1 = seq[0] || DEMO_CAMPAIGN.tab4_interval_messages.sequence[0];
+      const b1 = (step1.branches && step1.branches[0]) || {};
+      const v1 = b1.variables || {};
+      const s1Title = cleanText(v1['콘텐츠 제목'] || (t1.title_30chars || channelName + ' 접수 확인'));
+      const s1Intro = cleanText(v1['콘텐츠 소개'] || '신청이 정상 접수되었습니다. 아래 버튼에서 첫 혜택을 바로 확인하세요.');
+      const s1Btn = (b1.buttons && b1.buttons[0] && b1.buttons[0].name) ? cleanText(b1.buttons[0].name) : '첫 혜택 바로 보기';
 
-    const step3 = seq[2] || DEMO_CAMPAIGN.tab4_interval_messages.sequence[2];
-    const b3 = (step3 && step3.branches && step3.branches[0]) || {};
-    const cards3 = (Array.isArray(b3.cards_800x600) && b3.cards_800x600.length)
-      ? b3.cards_800x600
-      : (Array.isArray(step3 && step3.cards_800x600) && step3.cards_800x600.length
-        ? step3.cards_800x600
-        : DEMO_CAMPAIGN.tab4_interval_messages.sequence[2].branches[0].cards_800x600);
-
-    const html =
-      // ── 1회차: 신청 즉시 100% 도달 알림톡 ──
-      '<div class="kk-date-divider">신청 완료 즉시 (0초 · 100% 도달 알림톡)</div>' +
-      '<div class="kk-msg-row">' +
-        avatarHtml +
-        '<div class="kk-msg-col">' +
-          '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
-          '<div class="kk-bubble-wrap">' +
-            '<div class="kk-alimtalk-card">' +
-              '<div class="kk-alimtalk-top">' +
-                '<span class="kk-alimtalk-label">💬 알림톡 도착</span>' +
-                '<span class="kk-ch-add-pill">+ 채널 추가</span>' +
+      html =
+        '<div class="kk-date-divider">신청 완료 즉시 (100% 도달 알림톡)</div>' +
+        '<div class="kk-msg-row">' +
+          avatarHtml +
+          '<div class="kk-msg-col">' +
+            '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
+            '<div class="kk-bubble-wrap">' +
+              '<div class="kk-alimtalk-card">' +
+                '<div class="kk-alimtalk-top">' +
+                  '<span class="kk-alimtalk-label">💬 알림톡 도착</span>' +
+                  '<span class="kk-ch-add-pill">+ 채널 추가</span>' +
+                '</div>' +
+                '<div class="kk-card-body">' +
+                  '<div class="kk-card-title">' + esc(s1Title) + '</div>' +
+                  '안녕하세요 <span class="kk-var">김지현</span>님!\n' +
+                  renderKakaoTextWithVars(s1Intro, b1.sheet_fallback_strings) +
+                '</div>' +
+                '<div class="kk-card-btns"><div class="kk-btn-mock">' + esc(s1Btn) + '</div></div>' +
               '</div>' +
-              '<div class="kk-card-body">' +
-                '<div class="kk-card-title">' + esc(s1Title) + '</div>' +
-                '안녕하세요 <span class="kk-var">김지현</span>님!\n' +
-                renderKakaoTextWithVars(s1Intro, b1.sheet_fallback_strings) +
-              '</div>' +
-              '<div class="kk-card-btns"><div class="kk-btn-mock">' + esc(s1Btn) + '</div></div>' +
+              '<span class="kk-time">방금 전</span>' +
             '</div>' +
-            '<span class="kk-time">방금 전</span>' +
           '</div>' +
-        '</div>' +
-      '</div>' +
+        '</div>';
+    } else if (tabIdx === 1) {
+      const step2 = seq[1] || DEMO_CAMPAIGN.tab4_interval_messages.sequence[1];
+      const b2 = (step2.branches && step2.branches[0]) || {};
+      const imgCopy2 = b2.image_copy || {};
+      const s2Body = cleanText(b2.body_text_400chars || '#{이름}님! 어제 안내에 이어 맞춤형 핵심 노하우를 보내드립니다.');
+      const s2Btns = (Array.isArray(b2.buttons) && b2.buttons.length) ? b2.buttons.slice(0, 2) : [{ name: '맞춤 가이드 보기' }];
 
-      // ── 2회차: D+1 오전 09:00 맞춤 친구톡 ──
-      '<div class="kk-date-divider">신청 1일 뒤 · 오전 09:00 (맞춤 친구톡 자동 발송)</div>' +
-      '<div class="kk-msg-row">' +
-        avatarHtml +
-        '<div class="kk-msg-col">' +
-          '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
-          '<div class="kk-bubble-wrap">' +
-            '<div class="kk-friend-card">' +
-              '<div class="kk-friend-banner">' +
-                '<span class="blur-lock-pill">✨ 전문가 배너 제작 영역 (800×400)</span>' +
-                '<div>' +
-                  '<div style="font-size:11px;font-weight:700;opacity:0.85">' + esc(cleanText(imgCopy2.badge || channelName)) + '</div>' +
-                  '<div style="font-size:14px;font-weight:800;line-height:1.32;margin-top:2px">' + esc(cleanText(imgCopy2.headline || s1Title)) + '</div>' +
+      html =
+        '<div class="kk-date-divider">신청 1일 후 · 오전 09:00 자동 발송</div>' +
+        '<div class="kk-msg-row">' +
+          avatarHtml +
+          '<div class="kk-msg-col">' +
+            '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
+            '<div class="kk-bubble-wrap">' +
+              '<div class="kk-friend-card">' +
+                '<div class="kk-friend-banner">' +
+                  '<span class="kk-blur-pill">✨ 전문가 배너 디자인 포함</span>' +
+                  '<div>' +
+                    '<div style="font-size:10.5px;font-weight:700;opacity:0.85">' + esc(cleanText(imgCopy2.badge || channelName)) + '</div>' +
+                    '<div style="font-size:13.5px;font-weight:800;line-height:1.3;margin-top:2px">' + esc(cleanText(imgCopy2.headline || '맞춤 핵심 노하우')) + '</div>' +
+                  '</div>' +
+                '</div>' +
+                '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
+                '<div class="kk-card-body">' + renderKakaoTextWithVars(s2Body, b2.sheet_fallback_strings) + '</div>' +
+                '<div class="kk-card-btns">' +
+                  s2Btns.map(bt => '<div class="kk-btn-mock">' + esc(cleanText(bt.name || '자세히 보기')) + '</div>').join('') +
                 '</div>' +
               '</div>' +
-              '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
-              '<div class="kk-card-body">' +
-                renderKakaoTextWithVars(s2Body, b2.sheet_fallback_strings) +
-              '</div>' +
-              '<div class="kk-card-btns">' +
-                s2Btns.map(bt => '<div class="kk-btn-mock">' + esc(cleanText(bt.name || '자세히 보기')) + '</div>').join('') +
-              '</div>' +
+              '<span class="kk-time">오전 9:00</span>' +
             '</div>' +
-            '<span class="kk-time">오전 9:00</span>' +
           '</div>' +
-        '</div>' +
-      '</div>' +
+        '</div>';
+    } else {
+      const step3 = seq[2] || DEMO_CAMPAIGN.tab4_interval_messages.sequence[2];
+      const b3 = (step3 && step3.branches && step3.branches[0]) || {};
+      const cards3 = (Array.isArray(b3.cards_800x600) && b3.cards_800x600.length)
+        ? b3.cards_800x600
+        : (Array.isArray(step3 && step3.cards_800x600) && step3.cards_800x600.length
+          ? step3.cards_800x600
+          : DEMO_CAMPAIGN.tab4_interval_messages.sequence[2].branches[0].cards_800x600);
 
-      // ── 3회차: D+3 브랜드 캐러셀 (가로 스와이프) ──
-      '<div class="kk-date-divider">신청 3일 뒤 · 오전 09:00 (브랜드 캐러셀 슬라이드)</div>' +
-      '<div class="kk-msg-row">' +
-        avatarHtml +
-        '<div class="kk-msg-col">' +
-          '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
-          '<div class="kk-carousel-track">' +
-            cards3.slice(0, 6).map((c, ci) =>
-              '<div class="kk-carousel-card">' +
-                '<div class="kk-carousel-thumb">' +
-                  '<span class="blur-lock-pill">카드 ' + (ci + 1) + ' · 800×600</span>' +
-                  '<span style="font-size:11.5px;font-weight:700;opacity:0.86">전문가 고화질 화보 세팅</span>' +
-                '</div>' +
-                '<div class="kk-carousel-body">' +
-                  '<h4>' + esc(cleanText(c.header_20chars || ('핵심 안내 ' + (ci + 1)))) + '</h4>' +
-                  '<p>' + renderKakaoTextWithVars(c.body_180chars || '', b3.sheet_fallback_strings) + '</p>' +
-                '</div>' +
-                '<div class="kk-card-btns"><div class="kk-btn-mock">' + esc(cleanText(c.button_8chars || '자세히보기')) + '</div></div>' +
-              '</div>'
-            ).join('') +
+      html =
+        '<div class="kk-date-divider">신청 3일 후 · 오전 09:00 (가로 슬라이드)</div>' +
+        '<div class="kk-msg-row">' +
+          avatarHtml +
+          '<div class="kk-msg-col">' +
+            '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
+            '<div class="kk-carousel-track">' +
+              cards3.slice(0, 6).map((c, ci) =>
+                '<div class="kk-carousel-card">' +
+                  '<div class="kk-carousel-thumb">' +
+                    '<span class="kk-blur-pill">카드 ' + (ci + 1) + ' · 전문가 디자인</span>' +
+                    '<span style="font-size:11px;font-weight:700;opacity:0.85">' + esc(channelName) + '</span>' +
+                  '</div>' +
+                  '<div class="kk-carousel-body">' +
+                    '<h4>' + esc(cleanText(c.header_20chars || ('맞춤 안내 ' + (ci + 1)))) + '</h4>' +
+                    '<p>' + renderKakaoTextWithVars(c.body_180chars || '', b3.sheet_fallback_strings) + '</p>' +
+                  '</div>' +
+                  '<div class="kk-card-btns"><div class="kk-btn-mock">' + esc(cleanText(c.button_8chars || '자세히보기')) + '</div></div>' +
+                '</div>'
+              ).join('') +
+            '</div>' +
           '</div>' +
-          '<div class="kk-swipe-hint">👈 좌우로 밀어서 캐러셀 카드를 넘겨보세요</div>' +
-        '</div>' +
-      '</div>';
+        '</div>';
+    }
 
     $('#kakao-chat-body').innerHTML = html;
   }
 
-  // [3단] 날짜발송 핀셋 타격
-  function renderPinpointStage3() {
-    const t5List = Array.isArray(camp.tab5_date_messages) && camp.tab5_date_messages.length
-      ? camp.tab5_date_messages
-      : DEMO_CAMPAIGN.tab5_date_messages;
-    const t5 = t5List[0] || {};
-    const b5 = (Array.isArray(t5.branches) && t5.branches[0]) || {};
-    const cards5 = (Array.isArray(b5.cards_800x600) && b5.cards_800x600.length)
-      ? b5.cards_800x600
-      : (Array.isArray(t5.cards_800x600) ? t5.cards_800x600 : []);
+  // 탭 & 타임라인 클릭 동기화
+  $$('[data-kk-tab]').forEach(btn => {
+    btn.onclick = () => {
+      STATE.activeKakaoTab = Number(btn.dataset.kkTab);
+      renderKakaoActiveTab();
+    };
+  });
+  $$('[data-tl-tab]').forEach(row => {
+    row.onclick = () => {
+      STATE.activeKakaoTab = Number(row.dataset.tlTab);
+      renderKakaoActiveTab();
+      const tabBar = $('#kk-tab-bar');
+      if (tabBar) tabBar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+  });
 
-    $('#pin-datetime').textContent = '📅 예약 발송 · ' + cleanText(t5.send_datetime || '특정 행사/마감일 오전 10:00');
-    $('#pin-target-tag').textContent = '🎯 핀셋 타겟: #' + (STATE.selectedTag || '관심고객');
-    $('#pin-title').textContent = cleanText(t5.title || (cards5[0] && cards5[0].header_20chars) || (channelName + ' 핵심 마감·혜택 핀셋 안내'));
-    const rawBody = b5.body_text_400chars || (cards5[0] && cards5[0].body_180chars) ||
-      '#{이름}님! 선택하신 #{@고객진단.유형} 고객님께만 드리는 특별 일정 마감 안내입니다. 자리 마감 전 지금 바로 확인해 보세요.';
-    $('#pin-body').innerHTML = renderKakaoTextWithVars(rawBody, b5.sheet_fallback_strings);
-  }
-
-  // [4단] 블러 슬롯 타이틀 개인화
-  $('#blur-slot1-title').textContent = channelName + ' · 대표 썸네일 & Hero 메인 비주얼 (1,000px)';
-
-  // 이미 확정된 제안서 상태 표시
   if (STATE.proposalMeta.confirmStatus === '결제·세팅요청' || STATE.proposalMeta.confirmStatus === '세팅완료') {
     const b = $('#already-confirmed-banner');
     b.hidden = false;
     b.textContent = STATE.proposalMeta.confirmStatus === '세팅완료'
-      ? '✅ 고마워톡 어드민 세팅이 완료된 캠페인 제안서입니다.'
-      : '✅ 이미 결제·세팅 요청이 접수된 제안서입니다. 전담 담당자가 확인 후 빠르게 세팅을 진행합니다.';
+      ? '✅ 고마워톡 어드민 세팅이 완료된 설계안입니다.'
+      : '✅ 이미 결제·세팅 요청이 접수된 설계안입니다.';
   }
 
-  renderSurveySimulation();
-  renderKakaoChatSimulation();
-  renderPinpointStage3();
+  renderYBranchFlowchart();
+  renderKakaoActiveTab();
 
-  // 로딩 종료 & 컨텐츠 표시
   $('#loading-screen').hidden = true;
   $('#proposal-content').hidden = false;
   $('#sticky-bottom-bar').hidden = false;
@@ -2402,7 +2574,7 @@ function renderProposal() {
   setupScrollObservers();
 }
 
-/* ═══════════════ 3. IntersectionObserver 순차 등장 & PC 미니 내비 동기화 ═══════════════ */
+/* ═══════════════ 3. IntersectionObserver 순차 등장 & 내비 동기화 ═══════════════ */
 function setupScrollObservers() {
   const reveals = $$('.reveal');
   if ('IntersectionObserver' in window) {
@@ -2413,25 +2585,21 @@ function setupScrollObservers() {
           revObs.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -24px 0px' });
+    }, { threshold: 0.12, rootMargin: '0px 0px -20px 0px' });
     reveals.forEach(el => revObs.observe(el));
   } else {
     reveals.forEach(el => el.classList.add('in'));
   }
 
-  // 하단 확정 섹션에 도달하면 하단 고정 Sticky CTA 바를 자연스럽게 숨김
   const confirmEl = $('#sec-confirm');
   const stickyBar = $('#sticky-bottom-bar');
   if (confirmEl && stickyBar && 'IntersectionObserver' in window) {
     const ctaObs = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        stickyBar.classList.toggle('hidden-scroll', entry.isIntersecting);
-      });
+      entries.forEach(entry => stickyBar.classList.toggle('hidden-scroll', entry.isIntersecting));
     }, { threshold: 0.15 });
     ctaObs.observe(confirmEl);
   }
 
-  // PC 좌측 미니 섹션 점프 내비게이션 활성 동기화
   const sectionIds = ['sec-cover', 'sec-1', 'sec-2', 'sec-3', 'sec-4', 'sec-confirm'];
   if ('IntersectionObserver' in window) {
     const navObs = new IntersectionObserver(entries => {
@@ -2449,9 +2617,8 @@ function setupScrollObservers() {
   }
 }
 
-/* ═══════════════ 4. 무인 확정 & 1회 수정 메모 폼 (confirm_proposal 직결) ═══════════════ */
+/* ═══════════════ 4. 무인 확정 폼 (confirm_proposal 100% 유지) ═══════════════ */
 function bindConfirmFormEvents() {
-  // 요금제 선택 카드
   $$('[data-plan]').forEach(btn => {
     btn.onclick = () => {
       STATE.selectedPlan = btn.dataset.plan === 'Starter' ? 'Starter' : 'Pro';
@@ -2459,7 +2626,6 @@ function bindConfirmFormEvents() {
     };
   });
 
-  // 세팅 방식 라디오 선택 (EDIT_ONCE 선택 시에만 1칸 메모창 노출)
   $$('input[name="setting_mode"]').forEach(radio => {
     radio.addEventListener('change', () => {
       STATE.settingMode = radio.value === 'EDIT_ONCE' ? 'EDIT_ONCE' : 'AS_IS';
@@ -2467,27 +2633,22 @@ function bindConfirmFormEvents() {
       $('#mode-card-edit').classList.toggle('selected', STATE.settingMode === 'EDIT_ONCE');
       const memoWrap = $('#memo-box-wrap');
       memoWrap.hidden = (STATE.settingMode !== 'EDIT_ONCE');
-      if (STATE.settingMode === 'EDIT_ONCE') {
-        $('#confirm-memo-input').focus();
-      }
+      if (STATE.settingMode === 'EDIT_ONCE') $('#confirm-memo-input').focus();
     });
   });
 
-  // 하단 Sticky CTA ➔ 확정 폼으로 부드럽게 스크롤
   $('#btn-sticky-go').onclick = () => {
     const target = $('#sec-confirm');
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // 상단/완료 화면 링크 복사 버튼
   const handleCopyShare = async () => {
     const ok = await copyText(location.href);
-    showToast(ok ? '✅ 제안서 링크가 복사되었습니다! 공동대표·결재자에게 바로 공유해 보세요.' : '⚠️ 주소창에서 링크를 복사해 주세요.');
+    showToast(ok ? '✅ 설계안 링크가 복사되었습니다!' : '⚠️ 주소창에서 링크를 복사해 주세요.');
   };
   $('#btn-share-link').onclick = handleCopyShare;
   $('#btn-done-copy-link').onclick = handleCopyShare;
 
-  // [✅ 세팅 확정 신청하기] 제출
   $('#btn-confirm-submit').onclick = submitConfirmProposal;
 }
 
@@ -2499,7 +2660,7 @@ async function submitConfirmProposal() {
   const memoVal = ($('#confirm-memo-input').value || '').trim();
   if (STATE.settingMode === 'EDIT_ONCE' && memoVal.length < 2) {
     errBox.hidden = false;
-    errBox.textContent = '⚠️ 수정할 날짜·금액·혜택 내용을 1줄 이상 입력해 주세요.';
+    errBox.textContent = '⚠️ 수정할 내용을 1줄 이상 입력해 주세요.';
     $('#confirm-memo-input').focus();
     return;
   }
@@ -2507,7 +2668,7 @@ async function submitConfirmProposal() {
   STATE.isSubmitting = true;
   const submitBtn = $('#btn-confirm-submit');
   submitBtn.disabled = true;
-  submitBtn.textContent = '⏳ 담당 전문가에게 세팅 확정 요청을 전송하고 있어요…';
+  submitBtn.textContent = '⏳ 세팅 확정 요청을 전송하고 있어요…';
 
   const payload = {
     action: 'confirm_proposal',
@@ -2538,11 +2699,10 @@ async function submitConfirmProposal() {
       submitBtn.disabled = false;
       submitBtn.textContent = '✅ 세팅 확정 신청하기';
       errBox.hidden = false;
-      errBox.textContent = '⚠️ 전송 중 오류가 발생했습니다. 잠시 후 다시 눌러주세요. (' + err.message + ')';
+      errBox.textContent = '⚠️ 전송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요. (' + err.message + ')';
       return;
     }
   } else {
-    // 로컬 브릿지 / 데모 미리보기 모드 시뮬레이션 성공 처리
     isSimulated = true;
     serverResult = {
       ok: true,
@@ -2594,16 +2754,16 @@ async function submitConfirmProposal() {
 
   if (isSimulated) {
     $('#done-title').textContent = '세팅 확정 신청 시뮬레이션이 완료되었습니다!';
-    $('#done-desc').textContent = '현재 로컬/데모 미리보기 상태입니다. 실서버 배포 후 고객이 이 버튼을 누르면 구글 시트가 [결제·세팅요청]으로 자동 갱신되고 대표님 구글 챗(HUMAN_QA_READY)으로 즉시 알림이 발송됩니다.';
+    $('#done-desc').textContent = '로컬 미리보기 상태입니다. 실서버 배포 후에는 구글 시트가 [결제·세팅요청]으로 바뀌고 구글 챗 알림이 즉시 발송됩니다.';
   }
 
   $('#done-meta-box').innerHTML =
-    '<div><b>• 신청 요금제:</b> ' + esc(planLabel) + '</div>' +
+    '<div><b>• 요금제:</b> ' + esc(planLabel) + '</div>' +
     '<div><b>• 세팅 방식:</b> ' + esc(modeLabel) + '</div>' +
     (payload.settingMode === 'EDIT_ONCE'
-      ? '<div><b>• 고객 1회 수정 메모:</b> ' + esc(payload.revisionMemo) + '</div>'
+      ? '<div><b>• 1회 수정 메모:</b> ' + esc(payload.revisionMemo) + '</div>'
       : '') +
-    '<div><b>• 처리 상태:</b> ' + esc(serverResult.confirmStatus || '결제·세팅요청') + '</div>';
+    '<div><b>• 상태:</b> ' + esc(serverResult.confirmStatus || '결제·세팅요청') + '</div>';
 
   doneCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
   showToast('✅ 세팅 확정 요청이 정상 접수되었습니다!');

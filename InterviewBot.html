@@ -1870,6 +1870,10 @@ const ST = {
   subIndustry: '',
   flowId: '',
   customFlows: [],
+  customExamplesMap: null,
+  customQ1Text: '',
+  examplesPrefetchKey: '',
+  examplesPrefetchPromise: null,
   submitted: false,
   lastSubmitResult: null,
 
@@ -2348,6 +2352,10 @@ function resetConsultFlow() {
   ST.subIndustry = '';
   ST.flowId = '';
   ST.customFlows = [];
+  ST.customExamplesMap = null;
+  ST.customQ1Text = '';
+  ST.examplesPrefetchKey = '';
+  ST.examplesPrefetchPromise = null;
   ST.submitted = false;
   ST.qNum = 1;
   ST.answers = {};
@@ -2409,6 +2417,10 @@ function selectSector(sectorId) {
   ST.sectorId = sectorId;
   ST.flowId = '';
   ST.customFlows = [];
+  ST.customExamplesMap = null;
+  ST.customQ1Text = '';
+  ST.examplesPrefetchKey = '';
+  ST.examplesPrefetchPromise = null;
   renderStage1Sectors();
   const sec = Consult.getSector(sectorId);
   if (!sec) return;
@@ -2454,6 +2466,10 @@ async function proceedToStage2() {
   }
   ST.subIndustry = rawSub || (sec ? sec.shortTitle : '');
   ST.flowId = '';
+  ST.customExamplesMap = null;
+  ST.customQ1Text = '';
+  ST.examplesPrefetchKey = '';
+  ST.examplesPrefetchPromise = null;
   syncHeaderBadge();
 
   // 세부 업종 기반 기본 추천 컬러 재반영 (아직 사용자가 Step 4에서 직접 고르지 않은 경우)
@@ -2468,8 +2484,7 @@ async function proceedToStage2() {
   goStage(2);
 
   // AI가 연결돼 있으면 입력한 세부 업종 100% 전용 6대 플로우를 실시간 AI 번역으로 정교화
-  const cfg = Engine.getConfig();
-  const hasAi = (getAiMode() === 'admin' && cfg.hasDirectKey) || (getAiMode() !== 'admin' && !!getProxyUrl());
+  const hasAi = Consult.hasAiAvailable({ mode: getAiMode(), proxyUrl: getProxyUrl() });
   if (hasAi && rawSub.length >= 2) {
     const loadBanner = $('#flow-loading-banner');
     loadBanner.hidden = false;
@@ -2570,10 +2585,47 @@ function renderStage2Flows(recommendedId) {
   updateStickyCtaBar();
 }
 
+function buildExamplesPrefetchKey(sectorId, subIndustry, flowId) {
+  return [sectorId || '', subIndustry || '', flowId || ''].join('||');
+}
+
+function prefetchConsultExamplesForFlow(flowId) {
+  if (!ST.sectorId || !flowId) return null;
+  const key = buildExamplesPrefetchKey(ST.sectorId, ST.subIndustry, flowId);
+  if (ST.examplesPrefetchKey === key && ST.examplesPrefetchPromise) {
+    return ST.examplesPrefetchPromise;
+  }
+  ST.examplesPrefetchKey = key;
+  ST.customExamplesMap = null;
+  ST.customQ1Text = '';
+
+  const p = Consult.generateConsultExamplesBatch({
+    mode: getAiMode(),
+    proxyUrl: getProxyUrl(),
+    token: ST.partnerToken,
+    ownerName: ST.partnerInfo.ownerName,
+    sectorId: ST.sectorId,
+    subIndustry: ST.subIndustry,
+    flowId: flowId,
+    customFlows: ST.customFlows
+  }).then(batch => {
+    if (ST.examplesPrefetchKey === key && batch && batch.examplesMap) {
+      ST.customExamplesMap = batch.examplesMap;
+      ST.customQ1Text = batch.q1QuestionText || '';
+    }
+    return batch;
+  }).catch(() => null);
+
+  ST.examplesPrefetchPromise = p;
+  return p;
+}
+
 function selectFlow(flowId) {
   ST.flowId = flowId;
   renderStage2Flows();
   updateStickyCtaBar();
+  // STEP 2에서 흐름 선택 즉시 Q1~Q5 세부 업종 전용 예시 세트를 1회 JSON 호출로 백그라운드 프리패치
+  prefetchConsultExamplesForFlow(flowId);
 }
 
 async function runFlowAiRecommend() {
@@ -2741,9 +2793,19 @@ async function startStage3Interview() {
   ST.qNum = 1;
   ST.guardrail = null;
   goStage(3);
-  $('#q-question-text').textContent = '⏳ 대표님 업종과 선택한 흐름에 딱 맞는 첫 질문을 준비하고 있어요…';
-  $('#example-chips-list').innerHTML = '';
+  const subLabel = ST.subIndustry || '대표님 업종';
+  $('#q-question-text').textContent = '⏳ "' + subLabel + '" 전용 Q1~Q5 맞춤 질문과 예시 3가지를 준비하고 있어요…';
+  $('#example-chips-list').innerHTML =
+    '<div class="example-chip" style="justify-content:center;color:var(--g500);cursor:default">⏳ ' + esc(subLabel) + ' 맞춤 예시를 불러오는 중…</div>';
   $('#btn-submit-q').disabled = true;
+
+  const key = buildExamplesPrefetchKey(ST.sectorId, ST.subIndustry, ST.flowId);
+  if (ST.examplesPrefetchKey !== key || !ST.examplesPrefetchPromise) {
+    prefetchConsultExamplesForFlow(ST.flowId);
+  }
+  if (ST.examplesPrefetchPromise) {
+    await ST.examplesPrefetchPromise;
+  }
 
   const pack = await Consult.getInitialQ1({
     mode: getAiMode(),
@@ -2753,8 +2815,16 @@ async function startStage3Interview() {
     sectorId: ST.sectorId,
     subIndustry: ST.subIndustry,
     flowId: ST.flowId,
-    customFlows: ST.customFlows
+    customFlows: ST.customFlows,
+    customExamplesMap: ST.customExamplesMap,
+    customQ1Text: ST.customQ1Text
   });
+  if (pack && pack.examplesMap) {
+    ST.customExamplesMap = pack.examplesMap;
+  }
+  if (pack && pack.q1QuestionText) {
+    ST.customQ1Text = pack.q1QuestionText;
+  }
   $('#btn-submit-q').disabled = false;
   renderCurrentQuestionPack(pack);
 }
@@ -2767,6 +2837,8 @@ function jumpToInterviewQuestion(targetQ) {
     subIndustry: ST.subIndustry,
     flowId: ST.flowId,
     customFlows: ST.customFlows,
+    customExamplesMap: ST.customExamplesMap,
+    customQ1Text: ST.customQ1Text,
     answers: ST.answers
   });
   renderCurrentQuestionPack(pack);
@@ -2798,6 +2870,8 @@ async function submitCurrentInterviewAnswer() {
       subIndustry: ST.subIndustry,
       flowId: ST.flowId,
       customFlows: ST.customFlows,
+      customExamplesMap: ST.customExamplesMap,
+      customQ1Text: ST.customQ1Text,
       qNum: ST.qNum,
       answers: ST.answers,
       userText: txt

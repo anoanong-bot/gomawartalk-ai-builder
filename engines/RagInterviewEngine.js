@@ -313,7 +313,8 @@
         }
         var cand = data.candidates && data.candidates[0];
         var parts = (cand && cand.content && cand.content.parts) || [];
-        var text = parts.map(function (p) { return p.text || ''; }).join('');
+        var nonThought = parts.filter(function (p) { return p && !p.thought && p.text; }).map(function (p) { return p.text; }).join('');
+        var text = nonThought || parts.map(function (p) { return p.text || ''; }).join('');
         return sanitizeText(text);
       });
     });
@@ -1009,33 +1010,35 @@
     });
   };
 
-  // AI 호출 라우터: admin → 로컬 Gemini 키 직결 / partner → Backend_Proxy(파트너 토큰 필수)
+  // AI 호출 라우터: admin → 로컬 Gemini 키 직결(없으면 Proxy 자동 폴백) / partner → Backend_Proxy 경유
   TOSS.callAI = function (o) {
     o = o || {};
-    if (o.mode === 'admin') {
-      var cfg = getConfig();
-      if (!cfg.hasDirectKey) {
-        var ne = new Error('NO_LOCAL_KEY'); ne.code = 'NO_LOCAL_KEY';
-        return Promise.reject(ne);
-      }
+    var cfg = getConfig();
+    var proxyUrl = String(o.proxyUrl || cfg.proxyUrl || '').trim();
+    if (o.mode === 'admin' && cfg.hasDirectKey) {
       return callGemini({
         apiKey: cfg.apiKey,
         systemInstruction: o.system,
         userText: o.user,
-        responseMimeType: 'application/json',
+        responseMimeType: o.responseMimeType !== undefined ? o.responseMimeType : 'application/json',
         temperature: o.temperature !== undefined ? o.temperature : 0.4,
         maxOutputTokens: o.maxOutputTokens || 2048,
         thinkingBudget: 0
       });
     }
-    return TOSS.postProxy(o.proxyUrl, {
-      action: 'chat',
-      partnerToken: o.token || '',
-      systemPrompt: o.system,
-      userText: o.user,
-      temperature: o.temperature !== undefined ? o.temperature : 0.4,
-      maxOutputTokens: o.maxOutputTokens || 2048
-    }).then(function (d) { return sanitizeText(d.reply || d.text || ''); });
+    if (proxyUrl) {
+      return TOSS.postProxy(proxyUrl, {
+        action: 'chat',
+        partnerToken: o.token || '',
+        systemPrompt: o.system,
+        userText: o.user,
+        responseMimeType: o.responseMimeType !== undefined ? o.responseMimeType : 'application/json',
+        temperature: o.temperature !== undefined ? o.temperature : 0.4,
+        maxOutputTokens: o.maxOutputTokens || 2048
+      }).then(function (d) { return sanitizeText(d.reply || d.text || ''); });
+    }
+    var ne = new Error('NO_LOCAL_KEY'); ne.code = 'NO_LOCAL_KEY';
+    return Promise.reject(ne);
   };
 
   // 오프라인 시뮬레이션 (관리자 로컬 테스트 + Gemini 키 미등록 시에만 사용)
@@ -1549,6 +1552,16 @@
     });
   };
 
+  CONSULT.hasAiAvailable = function (ctx) {
+    ctx = ctx || {};
+    var cfg = getConfig();
+    var pUrl = String(ctx.proxyUrl || cfg.proxyUrl || '').trim();
+    if (ctx.mode === 'admin') {
+      return !!(cfg.hasDirectKey || pUrl.length >= 8);
+    }
+    return pUrl.length >= 8;
+  };
+
   // Step 2: 세부 업종 100% 맞춤형 6대 카톡 운영 플로우 실시간 AI 번역 생성 (오프라인 시 키워드 분리 폴백)
   CONSULT.generateSubIndustryFlows = function (ctx) {
     ctx = ctx || {};
@@ -1557,7 +1570,7 @@
     var localFlows = CONSULT.getFlowsForContext(ctx.sectorId, sub);
 
     // 세부 업종이 없거나 AI 미연결이면 즉시 오염 없는 로컬 6대 플로우 반환
-    if (!sub || (ctx.mode === 'admin' && !getConfig().hasDirectKey) || (ctx.mode !== 'admin' && !String(ctx.proxyUrl || '').trim())) {
+    if (!sub || !CONSULT.hasAiAvailable(ctx)) {
       return Promise.resolve({ flows: localFlows, source: 'local_clean' });
     }
 
@@ -1752,17 +1765,23 @@
     var owner = String(ctx.ownerName || '대표님').trim();
     var meta = CONSULT.Q_META[qNum - 1] || CONSULT.Q_META[0];
     var subPack = CONSULT.matchSubDomainPack(ctx.sectorId, sub);
-    var rawChips = (subPack && subPack.pack && subPack.pack.examples && subPack.pack.examples[qNum])
-      ? subPack.pack.examples[qNum].map(function (x) { return interpolateSub(x, sub); })
-      : ((sec && sec.examples && sec.examples[qNum]) ? sec.examples[qNum].slice(0, 3) : []);
+    var batchMap = ctx.customExamplesMap || null;
+    var batchChips = (batchMap && Array.isArray(batchMap[qNum]) && batchMap[qNum].length >= 2) ? batchMap[qNum] : null;
+    var rawChips = batchChips
+      ? batchChips.slice(0, 3)
+      : ((subPack && subPack.pack && subPack.pack.examples && subPack.pack.examples[qNum])
+        ? subPack.pack.examples[qNum].map(function (x) { return interpolateSub(x, sub); })
+        : ((sec && sec.examples && sec.examples[qNum]) ? sec.examples[qNum].slice(0, 3) : []));
 
     var qText = '';
     var topicSnippet = tFirst(A[1] || sub, 28);
     var giftSnippet = tFirst(A[3] || '첫 무료 혜택', 24);
 
     if (qNum === 1) {
-      qText = '**' + sub + '** 분야에 딱 맞는 **' + flowTitle + '**을 골라주셨네요!\n' +
-        owner + ' 대표님, 이번 캠페인으로 **꼭 이루고 싶은 진짜 목표와 핵심 주제**를 편하게 들려주세요.';
+      qText = (ctx.customQ1Text && String(ctx.customQ1Text).trim())
+        ? String(ctx.customQ1Text).trim()
+        : ('**' + sub + '** 분야에 딱 맞는 **' + flowTitle + '**을 골라주셨네요!\n' +
+          owner + ' 대표님, 이번 캠페인으로 **꼭 이루고 싶은 진짜 목표와 핵심 주제**를 편하게 들려주세요.');
     } else if (qNum === 2) {
       qText = '목표가 아주 선명해요! **"' + topicSnippet + '"**에 반응할 **가장 모으고 싶은 핵심 고객**은 어떤 분이고, 그분들이 평소 겪는 **단골 현실 고민**은 무엇인가요?';
     } else if (qNum === 3) {
@@ -1796,55 +1815,104 @@
     }).join('\n');
   };
 
-  // Q1 시작 시에도 업종·세부업종·플로우 맥락에 맞춘 맞춤형 Q1 + 예시 칩 3개 제공
-  CONSULT.getInitialQ1 = function (ctx) {
-    var localPack = CONSULT.buildLocalQuestionPack(1, ctx);
+  // STEP 2 -> STEP 3 전환 시 1회 JSON 호출로 Q1~Q5 전체 맞춤 예시(각 3개, 총 15개) + Q1 질문을 한 번에 동적 생성
+  CONSULT.generateConsultExamplesBatch = function (ctx) {
+    ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
     var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
     var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, sub);
-    // 세부 업종이 비어 있거나 AI 미연결이면 즉시 로컬 팩 반환 (0ms 쾌속 진입)
-    if (ctx.mode === 'admin' && !getConfig().hasDirectKey) {
-      return Promise.resolve(localPack);
+    var localMap = {};
+    for (var n = 1; n <= CONSULT.TOTAL_Q; n++) {
+      localMap[n] = CONSULT.buildLocalQuestionPack(n, ctx).exampleChips;
     }
-    if (ctx.mode !== 'admin' && !String(ctx.proxyUrl || '').trim()) {
-      return Promise.resolve(localPack);
+    var localQ1Text = CONSULT.buildLocalQuestionPack(1, ctx).questionText;
+
+    if (!sub || !CONSULT.hasAiAvailable(ctx)) {
+      return Promise.resolve({
+        q1QuestionText: localQ1Text,
+        examplesMap: localMap,
+        source: 'local_clean'
+      });
     }
 
     var sys = [
       '당신은 고마워톡 수석 마케팅 컨설턴트입니다.',
-      '파트너가 방금 선택한 [분야], [세부 업종], [선택 운영 흐름]에 100% 맞춘 살아있는 첫 번째 질문(Q1: 캠페인 목표 & 핵심 주제)과',
-      '파트너가 터치해 내 내용으로 고쳐 쓸 수 있는 현실적인 예시 문장 칩 3개를 JSON으로 작성하세요.',
-      '절대 규칙:',
-      '1) "어떤 클래스·상품·모임을 알리고 싶으신가요?" 같은 천편일률적 고정 문구 절대 금지. 반드시 세부 업종 언어를 녹여서 물어보세요.',
+      '사용자가 입력한 [세부 업종]과 [선택 운영 흐름]에 100% 전용으로 맞춘 Q1~Q5 심층 인터뷰 예시 문장 세트(각 질문당 정확히 3개, 총 15개)와 Q1 맞춤 질문 문장을 JSON 하나로 작성하세요.',
+      '',
+      '[절대 규칙]',
+      '1) 타 업종 혼입 100% 절대 금지! 오직 사용자가 입력한 [세부 업종] 현장 용어와 실제 상황만 사용하세요.',
+      '   예) 세부 업종이 "기독교 집회"라면 15개 예시 전부 집회·부흥회·수련회·찬양집회·성도·기도제목·순서지 등 관련 내용만 작성하고, 협회·소상공인·독서·러닝 동호회·병원·학원·쇼핑몰 등 다른 업종 단어를 단 한 글자도 절대 섞지 마세요.',
       '2) 내부 시스템 용어(뜰채, 시트 정수 더하기, 1회차 알림톡, 트랙 번호, ' + TOSS_BANNED_LIT + ') 절대 금지.',
-      '3) questionText는 2문장 이내, 친근하고 전문적인 존댓말, 핵심 강조만 **굵게** 1~2곳.',
-      '4) exampleChips는 정확히 3개, 각 35~75자 사이의 실제 대표님이 쓸 법한 완성된 1인칭("~하고 싶어요.") 문장.',
-      '출력 JSON만: {"questionText":"...","exampleChips":["예시1","예시2","예시3"]}'
+      '3) 각 예시 문장은 실제 대표자/운영자가 그대로 터치해 약간만 고쳐 쓸 수 있는 현실적인 1인칭 존댓말 문장(35~80자)으로, 3개가 서로 다른 구체적 각도를 제시하도록 쓰세요.',
+      '4) 질문별 내용:',
+      '   - q1: 캠페인 목표 & 핵심 주제',
+      '   - q2: 핵심 타겟 & 현실 고민',
+      '   - q3: 신청 직후 첫 카톡으로 바로 선물할 무료 혜택·자료·안내',
+      '   - q4: 운영자/단체/브랜드만의 경력·강점·성과 숫자',
+      '   - q5: 신청폼 객관식 분류 질문 + 후속 카톡 주기·말투/언어',
+      '5) q1QuestionText는 2문장 이내, 친근하고 전문적인 존댓말, 핵심 강조만 **굵게** 1~2곳.',
+      '6) 출력은 아래 JSON 객체만 출력하세요:',
+      '{"q1QuestionText":"...","q1":["예시1","예시2","예시3"],"q2":["예시1","예시2","예시3"],"q3":["예시1","예시2","예시3"],"q4":["예시1","예시2","예시3"],"q5":["예시1","예시2","예시3"]}'
     ].join('\n');
 
-    var user = '[대표자] ' + (ctx.ownerName || '대표님') +
-      '\n[분야] ' + (sec ? sec.title : '') +
-      '\n[세부 업종] ' + sub +
+    var user = '[대표자/담당자] ' + (ctx.ownerName || '대표님') +
+      '\n[대분류 분야] ' + (sec ? sec.title : '기타 업종') +
+      '\n[세부 업종 — 15개 예시 전부 오직 이 업종에만 맞춰 작성] ' + sub +
       '\n[선택 운영 흐름] ' + (flow ? (flow.title + ' — ' + flow.summary) : '') +
       '\n\nJSON만 출력하세요.';
 
     return TOSS.callAI({
       mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
-      system: sys, user: user, temperature: 0.45, maxOutputTokens: 900
+      system: sys, user: user, responseMimeType: 'application/json',
+      temperature: 0.4, maxOutputTokens: 2400
     }).then(function (raw) {
       var obj = extractJson(raw);
-      if (!obj || !obj.questionText || !Array.isArray(obj.exampleChips) || obj.exampleChips.length < 2) {
-        return localPack;
+      if (!obj || typeof obj !== 'object') {
+        return { q1QuestionText: localQ1Text, examplesMap: localMap, source: 'local_clean' };
+      }
+      var mergedMap = {};
+      var aiFilledCount = 0;
+      for (var q = 1; q <= CONSULT.TOTAL_Q; q++) {
+        var arr = obj['q' + q] || (obj.examples && (obj.examples[q] || obj.examples[String(q)]));
+        if (Array.isArray(arr) && arr.length >= 3) {
+          var cleaned = arr.slice(0, 3).map(function (c) { return CONSULT.cleanPartnerText(String(c || '').trim()); }).filter(Boolean);
+          if (cleaned.length === 3) {
+            mergedMap[q] = cleaned;
+            aiFilledCount++;
+            continue;
+          }
+        }
+        mergedMap[q] = localMap[q];
       }
       return {
-        qNum: 1,
-        label: localPack.label,
-        usageHint: localPack.usageHint,
-        questionText: CONSULT.cleanPartnerText(obj.questionText),
-        exampleChips: obj.exampleChips.slice(0, 3).map(function (c) { return CONSULT.cleanPartnerText(c); })
+        q1QuestionText: obj.q1QuestionText ? CONSULT.cleanPartnerText(obj.q1QuestionText) : localQ1Text,
+        examplesMap: mergedMap,
+        source: aiFilledCount >= 3 ? 'ai_batch' : 'local_clean'
       };
     }).catch(function () {
-      return localPack;
+      return { q1QuestionText: localQ1Text, examplesMap: localMap, source: 'local_clean' };
+    });
+  };
+
+  // Q1 시작 시: 미리 받아둔 Q1~Q5 배치가 있으면 즉시 반환, 없으면 1회 배치 호출로 Q1~Q5 전체 생성 후 Q1 반환
+  CONSULT.getInitialQ1 = function (ctx) {
+    ctx = ctx || {};
+    if (ctx.customExamplesMap && Array.isArray(ctx.customExamplesMap[1]) && ctx.customExamplesMap[1].length >= 2) {
+      var readyPack = CONSULT.buildLocalQuestionPack(1, ctx);
+      readyPack.examplesMap = ctx.customExamplesMap;
+      readyPack.source = 'ai_prefetched';
+      return Promise.resolve(readyPack);
+    }
+
+    return CONSULT.generateConsultExamplesBatch(ctx).then(function (batch) {
+      var pack = CONSULT.buildLocalQuestionPack(1, Object.assign({}, ctx, {
+        customExamplesMap: batch.examplesMap,
+        customQ1Text: batch.q1QuestionText
+      }));
+      pack.examplesMap = batch.examplesMap;
+      pack.q1QuestionText = batch.q1QuestionText;
+      pack.source = batch.source;
+      return pack;
     });
   };
 
@@ -1878,7 +1946,7 @@
     var localNext = isLastQ ? null : CONSULT.buildLocalQuestionPack(nextQNum, Object.assign({}, ctx, { answers: nextAnswers }));
 
     // 오프라인(키/프록시 미설정) 즉시 진행
-    if ((ctx.mode === 'admin' && !getConfig().hasDirectKey) || (ctx.mode !== 'admin' && !String(ctx.proxyUrl || '').trim())) {
+    if (!CONSULT.hasAiAvailable(ctx)) {
       return Promise.resolve({
         feasible: true,
         completedInterview: isLastQ,
@@ -1897,6 +1965,7 @@
       CONSULT.buildGuardrailManualSummary(),
       '※ 위 목록 외라도 "실시간 맞춤 영상/음성/이미지 즉석 자동 제작 발송", "카톡방 내 실시간 AI 1:1 자유 채팅 상담", "채널 미추가 고객 광고성 친구톡 강제 발송", "알림톡 본문에 할인·특가·쿠폰 발송", "고마워톡 자체 카드결제창/장바구니 내장", "신청폼 내 사진·서류 파일 업로드", "야간(20:30~08:00) 친구톡 발송", "한 회차 6개 이상 다중 분기"가 포함되면 절대 통과시키지 마세요!',
       '※ 단, 파트너가 정상적인 목표·고민·무료 PDF/가이드/쿠폰(친구톡)/상담/예약/기존 링크 연결/객관식 분류 등을 적었다면 반드시 feasible=true로 통과시키세요.',
+      '※ exampleChips 3개는 반드시 사용자가 입력한 [세부 업종](' + sub + ')과 직전 답변 맥락에만 100% 맞춰 작성하고, 다른 업종 예시를 단 한 글자도 절대 섞지 마세요.',
       '',
       '[응답 JSON 규격]',
       'A) 불가능한 기능 감지 시 (다음 질문으로 절대 넘어가지 않음):',
@@ -1905,11 +1974,11 @@
       'B) 구현 가능 시 (feasible=true):',
       isLastQ
         ? '{"feasible":true,"completedInterview":true,"ackText":"5가지 답변을 바탕으로 브랜드 스타일 단계로 넘어가는 따뜻한 한 문장"}'
-        : ('{"feasible":true,"completedInterview":false,"questionText":"직전 답변을 짧게 공감하며 자연스럽게 이어가는 Q' + nextQNum + '(' + nextMeta.label + ') 맞춤 질문 (2문장 이내, 핵심만 **굵게**, 내부 전문용어 및 ' + TOSS_BANNED_LIT + ' 절대 금지)","exampleChips":["이 업종·맥락에 100% 맞춘 현실적 1인칭 예시1 (40~80자)","예시2","예시3"]}')
+        : ('{"feasible":true,"completedInterview":false,"questionText":"직전 답변을 짧게 공감하며 자연스럽게 이어가는 Q' + nextQNum + '(' + nextMeta.label + ') 맞춤 질문 (2문장 이내, 핵심만 **굵게**, 내부 전문용어 및 ' + TOSS_BANNED_LIT + ' 절대 금지)","exampleChips":["[' + sub + '] 전용 현실적 1인칭 예시1 (40~80자)","[' + sub + '] 전용 예시2","[' + sub + '] 전용 예시3"]}')
     ].join('\n');
 
     var user = '[분야] ' + (sec ? sec.title : '') +
-      '\n[세부 업종] ' + sub +
+      '\n[세부 업종 — 타 업종 혼입 절대 금지] ' + sub +
       '\n[선택 운영 흐름] ' + (flow ? (flow.title + ' — ' + flow.summary) : '') +
       '\n[지금까지 받은 답변]\n' + CONSULT.formatConsultAnswers(nextAnswers) +
       '\n\n[방금 검토할 Q' + qNum + ' 답변]\n' + userText +
@@ -1917,7 +1986,8 @@
 
     return TOSS.callAI({
       mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
-      system: sys, user: user, temperature: 0.35, maxOutputTokens: 1200
+      system: sys, user: user, responseMimeType: 'application/json',
+      temperature: 0.35, maxOutputTokens: 1200
     }).then(function (raw) {
       var obj = extractJson(raw);
       if (!obj || typeof obj !== 'object') {
@@ -1949,7 +2019,7 @@
           nextPack: null
         };
       }
-      var chips = (Array.isArray(obj.exampleChips) && obj.exampleChips.length >= 2)
+      var chips = (Array.isArray(obj.exampleChips) && obj.exampleChips.length >= 3)
         ? obj.exampleChips.slice(0, 3).map(function (c) { return CONSULT.cleanPartnerText(c); })
         : localNext.exampleChips;
       return {
@@ -1992,7 +2062,7 @@
       return '고마워톡은 **카카오 1초 신청 ➔ 즉시 첫 카톡(알림톡) ➔ 채널 친구 대상 후속 자동 카톡(친구톡/캐러셀) 및 날짜 예약 발송**을 지원해요. 요금제(Starter 연 24만 / Pro 연 40만), 신청폼 분류, 모바일 웹진 연동 등 구체적인 기능을 물어보시면 바로 안내해 드릴게요!';
     }
 
-    if ((ctx.mode === 'admin' && !getConfig().hasDirectKey) || (ctx.mode !== 'admin' && !String(ctx.proxyUrl || '').trim())) {
+    if (!CONSULT.hasAiAvailable(ctx)) {
       return Promise.resolve(localAnswer());
     }
 
@@ -2008,7 +2078,8 @@
 
     return TOSS.callAI({
       mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
-      system: sys, user: '파트너 질문: ' + q, temperature: 0.25, maxOutputTokens: 700
+      system: sys, user: '파트너 질문: ' + q, responseMimeType: '',
+      temperature: 0.25, maxOutputTokens: 700
     }).then(function (raw) {
       var s = String(raw || '').trim();
       // 혹시 JSON으로 오면 텍스트 추출
@@ -2043,7 +2114,7 @@
 
   CONSULT.summarize = function (ctx, revisionText) {
     var local = CONSULT.localSummary(ctx);
-    if ((ctx.mode === 'admin' && !getConfig().hasDirectKey) || (ctx.mode !== 'admin' && !String(ctx.proxyUrl || '').trim())) {
+    if (!CONSULT.hasAiAvailable(ctx)) {
       if (revisionText) {
         local.goalTopic = tFirst(local.goalTopic + ' · ' + revisionText, 85);
       }

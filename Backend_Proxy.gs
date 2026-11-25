@@ -1735,13 +1735,13 @@ function handleLookupPartner_(body) {
 }
 
 /* =========================================================================
- * 9. Gemini API 프록시 (gemini-3.8-flash 기본 + 실시간 /v1beta/models 동적 탐색 폴백)
+ * 9. Gemini API 프록시 (gemini-3.8-flash 기본 + 실시간 /v1beta/models 다중 폴백 & 캐시)
  * ========================================================================= */
-function fetchAvailableGeminiModel_(apiKey) {
+function fetchAvailableGeminiModels_(apiKey) {
   var url = "https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(apiKey);
   var res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
   if (res.getResponseCode() !== 200) {
-    return DEFAULT_GEMINI_MODEL;
+    return [DEFAULT_GEMINI_MODEL];
   }
   var data = JSON.parse(res.getContentText());
   var models = data.models || [];
@@ -1751,7 +1751,7 @@ function fetchAvailableGeminiModel_(apiKey) {
     var mName = String(models[i].name || "");
     var methods = models[i].supportedGenerationMethods || [];
     if (mName.indexOf("gemini") === -1 || methods.indexOf("generateContent") === -1) continue;
-    if (/embedding|aqa|tts|audio|robotics|image-generation/i.test(mName)) continue;
+    if (/embedding|aqa|tts|audio|robotics|computer-use|image|vision|veo|imagen|learnlm|live|nano/i.test(mName)) continue;
     candidates.push(mName);
   }
 
@@ -1759,8 +1759,10 @@ function fetchAvailableGeminiModel_(apiKey) {
     var score = function (s) {
       var v = 0;
       if (s === DEFAULT_GEMINI_MODEL) v += 1000;
-      if (/flash/i.test(s) && !/lite/i.test(s)) v += 100;
+      if (/flash/i.test(s) && !/lite/i.test(s)) v += 140;
+      else if (/flash/i.test(s)) v += 90;
       if (/pro/i.test(s)) v += 60;
+      if (!/exp|preview|thinking/i.test(s)) v += 45;
       var m = s.match(/gemini-(\d+(?:\.\d+)?)/i);
       if (m) v += parseFloat(m[1]) * 20;
       return v;
@@ -1768,18 +1770,43 @@ function fetchAvailableGeminiModel_(apiKey) {
     return score(b) - score(a);
   });
 
-  return candidates.length ? candidates[0] : DEFAULT_GEMINI_MODEL;
+  return candidates.length ? candidates : [DEFAULT_GEMINI_MODEL];
 }
 
-function invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, maxTokens) {
+function fetchAvailableGeminiModel_(apiKey) {
+  var list = fetchAvailableGeminiModels_(apiKey);
+  return list.length ? list[0] : DEFAULT_GEMINI_MODEL;
+}
+
+function extractGeminiResponseText_(parsed) {
+  var cand = parsed && parsed.candidates && parsed.candidates[0];
+  var parts = (cand && cand.content && cand.content.parts) || [];
+  var out = "";
+  var allText = "";
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i];
+    if (!p || !p.text) continue;
+    allText += String(p.text);
+    if (!p.thought) {
+      out += String(p.text);
+    }
+  }
+  return out || allText;
+}
+
+function invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, maxTokens, responseMimeType) {
   var cleanName = modelName.indexOf("models/") === 0 ? modelName : ("models/" + modelName);
   var endpoint = "https://generativelanguage.googleapis.com/v1beta/" + cleanName + ":generateContent?key=" + encodeURIComponent(apiKey);
+  var genConfig = {
+    temperature: temperature !== undefined ? temperature : 0.4,
+    maxOutputTokens: maxTokens || 2048
+  };
+  if (responseMimeType) {
+    genConfig.responseMimeType = String(responseMimeType);
+  }
   var payload = {
     contents: [{ role: "user", parts: [{ text: promptText }] }],
-    generationConfig: {
-      temperature: temperature !== undefined ? temperature : 0.4,
-      maxOutputTokens: maxTokens || 2048
-    }
+    generationConfig: genConfig
   };
   if (systemPrompt) {
     payload.systemInstruction = { parts: [{ text: systemPrompt }] };
@@ -1792,34 +1819,79 @@ function invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temp
   });
 }
 
-function callGemini_(promptText, systemPrompt, temperature, maxTokens) {
+function callGemini_(promptText, systemPrompt, temperature, maxTokens, responseMimeType) {
   var apiKey = getProp_("GEMINI_API_KEY", "");
   if (!apiKey) {
     throw new Error("스크립트 속성에 GEMINI_API_KEY가 설정되지 않았습니다.");
   }
-  // 1차: gemini-3.8-flash 기본 호출 -> 404/미지원 시 실시간 /v1beta/models 조회로 활성 모델 자동 폴백
-  var res = invokeGeminiEndpoint_(apiKey, DEFAULT_GEMINI_MODEL, promptText, systemPrompt, temperature, maxTokens);
-  if (res.getResponseCode() !== 200) {
-    var fallbackModel = fetchAvailableGeminiModel_(apiKey);
-    res = invokeGeminiEndpoint_(apiKey, fallbackModel, promptText, systemPrompt, temperature, maxTokens);
-  }
-  var code = res.getResponseCode();
-  var text = res.getContentText();
-  if (code !== 200) {
-    var cb = recordCircuitBreakerError_("GEMINI", "HTTP " + code + " " + text.slice(0, 120), -1);
-    if (cb && cb.tripped) {
-      postGoogleChatWebhook_(
-        "[CIRCUIT_BREAKER] Gemini API 3회 연속 오류 감지!\n- HTTP " + code + ": " + text.slice(0, 160),
-        -1
-      );
+
+  var cache = null;
+  var cachedModel = "";
+  try {
+    cache = CacheService.getScriptCache();
+    cachedModel = String(cache.get("ACTIVE_GEMINI_MODEL_CACHE") || "").trim();
+  } catch (cacheErr) {}
+
+  var tried = {};
+  var tryOrder = [];
+  if (cachedModel) tryOrder.push(cachedModel);
+  if (tryOrder.indexOf(DEFAULT_GEMINI_MODEL) === -1) tryOrder.push(DEFAULT_GEMINI_MODEL);
+
+  var lastCode = 0;
+  var lastText = "";
+
+  function attemptModel_(modelName) {
+    if (!modelName || tried[modelName]) return null;
+    tried[modelName] = true;
+    var res = invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, maxTokens, responseMimeType);
+    var code = res.getResponseCode();
+    var text = res.getContentText();
+    // 일부 모델에서 responseMimeType 거부(400) 시 MIME 옵션 제거 후 1회 재시도
+    if (code === 400 && responseMimeType && /responseMimeType|mime/i.test(text)) {
+      res = invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, maxTokens, "");
+      code = res.getResponseCode();
+      text = res.getContentText();
     }
-    throw new Error("Gemini API 오류 (HTTP " + code + "): " + text.slice(0, 200));
+    lastCode = code;
+    lastText = text;
+    if (code === 200) {
+      var parsed = JSON.parse(text);
+      var extracted = extractGeminiResponseText_(parsed);
+      if (extracted && String(extracted).trim() !== "") {
+        try {
+          if (cache) cache.put("ACTIVE_GEMINI_MODEL_CACHE", modelName, 600);
+        } catch (ce) {}
+        setProp_("GEMINI_CONSECUTIVE_ERRORS", "0");
+        return extracted;
+      }
+    }
+    return null;
   }
-  setProp_("GEMINI_CONSECUTIVE_ERRORS", "0");
-  var parsed = JSON.parse(text);
-  var cand = parsed.candidates && parsed.candidates[0];
-  var part = cand && cand.content && cand.content.parts && cand.content.parts[0];
-  return part ? String(part.text || "") : "";
+
+  for (var i = 0; i < tryOrder.length; i++) {
+    var okText = attemptModel_(tryOrder[i]);
+    if (okText !== null) return okText;
+  }
+
+  // 기본/캐시 모델 실패 시 실시간 /v1beta/models 탐색 후 상위 4개 후보 순차 시도
+  var discovered = fetchAvailableGeminiModels_(apiKey);
+  var attempts = 0;
+  for (var j = 0; j < discovered.length && attempts < 4; j++) {
+    var candModel = discovered[j];
+    if (tried[candModel]) continue;
+    attempts++;
+    var fallbackText = attemptModel_(candModel);
+    if (fallbackText !== null) return fallbackText;
+  }
+
+  var cb = recordCircuitBreakerError_("GEMINI", "HTTP " + lastCode + " " + String(lastText || "").slice(0, 120), -1);
+  if (cb && cb.tripped) {
+    postGoogleChatWebhook_(
+      "[CIRCUIT_BREAKER] Gemini API 3회 연속 오류 감지!\n- HTTP " + lastCode + ": " + String(lastText || "").slice(0, 160),
+      -1
+    );
+  }
+  throw new Error("Gemini API 오류 (HTTP " + lastCode + "): " + String(lastText || "").slice(0, 200));
 }
 
 function handleGenerateImageProxy_(body) {
@@ -1869,7 +1941,7 @@ function extractJsonSafe_(rawText) {
 function handleChatProxy_(body) {
   var userText = String(body.userText || "");
   var sys = String(body.systemPrompt || "당신은 고마워톡 전문 컨설턴트입니다. 카카오 알림톡 규정을 준수하여 친절하게 답변하세요.");
-  var reply = callGemini_(userText, sys, body.temperature, body.maxOutputTokens);
+  var reply = callGemini_(userText, sys, body.temperature, body.maxOutputTokens, body.responseMimeType || "");
   return { ok: true, reply: reply };
 }
 
@@ -1879,7 +1951,7 @@ function handlePinpointEdit_(body) {
   var currentTabJson = JSON.stringify(body.currentData || {});
   var sys = "당신은 고마워톡 캠페인 카피라이터입니다. 사용자의 수정 지시를 반영해 입력된 JSON과 동일한 구조의 JSON만 반환하세요. 알림톡 금지어(할인, 특가, 이벤트, 무료증정)는 알림톡 영역에 절대 넣지 마세요.";
   var prompt = "현재 탭(" + tabId + ") 데이터:\n" + currentTabJson + "\n\n수정 지시:\n" + instruction + "\n\n수정된 JSON만 중괄호로 감싸서 출력하세요.";
-  var raw = callGemini_(prompt, sys, 0.4, 4096);
+  var raw = callGemini_(prompt, sys, 0.4, 4096, "application/json");
   var updated = extractJsonSafe_(raw);
   if (!updated) {
     return { ok: false, error: "AI 응답에서 JSON을 추출하지 못했습니다.", raw: raw };

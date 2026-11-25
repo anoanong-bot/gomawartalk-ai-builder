@@ -1,6 +1,6 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-25 22:32 (KST · 2026-11-25 최종 마감 — `Proposal.html` V2.4 순정 UI·플라잉 꼬리표·손가락 코치마크 완결 & 실서버 배포·카카오싱크 실전 정렬 통합 반영)
+- **최종 갱신일시:** 2026-11-25 22:43 (KST · STEP 3 Q1~Q5 세부 업종 전용 동적 예시 배치 + 정적 폴백 3종 분리 + GAS Gemini 프록시 다중 폴백/캐시 강화 완료)
 - **기준 버전:** Master PRD V2.3 / `Proposal.html` V2.4 (V2.2 As-Built 100% 무손실 보존)
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
 - **실서버 배포 URL:** `https://anoanong-bot.github.io/gomawartalk-ai-builder/`
@@ -30,6 +30,10 @@
    - **플라잉 꼬리표 스탬프 & 컬러 동기화:** Step 2~5 상단 다크 캡슐 고객 상태 바(`👤 체험고객 김민지 님`) + 설문 선택 시 고유 컬러 꼬리표(`🏷️ #꼬리표명`) 비행 부착 애니메이션 + Step 3·4·5 카톡 말풍선 동일 컬러 `🏷️ 맞춤 반영` 하이라이트 + Step 4 전체 설문 꼬리표 칩 0.2초 모핑 즉시 비교
    - **모드 버튼 제거 & 손가락 코치마크(`👆` + 동심원 파동):** `[▶ 자동 시연 / ⏸ 일시정지]` 버튼 제거(스텝 바 우측 아이콘형 `↻`만 유지), 실제 타겟 위 깜빡이는 `👆` 코치마크 스마트 하이브리드 유도(미조작 시 자동 진행 ➔ 터치 즉시 타이머 해제 후 다음 타겟 가이드만 유지)
    - **가드레일 100% 보존:** `?fileId=...` 드라이브 JSON 조회·`?demo=1` 폴백, 하단 `세팅 확정 신청하기` 폼(`confirm_proposal`, 14개 DOM ID, `EDIT_ONCE` 메모, 잠금 배너, `gmt_proposal_confirm` 브릿지), V2.7 실존 기능만 탑재
+6. **STEP 3 Q1~Q5 세부 업종 100% 전용 예시 동적 생성 & GAS Gemini 프록시 안정화 *(완료)*:**
+   - `InterviewBot.html` & `engines/RagInterviewEngine.js`: STEP 2 흐름 선택 시 `Consult.generateConsultExamplesBatch()`로 Q1~Q5 15개 맞춤 예시를 1회 JSON 프리패치, STEP 3 진입·질문 점프·다음 문항 전환 전체에 타 업종 혼입 0% 보장(로컬 키 없는 환경에서도 `Backend_Proxy.gs` 자동 라우팅)
+   - `Backend_Proxy.gs`: `fetchAvailableGeminiModels_()` 비텍스트 모델(`image|vision|audio|tts|live|nano` 등) 제외 + `callGemini_()` 최대 4후보 순차 폴백 + `CacheService` 10분 활성 모델 캐시 + thinking 파트(`!p.thought`) 필터링 + `responseMimeType` 지원
+   - `data/GomawartalkManual.js`: `subDomainPacks`에 `church_gathering` / `association_org` / `hobby_club` 3종 완전 분리 (`기독교 집회`·`협회`·`독서/러닝 모임` 폴백 혼입 원천 차단)
 
 ---
 
@@ -39,7 +43,8 @@
    - [ ] `Backend_Proxy.gs`에서 카카오 사용자 정보 응답(`kakao_account.phone_number` 예: `+82 10-1234-5678` 국제번호/하이픈 포맷, 권한 미반환 케이스 등) 파싱 로직과 시트 기록 과정을 정밀 진단해 `01000000000` 폴백이 발생하는 근본 원인 수정
 2. **[P0 · 인프라 안정화] GAS 호출 서버 유동 IP 대응 점검:**
    - [ ] Google Apps Script(`UrlFetchApp`)의 아웃바운드 유동 IP 특성상 카카오 디벨로퍼스 REST API 호출 허용 IP(`220.88.183.131`, `210.95.241.214`) 외 Google IP 대역 호출 시 차단되는 현상 점검 및 허용 IP 정책/대응 방안 확정
-3. **[P1 · 배포 반영] `Proposal.html` V2.4 마감 커밋 원격 Push:**
-   - [ ] GitHub Desktop에서 최신 마감 커밋을 `origin/master`로 Push하여 실서버(`https://anoanong-bot.github.io/gomawartalk-ai-builder/Proposal.html`)에 V2.4 시뮬레이터 즉시 반영 및 스마트폰 실기 확인
+3. **[P1 · 배포 반영] 최신 마감 커밋 원격 Push & GAS 웹 앱 재배포:**
+   - [ ] GitHub Desktop에서 최신 커밋을 `origin/master`로 Push (`InterviewBot.html`, `Proposal.html`, `engines/RagInterviewEngine.js`, `data/GomawartalkManual.js` 실서버 반영)
+   - [ ] Google Apps Script 편집기에 갱신된 `Backend_Proxy.gs` 반영 후 `[배포 > 배포 관리 > 새 버전]` 배포 (Gemini 다중 모델 폴백·캐시·thinking 파트 필터링 실서버 적용)
 4. **[P1 · 12월 7일 마일스톤] 구글 시트(`파트너캠페인관제탑`) 중심 전체 E2E 최종 완결 점검:**
    - [ ] **12월 7일 목표:** 실전 스마트폰에서 `카카오싱크 로그인(실제 전화번호 정상 기록)` ➔ `인터뷰봇 무료 체험 제출` ➔ `구글 시트(파트너캠페인관제탑) 행·드라이브 JSON 생성` ➔ `Proposal.html V2.4 시뮬레이터 & 세팅 확정(수정메모) 제출` ➔ `Google Chat 알림 수신` ➔ `시트 등급 Pro 승격` ➔ `LandingBuilder.html 유료 조종석 포스트잇·AI 이미지 채우기`까지 전 구간 E2E 최종 완결 검증

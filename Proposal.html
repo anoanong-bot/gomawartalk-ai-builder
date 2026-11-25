@@ -1879,7 +1879,7 @@ button { cursor: pointer; border: none; background: none; }
  * [상단 분리 설정 객체] Backend_Proxy.gs 배포 URL (공개 파일 — 비밀 키 기입 금지)
  * ═══════════════════════════════════════════════════════════════════════════ */
 const PROPOSAL_CONFIG = {
-  BACKEND_PROXY_URL: ''
+  BACKEND_PROXY_URL: 'https://script.google.com/macros/s/AKfycbz-XDsBzinTqayvknhpCbCvHDFUC86exY9rs6AuxUGWFGg-NPiLET5QiekTHL1XuY9Tlw/exec'
 };
 
 const STORAGE_KEYS = {
@@ -2093,13 +2093,13 @@ const STATE = {
 };
 
 function getProxyUrl() {
-  if (PROPOSAL_CONFIG.BACKEND_PROXY_URL && PROPOSAL_CONFIG.BACKEND_PROXY_URL.trim()) {
-    return PROPOSAL_CONFIG.BACKEND_PROXY_URL.trim();
-  }
   try {
     const qsProxy = (new URLSearchParams(location.search).get('proxy') || '').trim();
     if (qsProxy) return qsProxy;
   } catch (e) {}
+  if (PROPOSAL_CONFIG.BACKEND_PROXY_URL && PROPOSAL_CONFIG.BACKEND_PROXY_URL.trim()) {
+    return PROPOSAL_CONFIG.BACKEND_PROXY_URL.trim();
+  }
   try {
     return (localStorage.getItem(STORAGE_KEYS.PROXY_URL) || localStorage.getItem(STORAGE_KEYS.LEGACY_PROXY) || '').trim();
   } catch (e) {

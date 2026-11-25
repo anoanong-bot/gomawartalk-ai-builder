@@ -3655,10 +3655,15 @@ function init() {
     if (presets && presets.academy) S.meta.industry_code = '';
   }
 
-  try { $('#proxy-url').value = localStorage.getItem('gmt_proxy_url') || ''; } catch (e) {}
+  const defaultProxy = (Eng && Eng.DEFAULT_PROXY_URL) || 'https://script.google.com/macros/s/AKfycbz-XDsBzinTqayvknhpCbCvHDFUC86exY9rs6AuxUGWFGg-NPiLET5QiekTHL1XuY9Tlw/exec';
+  try { $('#proxy-url').value = localStorage.getItem('gmt_proxy_url') || defaultProxy; } catch (e) { $('#proxy-url').value = defaultProxy; }
   bind(); renderAll(); updateAiKeyBadge();
-  // 로컬 테스트 환경에서 Proxy 미설정 시 유료 샘플 + 로컬 E2E 브릿지 목록 자동 세팅
-  if (!$('#proxy-url').value.trim()) {
+  // 로컬 테스트 환경에서 유료 샘플 + 로컬 E2E 브릿지 목록 기본 세팅 (새로고침 클릭 시 실서버 list_paid 즉시 조회)
+  if (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    loadDemoIntakeList(true);
+  } else if ($('#proxy-url').value.trim()) {
+    refreshIntake();
+  } else {
     loadDemoIntakeList(true);
   }
 

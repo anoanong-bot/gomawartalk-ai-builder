@@ -1,6 +1,6 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-25 14:56 (KST · **`Proposal.html` 시각 도식화·Y자 분기 플로우차트·블러 스마트폰 목업 전면 리디자인 완료**)
+- **최종 갱신일시:** 2026-11-25 15:31 (KST · 실배포 GAS 웹 앱 URL & 카카오 JavaScript 키 프론트엔드 전면 연동 완료)
 - **기준 버전:** Master PRD V2.3 Final (V2.2 As-Built 100% 무손실 보존 + V2.3 카카오싱크 퍼널 · 모바일 제안서 · 유료 조종석 필터 & 포스트잇 전 단계 완결)
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
 - **코드 기준 상태:** V2.3 전 단계 코드 완료 · 전 파일(10/10) V8 구문/보안(비밀키 0건, 금지어 0건, 구형 모델 0건, GAS 백틱 0건)/4단계 E2E 통합 검증 **전원 PASS**
@@ -35,7 +35,7 @@
    - [ ] 편집기에서 `setupV23ControlTowerSheet` 함수 1회 실행해 15컬럼 시트·모바일 리모컨·드롭다운 생성
    - [ ] `[배포] ➔ [새 배포] ➔ [웹 앱]` (실행 주체: 나 / 액세스 권한: 모든 사용자) 배포 후 `/exec` URL 복사
 2. **프론트엔드 실배포 URL 연결 & GitHub Pages 개통:**
-   - [ ] `InterviewBot.html` 상단 `PARTNER_BOT_CONFIG`에 `KAKAO_JS_KEY`, `BACKEND_PROXY_URL`, `UPGRADE_INQUIRY_URL` 입력
-   - [ ] `Proposal.html` 상단 `PROPOSAL_CONFIG`에 `BACKEND_PROXY_URL` 입력
-   - [ ] 카카오 디벨로퍼스 `[플랫폼 > Web 도메인]` 및 `[카카오 로그인 > Redirect URI]`에 GitHub Pages 배포 주소 등록
+   - [x] `InterviewBot.html`(`KAKAO_JS_KEY`, `BACKEND_PROXY_URL`), `Proposal.html`(`BACKEND_PROXY_URL`), `LandingBuilder.html`, `engines/RagInterviewEngine.js`(`DEFAULT_PROXY_URL`) 실배포 GAS 웹 앱 URL 연결 완료
+   - [ ] GitHub 저장소 원격 푸시 및 GitHub Pages 활성화 ➔ 배포 URL 확인
+   - [ ] 카카오 디벨로퍼스 `[플랫폼 > Web 도메인]` 및 `[카카오 로그인 > Redirect URI]`에 GitHub Pages 배포 주소 등록 + GAS 스크립트 속성 `PROPOSAL_URL`, `BUILDER_URL`, `KAKAO_REDIRECT_URI` 최종 반영
    - [ ] 실전 스마트폰에서 카카오싱크 로그인 ➔ 무료 체험 2회 제출 ➔ `Proposal.html` 수정메모 확정 ➔ Google Chat `HUMAN_QA_READY` 수신 ➔ 시트 등급 `Pro` 승격 ➔ `LandingBuilder.html` 포스트잇·AI 이미지 채우기 최종 라이브 QA

@@ -19,6 +19,7 @@
   };
 
   var DEFAULT_MODEL = 'gemini-3.8-flash';
+  var DEFAULT_PROXY_URL = 'https://script.google.com/macros/s/AKfycbz-XDsBzinTqayvknhpCbCvHDFUC86exY9rs6AuxUGWFGg-NPiLET5QiekTHL1XuY9Tlw/exec';
   var BANNED_RE = new RegExp('\\uB274\\uC2A4\\uB808\\uD130', 'g');
   var CACHED_DISCOVERED_MODELS = null;
 
@@ -26,7 +27,7 @@
   // 1. 공유 설정 & 브릿지 스토리지 (InterviewBot <-> LandingBuilder)
   // ─────────────────────────────────────────────────────────────
   function getConfig() {
-    var apiKey = '', model = DEFAULT_MODEL, proxyUrl = '';
+    var apiKey = '', model = DEFAULT_MODEL, proxyUrl = DEFAULT_PROXY_URL;
     try {
       apiKey = (localStorage.getItem(STORAGE_KEYS.API_KEY) || '').trim();
       var savedModel = (localStorage.getItem(STORAGE_KEYS.MODEL) || '').trim();
@@ -36,7 +37,8 @@
       } else {
         model = savedModel;
       }
-      proxyUrl = (localStorage.getItem(STORAGE_KEYS.PROXY_URL) || localStorage.getItem(STORAGE_KEYS.LEGACY_PROXY) || '').trim();
+      var savedProxy = (localStorage.getItem(STORAGE_KEYS.PROXY_URL) || localStorage.getItem(STORAGE_KEYS.LEGACY_PROXY) || '').trim();
+      proxyUrl = savedProxy || DEFAULT_PROXY_URL;
     } catch (e) {}
     return {
       apiKey: apiKey,
@@ -2213,6 +2215,7 @@
 
   // 정적 헬퍼 노출
   RagInterviewEngine.DEFAULT_MODEL = DEFAULT_MODEL;
+  RagInterviewEngine.DEFAULT_PROXY_URL = DEFAULT_PROXY_URL;
   RagInterviewEngine.getConfig = getConfig;
   RagInterviewEngine.saveConfig = saveConfig;
   RagInterviewEngine.saveBridgeCampaign = saveBridgeCampaign;

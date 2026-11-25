@@ -985,7 +985,8 @@
     ].join('\n');
   };
 
-  TOSS.postProxy = function (url, body) {
+  TOSS.postProxy = function (url, body, opts) {
+    opts = opts || {};
     var u = String(url || '').trim();
     if (!u) return Promise.reject(new Error('서버 연결 주소(BACKEND_PROXY_URL)가 설정되지 않았어요.'));
     return fetch(u, {
@@ -996,9 +997,10 @@
       if (!res.ok) throw new Error('서버 응답 오류 (HTTP ' + res.status + ')');
       return res.json();
     }).then(function (data) {
-      if (data && data.error) {
+      if (data && data.error && !opts.allowErrorPayload && !data.quotaExceeded) {
         var e = new Error(data.error);
         e.code = data.code || '';
+        e.data = data;
         throw e;
       }
       return data;
@@ -1338,8 +1340,33 @@
       });
   };
 
-  TOSS.submitCampaign = function (proxyUrl, token, master) {
-    return TOSS.postProxy(proxyUrl, { action: 'submit_campaign', partnerToken: token, payload: master });
+  TOSS.submitCampaign = function (proxyUrl, tokenOrOpts, master) {
+    var opts = (tokenOrOpts && typeof tokenOrOpts === 'object')
+      ? tokenOrOpts
+      : { partnerToken: String(tokenOrOpts || '') };
+    var payloadBody = {
+      action: 'submit_campaign',
+      partnerToken: opts.partnerToken || opts.userToken || '',
+      userToken: opts.userToken || '',
+      kakao_user_id: opts.kakao_user_id || '',
+      name: opts.name || '',
+      phone: opts.phone || '',
+      adminBypass: !!opts.adminBypass,
+      skip_image_gen: opts.skip_image_gen !== false,
+      auth: {
+        kakao_user_id: opts.kakao_user_id || '',
+        name: opts.name || '',
+        phone: opts.phone || '',
+        userToken: opts.userToken || '',
+        adminBypass: !!opts.adminBypass
+      },
+      payload: master
+    };
+    return TOSS.postProxy(proxyUrl, payloadBody, { allowErrorPayload: true });
+  };
+
+  TOSS.verifyUserAndQuota = function (proxyUrl, payload) {
+    return TOSS.postProxy(proxyUrl, Object.assign({ action: 'verifyUserAndQuota' }, payload || {}), { allowErrorPayload: true });
   };
 
   TOSS.verifyPartner = function (proxyUrl, payload) {
@@ -2080,15 +2107,21 @@
 
     var master = TOSS.assembleCampaign(aiJson, mappedAnswers, partner);
 
-    // 메타 & 파트너 정보 강화
+    // 메타 & 파트너 정보 강화 (V2.3: 텍스트 5대 탭 JSON 전용 생성 — 인터뷰 단계 이미지 생성 보류)
+    var skipImageGen = ctx.skipImageGen !== false;
     master.meta.source = 'partner_bot_consult5';
-    master.meta.auto_generate_visuals = true;
+    master.meta.skip_image_gen = skipImageGen;
+    master.meta.generation_mode = skipImageGen ? 'TEXT_ONLY_5TABS' : 'FULL_WITH_VISUALS';
+    master.meta.auto_generate_visuals = !skipImageGen;
     if (ctx.summary && typeof ctx.summary.useWebzine === 'boolean') {
       master.meta.use_webzine = ctx.summary.useWebzine;
     } else if (flow && typeof flow.useWebzine === 'boolean') {
       master.meta.use_webzine = flow.useWebzine;
     }
 
+    master.partner_info.kakao_user_id = partner.kakao_user_id || '';
+    master.partner_info.tier = partner.tier || '가망고객';
+    master.partner_info.current_plan = (partner.tier === 'Pro') ? 'PRO' : (partner.tier === 'Starter' ? 'STARTER' : 'LEAD');
     master.partner_info.sector_id = ctx.sectorId || '';
     master.partner_info.sector_label = sec ? sec.title : '';
     master.partner_info.sub_industry = ctx.subIndustry || '';

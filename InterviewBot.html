@@ -182,6 +182,214 @@ button { cursor: pointer; border: none; background: none; }
 }
 .hbtn:active { background: var(--g200); }
 
+/* V2.3 상단 등급 및 잔여 횟수 배지 */
+.quota-bar-row {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.quota-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.quota-pill.tier-lead {
+  background: #FFF7ED;
+  color: #C2410C;
+  border: 1px solid #FED7AA;
+}
+.quota-pill.tier-starter {
+  background: var(--blue-lt);
+  color: var(--blue-dk);
+  border: 1px solid #BFDBFE;
+}
+.quota-pill.tier-pro {
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+.quota-pill.tier-empty {
+  background: var(--red-lt);
+  color: var(--red);
+  border: 1px solid var(--red-bd);
+}
+.quota-sub-hint {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--g500);
+  white-space: nowrap;
+}
+
+/* V2.3 한도 초과 차단 화면 (#quota-blocked-gate) */
+#quota-blocked-gate {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 22px calc(24px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+  overflow-y: auto;
+  gap: 18px;
+}
+.blocked-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.blocked-icon-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: var(--amber-lt);
+  border: 1px solid var(--amber-bd);
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+}
+.blocked-title {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--g900);
+  word-break: keep-all;
+}
+.blocked-desc {
+  font-size: 14px;
+  color: var(--g700);
+  line-height: 1.55;
+  word-break: keep-all;
+}
+.blocked-plan-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 4px;
+}
+.blocked-plan-card {
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--g200);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.blocked-plan-card.pro {
+  border-color: var(--blue);
+  background: #F4F9FF;
+}
+.blocked-plan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--g900);
+}
+.blocked-plan-price {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--blue-dk);
+}
+.blocked-plan-sub {
+  font-size: 12.5px;
+  color: var(--g700);
+  line-height: 1.45;
+}
+.blocked-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+/* V2.3 듀얼 트랙 완료 화면 스타일 (가망고객 제안서 vs 유료 파트너 직행) */
+.done-track-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11.5px;
+  font-weight: 800;
+}
+.done-track-badge.lead { background: #FFF7ED; color: #C2410C; border: 1px solid #FED7AA; }
+.done-track-badge.paid { background: var(--green-lt); color: #065F46; border: 1px solid var(--green-bd); }
+.done-reassure-box {
+  padding: 13px 14px;
+  border-radius: 13px;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E3A8A;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+.done-paid-box {
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--green-lt);
+  border: 1.5px solid var(--green-bd);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #065F46;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+.done-cta-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 2px;
+}
+.btn-proposal-open {
+  width: 100%;
+  min-height: 54px;
+  padding: 15px 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  font-size: 15.5px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28);
+}
+.btn-proposal-open:active { transform: scale(0.985); }
+.btn-proposal-copy {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: 13px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--blue);
+  color: var(--blue-dk);
+  font-size: 14.5px;
+  font-weight: 800;
+  text-align: center;
+}
+.btn-proposal-copy:active { background: var(--blue-lt); }
+.copy-toast-msg {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--green);
+  text-align: center;
+}
+
 /* 5단계 진행률 바 */
 .stage-progress-wrap { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
 .stage-progress-top { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 800; }
@@ -1200,23 +1408,23 @@ button { cursor: pointer; border: none; background: none; }
 
 <div id="mobile-shell">
 
-  <!-- ═════════ 1. 선(先) 파트너 인증 게이트 (비인증자 AI 토큰 소모 100% 차단) ═════════ -->
+  <!-- ═════════ 1. 카카오싱크 선인증 게이트 (등급 확인 & 서버단 횟수 통제) ═════════ -->
   <section id="auth-gate">
     <div class="auth-hero">
-      <div class="auth-badge">🔒 고마워톡 파트너 전용 서비스</div>
+      <div class="auth-badge">💬 고마워톡 AI 캠페인 컨설턴트</div>
       <h1 class="auth-title">우리 업종에 딱 맞춘<br>카카오 캠페인 5단계 컨설팅</h1>
-      <p class="auth-desc">사전 승인된 고마워톡 파트너 대표님만 이용하실 수 있어요. 카카오로 1초 인증 후 내 분야 맞춤 흐름부터 브랜드 사진까지 한 번에 기획해 보세요.</p>
+      <p class="auth-desc">카카오 1초 로그인으로 내 업종 맞춤 캠페인 기획안과 카톡 자동화 시뮬레이션을 무료로 체험(2회)해 보세요. 유료 파트너 대표님은 월간 제작 한도로 바로 접수됩니다.</p>
 
       <div class="auth-steps-card">
         <div class="auth-step-row"><span class="auth-step-num">1</span><span>6대 분야 선택 & 내 업종 맞춤 카톡 흐름 미리보기</span></div>
         <div class="auth-step-row"><span class="auth-step-num">2</span><span>예시 터치로 쉽게 고치는 5단계 심층 컨설팅 + 가능 여부 즉시 검증</span></div>
-        <div class="auth-step-row"><span class="auth-step-num">3</span><span>로고·브랜드 컬러·실제 사진 담아 제작 요청 제출하면 끝!</span></div>
+        <div class="auth-step-row"><span class="auth-step-num">3</span><span>로고·브랜드 컬러·실제 사진 담아 맞춤 제안서 생성 또는 즉시 세팅 접수!</span></div>
       </div>
 
       <div class="auth-actions">
         <button type="button" class="btn-kakao-auth" id="btn-kakao-login">
           <span>💬</span>
-          <span>카카오로 1초 파트너 인증하기</span>
+          <span>카카오로 1초 시작하기</span>
         </button>
         <div id="auth-status-box" class="auth-msg-box" hidden></div>
       </div>
@@ -1232,7 +1440,48 @@ button { cursor: pointer; border: none; background: none; }
         <input type="text" class="admin-in" id="admin-biz-input" placeholder="테스트 상호/채널명" value="한빛 병의원 세무회계">
         <input type="text" class="admin-in" id="admin-owner-input" placeholder="대표자명" value="김대표">
       </div>
+      <select class="admin-in" id="admin-tier-select" aria-label="로컬 테스트 등급 선택">
+        <option value="lead">테스트 등급: 🎯 가망고객 (잔여 2/2회 · 제안서 분기)</option>
+        <option value="starter">테스트 등급: ⭐ Starter (잔여 2/2회 · 유료 직행)</option>
+        <option value="pro">테스트 등급: 👑 Pro (잔여 10/10회 · 패스트트랙)</option>
+        <option value="lead_exhausted">테스트 등급: ⛔ 가망고객 한도초과 (잔여 0/2회 · 차단 화면)</option>
+      </select>
       <button type="button" class="btn-admin-pass" id="btn-admin-freepass">🛠️ 관리자 로컬 테스트 프리패스 (즉시 입장)</button>
+    </div>
+  </section>
+
+  <!-- ═════════ 1-B. V2.3 잔여 횟수 0회 한도 초과 차단 화면 ═════════ -->
+  <section id="quota-blocked-gate" hidden>
+    <div class="blocked-hero">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div class="blocked-icon-circle" id="blocked-icon">🎯</div>
+        <span class="quota-pill tier-empty" id="blocked-quota-pill">무료 체험 잔여: 0/2회</span>
+      </div>
+      <h1 class="blocked-title" id="blocked-title">무료 캠페인 설계 체험(2회)을 모두 완료하셨습니다</h1>
+      <p class="blocked-desc" id="blocked-desc">고마워톡을 도입하시면 담당 전문가가 업종 맞춤 고화질 이미지 제작부터 카카오 알림톡·친구톡 어드민 세팅까지 100% 완료해 드립니다.</p>
+
+      <div class="blocked-plan-grid">
+        <div class="blocked-plan-card">
+          <div class="blocked-plan-head">
+            <span>⭐ Starter 플랜</span>
+            <span class="blocked-plan-price">연 24만 원</span>
+          </div>
+          <div class="blocked-plan-sub">매월 2회 캠페인 전문가 제작 · 영업일 3일 이내 어드민 세팅 완료</div>
+        </div>
+        <div class="blocked-plan-card pro">
+          <div class="blocked-plan-head">
+            <span>👑 Pro 플랜 (추천)</span>
+            <span class="blocked-plan-price">연 40만 원</span>
+          </div>
+          <div class="blocked-plan-sub">매월 10회 캠페인 제작 · 영업일 1일 패스트트랙 + 브랜드 로고 맞춤 알림톡</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="blocked-actions">
+      <a class="btn-proposal-open" id="btn-quota-upgrade-cta" href="https://gomawartalk.com" target="_blank" rel="noopener noreferrer">🚀 고마워톡 도입 / 업그레이드 문의하기</a>
+      <button type="button" class="btn-secondary" id="btn-quota-recheck">🔄 등급 변경 후 잔여 횟수 다시 확인하기</button>
+      <button type="button" class="btn-secondary" id="btn-blocked-back-auth" hidden>🛠️ 관리자 테스트 화면으로 돌아가기</button>
     </div>
   </section>
 
@@ -1248,6 +1497,10 @@ button { cursor: pointer; border: none; background: none; }
           <button type="button" class="hbtn" id="btn-top-ai-cfg" hidden>🔑 AI</button>
           <button type="button" class="hbtn" id="btn-reset">처음부터</button>
         </div>
+      </div>
+      <div class="quota-bar-row" id="quota-bar-row" hidden>
+        <span class="quota-pill tier-lead" id="quota-badge">🎯 무료 체험 잔여: 2/2회</span>
+        <span class="quota-sub-hint" id="quota-sub-hint">텍스트 5대 탭 무료 설계</span>
       </div>
       <div class="stage-progress-wrap">
         <div class="stage-progress-top">
@@ -1560,10 +1813,12 @@ button { cursor: pointer; border: none; background: none; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * [상단 분리 설정 객체] 카카오 JavaScript 키 & Backend_Proxy.gs 배포 URL
+ * (주의: 공개 파일이므로 GEMINI_API_KEY, KAKAO_REST_API_KEY 등 비밀 키 절대 기입 금지)
  * ═══════════════════════════════════════════════════════════════════════════ */
 const PARTNER_BOT_CONFIG = {
   KAKAO_JS_KEY: 'YOUR_KAKAO_JAVASCRIPT_KEY',
-  BACKEND_PROXY_URL: ''
+  BACKEND_PROXY_URL: '',
+  UPGRADE_INQUIRY_URL: 'https://gomawartalk.com'
 };
 
 const $ = (s, r) => (r || document).querySelector(s);
@@ -1592,7 +1847,23 @@ const ST = {
   verified: false,
   isAdminBypass: false,
   partnerToken: '',
-  partnerInfo: { businessName: '', ownerName: '', phone: '', email: '' },
+  userToken: '',
+  user: { kakao_user_id: '', name: '', phone: '', email: '' },
+  quota: {
+    tier: '가망고객',
+    quotaType: 'TOTAL',
+    limit: 2,
+    used: 0,
+    remaining: 2,
+    allowed: true,
+    totalUsed: 0,
+    monthlyUsed: 0,
+    lastUsedMonth: '',
+    currentMonth: '',
+    message: '',
+    ctaType: ''
+  },
+  partnerInfo: { businessName: '', ownerName: '', phone: '', email: '', kakao_user_id: '', tier: '가망고객' },
 
   stage: 1, // 1..5
   sectorId: '',
@@ -1600,6 +1871,7 @@ const ST = {
   flowId: '',
   customFlows: [],
   submitted: false,
+  lastSubmitResult: null,
 
   qNum: 1, // 1..5
   answers: {},
@@ -1647,7 +1919,55 @@ function getAiMode() {
   return ST.isAdminBypass ? 'admin' : 'partner';
 }
 
-/* ═══════════════ 1. 선(先) 파트너 인증 게이트 로직 (기존 완성 규격 100% 유지) ═══════════════ */
+/* ═══════════════ 1. V2.3 카카오싱크 선인증 & 등급·잔여 횟수 배지 / 한도 차단 게이트 ═══════════════ */
+function normalizeTier(raw) {
+  const s = String(raw == null ? '' : raw).trim().toLowerCase();
+  if (s === 'pro') return 'Pro';
+  if (s === 'starter') return 'Starter';
+  return '가망고객';
+}
+
+function isPaidTier(tier) {
+  const t = normalizeTier(tier);
+  return t === 'Starter' || t === 'Pro';
+}
+
+function formatQuotaBadgeText(quota) {
+  const q = quota || {};
+  const tier = normalizeTier(q.tier);
+  const limit = Number(q.limit) || (tier === 'Pro' ? 10 : 2);
+  const remaining = Math.max(0, Number.isFinite(Number(q.remaining)) ? Number(q.remaining) : Math.max(0, limit - (Number(q.used) || 0)));
+  if (tier === 'Pro') {
+    return '👑 Pro 잔여: ' + remaining + '/' + limit + '회 (월간)';
+  }
+  if (tier === 'Starter') {
+    return '⭐ Starter 잔여: ' + remaining + '/' + limit + '회 (월간)';
+  }
+  return '🎯 무료 체험 잔여: ' + remaining + '/' + limit + '회';
+}
+
+function renderQuotaBadge() {
+  const row = $('#quota-bar-row');
+  const pill = $('#quota-badge');
+  const hint = $('#quota-sub-hint');
+  if (!row || !pill) return;
+
+  const q = ST.quota || {};
+  const tier = normalizeTier(q.tier);
+  const remaining = Math.max(0, Number(q.remaining) || 0);
+  row.hidden = false;
+  pill.textContent = formatQuotaBadgeText(q);
+  pill.className = 'quota-pill ' + (remaining <= 0
+    ? 'tier-empty'
+    : (tier === 'Pro' ? 'tier-pro' : (tier === 'Starter' ? 'tier-starter' : 'tier-lead')));
+
+  if (hint) {
+    if (tier === 'Pro') hint.textContent = '영업일 1일 패스트트랙';
+    else if (tier === 'Starter') hint.textContent = '영업일 3일 이내 세팅';
+    else hint.textContent = '텍스트 5대 탭 무료 설계';
+  }
+}
+
 function showAuthMessage(text, isErr) {
   const box = $('#auth-status-box');
   box.hidden = false;
@@ -1655,30 +1975,140 @@ function showAuthMessage(text, isErr) {
   box.textContent = text;
 }
 
-async function verifyPartnerWithBackend(kakaoProfile) {
-  const normPhone = normalizeKakaoPhone(kakaoProfile.phone || '');
-  const email = String(kakaoProfile.email || '').trim();
-  const nickname = String(kakaoProfile.nickname || '').trim();
-  const proxyUrl = getProxyUrl();
+function showQuotaBlockedGate(quota) {
+  const q = Object.assign({}, ST.quota || {}, quota || {});
+  const tier = normalizeTier(q.tier);
+  ST.quota = q;
+  ST.quota.tier = tier;
+  ST.quota.remaining = 0;
+  ST.quota.allowed = false;
 
+  $('#auth-gate').hidden = true;
+  $('#consult-app').hidden = true;
+  $('#quota-blocked-gate').hidden = false;
+
+  const iconEl = $('#blocked-icon');
+  const pillEl = $('#blocked-quota-pill');
+  const titleEl = $('#blocked-title');
+  const descEl = $('#blocked-desc');
+  const ctaEl = $('#btn-quota-upgrade-cta');
+  const backAuthBtn = $('#btn-blocked-back-auth');
+
+  if (pillEl) pillEl.textContent = formatQuotaBadgeText(q);
+  if (ctaEl) ctaEl.href = PARTNER_BOT_CONFIG.UPGRADE_INQUIRY_URL || 'https://gomawartalk.com';
+  if (backAuthBtn) backAuthBtn.hidden = !IS_ADMIN_ENV;
+
+  if (tier === 'Pro') {
+    if (iconEl) iconEl.textContent = '👑';
+    if (titleEl) titleEl.textContent = '이번 달 Pro 제작 한도(' + (q.limit || 10) + '회)를 모두 사용하셨습니다';
+    if (descEl) descEl.textContent = q.message || '다음 달 1일에 월 10회 제작 한도가 자동으로 초기화됩니다. 추가 제작이 급하신 경우 담당자에게 문의해 주세요.';
+    if (ctaEl) ctaEl.textContent = '💬 담당자에게 추가 제작 문의하기';
+  } else if (tier === 'Starter') {
+    if (iconEl) iconEl.textContent = '⭐';
+    if (titleEl) titleEl.textContent = '이번 달 Starter 제작 한도(' + (q.limit || 2) + '회)를 모두 사용하셨습니다';
+    if (descEl) descEl.textContent = q.message || 'Pro 플랜(월 10회 · 영업일 1일 패스트트랙)으로 업그레이드하시거나 다음 달 1일 자동 초기화 후 이용해 주세요.';
+    if (ctaEl) ctaEl.textContent = '👑 Pro 플랜(월 10회) 업그레이드 문의하기';
+  } else {
+    if (iconEl) iconEl.textContent = '🎯';
+    if (titleEl) titleEl.textContent = '무료 캠페인 설계 체험(2회)을 모두 완료하셨습니다';
+    if (descEl) descEl.textContent = q.message || '고마워톡을 도입하시면 전문가가 업종 맞춤 고화질 이미지 제작 및 채널 어드민 세팅을 100% 완료해 드립니다.';
+    if (ctaEl) ctaEl.textContent = '🚀 고마워톡 도입 / 플랜 신청 문의하기';
+  }
+}
+
+async function verifyUserAndQuotaWithBackend(authPayload) {
+  const proxyUrl = getProxyUrl();
   if (!proxyUrl) {
-    showAuthMessage('사전 승인된 고마워톡 파트너 전용 서비스입니다. 담당자에게 파트너 등록을 요청해 주세요. (인증 서버 URL 미설정)', true);
+    showAuthMessage('인증 서버 주소(BACKEND_PROXY_URL)가 아직 설정되지 않았습니다. 관리자에게 문의해 주세요.', true);
     return false;
   }
 
-  showAuthMessage('⏳ 승인된 파트너 명단을 확인하고 있어요…', false);
+  showAuthMessage('⏳ 카카오싱크 인증 및 이용 가능 횟수를 확인하고 있어요…', false);
   try {
-    const res = await Toss.verifyPartner(proxyUrl, { phone: normPhone, email: email, nickname: nickname });
+    const res = await Toss.verifyUserAndQuota(proxyUrl, authPayload || {});
+    if (!res || !res.ok || !res.verified) {
+      showAuthMessage((res && (res.error || res.message)) || '카카오싱크 인증에 실패했습니다. 다시 시도해 주세요.', true);
+      return false;
+    }
+
+    const userObj = res.user || {};
+    const quotaObj = res.quota || {
+      tier: '가망고객',
+      quotaType: 'TOTAL',
+      limit: 2,
+      used: 0,
+      remaining: 2,
+      allowed: true
+    };
+
+    ST.userToken = res.userToken || '';
+    ST.user = {
+      kakao_user_id: String(userObj.kakao_user_id || ''),
+      name: String(userObj.name || '대표님'),
+      phone: normalizeKakaoPhone(userObj.phone || ''),
+      email: String(userObj.email || '')
+    };
+    ST.quota = Object.assign({}, ST.quota, quotaObj, {
+      tier: normalizeTier(quotaObj.tier)
+    });
+
+    // 서버 응답 기준 잔여 횟수 0회(한도 초과) 시 Step 1 진입 즉시 차단!
+    if (res.allowed === false || quotaObj.allowed === false || Number(quotaObj.remaining) <= 0) {
+      showQuotaBlockedGate(ST.quota);
+      return false;
+    }
+
+    const partnerInfo = {
+      businessName: userObj.businessName || (ST.user.name ? (ST.user.name + ' 대표님') : '고마워톡 파트너'),
+      ownerName: ST.user.name || '대표님',
+      phone: ST.user.phone,
+      email: ST.user.email,
+      kakao_user_id: ST.user.kakao_user_id,
+      tier: ST.quota.tier
+    };
+
+    unlockPartnerApp(partnerInfo, ST.userToken || 'VERIFIED_KAKAO_SYNC', !!res.isAdminBypass, ST.quota);
+    return true;
+  } catch (err) {
+    showAuthMessage('카카오싱크 인증 확인 중 오류가 발생했습니다. (' + err.message + ')', true);
+    return false;
+  }
+}
+
+// V2.2 하위 호환 래퍼 (window.BOT.verifyPartnerWithBackend 호출 대비)
+async function verifyPartnerWithBackend(kakaoProfile) {
+  const p = kakaoProfile || {};
+  if (p.code || p.accessToken || p.userToken) {
+    return verifyUserAndQuotaWithBackend(p);
+  }
+  const proxyUrl = getProxyUrl();
+  if (!proxyUrl) {
+    showAuthMessage('인증 서버 주소(BACKEND_PROXY_URL)가 설정되지 않았습니다.', true);
+    return false;
+  }
+  showAuthMessage('⏳ 파트너 정보를 확인하고 있어요…', false);
+  try {
+    const res = await Toss.verifyPartner(proxyUrl, {
+      phone: normalizeKakaoPhone(p.phone || ''),
+      email: String(p.email || '').trim(),
+      nickname: String(p.nickname || '').trim()
+    });
     if (res && res.verified && res.partnerInfo) {
-      unlockPartnerApp(res.partnerInfo, res.partnerToken || 'VERIFIED_PARTNER', false);
+      unlockPartnerApp(res.partnerInfo, res.partnerToken || 'VERIFIED_PARTNER', false, {
+        tier: 'Starter', quotaType: 'MONTHLY', limit: 2, used: 0, remaining: 2, allowed: true
+      });
       return true;
     }
-    showAuthMessage((res && res.message) || '사전 승인된 고마워톡 파트너 전용 서비스입니다. 담당자에게 파트너 등록을 요청해 주세요.', true);
+    showAuthMessage((res && res.message) || '카카오로 다시 로그인해 주세요.', true);
     return false;
   } catch (err) {
-    showAuthMessage('사전 승인된 고마워톡 파트너 전용 서비스입니다. 담당자에게 파트너 등록을 요청해 주세요. (' + err.message + ')', true);
+    showAuthMessage('인증 확인 중 오류가 발생했습니다. (' + err.message + ')', true);
     return false;
   }
+}
+
+function getKakaoRedirectUri() {
+  return location.origin + location.pathname;
 }
 
 function handleKakaoLoginClick() {
@@ -1694,69 +2124,144 @@ function handleKakaoLoginClick() {
   } catch (e) {}
 
   if (!window.Kakao.isInitialized()) {
-    showAuthMessage('사전 승인된 고마워톡 파트너 전용 서비스입니다. 담당자에게 파트너 등록을 요청해 주세요.', true);
+    showAuthMessage('카카오싱크 앱 키(KAKAO_JS_KEY)가 아직 등록되지 않았습니다. 관리자에게 설정을 요청해 주세요.', true);
     return;
   }
 
+  // 카카오 JS SDK v2 표준 인가 코드(Kakao Sync OAuth) 리다이렉트 우선
+  if (window.Kakao.Auth && typeof window.Kakao.Auth.authorize === 'function') {
+    window.Kakao.Auth.authorize({
+      redirectUri: getKakaoRedirectUri(),
+      scope: 'profile_nickname,account_email,name,phone_number'
+    });
+    return;
+  }
+
+  // 구형 SDK 팝업 로그인 폴백 (액세스 토큰을 백엔드 verifyUserAndQuota로 전달)
   if (window.Kakao.Auth && typeof window.Kakao.Auth.login === 'function') {
     window.Kakao.Auth.login({
-      scope: 'profile_nickname,account_email,phone_number',
-      success: function () {
-        window.Kakao.API.request({
-          url: '/v2/user/me',
-          success: function (res) {
-            const acc = (res && res.kakao_account) || {};
-            const prof = acc.profile || {};
-            verifyPartnerWithBackend({
-              phone: acc.phone_number || '',
-              email: acc.email || '',
-              nickname: prof.nickname || ''
-            });
-          },
-          fail: function (err) {
-            showAuthMessage('카카오 계정 정보를 가져오지 못했습니다: ' + JSON.stringify(err), true);
-          }
-        });
+      scope: 'profile_nickname,account_email,name,phone_number',
+      success: function (authObj) {
+        const accessToken = (authObj && authObj.access_token) ||
+          (window.Kakao.Auth.getAccessToken && window.Kakao.Auth.getAccessToken()) || '';
+        if (accessToken) {
+          verifyUserAndQuotaWithBackend({ accessToken: accessToken });
+        } else {
+          showAuthMessage('카카오 액세스 토큰을 확인하지 못했습니다. 다시 시도해 주세요.', true);
+        }
       },
       fail: function (err) {
         showAuthMessage('카카오 로그인이 취소되었거나 실패했습니다: ' + JSON.stringify(err), true);
       }
     });
-  } else if (window.Kakao.Auth && typeof window.Kakao.Auth.authorize === 'function') {
-    window.Kakao.Auth.authorize({
-      redirectUri: location.origin + location.pathname,
-      scope: 'profile_nickname,account_email,phone_number'
-    });
   }
 }
 
-function unlockPartnerApp(partnerInfo, token, isAdminBypass) {
+function checkKakaoAuthCallbackOnLoad() {
+  try {
+    const qs = new URLSearchParams(location.search);
+    const code = (qs.get('code') || '').trim();
+    const errParam = (qs.get('error') || '').trim();
+    if (errParam) {
+      showAuthMessage('카카오싱크 로그인이 취소되었거나 거부되었습니다. 다시 시도해 주세요.', true);
+      return;
+    }
+    if (!code) return;
+
+    // URL에서 인가 코드(code) 제거하여 새로고침 시 재사용 오류 방지
+    const cleanParams = new URLSearchParams(location.search);
+    cleanParams.delete('code');
+    cleanParams.delete('state');
+    const cleanQuery = cleanParams.toString();
+    const cleanUrl = location.pathname + (cleanQuery ? ('?' + cleanQuery) : '') + location.hash;
+    try { history.replaceState(null, '', cleanUrl); } catch (e) {}
+
+    verifyUserAndQuotaWithBackend({
+      code: code,
+      redirectUri: getKakaoRedirectUri()
+    });
+  } catch (e) {}
+}
+
+function unlockPartnerApp(partnerInfo, token, isAdminBypass, quotaInfo) {
   ST.verified = true;
   ST.isAdminBypass = !!isAdminBypass;
   ST.partnerToken = token || '';
+  if (token && !ST.userToken) ST.userToken = token;
+
+  const q = quotaInfo || ST.quota || {
+    tier: '가망고객', quotaType: 'TOTAL', limit: 2, used: 0, remaining: 2, allowed: true
+  };
+  ST.quota = Object.assign({}, ST.quota, q, { tier: normalizeTier(q.tier) });
+
   ST.partnerInfo = {
     businessName: partnerInfo.businessName || '고마워톡 파트너',
     ownerName: partnerInfo.ownerName || '대표님',
     phone: normalizeKakaoPhone(partnerInfo.phone || '01000000000'),
-    email: partnerInfo.email || ''
+    email: partnerInfo.email || '',
+    kakao_user_id: partnerInfo.kakao_user_id || ST.user.kakao_user_id || '',
+    tier: ST.quota.tier
   };
+  if (!ST.user.kakao_user_id && ST.partnerInfo.kakao_user_id) {
+    ST.user.kakao_user_id = ST.partnerInfo.kakao_user_id;
+  }
 
   $('#partner-badge').textContent = ST.partnerInfo.businessName;
+  renderQuotaBadge();
   $('#auth-gate').hidden = true;
+  $('#quota-blocked-gate').hidden = true;
   $('#consult-app').hidden = false;
   if (IS_ADMIN_ENV) $('#btn-top-ai-cfg').hidden = false;
   resetConsultFlow();
 }
 
-function bypassAuthForAdmin(customBiz, customOwner) {
+function buildMockQuotaForAdminTier(tierMode) {
+  const mode = String(tierMode || 'lead').toLowerCase();
+  const ym = new Date().toISOString().slice(0, 7);
+  if (mode === 'pro') {
+    return { tier: 'Pro', quotaType: 'MONTHLY', limit: 10, used: 0, remaining: 10, allowed: true, totalUsed: 0, monthlyUsed: 0, currentMonth: ym, message: '이용 가능합니다.' };
+  }
+  if (mode === 'starter') {
+    return { tier: 'Starter', quotaType: 'MONTHLY', limit: 2, used: 0, remaining: 2, allowed: true, totalUsed: 0, monthlyUsed: 0, currentMonth: ym, message: '이용 가능합니다.' };
+  }
+  if (mode === 'lead_exhausted') {
+    return {
+      tier: '가망고객', quotaType: 'TOTAL', limit: 2, used: 2, remaining: 0, allowed: false,
+      totalUsed: 2, monthlyUsed: 2, currentMonth: ym,
+      message: '무료 캠페인 설계 체험(2회)을 모두 완료하셨습니다. 고마워톡 Starter 또는 Pro 플랜 도입 시 전문가가 고화질 이미지 제작 및 세팅을 100% 완료해 드립니다.',
+      ctaType: 'UPGRADE_FROM_LEAD'
+    };
+  }
+  return { tier: '가망고객', quotaType: 'TOTAL', limit: 2, used: 0, remaining: 2, allowed: true, totalUsed: 0, monthlyUsed: 0, currentMonth: ym, message: '이용 가능합니다.' };
+}
+
+function bypassAuthForAdmin(customBiz, customOwner, customTierMode) {
   const biz = (customBiz || ($('#admin-biz-input') && $('#admin-biz-input').value) || '한빛 병의원 세무회계').trim();
   const owner = (customOwner || ($('#admin-owner-input') && $('#admin-owner-input').value) || '김대표').trim();
+  const tierMode = customTierMode || ($('#admin-tier-select') && $('#admin-tier-select').value) || 'lead';
+  const mockQuota = buildMockQuotaForAdminTier(tierMode);
+
+  ST.user = {
+    kakao_user_id: 'ADMIN_LOCAL_TEST',
+    name: owner,
+    phone: '01012345678',
+    email: 'partner@gomawartalk.com'
+  };
+
+  if (!mockQuota.allowed || mockQuota.remaining <= 0) {
+    ST.isAdminBypass = true;
+    showQuotaBlockedGate(mockQuota);
+    return;
+  }
+
   unlockPartnerApp({
     businessName: biz,
     ownerName: owner,
     phone: '01012345678',
-    email: 'partner@gomawartalk.com'
-  }, 'ADMIN_LOCAL_BYPASS', true);
+    email: 'partner@gomawartalk.com',
+    kakao_user_id: 'ADMIN_LOCAL_TEST',
+    tier: mockQuota.tier
+  }, 'ADMIN_LOCAL_BYPASS', true, mockQuota);
 }
 
 /* ═══════════════ 공통 네비게이션 & 진행률 바 ═══════════════ */
@@ -2720,17 +3225,54 @@ function renderStage5SummaryCard() {
   }
 }
 
+function resolveAbsoluteProposalUrl(rawUrl) {
+  const u = String(rawUrl || '').trim();
+  if (!u) return '';
+  if (/^https?:\/\//i.test(u)) return u;
+  try {
+    return new URL(u, location.href).href;
+  } catch (e) {
+    return u;
+  }
+}
+
+async function copyTextToClipboard(text) {
+  const str = String(text || '').trim();
+  if (!str) return false;
+  try {
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      await navigator.clipboard.writeText(str);
+      return true;
+    }
+  } catch (e) {}
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = str;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return !!ok;
+  } catch (e2) {
+    return false;
+  }
+}
+
 async function generateAndSubmitCampaign() {
   if (ST.isBusy) return null;
   ST.isBusy = true;
   const btn = $('#btn-submit-campaign');
   btn.disabled = true;
-  btn.textContent = '⏳ 대표님 맞춤 캠페인 기획안과 구성을 생성하고 있어요…';
+  btn.textContent = '⏳ 텍스트 5대 탭 맞춤 기획안을 생성하고 있어요…';
 
+  // V2.3 원가 방어: 인터뷰 제출 단계에서는 텍스트 5대 탭 JSON만 생성 (이미지 생성 보류)
   const ctx = {
     mode: getAiMode(),
     proxyUrl: getProxyUrl(),
-    token: ST.partnerToken,
+    token: ST.partnerToken || ST.userToken,
+    skipImageGen: true,
     sectorId: ST.sectorId,
     subIndustry: ST.subIndustry,
     flowId: ST.flowId,
@@ -2738,7 +3280,10 @@ async function generateAndSubmitCampaign() {
     answers: ST.answers,
     notes: ST.notes,
     summary: ST.summary,
-    partner: ST.partnerInfo,
+    partner: Object.assign({}, ST.partnerInfo, {
+      kakao_user_id: ST.user.kakao_user_id || ST.partnerInfo.kakao_user_id || '',
+      tier: normalizeTier((ST.quota && ST.quota.tier) || ST.partnerInfo.tier)
+    }),
     brandAssets: {
       logoBase64: ST.brandAssets.logoBase64,
       logoMode: ST.brandAssets.logoBase64 ? 'image' : 'text_auto',
@@ -2758,6 +3303,12 @@ async function generateAndSubmitCampaign() {
     master = Consult.assembleCampaign(null, ctx);
   }
 
+  // 텍스트 전용 설계 플래그 강제 보증 (이미지 생성 비용 0원)
+  if (!master.meta) master.meta = {};
+  master.meta.skip_image_gen = true;
+  master.meta.generation_mode = 'TEXT_ONLY_5TABS';
+  master.meta.auto_generate_visuals = false;
+
   ST.lastGeneratedCampaign = master;
   Engine.saveBridgeCampaign(master);
 
@@ -2765,17 +3316,66 @@ async function generateAndSubmitCampaign() {
   const proxyUrl = getProxyUrl();
   if (proxyUrl) {
     try {
-      cloudResult = await Toss.submitCampaign(proxyUrl, ST.partnerToken, master);
+      cloudResult = await Toss.submitCampaign(proxyUrl, {
+        userToken: ST.userToken,
+        partnerToken: ST.partnerToken,
+        kakao_user_id: ST.user.kakao_user_id || ST.partnerInfo.kakao_user_id || '',
+        name: ST.partnerInfo.ownerName,
+        phone: ST.partnerInfo.phone,
+        adminBypass: ST.isAdminBypass,
+        skip_image_gen: true
+      }, master);
     } catch (e) {
-      cloudResult = { ok: false, error: e.message };
+      cloudResult = (e && e.data) ? e.data : { ok: false, error: e.message };
     }
   }
 
   ST.isBusy = false;
-  ST.submitted = true;
   btn.disabled = false;
   btn.textContent = '✅ 이대로 제작 요청 제출하기';
+
+  // 서버단 한도 초과 차단 응답 처리
+  if (cloudResult && cloudResult.quotaExceeded) {
+    const blockedQuota = cloudResult.quota || Object.assign({}, ST.quota, {
+      tier: normalizeTier(cloudResult.tier || (ST.quota && ST.quota.tier)),
+      remaining: 0,
+      allowed: false,
+      message: cloudResult.error || ''
+    });
+    ST.quota = Object.assign({}, ST.quota, blockedQuota, { tier: normalizeTier(blockedQuota.tier) });
+    renderQuotaBadge();
+    showQuotaBlockedGate(ST.quota);
+    return null;
+  }
+
+  ST.submitted = true;
+  ST.lastSubmitResult = cloudResult;
+
+  // 등급 및 잔여 횟수 상태 동기화 (서버 응답 우선, 오프라인 테스트 시 로컬 차감)
+  const resolvedTier = normalizeTier(
+    (cloudResult && cloudResult.tier) ||
+    (cloudResult && cloudResult.quota && cloudResult.quota.tier) ||
+    (ST.quota && ST.quota.tier) ||
+    '가망고객'
+  );
+  if (cloudResult && cloudResult.quota) {
+    ST.quota = Object.assign({}, ST.quota, cloudResult.quota, { tier: resolvedTier });
+  } else if (ST.quota) {
+    const nextUsed = (Number(ST.quota.used) || 0) + 1;
+    const lim = Number(ST.quota.limit) || (resolvedTier === 'Pro' ? 10 : 2);
+    ST.quota.used = nextUsed;
+    ST.quota.remaining = Math.max(0, lim - nextUsed);
+    ST.quota.allowed = ST.quota.remaining > 0;
+  }
+  ST.partnerInfo.tier = resolvedTier;
+  renderQuotaBadge();
   updateStickyCtaBar();
+
+  const isPaid = isPaidTier(resolvedTier);
+  const rawProposalUrl = (cloudResult && cloudResult.proposalUrl)
+    ? String(cloudResult.proposalUrl)
+    : ('Proposal.html?fileId=' + encodeURIComponent((cloudResult && cloudResult.fileId) || 'local_preview'));
+  const shareProposalUrl = resolveAbsoluteProposalUrl(rawProposalUrl);
 
   const uploadedCnt = (master.brand_assets.partner_photos || []).length;
   const adminBtnsHtml = IS_ADMIN_ENV
@@ -2785,21 +3385,61 @@ async function generateAndSubmitCampaign() {
       '</div>'
     : '';
 
+  const summaryWrap = $('#summary-confirm-card');
+  if (summaryWrap) summaryWrap.hidden = true;
+
   const doneCard = $('#submit-done-card');
   doneCard.hidden = false;
-  doneCard.innerHTML =
-    '<div class="summary-head" style="color:var(--green)">🎉 제작 요청이 완벽히 접수되었어요!</div>' +
-    '<div class="summary-item"><b>캠페인 제목</b>' + esc(master.tab1_basic_settings.title_30chars) + '</div>' +
-    '<div class="summary-item"><b>메인 헤드카피</b>' + esc(master.tab2_landing_content.blocks_1000px[0].title) + '</div>' +
-    '<div class="summary-item"><b>브랜드 에셋 연동</b>로고: ' + (master.brand_assets.logo_base64 ? '로고 이미지 첨부됨' : '✨ 상호명 텍스트 로고 자동 적용') +
-      ' · 컬러: ' + esc(master.brand_assets.primary_color) +
-      ' · 사진: ' + (uploadedCnt ? ('실사 ' + uploadedCnt + '장 우선 배치') : 'AI 실사 자동 생성') + '</div>' +
-    '<div style="font-size:13px;color:var(--g700);line-height:1.5">' +
-      (cloudResult && cloudResult.ok
-        ? '담당자에게 제작 요청 알림이 전송되었어요. 세팅이 완료되면 카톡으로 안내해 드릴게요!'
-        : '맞춤 캠페인 기획안과 브랜드 에셋이 준비되었어요. 담당자가 확인 후 빠르게 세팅해 드릴게요!') +
-    '</div>' +
-    adminBtnsHtml;
+
+  if (!isPaid) {
+    // ── 분기 A: 가망고객 ➔ 맞춤 제안서 바로 보기 + 링크 복사 완료 화면 ──
+    doneCard.style.borderColor = 'var(--blue)';
+    doneCard.innerHTML =
+      '<span class="done-track-badge lead">🎯 무료 맞춤 기획 완료 · ' + esc(formatQuotaBadgeText(ST.quota)) + '</span>' +
+      '<div class="summary-head" style="color:var(--g900)">🎉 대표님 맞춤 고마워톡 제안서가 완성되었어요!</div>' +
+      '<div class="summary-item"><b>캠페인 제목</b>' + esc(master.tab1_basic_settings.title_30chars) + '</div>' +
+      '<div class="summary-item"><b>메인 헤드카피</b>' + esc(master.tab2_landing_content.blocks_1000px[0].title) + '</div>' +
+      '<div class="done-reassure-box">✨ 고마워톡 도입 시 전문가가 업종 맞춤 고화질 이미지 제작 및 채널 세팅을 100% 완료해 드립니다.</div>' +
+      '<div class="done-cta-stack">' +
+        '<a class="btn-proposal-open" id="btn-open-proposal" href="' + esc(rawProposalUrl) + '">📱 내 맞춤 고마워톡 제안서 바로 보기</a>' +
+        '<button type="button" class="btn-proposal-copy" id="btn-copy-proposal-url">🔗 제안서 링크 복사하기</button>' +
+        '<div class="copy-toast-msg" id="proposal-copy-toast" hidden>✅ 제안서 링크가 복사되었어요! 카카오톡이나 메모장에 붙여넣어 보세요.</div>' +
+      '</div>' +
+      adminBtnsHtml;
+
+    const copyBtn = $('#btn-copy-proposal-url');
+    if (copyBtn) {
+      copyBtn.onclick = async () => {
+        const ok = await copyTextToClipboard(shareProposalUrl);
+        const toast = $('#proposal-copy-toast');
+        if (toast) {
+          toast.hidden = false;
+          toast.textContent = ok
+            ? '✅ 제안서 링크가 복사되었어요! (' + shareProposalUrl + ')'
+            : '⚠️ 자동 복사에 실패했어요. 제안서 바로 보기에서 주소를 복사해 주세요.';
+        }
+      };
+    }
+  } else {
+    // ── 분기 B: Starter / Pro 유료 파트너 ➔ 제안서 버튼 없이 즉시 제작 접수 완료 화면 ──
+    const isPro = resolvedTier === 'Pro';
+    const slaText = isPro
+      ? '⚡ Pro 패스트트랙 적용 · 영업일 1일 이내 고마워톡 어드민 비공개(발송 대기) 상태로 세팅 완료 후 안내해 드려요.'
+      : '📋 Starter 유료 제작 적용 · 영업일 3일 이내 고마워톡 어드민 비공개(발송 대기) 상태로 세팅 완료 후 안내해 드려요.';
+
+    doneCard.style.borderColor = 'var(--green)';
+    doneCard.innerHTML =
+      '<span class="done-track-badge paid">' + (isPro ? '👑 Pro 유료 파트너' : '⭐ Starter 유료 파트너') + ' · ' + esc(formatQuotaBadgeText(ST.quota)) + '</span>' +
+      '<div class="summary-head" style="color:var(--green)">✅ 유료 파트너 제작 의뢰가 접수되었습니다!</div>' +
+      '<div class="done-paid-box">유료 파트너 제작 의뢰가 접수되었습니다! 담당 전문가가 맞춤 실사 이미지 생성 및 고마워톡 어드민 세팅을 바로 진행합니다.</div>' +
+      '<div class="summary-item"><b>캠페인 제목</b>' + esc(master.tab1_basic_settings.title_30chars) + '</div>' +
+      '<div class="summary-item"><b>메인 헤드카피</b>' + esc(master.tab2_landing_content.blocks_1000px[0].title) + '</div>' +
+      '<div class="summary-item"><b>브랜드 에셋 연동</b>로고: ' + (master.brand_assets.logo_base64 ? '로고 이미지 첨부됨' : '✨ 상호명 텍스트 로고 자동 적용') +
+        ' · 컬러: ' + esc(master.brand_assets.primary_color) +
+        ' · 사진: ' + (uploadedCnt ? ('실사 ' + uploadedCnt + '장 우선 배치') : '전문가 AI 실사 생성 예정') + '</div>' +
+      '<div style="font-size:12.5px;color:var(--g700);line-height:1.5">' + esc(slaText) + '</div>' +
+      adminBtnsHtml;
+  }
 
   doneCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
@@ -2830,7 +3470,30 @@ async function generateAndSubmitCampaign() {
 /* ═══════════════ 이벤트 바인딩 ═══════════════ */
 $('#btn-kakao-login').onclick = handleKakaoLoginClick;
 $('#btn-admin-freepass').onclick = () => bypassAuthForAdmin();
-$('#btn-reset').onclick = () => { if (ST.verified) resetConsultFlow(); };
+$('#btn-reset').onclick = () => {
+  if (!ST.verified) return;
+  if (ST.quota && Number(ST.quota.remaining) <= 0) {
+    showQuotaBlockedGate(ST.quota);
+    return;
+  }
+  resetConsultFlow();
+};
+$('#btn-quota-recheck').onclick = async () => {
+  if (ST.userToken && getProxyUrl()) {
+    $('#quota-blocked-gate').hidden = true;
+    $('#auth-gate').hidden = false;
+    await verifyUserAndQuotaWithBackend({ userToken: ST.userToken });
+  } else {
+    $('#quota-blocked-gate').hidden = true;
+    $('#auth-gate').hidden = false;
+    showAuthMessage('카카오로 다시 로그인하여 최신 등급 및 잔여 횟수를 확인해 주세요.', false);
+  }
+};
+$('#btn-blocked-back-auth').onclick = () => {
+  $('#quota-blocked-gate').hidden = true;
+  $('#consult-app').hidden = true;
+  $('#auth-gate').hidden = false;
+};
 
 // Step 1
 $('#btn-to-stage2').onclick = proceedToStage2;
@@ -2993,12 +3656,20 @@ if (IS_ADMIN_ENV) {
   $('#admin-freepass-box').hidden = false;
 }
 
+// 카카오싱크 OAuth 인가 코드(?code=...) 리다이렉트 콜백 자동 감지
+checkKakaoAuthCallbackOnLoad();
+
 /* ═══════════════ 외부/자동화 테스트 호환 인터페이스 (window.BOT) ═══════════════ */
 window.BOT = {
   config: PARTNER_BOT_CONFIG,
   isAdminEnv: () => IS_ADMIN_ENV,
   state: () => ST,
   normalizePhone: normalizeKakaoPhone,
+  normalizeTier,
+  formatQuotaBadgeText,
+  renderQuotaBadge,
+  showQuotaBlockedGate,
+  verifyUserAndQuotaWithBackend,
   verifyPartnerWithBackend,
   bypassAuthForAdmin,
   selectSector,
@@ -3010,6 +3681,7 @@ window.BOT = {
   enterStage5Summary,
   generateAndSubmitCampaign,
   buildCampaignMasterJson: () => ST.lastGeneratedCampaign || Consult.assembleCampaign(null, {
+    skipImageGen: true,
     sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId,
     answers: ST.answers, partner: ST.partnerInfo, brandAssets: {
       logoBase64: ST.brandAssets.logoBase64, primaryColor: ST.brandAssets.primaryColor,

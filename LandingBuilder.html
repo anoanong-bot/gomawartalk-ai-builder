@@ -732,9 +732,9 @@ body:not(.wz-on) .wz-only{display:none}
         <div class="sw req"><div class="sw-t"><div class="sw-n">📌 상단바 보이기 <span class="badge r">강제 ON</span></div><div class="sw-d">상단 노란색 [채널 추가] 유도 영역 — Off 시 채널 추가 유도가 불가능합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
         <div class="sw"><div class="sw-t"><div class="sw-n">🧩 화면 모드</div><div class="sw-d">일반 모드 = 신청페이지 + 폼 / 폼전용 모드 = 현장 접수·QR 체크인용 (특수 뷰 6-A)</div></div>
           <div class="seg"><label><input type="radio" name="formmode" value="normal" checked>일반 모드</label><label><input type="radio" name="formmode" value="formonly">폼전용 모드</label></div></div>
-        <div class="sw req"><div class="sw-t"><div class="sw-n">🔔 실패시 안내 알림톡 <span class="badge r">강제 ON</span></div><div class="sw-d">채널 추가 전 고객에게 친구톡이 실패하면 안내 알림톡을 자동 발송합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
+        <div class="sw req"><div class="sw-t"><div class="sw-n">🔔 실패시 안내 알림톡 <span class="badge r">강제 ON</span></div><div class="sw-d">채널 추가 전 고객에게 광고 메시지가 실패하면 미수신 안내 알림톡을 자동 발송합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
         <div class="sw req"><div class="sw-t"><div class="sw-n">🔁 실패시 다음날 재시도 (익일 09시 2회 루프) <span class="badge r">강제 ON</span></div><div class="sw-d">채널 추가 전 고객 2회 자동 안내 — 다음날 오전 9시에 최대 2회 재시도하여 도달률을 극대화합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
-        <div class="sw req"><div class="sw-t"><div class="sw-n">✅ 신청시 마케팅 수신동의 팝업 표시 <span class="badge r">강제 ON</span></div><div class="sw-d">친구톡·브랜드메시지(M형) 발송 대상 확보에 필수 — Off 시 이후 발송 대상이 급감합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
+        <div class="sw req"><div class="sw-t"><div class="sw-n">✅ 신청시 마케팅 수신동의 팝업 표시 <span class="badge r">강제 ON</span></div><div class="sw-d">광고 메시지(이미지형·캐러셀·M형) 발송 대상 확보에 필수 — Off 시 이후 발송 대상이 급감합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
       </div>
     </div>
 
@@ -898,7 +898,7 @@ body:not(.wz-on) .wz-only{display:none}
           <label><input type="radio" name="t5mode" value="full" checked>📋 전체 연동 모드</label>
           <label><input type="radio" name="t5mode" value="quick">⚡ 단독 공지/이벤트 1건 퀵 모드</label>
         </div>
-        <span class="badge g">브랜드메시지 M형 (25원) · 채널 추가 전 마케팅 수신동의자 포괄</span>
+        <span class="badge g">광고 · M형 (25원 · 채널 추가 전 마케팅 수신동의자 포괄)</span>
       </div>
       <div class="row" style="flex-wrap:wrap">
         <button class="act" data-act="tpl-modal-open">📥 알림톡 템플릿 JSON 업데이트</button>
@@ -906,7 +906,7 @@ body:not(.wz-on) .wz-only{display:none}
       </div>
     </div>
 
-    <div class="warn blue"><span style="font-size:18px">💡</span><div><b>날짜발송 &amp; 브랜드메시지 M형 활용 가이드:</b><br>• 특정 발송 일시(<code>YYYY-MM-DD HH:mm</code>)에 대상자 전체에게 동시 발송합니다 (행사 D-3/D-1 리마인드, 시즌 오픈, 긴급 공지).<br>• 과거 발송 완료 메시지는 카드 우측 <b>[📋 복제]</b> 버튼으로 즉시 재활용할 수 있으며, 야간 제한 시간(20:00~익일 08:00)에는 친구톡/브랜드메시지 발송이 제한됩니다.</div></div>
+    <div class="warn blue"><span style="font-size:18px">💡</span><div><b>날짜발송 &amp; 광고(M형) 활용 가이드:</b><br>• 특정 발송 일시(<code>YYYY-MM-DD HH:mm</code>)에 대상자 전체에게 동시 발송합니다 (행사 D-3/D-1 리마인드, 시즌 오픈, 긴급 공지).<br>• 과거 발송 완료 메시지는 카드 우측 <b>[📋 복제]</b> 버튼으로 즉시 재활용할 수 있으며, 야간 제한 시간(20:00~익일 08:00)에는 광고 메시지 발송이 제한됩니다.</div></div>
     <div id="t5-ref-banner"></div>
     <div class="timeline" id="t5-list"></div>
   </div>
@@ -1114,10 +1114,10 @@ const TIMING_OPTS = [
   { v: 'AFTER_14_DAYS_0900', l: '14일 뒤 · 오전 09:00' }
 ];
 const TPL_TYPES = [
-  { v: 'ALIMTALK', l: '📩 알림톡 (공용/전용 · 100% 도달)' },
-  { v: 'FREE_FRIENDTALK', l: '💬 자유작성 친구톡 (800×400 JPG · 쿠폰/유튜브)' },
-  { v: 'BRAND_CAROUSEL', l: '🎠 브랜드 캐러셀 (800×600 · 2~6장)' },
-  { v: 'BRAND_M', l: '📣 브랜드메시지 M형 (25원 · 채널 추가 전 포괄)' }
+  { v: 'ALIMTALK', l: '📩 알림톡 (정보성 · 24시간 100% 도달)' },
+  { v: 'FREE_FRIENDTALK', l: '💬 광고 · 이미지형 (800×400 JPG · 쿠폰/유튜브)' },
+  { v: 'BRAND_CAROUSEL', l: '🎠 광고 · 캐러셀형 (800×600 · 2~6장)' },
+  { v: 'BRAND_M', l: '📣 광고 · M형 (25원 · 채널 추가 전 포괄)' }
 ];
 const BTN_TYPES = { WL: '🌐 일반 웹링크', YT: '▶ 유튜브 앱 직행', CP: '🎟️ 카톡 쿠폰 링크' };
 let WEBZINE_ANCHORS = [
@@ -1436,7 +1436,7 @@ function stateFromData(d, keep) {
   s.pinned_consult_notes = Array.isArray(d.pinned_consult_notes) ? d.pinned_consult_notes.slice() : [];
   if (keep) { s.partner = clone(keep.partner); s.brand.primary = keep.brand.primary; s.brand.secondary = keep.brand.secondary; s.brand.logo = keep.brand.logo; s.brand.font_theme = keep.brand.font_theme || 'modern'; s.meta.use_webzine = keep.meta.use_webzine; s.meta.webzine_base_url = keep.meta.webzine_base_url; s.passthrough = clone(keep.passthrough); s.t2.bg_color = keep.t2.bg_color; }
   const resolvedBrandName = String(m.brand_name || (d.tab1_basic_settings && d.tab1_basic_settings.channel_name) || pi.channel_name || '').trim();
-  const safeBrandName = (resolvedBrandName && !/대표님\s*$/.test(resolvedBrandName)) ? resolvedBrandName : '';
+  const safeBrandName = (resolvedBrandName && !/(?:\uB300\uD45C\uB2D8|\uC0AC\uC7A5\uB2D8|\uD30C\uD2B8\uB108\uB2D8)\s*$/.test(resolvedBrandName)) ? resolvedBrandName : '';
   s.meta.brand_name = safeBrandName;
   if (d.partner_info || safeBrandName) {
     s.partner.owner_name = pi.owner_name || ''; s.partner.channel_name = safeBrandName || pi.channel_name || ''; s.partner.channel_id_num = pi.channel_id_num || '';
@@ -2347,7 +2347,7 @@ function renderMessageBody(scope, mi, msg, refs) {
     return brTabs + '<div class="msg-grid"><div>' + left + '</div><div>' + right + '</div></div>';
   }
 
-  // ── ② 자유작성 친구톡 & ④ 브랜드메시지 M형 ──
+  // ── ② 광고 · 이미지형 & ④ 광고 · M형 ──
   if (tt === 'FREE_FRIENDTALK' || tt === 'BRAND_M') {
     const isM = tt === 'BRAND_M';
     const r15 = br.image_ratio === '1.5:1';
@@ -2357,7 +2357,7 @@ function renderMessageBody(scope, mi, msg, refs) {
     const bodyLen = cpLen(br.body_text_400chars);
 
     const left = condRow +
-      (isM ? '<div class="warn blue" style="margin-bottom:12px"><span style="font-size:15px">📣</span><div><b>브랜드메시지 M형 (건당 25원):</b> 채널을 추가하지 않은 <b>마케팅 수신동의 고객</b>까지 포괄 발송합니다. (야간 20:00~08:00 발송 제한)</div></div>' : '') +
+      (isM ? '<div class="warn blue" style="margin-bottom:12px"><span style="font-size:15px">📣</span><div><b>광고 · M형 (건당 25원):</b> 채널을 추가하지 않은 <b>마케팅 수신동의 고객</b>까지 포괄 발송합니다. (야간 20:00~08:00 발송 제한)</div></div>' : '') +
       '<div class="field"><div class="lbl">📐 배너 비율 &amp; JPG 캡처 <span class="badge g">500KB 이하 JPG 자동 압축</span></div>' +
       '<div class="row" style="flex-wrap:wrap"><div class="seg"><label><input type="radio" name="ftr-' + canvasId + '" value="2:1"' + (!r15 ? ' checked' : '') + ' data-ftr data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '">800×400 (2:1)</label><label><input type="radio" name="ftr-' + canvasId + '" value="1.5:1"' + (r15 ? ' checked' : '') + ' data-ftr data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '">800×533 (1.5:1)</label></div>' +
       '<label class="act sm" style="cursor:pointer">🖼️ 배너 사진 교체<input type="file" accept="image/*" hidden data-act="ft-img" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '"></label>' +
@@ -2369,7 +2369,7 @@ function renderMessageBody(scope, mi, msg, refs) {
       sheetFallbackHTML(scope, mi, bi, [br.body_text_400chars], br) +
       buttonEditorHTML(scope, mi, bi, br.buttons, !isM);
 
-    const right = '<div class="kakao-stage"><div class="kakao-head"><span class="kakao-av">' + esc(chName.slice(0, 1)) + '</span><span>' + esc(chName) + '</span><span class="badge" style="margin-left:auto">' + (isM ? '브랜드M' : '친구톡') + ' · 클릭 편집</span></div>' +
+    const right = '<div class="kakao-stage"><div class="kakao-head"><span class="kakao-av">' + esc(chName.slice(0, 1)) + '</span><span>' + esc(chName) + '</span><span class="badge" style="margin-left:auto">' + (isM ? '광고 (M형)' : '광고') + ' · 클릭 편집</span></div>' +
       '<div class="ft-frame" style="height:' + fh + 'px"><div id="' + canvasId + '" class="ft-canvas' + (r15 ? ' r15' : '') + (br.image_base64 ? ' has-img' : '') + '" style="transform:scale(' + scale + ');' + (br.image_base64 ? 'background-image:url(' + br.image_base64 + ')' : '') + '">' +
       '<div class="ft-badge ed" contenteditable="true" data-single data-ftf="badge" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '">' + esc(br.image_copy.badge) + '</div>' +
       '<div class="ft-head ed" contenteditable="true" data-ftf="headline" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '">' + esc(br.image_copy.headline) + '</div>' +
@@ -2959,7 +2959,7 @@ function loadDemoIntakeList(silent) {
       id: (localConf && localConf.fileId) || 'local_preview',
       fileId: (localConf && localConf.fileId) || 'local_preview',
       name: '[로컬 E2E] ' + bCh,
-      ownerName: (bridged.partner_info && bridged.partner_info.owner_name) || (localConf && localConf.ownerName) || '대표님',
+      ownerName: (bridged.partner_info && bridged.partner_info.owner_name) || (localConf && localConf.ownerName) || '파트너님',
       industry: (bridged.partner_info && (bridged.partner_info.sub_industry || bridged.partner_info.sector_label)) || (localConf && localConf.industry) || '',
       createdTime: localConf ? 'Proposal 확정 연동' : 'InterviewBot 연동',
       tier: bTier,

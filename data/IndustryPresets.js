@@ -220,7 +220,7 @@ window.GOMAWARTALK_INDUSTRY_PRESETS = {
     meta: {
       industry_code: "pro_ngo_church",
       industry_label: "💼 세무·법무·노무·컨설팅 & 🏛️ 비영리단체·교회·후원재단",
-      description: "회원·교인·후원 모임 등록 → 신청 확인 알림톡 → 채널 친구 대상 전문 칼럼·주보·후원 현장 이야기 정기 발송 (친구톡/브랜드메시지) → 주요 일정·긴급 공지 (날짜발송)",
+      description: "회원·교인·후원 모임 등록 → 신청 확인 알림톡 → 채널 친구 대상 전문 칼럼·주보·후원 현장 이야기 정기 발송 (광고 메시지) → 주요 일정·긴급 공지 (날짜발송)",
       recommended_track: "TRACK_3",
       recommended_track_label: "정기 칼럼·정보 연재형 (회원 등록 후 채널 친구 대상 발송)",
     },
@@ -241,8 +241,8 @@ window.GOMAWARTALK_INDUSTRY_PRESETS = {
     },
     tab2_landing_blocks: [
       {
-        step: 1, type: "HERO", tag: "소상공인·1인 법인 대표님 필독",
-        title: "2026 세법 개정, 나에게 유리한 항목은?\n대표님만 모르면 손해입니다",
+        step: 1, type: "HERO", tag: "소상공인·1인 법인 사업자 필독",
+        title: "2026 세법 개정, 나에게 유리한 항목은?\n모르면 그대로 세금을 더 냅니다",
         subtitle: "세무사가 직접 정리한 절세 포인트 5가지 무료 발송",
         spec_1: "2026 개정 세법 핵심 절세 가이드 PDF 즉시 발송",
         spec_2: "개인·법인·비영리 유형별 맞춤 경비 처리 체크리스트",
@@ -256,7 +256,7 @@ window.GOMAWARTALK_INDUSTRY_PRESETS = {
           "세무사에게 물어보고 싶은데 어디서부터 시작해야 할지 막막해요",
           "절세할 수 있는 방법이 있는 것 같은데 아무도 알려주지 않아요"
         ],
-        bottom_quote: "대표님의 사업 유형에 딱 맞는 합법적 절세 공식을 명쾌하게 정리해 드립니다."
+        bottom_quote: "사업 유형에 딱 맞는 합법적 절세 공식을 명쾌하게 정리해 드립니다."
       },
       {
         step: 3, type: "SOLUTION", title: "10년 경력 세무사가\n핵심만 압축해 전달해 드립니다",
@@ -269,7 +269,7 @@ window.GOMAWARTALK_INDUSTRY_PRESETS = {
       {
         step: 4, type: "TRUST_PROOF", title: "현재 350개 사업체의 세무 파트너입니다",
         stat_highlight: "고객사 평균 절세액 연 480만 원 · 세무 조사 대응 성공률 100%",
-        rec1_title: "이런 대표님께 강력 추천합니다",
+        rec1_title: "이런 사업자분께 강력 추천합니다",
         rec1_body: "놓치고 있는 공제·감면 혜택을 챙기고 세금 신고 일정을 체계적으로 관리하고 싶은 분",
         rec2_title: "신청 즉시 받아보실 핵심 혜택",
         rec2_body: "2026 절세 핵심 가이드 1편과 사업 유형별 맞춤 세무 칼럼을 카카오로 즉시 보내드립니다"

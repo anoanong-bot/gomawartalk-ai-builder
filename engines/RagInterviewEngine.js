@@ -953,7 +953,7 @@
   TOSS.buildSystemPrompt = function () {
     var jargonList = ['1회차 알림톡', '미끼 자료', '뜰채 분기', '3번 트랙', '청사진', '제로베이스', '웹진 앵커', TOSS_BANNED_LIT].join(', ');
     return [
-      '당신은 고마워톡 파트너(소상공인·강사·전문가) 대표님이 카카오 신청 캠페인을 만들 수 있도록 돕는 다정한 마케팅 도우미입니다.',
+      '당신은 고마워톡 파트너님이 카카오 신청 캠페인을 만들 수 있도록 돕는 다정한 마케팅 도우미입니다.',
       '토스 앱처럼 "한 번에 질문 딱 하나"만 묻는 8단계 스무고개로 진행합니다.',
       '',
       '[절대 대화 수칙]',
@@ -998,7 +998,7 @@
       if (k) know = String(k).slice(0, 700);
     }
     return [
-      '[파트너] ' + (ctx.partnerName || '대표님'),
+      '[파트너] ' + (ctx.partnerName || '파트너님'),
       '[지금까지 받은 답]',
       TOSS.formatAnswers(ctx.answers),
       '',
@@ -1154,14 +1154,14 @@
 
   TOSS.summarize = function (ctx, revisionText) {
     var sys = [
-      '당신은 고마워톡 마케팅 도우미입니다. 대표님의 8가지 답변을 모바일에서 한눈에 보이는 기획 요약으로 정리하세요.',
+      '당신은 고마워톡 마케팅 도우미입니다. 파트너님의 8가지 답변을 모바일에서 한눈에 보이는 기획 요약으로 정리하세요.',
       '각 항목은 40자 이내의 쉬운 일상 언어로 쓰고, 전문용어(' + ['1회차 알림톡', '미끼 자료', '뜰채 분기', '청사진', '제로베이스', '웹진 앵커', TOSS_BANNED_LIT].join(', ') + ')는 쓰지 마세요.',
       '출력 JSON: {"target":"","concept":"핵심 카피 컨셉 한 줄(60자 이내)","gift":"첫 무료 혜택","questions":["신청할 때 물어볼 질문1","질문2"],"flow":"카톡 소식 이어가는 흐름"}'
     ].join('\n');
-    var user = '[대표님 답변]\n' + TOSS.formatAnswers(ctx.answers) +
+    var user = '[파트너님 답변]\n' + TOSS.formatAnswers(ctx.answers) +
       (ctx.notes && ctx.notes.length ? ('\n[추가 메모]\n' + ctx.notes.join('\n')) : '') +
       (ctx.prevSummary ? ('\n[이전 요약]\n' + JSON.stringify(ctx.prevSummary)) : '') +
-      (revisionText ? ('\n[대표님 수정 요청 — 반드시 반영]\n' + revisionText) : '') + '\n\nJSON만 출력하세요.';
+      (revisionText ? ('\n[파트너님 수정 요청 — 반드시 반영]\n' + revisionText) : '') + '\n\nJSON만 출력하세요.';
     return TOSS.callAI({ mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token, system: sys, user: user, temperature: 0.3, maxOutputTokens: 1024 })
       .then(function (raw) {
         var o = extractJson(raw);
@@ -1203,7 +1203,8 @@
             { priority: 2, option_label: '선택지B(입문/고민중/나머지)', tag: '나머지모두', badge: '선택지B 맞춤 배지', headline: '선택지B 눈높이에 맞춘 완전히 다른 헤드라인', subtext: '선택지B 보조문구', body_text: '#{이름}님! 선택지B 대상의 공감 첫 문장과 완전히 다른 제공 가치 본문(기계식 치환 금지)', btn_name: '선택지B 전용 버튼' }
           ]
         },
-        { step: 3, timing: 'AFTER_3_DAYS_0900', template_type: 'BRAND_CAROUSEL', has_spotlight_branch: false, condition_desc: '모두 (전체 신청자)', cards: [{ header_20chars: '카드1 제목', body_180chars: '본문', button_8chars: '자세히보기' }, { header_20chars: '카드2 제목', body_180chars: '본문', button_8chars: '신청하기' }] }
+        { step: 3, timing: 'AFTER_3_DAYS_0900', template_type: 'BRAND_CAROUSEL', has_spotlight_branch: false, condition_desc: '모두 (전체 신청자)', cards: [{ header_20chars: '카드1 제목', body_180chars: '본문', button_8chars: '자세히보기' }, { header_20chars: '카드2 제목', body_180chars: '본문', button_8chars: '신청하기' }] },
+        { step: 4, timing: 'AFTER_7_DAYS_1000', template_type: 'FREE_FRIENDTALK', has_spotlight_branch: false, condition_desc: '모두 (전체 신청자)', badge: '광고 3회차 · 마감 혜택', headline: '최종 혜택 및 상담 안내', subtext: '보조문구', body_text: '#{이름}님! 마지막 혜택과 상담 일정을 확인해 보세요.', btn_name: '혜택 자세히 보기' }
       ],
       use_webzine: true,
       webzine_studio: { webzine_title: '매거진 타이틀', sections: [
@@ -1214,17 +1215,17 @@
       ] }
     };
     var sys = [
-      '당신은 고마워톡 수석 카피라이터입니다. 대표님의 8가지 답변만을 재료로 캠페인 전체 문구를 100% 새로 작문하세요.',
+      '당신은 고마워톡 수석 카피라이터입니다. 파트너님의 8가지 답변만을 재료로 캠페인 전체 문구를 100% 새로 작문하세요.',
       '규칙: 1) 어떤 업종 샘플 문구도 복사하지 말고 오직 이번 답변에서 출발하세요. 2) 금지어(' + TOSS_BANNED_LIT + ')는 쓰지 마세요.',
       '3) 알림톡(ALIMTALK)에는 할인/특가/이벤트/무료증정/쿠폰 같은 광고성 단어 및 "채널 추가를 눌러주세요", "채널 추가 부탁드려요", "채널 추가 후" 같은 채널 추가 유도 문구를 본문에 절대 쓰지 마세요(카카오 심사 반려 사유). 4) 시트 변수는 #{@시트명.필드명} 형식.',
       '5) 말투(Step 3)와 언어(예: 한국어+영어 병기)를 모든 문구에 일관되게 반영하세요. 6) 신청 질문(Step 7)은 고른 질문마다 보기 3~4개(각 30자 이내)를 만들고 tag/sheet_field/sheet_value를 채우세요(최대 2문항).',
       '7) [원포인트 맞춤 분기 절대 원칙 — 단 1개 핵심 회차 × 2종 대비 원고] 캠페인 전체에서 딱 1개 핵심 메시지 회차(기본: tab4_sequence 2회차)에만 has_spotlight_branch=true와 극명하게 대비되는 2종의 맞춤 원고 branch_pair(1순위 핵심 태그 선택지A vs 2순위 나머지 모두 선택지B)를 작성하고, 나머지 모든 회차(1회차·3회차 등)는 has_spotlight_branch=false 공통 단일 원고 1개로 작성하세요.',
       '8) [기계식 단어 대입 100% 금지] "[예] 신청자 전용 가이드", "[모름] 집중 완성 로드맵", "선택하신 「예」 기준에 맞춰..."처럼 설문 보기 글자만 끼워 넣는 치환 문구를 절대 쓰지 마세요! 한국어 익숙도 "상"("한국어를 완벽히 마스터해 봅시다! 실전 고급 표현 3가지...") vs "하"("처음이어도 괜찮아요! 오늘 바로 써먹는 쉬운 기초 인사말부터...")처럼 대상 눈높이에 맞춰 카드 헤드라인·첫 문장 공감 화법·핵심 제공 가치·버튼명까지 완전히 다른 고품질 원고 2개를 작성하세요.',
-      '9) 이후 카톡 소식(Step 8) 흐름에 맞춰 tab4_sequence를 3회차로 구성하고, 연재·챌린지·콘텐츠형이면 use_webzine=true, 쿠폰·행사 안내 위주면 false.',
+      '9) [알림톡 1 : 광고 3 황금 비율] 카톡 채널 친구 수가 늘어나는 원리에 맞춰 신청 즉시 알림톡(1회) + 후속 광고 메시지(이미지형/캐러셀 3회) 1:3 비율로 구성하고, 연재·챌린지·콘텐츠형이면 use_webzine=true, 쿠폰·행사 안내 위주면 false.',
       '10) imagePrompt는 반드시 영어, "no text, no letters" 포함, 해당 구간 장면을 구체적으로.',
       '출력은 아래 스키마와 동일한 키 구조의 JSON 객체 하나만.'
     ].join('\n');
-    var user = '[대표님 답변]\n' + TOSS.formatAnswers(ctx.answers) +
+    var user = '[파트너님 답변]\n' + TOSS.formatAnswers(ctx.answers) +
       (ctx.notes && ctx.notes.length ? ('\n[추가 메모]\n' + ctx.notes.join('\n')) : '') +
       (ctx.summary ? ('\n[확정된 기획 요약]\n' + JSON.stringify(ctx.summary)) : '') +
       '\n\n[출력 스키마]\n' + JSON.stringify(schema);
@@ -1259,7 +1260,8 @@
       tab4_sequence: [
         { step: 1, timing: 'IMMEDIATE', template_type: 'ALIMTALK', condition_desc: '모두 (전체 신청자)', content_title: tFirst(topic, 20) + ' 신청 접수 확인', content_intro: '신청이 정상 접수되었습니다. 준비된 첫 안내 자료를 아래 버튼에서 바로 확인해 보세요.', btn_name: '첫 자료 확인하기' },
         { step: 2, timing: 'AFTER_1_DAY_0900', template_type: 'FREE_FRIENDTALK', condition_desc: '모두 (전체 신청자)', badge: tFirst(target || '채널 친구 전용', 14), headline: tFirst(topic, 30), subtext: tFirst(gift, 30), body_text: '#{이름}님! 어제 받아보신 내용에 이어 두 번째 소식을 보내드려요. ' + tFirst(flow, 60), btn_name: '이어서 보기' },
-        { step: 3, timing: 'AFTER_3_DAYS_0900', template_type: 'BRAND_CAROUSEL', condition_desc: '모두 (전체 신청자)', cards: [{ header_20chars: tFirst(topic, 20), body_180chars: tFirst(gift, 120), button_8chars: '자세히보기' }, { header_20chars: '궁금한 점 안내', body_180chars: '궁금한 점은 언제든 채널로 문의해 주세요.', button_8chars: '신청하기' }] }
+        { step: 3, timing: 'AFTER_3_DAYS_0900', template_type: 'BRAND_CAROUSEL', condition_desc: '모두 (전체 신청자)', cards: [{ header_20chars: tFirst(topic, 20), body_180chars: tFirst(gift, 120), button_8chars: '자세히보기' }, { header_20chars: '궁금한 점 안내', body_180chars: '궁금한 점은 언제든 채널로 문의해 주세요.', button_8chars: '신청하기' }] },
+        { step: 4, timing: 'AFTER_7_DAYS_1000', template_type: 'FREE_FRIENDTALK', condition_desc: '모두 (전체 신청자)', badge: '마감 혜택 · 상담 안내', headline: tFirst(topic, 24) + ' 최종 안내', subtext: '채널 친구 전용 마지막 혜택', body_text: '#{이름}님! 보내드린 자료는 잘 살펴보셨나요? 놓치면 아쉬운 특별 혜택과 1:1 상담 예약을 지금 확인해 보세요.', btn_name: '혜택·상담 보기' }
       ],
       use_webzine: /연재|챌린지|칼럼|소식|정기/.test(flow),
       webzine_studio: { webzine_title: tFirst(topic, 24) + ' 매거진', sections: [
@@ -1735,6 +1737,14 @@
           sub: '매월 거르지 않고 관계가 깊어지는 정기 발송',
           chatDateOffsetDays: 60,
           sendTimeLabel: '오전 10:00'
+        },
+        step4: {
+          timing: 'AFTER_3_MONTHS_1000',
+          shortLabel: '+3개월 뒤',
+          badge: '🗓️ 세 달째 · 월간 3호 정기 연재',
+          sub: '세 번째 월간 광고 메시지로 단골 팬덤을 완성합니다',
+          chatDateOffsetDays: 90,
+          sendTimeLabel: '오전 10:00'
         }
       };
     }
@@ -1762,6 +1772,14 @@
           badge: '📅 2주째 · 주간 3회차 정기 발송',
           sub: '꾸준한 주간 소통으로 신뢰가 자연스럽게 쌓입니다',
           chatDateOffsetDays: 14,
+          sendTimeLabel: '오전 09:00'
+        },
+        step4: {
+          timing: 'AFTER_21_DAYS_0900',
+          shortLabel: '3주 뒤(4회)',
+          badge: '📅 3주째 · 주간 4회차 전환 안내',
+          sub: '3주간 쌓인 신뢰를 실제 참여·신청으로 이어갑니다',
+          chatDateOffsetDays: 21,
           sendTimeLabel: '오전 09:00'
         }
       };
@@ -1791,6 +1809,14 @@
           sub: '놓치지 않도록 당일 최종 안내가 도착합니다',
           chatDateOffsetDays: 7,
           sendTimeLabel: '오전 08:30'
+        },
+        step4: {
+          timing: 'EVENT_AFTER_1_DAY_1000',
+          shortLabel: '행사 다음 날',
+          badge: '💌 행사 다음 날 · 감사 및 후속 안내',
+          sub: '참석 감사 인사와 함께 후속 자료·상담을 안내합니다',
+          chatDateOffsetDays: 8,
+          sendTimeLabel: '오전 10:00'
         }
       };
     }
@@ -1807,16 +1833,24 @@
         timing: 'AFTER_1_DAY_0900',
         shortLabel: '+1일 뒤',
         badge: '🌙 하루가 지났습니다 · D+1 오전 09:00',
-        sub: '선택하신 답변에 맞춘 안내 메시지가 자동 발송됩니다',
+        sub: '선택하신 답변에 맞춘 광고 메시지가 자동 발송됩니다',
         chatDateOffsetDays: 1,
         sendTimeLabel: '오전 09:00'
       },
       step3: {
         timing: 'AFTER_3_DAYS_0900',
-        shortLabel: '+3일 전환',
+        shortLabel: '+3일 뒤',
         badge: '🌅 3일이 지났습니다 · D+3 오전 10:00',
-        sub: '전환 유도 맞춤 안내가 자동 도착합니다',
+        sub: '핵심 사례·커리큘럼 카드가 자동 도착합니다',
         chatDateOffsetDays: 3,
+        sendTimeLabel: '오전 10:00'
+      },
+      step4: {
+        timing: 'AFTER_7_DAYS_0900',
+        shortLabel: '+7일 뒤',
+        badge: '✨ 일주일 뒤 · D+7 마감 혜택 안내',
+        sub: '채널 친구 전용 최종 혜택·상담 안내가 자동 발송됩니다',
+        chatDateOffsetDays: 7,
         sendTimeLabel: '오전 10:00'
       }
     };
@@ -1842,7 +1876,7 @@
     var now = new Date(), p2 = function (n) { return String(n).padStart(2, '0'); };
     var ymd = now.getFullYear() + p2(now.getMonth() + 1) + p2(now.getDate());
     var rawBrand = String(extra.brandName || partner.brandName || partner.businessName || partner.channel_name || '').trim();
-    if (/대표님\s*$/.test(rawBrand)) rawBrand = '';
+    if (/(?:\uB300\uD45C\uB2D8|\uC0AC\uC7A5\uB2D8|\uD30C\uD2B8\uB108\uB2D8)\s*$/.test(rawBrand)) rawBrand = '';
     var channel = rawBrand || '맞춤 브랜드 채널';
 
     var gT1 = g.tab1_basic_settings || {}, fT1 = fb.tab1_basic_settings;
@@ -1888,7 +1922,11 @@
 
     var baseUrl = 'https://gomawartalk.com/webzine/' + ymd + '.html';
     var gSeq = g.tab4_sequence;
-    var rawSeq = (Array.isArray(gSeq) && gSeq.length >= 2) ? gSeq.slice(0, 5) : fb.tab4_sequence;
+    var rawSeq = (Array.isArray(gSeq) && gSeq.length >= 2) ? gSeq.slice(0, 5) : fb.tab4_sequence.slice();
+    // V3.0 황금 비율(알림톡 1 : 광고 3) 보장: AI가 3단계까지만 생성한 경우 4번째 광고 스텝 자동 보강
+    while (rawSeq.length < 4) {
+      rawSeq.push(fb.tab4_sequence[rawSeq.length] || fb.tab4_sequence[3]);
+    }
 
     var cadenceSeed = [
       extra.cadenceSeed,
@@ -1900,8 +1938,8 @@
     var videoInfo = detectVideoMedia(cadenceSeed);
 
     var sequence = rawSeq.map(function (s, idx) {
-      var cadStep = idx === 0 ? cadence.step1 : (idx === 1 ? cadence.step2 : cadence.step3);
-      var tt = s.template_type || (idx === 0 ? 'ALIMTALK' : idx === 1 ? 'FREE_FRIENDTALK' : 'BRAND_CAROUSEL');
+      var cadStep = idx === 0 ? cadence.step1 : (idx === 1 ? cadence.step2 : (idx === 2 ? cadence.step3 : (cadence.step4 || cadence.step3)));
+      var tt = s.template_type || (idx === 0 ? 'ALIMTALK' : idx === 1 ? 'FREE_FRIENDTALK' : idx === 2 ? 'BRAND_CAROUSEL' : 'FREE_FRIENDTALK');
       var cards = (Array.isArray(s.cards) && s.cards.length >= 2 ? s.cards : fb.tab4_sequence[2].cards).slice(0, 6).map(function (c, ci) {
         return {
           card_index: ci + 1, header_20chars: tFirst(c.header_20chars || ('카드 ' + (ci + 1)), 20), body_180chars: tFirst(c.body_180chars || '', 180),
@@ -1986,7 +2024,7 @@
       source_platform: 'NATIVE',
       credit_balance: null,
       external_mapping: null,
-      meta: { schema_version: '2.0', brand_name: channel, campaign_id: ymd + '_' + String(channel).replace(/\s+/g, '') + '_01', created_at: now.toISOString(), mode: 'FULL_SET', use_webzine: !!useWebzine, webzine_base_url: baseUrl, source: 'partner_bot_toss8', auto_generate_visuals: true },
+      meta: { schema_version: '2.0', brand_name: channel, campaign_id: ymd + '_' + String(channel).replace(/\s+/g, '') + '_01', created_at: now.toISOString(), mode: 'FULL_SET', use_webzine: !!useWebzine, webzine_base_url: baseUrl, source: 'partner_bot_toss8', auto_generate_visuals: true, message_ratio: { alimtalk: 1, ad: 3, label: '알림톡 1 : 광고 3' } },
       partner_info: { owner_name: partner.ownerName || '', phone: partner.phone || '', email: partner.email || '', channel_name: channel, channel_id_num: '', current_plan: 'STARTER', pro_upgrade_requested: false, industry_code: 'custom_ai', track_id: '' },
       brand_assets: { primary_color: gBa.primary_color || smartTheme.primary, secondary_color: gBa.secondary_color || smartTheme.secondary, font_theme: gBa.font_theme || 'modern', logo_base64: null, block_images_base64: { block_1: null, block_2: null, block_3: null, block_4: null, block_5: null } },
       tab1_basic_settings: {
@@ -2214,7 +2252,7 @@
     return s || String(raw || '').trim();
   }
 
-  // ── V2.8 카카오 메시지 성격 자동 분류(정보성 알림톡 vs 홍보·소식 카톡) & 야간 규정(20:00~08:00) 검증 ──
+  // ── V3.0 카카오 메시지 성격 자동 분류(알림톡 vs 광고) & 야간 규정(20:00~08:00) 검증 ──
   CONSULT.stripAlimtalkChannelAddSolicitation = stripAlimtalkChannelAddSolicitation;
   TOSS.stripAlimtalkChannelAddSolicitation = stripAlimtalkChannelAddSolicitation;
 
@@ -2225,12 +2263,12 @@
     var n = Number(qNum) || 0;
     var s = String(text || '').trim();
     if (n === 3) {
-      var b3 = '🔵 정보성 알림톡 · 24시간 즉시 발송';
+      var b3 = '🔵 알림톡 (정보성 · 24시간 즉시 발송)';
       return {
         type: 'INFO_ALIMTALK',
         badge: b3,
         badgeText: b3,
-        shortLabel: '정보성 알림톡',
+        shortLabel: '알림톡',
         allowNight: true,
         isPromo: false
       };
@@ -2239,33 +2277,33 @@
       var hasPromo = PROMO_MESSAGE_RE.test(s);
       var hasInfo = INFO_ALIMTALK_RE.test(s);
       if (hasPromo) {
-        var bp = '🟡 홍보·소식 카톡 (오후 8시~오전 8시 발송 제한)';
+        var bp = '🟡 광고 (오후 8시~오전 8시 발송 제한)';
         return {
           type: 'PROMO_FRIENDTALK',
           badge: bp,
           badgeText: bp,
-          shortLabel: '홍보·소식 카톡',
+          shortLabel: '광고',
           allowNight: false,
           isPromo: true
         };
       }
       if (hasInfo || n === 5) {
-        var bi = '🔵 정보성 알림톡 (야간 20시 이후에도 발송 가능)';
+        var bi = '🔵 알림톡 (정보성 · 24시간 발송 가능)';
         return {
           type: 'INFO_ALIMTALK',
           badge: bi,
           badgeText: bi,
-          shortLabel: '정보성 알림톡',
+          shortLabel: '알림톡',
           allowNight: true,
           isPromo: false
         };
       }
-      var bp2 = '🟡 홍보·소식 카톡 (오후 8시~오전 8시 발송 제한)';
+      var bp2 = '🟡 광고 (오후 8시~오전 8시 발송 제한)';
       return {
         type: 'PROMO_FRIENDTALK',
         badge: bp2,
         badgeText: bp2,
-        shortLabel: '홍보·소식 카톡',
+        shortLabel: '광고',
         allowNight: false,
         isPromo: true
       };
@@ -2297,7 +2335,7 @@
     if (!hasNightTime && !hasNightWord) {
       return { blocked: false, msgType: msgType };
     }
-    var exactMsg = '이 내용은 홍보·소식성이라 카카오 정책상 오후 8시~오전 8시에는 발송되지 않아요. 오후 7:30 이전이나 오전 8:00 이후로 맞춰보세요!';
+    var exactMsg = '이 내용은 광고 메시지라 카카오 정책상 오후 8시~오전 8시에는 발송되지 않아요. 오후 7:30 이전이나 오전 8:00 이후로 맞춰보세요!';
     var safeText = String(text || '').trim();
     var eveningDraft = safeText
       .replace(/(오후\s*8시|저녁\s*8시|20시|20:00|오후\s*9시|오후\s*10시|오후\s*11시|21시|22시|23시|밤\s*\d{1,2}시|새벽\s*\d{1,2}시|오전\s*[1-7]시|야간|심야|새벽)/g, '오후 7시 30분');
@@ -2312,13 +2350,13 @@
       msgType: msgType,
       guardrail: {
         ruleId: 'night_friendtalk',
-        title: '홍보·소식 카톡 야간 발송 제한 (오후 8시~오전 8시)',
+        title: '광고 메시지 야간 발송 제한 (오후 8시~오전 8시)',
         reason: exactMsg,
         exactMessage: exactMsg,
         alternatives: [
           {
             label: '오후 7:30(19:30)으로 발송 시각 맞추기',
-            detail: '카카오 홍보 카톡 마감(오후 8시) 직전인 오후 7:30에 안전하게 발송되도록 맞춰드려요.',
+            detail: '카카오 광고 메시지 마감(오후 8시) 직전인 오후 7:30에 안전하게 발송되도록 맞춰드려요.',
             suggestedTime24: '19:30',
             draftText: eveningDraft
           },
@@ -2864,7 +2902,7 @@
     var txt = String(userText || '').trim();
     if (!txt) return { feasible: true };
 
-    // V2.8: Q4/Q5 야간 발송 정책 정밀 검증 (정보성 알림톡은 24시간 허용, 홍보·소식 카톡만 20:00~08:00 차단)
+    // V3.0: Q4/Q5 야간 발송 정책 정밀 검증 (정보성 알림톡은 24시간 허용, 광고 메시지만 20:00~08:00 차단)
     var qNum = Number(opts.qNum) || 0;
     if (qNum === 4 || qNum === 5) {
       var nightCheck = CONSULT.checkNightPolicyForMessage(qNum, txt, opts.time24List);
@@ -2985,7 +3023,7 @@
     var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub);
     var flowTitle = flow ? flow.title : '카카오 자동 운영 흐름';
     var A = ctx.answers || {};
-    var owner = String(ctx.ownerName || '대표님').trim();
+    var owner = String(ctx.ownerName || '파트너님').trim();
     var meta = CONSULT.Q_META[qNum - 1] || CONSULT.Q_META[0];
     var subPack = CONSULT.matchSubDomainPack(ctx.sectorId, rawSub) || CONSULT.matchSubDomainPack(ctx.sectorId, sub);
     var batchMap = ctx.customExamplesMap || null;
@@ -3102,7 +3140,7 @@
       '{"q1QuestionText":"...","q1":["예시1","예시2","예시3"],"q2":["예시1","예시2","예시3"],"q3":["예시1","예시2","예시3"],"q4":["예시1","예시2","예시3"],"q5":["예시1","예시2","예시3"]}'
     ].filter(Boolean).join('\n');
 
-    var user = '[대표자/담당자] ' + (ctx.ownerName || '대표님') +
+    var user = '[파트너/담당자] ' + (ctx.ownerName || '파트너님') +
       '\n[대분류 분야] ' + (sec ? sec.title : '기타 업종') +
       '\n[정제된 세부 업종 — 15개 예시 전부 오직 이 도메인에만 맞춰 작성] ' + sub +
       (extractedGoal ? ('\n[사용자가 STEP 1에서 밝힌 목표] ' + extractedGoal) : '') +
@@ -3219,7 +3257,7 @@
       '',
       '[절대 매뉴얼 검문 기준 — 아래 중 하나라도 파트너 답변에 요구되면 반드시 feasible=false로 차단하세요!]',
       CONSULT.buildGuardrailManualSummary(),
-      '※ 위 목록 외라도 "실시간 맞춤 영상/음성/이미지 즉석 자동 제작 발송", "카톡방 내 실시간 AI 1:1 자유 채팅 상담", "채널 미추가 고객 광고성 친구톡 강제 발송", "알림톡 본문에 할인·특가·쿠폰 또는 채널 추가 유도 문구 기재", "고마워톡 자체 카드결제창/장바구니 내장", "신청폼 내 사진·서류 파일 업로드", "야간(20:00~08:00) 홍보·소식 카톡(친구톡·브랜드메시지) 발송", "한 회차 6개 이상 다중 분기"가 포함되면 절대 통과시키지 마세요!',
+      '※ 위 목록 외라도 "실시간 맞춤 영상/음성/이미지 즉석 자동 제작 발송", "카톡방 내 실시간 AI 1:1 자유 채팅 상담", "채널 추가 전 고객 광고 메시지 강제 발송", "알림톡 본문에 할인·특가·쿠폰 또는 채널 추가 유도 문구 기재", "고마워톡 자체 카드결제창/장바구니 내장", "신청폼 내 사진·서류 파일 업로드", "야간(20:00~08:00) 광고 메시지 발송", "한 회차 6개 이상 다중 분기"가 포함되면 절대 통과시키지 마세요!',
       '※ 단, 예약·신청 확인·일정 리마인드 같은 정보성 알림톡은 야간 20시 이후 포함 24시간 언제든 발송 가능하므로 야간 시간이라도 절대 차단하지 마세요!',
       '※ 단, 파트너가 정상적인 목표·고민·자료·안내·상담·예약·기존 링크 연결·객관식 분류 등을 적었다면 반드시 feasible=true로 통과시키세요.',
       '※ exampleChips 3개는 반드시 사용자가 입력한 [세부 업종](' + sub + ')과 직전 답변 맥락에만 100% 맞춰 작성하고, 다른 업종 예시를 단 한 글자도 절대 섞지 마세요.',
@@ -3227,7 +3265,7 @@
       '',
       '[응답 JSON 규격]',
       'A) 불가능한 기능 감지 시 (다음 질문으로 절대 넘어가지 않음):',
-      '{"feasible":false,"title":"한 줄 요약","reason":"고마워톡에서 지원하지 않는 정확한 사유(대표님, 고마워톡에서는 [이 부분] 기능은 지원하지 않아요. 에 들어갈 명사구)","alternatives":[{"label":"대안1 제목","detail":"고마워톡 기능으로 구현하는 친절한 설명 1~2문장","draftText":"파트너가 아래 칸에 채워 바로 쓸 수 있는 1인칭 수정 문장"},{"label":"대안2 제목","detail":"대안2 설명 1~2문장","draftText":"대안2 1인칭 수정 문장"}]}',
+      '{"feasible":false,"title":"한 줄 요약","reason":"고마워톡에서 지원하지 않는 정확한 사유(파트너님, 고마워톡에서는 [이 부분] 기능은 지원하지 않아요. 에 들어갈 명사구)","alternatives":[{"label":"대안1 제목","detail":"고마워톡 기능으로 구현하는 친절한 설명 1~2문장","draftText":"파트너가 아래 칸에 채워 바로 쓸 수 있는 1인칭 수정 문장"},{"label":"대안2 제목","detail":"대안2 설명 1~2문장","draftText":"대안2 1인칭 수정 문장"}]}',
       '',
       'B) 구현 가능 시 (feasible=true):',
       isLastQ
@@ -3328,13 +3366,13 @@
           return (i + 1) + ') **' + a.label + '**: ' + a.detail;
         }).join('\n');
         return CONSULT.cleanPartnerText(
-          '대표님, 고마워톡에서는 **' + localGuard.reason + '** 기능은 지원하지 않아요.\n\n대신 이런 방법으로 구현하시면 효과가 아주 좋아요:\n' + altLines
+          '파트너님, 고마워톡에서는 **' + localGuard.reason + '** 기능은 지원하지 않아요.\n\n대신 이런 방법으로 구현하시면 효과가 아주 좋아요:\n' + altLines
         );
       }
       if (ragSnippet) {
         return CONSULT.cleanPartnerText(ragSnippet.slice(0, 520));
       }
-      return '고마워톡은 **카카오 1초 신청 ➔ 즉시 첫 카톡(알림톡) ➔ 채널 친구 대상 후속 자동 카톡(친구톡/캐러셀) 및 날짜 예약 발송**을 지원해요. 요금제(Starter 연 24만 / Pro 연 40만), 맞춤 구축 프로젝트(300만 원 이상), 신청폼 분류, 모바일 웹진 연동 등 구체적인 기능을 물어보시면 바로 안내해 드릴게요!';
+      return '고마워톡은 **카카오 1초 신청 ➔ 즉시 알림톡(1회) ➔ 채널 친구 대상 후속 광고 메시지(이미지형/캐러셀 3회) 및 날짜 예약 발송**을 지원해요. 요금제(Starter 연 24만 / Pro 연 40만), 맞춤 구축, 신청폼 분류, 모바일 웹진 연동 등 궁금한 기능을 물어보시면 바로 안내해 드릴게요!';
     }
 
     if (!CONSULT.hasAiAvailable(ctx)) {
@@ -3344,7 +3382,7 @@
     var sys = [
       '당신은 고마워톡 공식 매뉴얼 기반 친절한 기능 상담원입니다.',
       '아래 [고마워톡 공식 매뉴얼]과 [지원 불가 및 대안 규칙]에만 근거하여 사실대로 정확히 답변하세요.',
-      '불가능한 기능이면 먼저 "대표님, 고마워톡에서는 ~ 기능은 지원하지 않아요."라고 명확히 말한 뒤, 고마워톡에서 가능한 스마트 대안 2가지를 쉽게 알려주세요.',
+      '불가능한 기능이면 먼저 "파트너님, 고마워톡에서는 ~ 기능은 지원하지 않아요."라고 명확히 말한 뒤, 고마워톡에서 가능한 스마트 대안 2가지를 쉽게 알려주세요.',
       '전 구간 다중 분기(풀파워 퍼널), 자동 견적·진단 프로그램 제작, 자사몰·CRM·외부 DB API 연동 문의 시에는 반드시 "전문가 별도 견적 프로젝트(300만 원 이상)" 기준을 안내하세요.',
       '내부 전문용어(뜰채, 시트 정수 더하기, ' + TOSS_BANNED_LIT + ')는 쉬운 일상 언어로 바꿔서 4~6문장 이내로 깔끔하게 답하세요.',
       '',
@@ -3418,7 +3456,7 @@
     }
 
     var sys = [
-      '당신은 고마워톡 마케팅 컨설턴트입니다. 대표님의 분야·선택 흐름·5단계 답변(① 신청화면 ② 신청질문 ③ 첫카톡 ④ 며칠뒤 자동 ⑤ 날짜지정)을 모바일 최종 확인 카드용으로 깔끔히 요약하세요.',
+      '당신은 고마워톡 마케팅 컨설턴트입니다. 파트너님의 분야·선택 흐름·5단계 답변(① 신청화면 ② 신청질문 ③ 첫카톡 ④ 며칠뒤 자동 ⑤ 날짜지정)을 모바일 최종 확인 카드용으로 깔끔히 요약하세요.',
       '내부 전문용어(뜰채, 시트 정수 더하기, ' + TOSS_BANNED_LIT + ')는 절대 쓰지 말고 쉬운 일상 언어로 각 항목을 50~80자 이내로 정리하세요.',
       '출력 JSON만: {"goalTopic":"① 신청화면 요약","formQ":"② 신청질문 요약","firstGift":"③ 첫카톡 요약","intervalAuto":"④ 며칠뒤 자동 요약","dateReserve":"⑤ 날짜지정 요약","useWebzine":true}'
     ].join('\n');
@@ -3566,7 +3604,7 @@
     };
 
     var resolvedBrandName = String(ctx.brandName || brand.brandName || partner.businessName || partner.channel_name || '').trim();
-    if (/대표님\s*$/.test(resolvedBrandName)) resolvedBrandName = '';
+    if (/(?:\uB300\uD45C\uB2D8|\uC0AC\uC7A5\uB2D8|\uD30C\uD2B8\uB108\uB2D8)\s*$/.test(resolvedBrandName)) resolvedBrandName = '';
     var presetCadenceHint = intervalConfig.preset === 'MONTHLY_30D'
       ? 'AFTER_1_MONTH 매월 정기 발송'
       : (intervalConfig.preset === 'WEEKLY_7D' ? 'AFTER_7_DAYS 매주 정기 발송' : '');
@@ -3667,6 +3705,60 @@
     } else if (rawDate && rawDate.mode === 'SKIP') {
       master.tab5_date_messages = [];
     }
+
+    // V3.0 알림톡 1 : 광고 3 황금 비율 보장 (Q5 생략 시에도 후속 광고 3회차 자동 보강)
+    var seqArr = (master.tab4_interval_messages && Array.isArray(master.tab4_interval_messages.sequence))
+      ? master.tab4_interval_messages.sequence
+      : [];
+    var hasDateAds = Array.isArray(master.tab5_date_messages) && master.tab5_date_messages.length > 0;
+    if (master.meta.schedule_config.interval_config.enabled && !hasDateAds && seqArr.length === 3) {
+      var cadFor4 = detectCampaignCadence(cadenceSeed);
+      var cad4 = cadFor4.step4 || cadFor4.step3;
+      var vid4 = detectVideoMedia(cadenceSeed);
+      var prevAd = seqArr[1] && seqArr[1].branches && seqArr[1].branches[0] ? seqArr[1].branches[0] : {};
+      var baseUrl4 = (master.meta && master.meta.webzine_base_url) || 'https://gomawartalk.com';
+      seqArr.push({
+        step: 4,
+        timing: cad4.timing,
+        step_short_label: cad4.shortLabel,
+        timewarp_badge: cad4.badge || '',
+        timewarp_sub: cad4.sub || '',
+        chat_date_offset_days: cad4.chatDateOffsetDays,
+        send_time_label: cad4.sendTimeLabel,
+        media_preview: vid4.isVideo ? { type: 'YOUTUBE', badge: vid4.badge, duration: '05:10', title: tFirst(finalBrand + ' 후속 안내 영상', 34), url: vid4.defaultUrl } : null,
+        template_type: 'FREE_FRIENDTALK',
+        template_id: TOSS_TEMPLATE_ID,
+        has_spotlight_branch: false,
+        branch_pair: null,
+        branches: [{
+          priority: 1,
+          condition_desc: '모두 (전체 신청자)',
+          template_id: TOSS_TEMPLATE_ID,
+          variables: prevAd.variables || { '콘텐츠 제목': finalBrand + ' 최종 안내', '콘텐츠 소개': '' },
+          sheet_fallback_strings: prevAd.sheet_fallback_strings || {},
+          image_ratio: '800x400',
+          image_copy: {
+            badge: cad4.shortLabel + ' · 채널 친구 전용',
+            headline: tFirst(finalBrand + ' 최종 혜택 · 상담 안내', 30),
+            subtext: '놓치기 전 바로 확인해 보세요'
+          },
+          media_preview: vid4.isVideo ? { type: 'YOUTUBE', badge: vid4.badge, duration: '05:10', title: tFirst(finalBrand + ' 후속 안내 영상', 34), url: vid4.defaultUrl } : null,
+          body_text_400chars: '#{이름}님! ' + finalBrand + '에서 준비한 채널 친구 전용 마지막 안내를 보내드려요. 궁금하신 점이나 예약·상담이 필요하시면 아래 버튼으로 편하게 이어가세요.',
+          buttons: vid4.isVideo
+            ? [{ name: vid4.buttonLabel, link_type: 'WL', youtube_app: true, webzine_anchor: '#sec-cta', url: vid4.defaultUrl }]
+            : [{ name: '최종 혜택 확인하기', link_type: 'WL', webzine_anchor: '#sec-cta', url: baseUrl4 + '#sec-cta' }],
+          cards_800x600: prevAd.cards_800x600 || []
+        }]
+      });
+    }
+    var adCountTotal = seqArr.filter(function (s, i) { return i > 0 && s && s.template_type !== 'ALIMTALK'; }).length +
+      (Array.isArray(master.tab5_date_messages) ? master.tab5_date_messages.length : 0);
+    master.meta.message_ratio = {
+      alimtalk: 1,
+      ad: 3,
+      total_ads: Math.max(3, adCountTotal),
+      label: '알림톡 1 : 광고 3'
+    };
 
     // Part 2: 모선(Mother-Hub) 외부 플랫폼 확장 소켓 3종 (기본 본체 NATIVE)
     master.source_platform = (ctx.sourcePlatform && String(ctx.sourcePlatform).trim()) || 'NATIVE';

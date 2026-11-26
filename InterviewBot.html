@@ -92,11 +92,11 @@ button { cursor: pointer; border: none; background: none; }
 }
 .auth-title {
   font-size: 28px; font-weight: 800; line-height: 1.36; letter-spacing: -0.025em;
-  color: var(--g900); word-break: keep-all;
+  color: #0F172A; word-break: keep-all;
 }
 .auth-desc {
-  margin-top: 14px; font-size: 18.5px; font-weight: 500; color: var(--g700);
-  line-height: 1.55; word-break: keep-all;
+  margin-top: 14px; font-size: 18px; font-weight: 400; color: #334155;
+  line-height: 1.58; word-break: keep-all;
 }
 .auth-steps-card {
   margin-top: 24px; padding: 20px 18px; border-radius: 20px;
@@ -104,7 +104,7 @@ button { cursor: pointer; border: none; background: none; }
 }
 .auth-step-row {
   display: flex; align-items: center; gap: 13px;
-  font-size: 18px; font-weight: 700; color: var(--g900);
+  font-size: 18px; font-weight: 600; color: #0F172A;
   line-height: 1.45; word-break: keep-all;
 }
 .auth-step-num {
@@ -296,13 +296,14 @@ button { cursor: pointer; border: none; background: none; }
   font-weight: 800;
   line-height: 1.38;
   letter-spacing: -0.025em;
-  color: var(--g900);
+  color: #0F172A;
   word-break: keep-all;
 }
 .blocked-desc {
   font-size: 18px;
-  color: var(--g700);
-  line-height: 1.55;
+  font-weight: 400;
+  color: #334155;
+  line-height: 1.58;
   word-break: keep-all;
 }
 .blocked-plan-grid {
@@ -340,8 +341,9 @@ button { cursor: pointer; border: none; background: none; }
 }
 .blocked-plan-sub {
   font-size: 16.5px;
-  color: var(--g700);
-  line-height: 1.5;
+  font-weight: 400;
+  color: #475569;
+  line-height: 1.52;
 }
 .blocked-actions {
   display: flex;
@@ -537,10 +539,10 @@ button { cursor: pointer; border: none; background: none; }
 
 .stage-heading {
   font-size: 25px; font-weight: 800; line-height: 1.38; letter-spacing: -0.025em;
-  color: var(--g900); word-break: keep-all;
+  color: #0F172A; word-break: keep-all;
 }
 .stage-sub {
-  font-size: 18px; color: var(--g700); line-height: 1.55;
+  font-size: 18px; font-weight: 400; color: #475569; line-height: 1.58;
   margin-top: 8px; word-break: keep-all;
 }
 .back-row {
@@ -571,14 +573,21 @@ button { cursor: pointer; border: none; background: none; }
 }
 .btn-primary {
   width: 100%;
-  min-height: 60px;
-  padding: 15px 18px;
-  border-radius: 16px;
+  min-height: 56px;
+  height: 56px;
+  padding: 0 16px;
+  border-radius: 15px;
   background: var(--blue);
   color: #FFFFFF;
-  font-size: 19px;
-  font-weight: 800;
+  font-size: 18.5px;
+  font-weight: 700;
   text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   box-shadow: 0 6px 18px rgba(49, 130, 246, 0.26);
   transition: transform 0.12s ease, opacity 0.15s ease;
 }
@@ -637,8 +646,8 @@ button { cursor: pointer; border: none; background: none; }
 }
 .sector-other-desc {
   font-size: 16px;
-  font-weight: 600;
-  color: var(--g500);
+  font-weight: 400;
+  color: #475569;
   margin-top: 3px;
 }
 
@@ -807,7 +816,7 @@ button { cursor: pointer; border: none; background: none; }
   border-top: 1px solid #DBEAFE;
   animation: fadeSlide 0.16s ease;
 }
-.flow-summary { font-size: 18px; color: var(--g700); line-height: 1.55; word-break: keep-all; }
+.flow-summary { font-size: 17.5px; font-weight: 400; color: #334155; line-height: 1.58; word-break: keep-all; }
 
 /* 3단계 카톡 발송 파이프라인 미리보기 (중첩 박스 제거 · 미니멀 클린) */
 .flow-pipeline {
@@ -820,13 +829,13 @@ button { cursor: pointer; border: none; background: none; }
 }
 .pipe-row {
   display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
-  font-size: 17px; line-height: 1.5; color: var(--g900);
+  font-size: 17px; font-weight: 400; line-height: 1.55; color: #334155;
 }
 .pipe-tag {
   flex-shrink: 0;
   padding: 4px 10px; border-radius: 8px;
-  background: var(--g200); color: var(--g900);
-  font-size: 16px; font-weight: 800; text-align: center;
+  background: var(--g200); color: #0F172A;
+  font-size: 16px; font-weight: 700; text-align: center;
 }
 .pipe-row:nth-child(2) .pipe-tag { background: #FEF08A; color: #422006; }
 .pipe-row:nth-child(3) .pipe-tag { background: var(--blue-lt); color: var(--blue-dk); }
@@ -837,8 +846,9 @@ button { cursor: pointer; border: none; background: none; }
   border-radius: 14px;
   background: #F8FAFC;
   font-size: 16.5px;
-  color: var(--g700);
-  line-height: 1.55;
+  font-weight: 400;
+  color: #475569;
+  line-height: 1.58;
   word-break: keep-all;
 }
 .text-logo-preview-pill {
@@ -926,8 +936,8 @@ button { cursor: pointer; border: none; background: none; }
   flex: 1;
   min-width: 0;
   font-size: 16.5px;
-  font-weight: 600;
-  color: var(--g700);
+  font-weight: 400;
+  color: #475569;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -935,7 +945,7 @@ button { cursor: pointer; border: none; background: none; }
 .sum-acc-toggle {
   flex-shrink: 0;
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--blue);
   background: var(--blue-lt);
   padding: 5px 10px;
@@ -950,7 +960,7 @@ button { cursor: pointer; border: none; background: none; }
   background: var(--g50);
 }
 .sum-acc-full {
-  font-size: 18px; line-height: 1.55; color: var(--g900); word-break: keep-all;
+  font-size: 18px; font-weight: 400; line-height: 1.58; color: #334155; word-break: keep-all;
 }
 .sum-inline-ta {
   width: 100%;
@@ -1085,7 +1095,7 @@ button { cursor: pointer; border: none; background: none; }
 }
 .q-text {
   font-size: 25px; font-weight: 800; line-height: 1.38; letter-spacing: -0.025em;
-  color: var(--g900); word-break: keep-all;
+  color: #0F172A; word-break: keep-all;
 }
 .q-text strong { color: var(--blue-dk); font-weight: 800; }
 .q-usage-hint {
@@ -1094,13 +1104,13 @@ button { cursor: pointer; border: none; background: none; }
 
 /* 스마트 자동 토스(Auto-Toss) 알림 배지 & 쉬운 일상 비유 배지 */
 .auto-toss-banner {
-  padding: 16px 16px;
+  padding: 15px 16px;
   border-radius: 16px;
   background: #EFF6FF;
   color: #1E3A8A;
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1.5;
+  font-size: 16.5px;
+  font-weight: 500;
+  line-height: 1.55;
   word-break: keep-all;
   animation: fadeSlide 0.2s ease;
 }
@@ -1109,9 +1119,9 @@ button { cursor: pointer; border: none; background: none; }
   border-radius: 15px;
   background: #F5F7FA;
   color: #334155;
-  font-size: 17px;
-  font-weight: 700;
-  line-height: 1.52;
+  font-size: 16.5px;
+  font-weight: 400;
+  line-height: 1.58;
   word-break: keep-all;
 }
 
@@ -1192,8 +1202,8 @@ button { cursor: pointer; border: none; background: none; }
 .q5-mode-sub {
   display: block;
   font-size: 16px;
-  font-weight: 600;
-  color: #64748B;
+  font-weight: 400;
+  color: #475569;
   margin-top: 4px;
 }
 .q5-mode-card.selected .q5-mode-sub { color: #1E40AF; }
@@ -1250,10 +1260,10 @@ button { cursor: pointer; border: none; background: none; }
   padding: 15px 16px;
   border-radius: 15px;
   background: #EFF6FF;
-  color: #1E3A8A;
+  color: #334155;
   font-size: 16.5px;
-  font-weight: 800;
-  line-height: 1.55;
+  font-weight: 400;
+  line-height: 1.58;
   word-break: keep-all;
 }
 .msg-type-badge {
@@ -1335,8 +1345,8 @@ button { cursor: pointer; border: none; background: none; }
   border: 1.5px solid #F59E0B;
   color: #92400E;
   font-size: 16.5px;
-  font-weight: 700;
-  line-height: 1.52;
+  font-weight: 400;
+  line-height: 1.55;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1347,13 +1357,13 @@ button { cursor: pointer; border: none; background: none; }
   flex-wrap: wrap;
   gap: 8px;
 }
-.btn-q5-night-fix {
+.btn-q5-night-fix, .btn-q5-fix-time {
   padding: 10px 14px;
   border-radius: 11px;
   background: var(--blue);
   color: #FFFFFF;
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 700;
 }
 .btn-q5-add-slot {
   width: 100%;
@@ -1413,11 +1423,11 @@ button { cursor: pointer; border: none; background: none; }
   display: flex; align-items: center; gap: 6px;
 }
 .guardrail-reason {
-  font-size: 17.5px; font-weight: 700; color: #78350F;
-  line-height: 1.55; word-break: keep-all;
+  font-size: 17px; font-weight: 400; color: #78350F;
+  line-height: 1.58; word-break: keep-all;
   background: #FFFFFF; padding: 14px 15px; border-radius: 13px;
 }
-.guardrail-sub { font-size: 16.5px; font-weight: 800; color: #92400E; }
+.guardrail-sub { font-size: 16.5px; font-weight: 700; color: #92400E; }
 .alt-card {
   background: #FFFFFF;
   border-radius: 14px;
@@ -1426,8 +1436,8 @@ button { cursor: pointer; border: none; background: none; }
   flex-direction: column;
   gap: 8px;
 }
-.alt-title { font-size: 17.5px; font-weight: 800; color: var(--g900); }
-.alt-detail { font-size: 16.5px; color: var(--g700); line-height: 1.52; }
+.alt-title { font-size: 17.5px; font-weight: 700; color: #0F172A; }
+.alt-detail { font-size: 16.5px; font-weight: 400; color: #475569; line-height: 1.55; }
 .btn-use-alt {
   align-self: flex-start;
   margin-top: 4px;
@@ -1436,55 +1446,102 @@ button { cursor: pointer; border: none; background: none; }
   background: var(--blue);
   color: #FFFFFF;
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
-/* Tap-to-Edit 예시 칩 영역 (50대+ 빅폰트 18.5px + 굵은 고대비 [이 내용 채우기] 버튼) */
+/* V3.0 Tap-to-Edit 예시 카드 — 1줄 요약 타이틀 아코디언 ➔ 클릭 시 전체 예시(weight 400) + [이 내용 선택] */
 .examples-wrap {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 .examples-caption {
-  font-size: 18px; font-weight: 800; color: var(--g900);
+  font-size: 17.5px; font-weight: 700; color: #0F172A;
   display: flex; align-items: center; gap: 6px; line-height: 1.45;
   word-break: keep-all;
 }
-.example-chip {
+.example-acc-item {
   width: 100%;
-  padding: 18px 18px;
-  border-radius: 18px;
+  border-radius: 16px;
   background: #F8FAFC;
-  border: 1.5px solid #DBEAFE;
+  border: 1.5px solid #E2E8F0;
+  overflow: hidden;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+.example-acc-item.open {
+  background: #FFFFFF;
+  border-color: var(--blue);
+  box-shadow: 0 6px 18px rgba(49, 130, 246, 0.11);
+}
+.example-acc-item.goal-item {
+  background: #EFF6FF;
+  border-color: #93C5FD;
+}
+.example-acc-head {
+  width: 100%;
+  min-height: 54px;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   text-align: left;
-  font-size: 18.5px;
-  font-weight: 600;
-  color: var(--g900);
-  line-height: 1.55;
-  word-break: keep-all;
+  background: transparent;
+}
+.example-acc-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.38;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.example-acc-chev {
+  flex-shrink: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #64748B;
+  transition: transform 0.16s ease;
+}
+.example-acc-item.open .example-acc-chev {
+  color: var(--blue-dk);
+  transform: rotate(180deg);
+}
+.example-acc-body {
+  padding: 14px 16px 16px;
+  border-top: 1px solid #EEF2F6;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
   gap: 13px;
-  transition: all 0.14s ease;
+  background: #FFFFFF;
+  animation: fadeSlide 0.16s ease;
 }
-.example-chip:hover, .example-chip:active {
-  border-color: var(--blue);
-  background: #F0F7FF;
+.example-acc-text {
+  font-size: 18px;
+  font-weight: 400;
+  color: #334155;
+  line-height: 1.58;
+  word-break: keep-all;
 }
-.example-chip-tag {
+.btn-select-example {
   align-self: flex-end;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 16px;
+  min-height: 44px;
+  padding: 9px 18px;
   border-radius: 12px;
   background: var(--blue);
   color: #FFFFFF;
   font-size: 16.5px;
-  font-weight: 800;
-  line-height: 1.25;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(49, 130, 246, 0.22);
 }
+.btn-select-example:active { transform: scale(0.97); }
 
 /* 주인공 멀티라인 주관식 입력창 (오픈 캔버스 상단 우선 · 18.5px 50대+ 빅폰트) */
 .answer-composer-card {
@@ -1531,11 +1588,23 @@ button { cursor: pointer; border: none; background: none; }
   display: flex; gap: 10px; align-items: center;
 }
 .btn-prev-q {
-  min-height: 60px;
-  padding: 14px 18px; border-radius: 16px;
-  background: #FFFFFF; border: 1.5px solid var(--g200);
-  color: var(--g900); font-size: 18px; font-weight: 800; flex-shrink: 0;
+  width: 52px;
+  height: 56px;
+  min-height: 56px;
+  padding: 0;
+  border-radius: 15px;
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  color: #0F172A;
+  font-size: 22px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  flex: 0 0 52px;
+  flex-shrink: 0;
+  line-height: 1;
 }
+.btn-prev-q:active { background: var(--g100); transform: scale(0.96); }
 
 /* ═════════ Step 4: 브랜드 디자인 재료 수집 (로고 · 컬러 · 실사 최대 3장) ═════════ */
 .asset-section-title {
@@ -1613,8 +1682,8 @@ button { cursor: pointer; border: none; background: none; }
   display: flex; flex-shrink: 0; border: 1px solid rgba(15, 23, 42, 0.14);
 }
 .color-swatch-pair span { flex: 1; display: block; }
-.color-meta b { display: block; font-size: 18px; color: var(--g900); line-height: 1.3; }
-.color-meta small { display: block; font-size: 16px; color: var(--g500); margin-top: 2px; }
+.color-meta b { display: block; font-size: 18px; font-weight: 700; color: #0F172A; line-height: 1.3; }
+.color-meta small { display: block; font-size: 16px; font-weight: 400; color: #475569; margin-top: 2px; }
 
 .custom-color-panel {
   padding: 14px; border-radius: 14px; background: var(--g50);
@@ -1777,9 +1846,9 @@ button { cursor: pointer; border: none; background: none; }
   background: #F6F8FA; border-radius: 16px; padding: 14px;
 }
 .qa-msg {
-  padding: 14px 15px; border-radius: 15px; font-size: 18px; line-height: 1.55; word-break: keep-all;
+  padding: 14px 15px; border-radius: 15px; font-size: 17.5px; font-weight: 400; line-height: 1.58; word-break: keep-all;
 }
-.qa-msg.bot { background: #FFFFFF; color: var(--g900); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05); }
+.qa-msg.bot { background: #FFFFFF; color: #334155; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05); }
 .qa-msg.bot strong { color: var(--blue-dk); }
 .qa-msg.user { background: var(--blue); color: #FFFFFF; align-self: flex-end; max-width: 88%; font-weight: 700; }
 .qa-faq-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1859,7 +1928,7 @@ button { cursor: pointer; border: none; background: none; }
 }
 .sum-pinned-chip button:hover { color: #DC2626; }
 
-/* V2.9 우측 하단 순수 챗봇·물음표 원형 아이콘 런처 (외부 텍스트 라벨 0건 · 52px × 52px 정원형) */
+/* V3.0 우측 하단 3D 글로시 입체 챗봇 아이콘 런처 (외부 텍스트 라벨 0건 · 52px × 52px 정원형) */
 .flt-launcher {
   position: fixed;
   right: 16px;
@@ -1875,18 +1944,17 @@ button { cursor: pointer; border: none; background: none; }
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%);
-  color: #FFFFFF;
+  background: transparent;
+  padding: 0;
   display: grid;
   place-items: center;
-  box-shadow: 0 10px 26px rgba(37, 99, 235, 0.36);
-  border: 2px solid rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.34), 0 4px 10px rgba(15, 23, 42, 0.14);
   transition: transform 0.16s ease, box-shadow 0.16s ease;
 }
-.flt-fab:active { transform: scale(0.93); }
-.flt-fab-svg { display: block; }
+.flt-fab:active { transform: scale(0.92); }
+.flt-fab-svg { width: 52px; height: 52px; display: block; border-radius: 50%; }
 
-/* V2.9 3-Tab 도움말·맞춤구축(300만+)·오류제보 바텀시트 팝업 */
+/* V3.0 3-Tab 도움말·맞춤구축 견적·오류제보 바텀시트 팝업 */
 .flt-sheet-backdrop {
   position: fixed;
   inset: 0;
@@ -1933,10 +2001,10 @@ button { cursor: pointer; border: none; background: none; }
   color: var(--g900);
 }
 .flt-sheet-sub {
-  font-size: 16.5px;
-  font-weight: 600;
-  line-height: 1.45;
-  color: var(--g700);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.48;
+  color: #475569;
   word-break: keep-all;
 }
 .flt-close-x {
@@ -1982,8 +2050,9 @@ button { cursor: pointer; border: none; background: none; }
 .flt-panel[hidden] { display: none; }
 .flt-panel-guide {
   font-size: 16.5px;
-  color: var(--g700);
-  line-height: 1.5;
+  font-weight: 400;
+  color: #475569;
+  line-height: 1.55;
   word-break: keep-all;
 }
 .flt-reason-list { display: flex; flex-direction: column; gap: 9px; }
@@ -2046,11 +2115,12 @@ button { cursor: pointer; border: none; background: none; }
   padding: 14px 16px;
   border-radius: 15px;
   background: #F5F3FF;
-  color: #4C1D95;
+  color: #334155;
   font-size: 16.5px;
-  font-weight: 700;
-  line-height: 1.52;
+  font-weight: 400;
+  line-height: 1.55;
 }
+.vip-intro-banner strong { color: #4C1D95; font-weight: 700; }
 .vip-chip-grid {
   display: flex;
   flex-direction: column;
@@ -2196,7 +2266,7 @@ button { cursor: pointer; border: none; background: none; }
 }
 .loading-spinner-wrap {
   position: relative;
-  width: 84px;
+  width: 88px;
   height: 76px;
   display: flex;
   align-items: center;
@@ -2205,71 +2275,39 @@ button { cursor: pointer; border: none; background: none; }
 .loading-motion-stage {
   position: relative;
   width: 84px;
-  height: 76px;
+  height: 74px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.loading-orbit-ring {
-  position: absolute;
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  border: 3.5px solid #E2E8F0;
-  border-top-color: #3182F6;
-  border-right-color: #FEE500;
-  animation: spinRing 0.95s cubic-bezier(0.55, 0.25, 0.45, 0.75) infinite;
+.loading-single-svg {
+  width: 76px;
+  height: 72px;
+  display: block;
+  overflow: visible;
 }
-.loading-bubble-actor {
-  position: relative;
-  z-index: 2;
-  width: 44px;
-  height: 36px;
-  border-radius: 14px;
-  background: #FEE500;
-  color: #191919;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  box-shadow: 0 8px 18px rgba(250, 204, 21, 0.42);
-  animation: bubbleHop 0.9s ease-in-out infinite;
+.loading-motion-stage[data-motion="pencil"] #loading-svg-plane { display: none; }
+.loading-motion-stage[data-motion="plane"] #loading-svg-pencil { display: none; }
+.ld-pencil-actor {
+  transform-box: fill-box;
+  transform-origin: bottom left;
+  animation: ldPencilWrite 1.45s ease-in-out infinite;
 }
-.loading-bubble-actor::after {
-  content: '';
-  position: absolute;
-  left: 7px;
-  bottom: -5px;
-  width: 10px;
-  height: 10px;
-  background: #FEE500;
-  transform: rotate(35deg);
-  border-radius: 2px;
+.ld-note-line {
+  stroke-dasharray: 28;
+  stroke-dashoffset: 28;
+  animation: ldLineDraw 1.45s ease-in-out infinite;
 }
-.loading-bubble-dot {
-  width: 5.5px;
-  height: 5.5px;
-  border-radius: 50%;
-  background: #191919;
-  animation: dotWave 0.9s ease-in-out infinite;
+.ld-note-line.l2 { animation-delay: 0.25s; }
+.ld-note-line.l3 { animation-delay: 0.5s; }
+.ld-plane-actor {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ldPlaneFly 1.35s ease-in-out infinite;
 }
-.loading-bubble-dot:nth-child(2) { animation-delay: 0.14s; }
-.loading-bubble-dot:nth-child(3) { animation-delay: 0.28s; }
-.loading-pen-badge {
-  position: absolute;
-  right: 3px;
-  bottom: 4px;
-  z-index: 3;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: #3182F6;
-  color: #FFFFFF;
-  font-size: 13px;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 4px 10px rgba(49, 130, 246, 0.36);
-  animation: penDraft 0.9s ease-in-out infinite;
+.ld-plane-trail {
+  stroke-dasharray: 5 5;
+  animation: ldTrailDash 0.9s linear infinite;
 }
 .loading-spinner-icon {
   position: absolute;
@@ -2279,20 +2317,23 @@ button { cursor: pointer; border: none; background: none; }
   opacity: 0;
   pointer-events: none;
 }
-@keyframes spinRing {
-  to { transform: rotate(360deg); }
+@keyframes ldPencilWrite {
+  0%, 100% { transform: translate(-4px, 2px) rotate(-6deg); }
+  35% { transform: translate(6px, -2px) rotate(4deg); }
+  70% { transform: translate(11px, 3px) rotate(-3deg); }
 }
-@keyframes bubbleHop {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-6px) scale(1.05); }
+@keyframes ldLineDraw {
+  0% { stroke-dashoffset: 28; opacity: 0.35; }
+  55%, 85% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0.25; }
 }
-@keyframes dotWave {
-  0%, 100% { transform: translateY(0); opacity: 0.45; }
-  50% { transform: translateY(-3px); opacity: 1; }
+@keyframes ldPlaneFly {
+  0%, 100% { transform: translate(-6px, 5px) rotate(-4deg); }
+  50% { transform: translate(7px, -6px) rotate(3deg); }
 }
-@keyframes penDraft {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  50% { transform: translate(3px, -4px) rotate(-14deg); }
+@keyframes ldTrailDash {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 20; }
 }
 .loading-subject-badge {
   display: inline-flex;
@@ -2344,9 +2385,9 @@ button { cursor: pointer; border: none; background: none; }
   text-align: right;
 }
 .loading-sub {
-  font-size: 17.5px;
-  font-weight: 600;
-  line-height: 1.52;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.55;
   color: #475569;
   word-break: keep-all;
 }
@@ -2446,16 +2487,31 @@ button { cursor: pointer; border: none; background: none; }
   background: #FFFBEB;
   border: 1.5px solid #FDE68A;
   border-radius: 18px;
-  padding: 20px 18px;
-  font-size: 19px;
-  font-weight: 600;
-  line-height: 1.6;
-  color: #1E293B;
+  padding: 18px 18px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.62;
+  color: #334155;
   word-break: keep-all;
 }
 .ty-delivery-box strong {
   color: #B45309;
-  font-weight: 800;
+  font-weight: 700;
+}
+.ty-reassure-box {
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: 16px;
+  padding: 17px 18px;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.62;
+  color: #334155;
+  word-break: keep-all;
+}
+.ty-reassure-box strong {
+  color: #1D4ED8;
+  font-weight: 700;
 }
 .btn-thankyou-home {
   width: 100%;
@@ -2507,7 +2563,7 @@ button { cursor: pointer; border: none; background: none; }
       </div>
       <div class="admin-input-row">
         <input type="text" class="admin-in" id="admin-biz-input" placeholder="테스트 상호/채널명" value="한빛 병의원 세무회계">
-        <input type="text" class="admin-in" id="admin-owner-input" placeholder="대표자명" value="김대표">
+        <input type="text" class="admin-in" id="admin-owner-input" placeholder="담당자명" value="김파트너">
       </div>
       <select class="admin-in" id="admin-tier-select" aria-label="로컬 테스트 등급 선택">
         <option value="lead">테스트 등급: 🎯 가망고객 (잔여 2/2회 · 제안서 분기)</option>
@@ -2527,7 +2583,7 @@ button { cursor: pointer; border: none; background: none; }
         <span class="quota-pill tier-empty" id="blocked-quota-pill">무료 체험 잔여: 0/2회</span>
       </div>
       <h1 class="blocked-title" id="blocked-title">무료 캠페인 설계 체험(2회)을 모두 완료하셨습니다</h1>
-      <p class="blocked-desc" id="blocked-desc">고마워톡을 도입하시면 담당 전문가가 업종 맞춤 고화질 이미지 제작부터 카카오 알림톡·친구톡 어드민 세팅까지 100% 완료해 드립니다.</p>
+      <p class="blocked-desc" id="blocked-desc">고마워톡을 도입하시면 담당 전문가가 업종 맞춤 신청페이지와 알림톡·광고 메시지 어드민 초기 세팅을 완료해 드리며, 이후 관리자 페이지에서 파트너님이 직접 수정하실 수 있습니다.</p>
 
       <div class="blocked-plan-grid">
         <div class="blocked-plan-card">
@@ -2677,7 +2733,7 @@ button { cursor: pointer; border: none; background: none; }
           <div id="guardrail-alts" style="display:flex;flex-direction:column;gap:8px"></div>
         </div>
 
-        <!-- 4-B) 카카오 메시지 성격 자동 분류 배지 (정보성 알림톡 vs 홍보·소식 카톡 20:00~08:00 안내) -->
+        <!-- 4-B) 카카오 메시지 성격 자동 분류 배지 (알림톡 vs 광고 20:00~08:00 안내) -->
         <div class="msg-type-badge" id="q-msg-type-badge" hidden></div>
 
         <!-- 5) 입력창 상단 우선(Input-First): 스크롤 없이 한눈에 들어오는 18px 답변 입력창 -->
@@ -2830,23 +2886,23 @@ button { cursor: pointer; border: none; background: none; }
         <div class="thankyou-card" id="submit-done-card" hidden></div>
       </section>
 
-      <!-- ═════════ 토스식 모바일 하단 고정 액션 바 (Step 1 ~ Step 5 공용 Sticky Bottom CTA) ═════════ -->
+      <!-- ═════════ 토스식 모바일 하단 고정 액션 바 (Step 1 ~ Step 5 무조건 1줄 고정 56px) ═════════ -->
       <div class="sticky-cta-bar" id="sticky-cta-bar" hidden>
         <div class="sticky-cta-caption" id="sticky-cta-caption" hidden></div>
 
         <!-- Step 1 CTA -->
         <div class="sticky-cta-row" id="cta-row-1" hidden>
-          <button type="button" class="btn-primary" id="btn-to-stage2">다음: 맞춤 카톡 흐름 보기 →</button>
+          <button type="button" class="btn-primary" id="btn-to-stage2">다음: 맞춤 흐름 보기 →</button>
         </div>
 
         <!-- Step 2 CTA -->
         <div class="sticky-cta-row" id="cta-row-2" hidden>
-          <button type="button" class="btn-primary" id="btn-to-stage3" disabled>이 흐름으로 질문 시작하기 →</button>
+          <button type="button" class="btn-primary" id="btn-to-stage3" disabled>이 흐름으로 시작하기 →</button>
         </div>
 
         <!-- Step 3 CTA -->
         <div class="sticky-cta-row" id="cta-row-3" hidden>
-          <button type="button" class="btn-prev-q" id="btn-prev-q" hidden>← 이전</button>
+          <button type="button" class="btn-prev-q" id="btn-prev-q" aria-label="이전 질문" hidden>←</button>
           <button type="button" class="btn-primary" id="btn-submit-q" style="flex:1">다음 질문 →</button>
         </div>
 
@@ -2857,7 +2913,7 @@ button { cursor: pointer; border: none; background: none; }
 
         <!-- Step 5 CTA -->
         <div class="sticky-cta-row" id="cta-row-5" hidden>
-          <button type="button" class="btn-primary" id="btn-submit-campaign">✅ 이대로 접수 신청하기</button>
+          <button type="button" class="btn-primary" id="btn-submit-campaign">이대로 접수 신청하기</button>
         </div>
       </div>
 
@@ -2866,19 +2922,32 @@ button { cursor: pointer; border: none; background: none; }
 
 </div>
 
-<!-- ═════════ Part 4 & V2.8: 생동감 있는 모션 로딩 오버레이 + 상호·업종 캡슐 분리 + 실시간 진행 게이지 ═════════ -->
+<!-- ═════════ V3.0 단일 아이콘 모션 로딩 오버레이 (연필 드로잉 / 종이비행기 전송) ═════════ -->
 <div class="global-loading-overlay" id="global-loading-overlay" role="dialog" aria-modal="true" aria-live="polite" hidden>
   <div class="loading-card">
     <div class="loading-spinner-wrap" aria-hidden="true">
-      <div class="loading-motion-stage">
-        <div class="loading-orbit-ring"></div>
-        <div class="loading-bubble-actor">
-          <span class="loading-bubble-dot"></span>
-          <span class="loading-bubble-dot"></span>
-          <span class="loading-bubble-dot"></span>
-        </div>
-        <span class="loading-pen-badge" id="loading-pen-badge">✏️</span>
-        <span class="loading-spinner-icon" id="loading-icon">💬</span>
+      <div class="loading-motion-stage" id="loading-motion-stage" data-motion="pencil">
+        <!-- 설계·요약 생성 중: 노트 위에 부드럽게 글을 써 내려가는 단일 연필 모션 -->
+        <svg class="loading-single-svg" id="loading-svg-pencil" viewBox="0 0 80 76" fill="none">
+          <rect x="12" y="14" width="44" height="52" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="2.2"/>
+          <line x1="21" y1="28" x2="46" y2="28" stroke="#3182F6" stroke-width="3" stroke-linecap="round" class="ld-note-line"/>
+          <line x1="21" y1="39" x2="43" y2="39" stroke="#60A5FA" stroke-width="3" stroke-linecap="round" class="ld-note-line l2"/>
+          <line x1="21" y1="50" x2="38" y2="50" stroke="#93C5FD" stroke-width="3" stroke-linecap="round" class="ld-note-line l3"/>
+          <g class="ld-pencil-actor">
+            <path d="M56.2 14.8L64.4 23L41.8 45.6L32.4 47.4L34.2 38L56.2 14.8Z" fill="#2563EB" stroke="#1E40AF" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M53.4 17.6L61.6 25.8" stroke="#FEE500" stroke-width="3" stroke-linecap="round"/>
+            <path d="M32.4 47.4L36.2 44.2L34.8 40.4" fill="#FEE500"/>
+          </g>
+        </svg>
+        <!-- 최종 제출·전달 중: 앞으로 경쾌하게 날아가는 단일 종이비행기 모션 -->
+        <svg class="loading-single-svg" id="loading-svg-plane" viewBox="0 0 80 76" fill="none">
+          <path d="M12 58C22 54 27 48 34 42" stroke="#93C5FD" stroke-width="2.8" stroke-linecap="round" class="ld-plane-trail"/>
+          <g class="ld-plane-actor">
+            <path d="M14 34L66 15L50 61L37 44L14 34Z" fill="#3182F6" stroke="#1D4ED8" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M66 15L37 44L39 58L47 49" fill="#93C5FD" stroke="#1D4ED8" stroke-width="1.8" stroke-linejoin="round"/>
+          </g>
+        </svg>
+        <span class="loading-spinner-icon" id="loading-icon"></span>
       </div>
     </div>
     <div class="loading-subject-badge" id="loading-subject-badge" hidden></div>
@@ -2896,48 +2965,69 @@ button { cursor: pointer; border: none; background: none; }
 <!-- ═════════ 플로팅 토스트 ═════════ -->
 <div class="bot-toast" id="bot-toast" role="status" aria-live="polite" hidden></div>
 
-<!-- ═════════ V2.9 우측 하단 순수 챗봇·물음표 원형 아이콘 런처 (외부 텍스트 0건 · 52px × 52px) ═════════ -->
+<!-- ═════════ V3.0 우측 하단 3D 글로시 입체 챗봇 아이콘 런처 (외부 텍스트 0건 · 52px × 52px) ═════════ -->
 <div class="flt-launcher is-gated" id="flt-launcher" hidden>
-  <button type="button" class="flt-fab" id="flt-fab" aria-label="무엇을 도와드릴까요? 질문·맞춤구축 견적·오류제보 열기" title="질문 · 맞춤구축 견적(300만 원+) · 오류제보">
-    <svg class="flt-fab-svg" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-      <line x1="14" y1="2.2" x2="14" y2="5.4" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round"/>
-      <circle cx="14" cy="2" r="1.45" fill="#FEE500"/>
-      <path d="M6.2 5.6H21.8C23.8 5.6 25.4 7.2 25.4 9.2V17.4C25.4 19.4 23.8 21 21.8 21H12.2L7.4 24.8C6.9 25.2 6.2 24.85 6.2 24.2V21C4.2 20.85 2.6 19.3 2.6 17.4V9.2C2.6 7.2 4.2 5.6 6.2 5.6Z" stroke="#FFFFFF" stroke-width="2.1" stroke-linejoin="round"/>
-      <path d="M11.3 11.1C11.3 9.7 12.45 8.7 14.05 8.7C15.55 8.7 16.7 9.55 16.7 10.9C16.7 11.95 16.05 12.55 15.05 13.15C14.3 13.6 13.95 13.95 13.95 14.75" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/>
-      <circle cx="14" cy="17.5" r="1.3" fill="#FEE500"/>
+  <button type="button" class="flt-fab" id="flt-fab" aria-label="무엇을 도와드릴까요? 질문·맞춤 구축 견적·오류 제보 열기" title="질문 · 맞춤 구축 견적 · 오류 제보">
+    <svg class="flt-fab-svg" width="52" height="52" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+      <defs>
+        <radialGradient id="ibFabSphere" cx="32%" cy="24%" r="76%">
+          <stop offset="0%" stop-color="#60A5FA"/>
+          <stop offset="46%" stop-color="#3182F6"/>
+          <stop offset="100%" stop-color="#1D4ED8"/>
+        </radialGradient>
+        <linearGradient id="ibFabGloss" x1="12" y1="5" x2="36" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.72"/>
+          <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="ibFabBubble" x1="15" y1="15" x2="37" y2="39" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FFFFFF"/>
+          <stop offset="100%" stop-color="#DCEBFF"/>
+        </linearGradient>
+        <filter id="ibFabDrop" x="9" y="12" width="34" height="32" filterUnits="userSpaceOnUse">
+          <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.24"/>
+        </filter>
+      </defs>
+      <circle cx="26" cy="26" r="25" fill="url(#ibFabSphere)" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
+      <ellipse cx="22" cy="14" rx="14" ry="8" fill="url(#ibFabGloss)"/>
+      <g filter="url(#ibFabDrop)">
+        <path d="M16.5 16.5H35.5C37.98 16.5 40 18.52 40 21V30.5C40 32.98 37.98 35 35.5 35H24.6L18.4 39.2C17.6 39.74 16.5 39.18 16.5 38.2V35C14 34.88 12 32.88 12 30.5V21C12 18.52 14.02 16.5 16.5 16.5Z" fill="url(#ibFabBubble)"/>
+        <circle cx="20.4" cy="25.8" r="2.1" fill="#2563EB"/>
+        <circle cx="26" cy="25.8" r="2.1" fill="#3B82F6"/>
+        <circle cx="31.6" cy="25.8" r="2.1" fill="#60A5FA"/>
+      </g>
     </svg>
   </button>
 </div>
 
-<!-- ═════════ V2.9 3-Tab 도움말·맞춤구축(300만 원+)·오류제보 바텀시트 팝업 ═════════ -->
+<!-- ═════════ V3.0 3-Tab 도움말·맞춤구축 견적·오류제보 바텀시트 팝업 ═════════ -->
 <div class="flt-sheet-backdrop is-gated" id="flt-sheet-backdrop" hidden>
   <div class="flt-sheet" id="flt-sheet" role="dialog" aria-label="무엇을 도와드릴까요?">
     <div class="flt-sheet-header">
       <div class="flt-sheet-head-copy">
         <div class="flt-sheet-title" id="flt-sheet-title">💬 무엇을 도와드릴까요?</div>
-        <div class="flt-sheet-sub" id="flt-sheet-sub">궁금한 점 확인 · 맞춤 구축(300만 원+) 견적 · 화면 오류 제보</div>
+        <div class="flt-sheet-sub" id="flt-sheet-sub">궁금한 점 확인 · 맞춤 구축 견적 · 화면 오류 제보</div>
       </div>
       <button type="button" class="flt-close-x" id="btn-close-flt" aria-label="닫기">✕</button>
     </div>
 
     <div class="flt-tabs" role="tablist">
       <button type="button" class="flt-tab-btn active" id="flt-tab-qa" data-flt-tab="qa" role="tab" aria-selected="true">자주 묻는 질문</button>
-      <button type="button" class="flt-tab-btn" id="flt-tab-vip" data-flt-tab="vip" role="tab" aria-selected="false">맞춤구축 견적(300만+)</button>
+      <button type="button" class="flt-tab-btn" id="flt-tab-vip" data-flt-tab="vip" role="tab" aria-selected="false">맞춤구축 견적</button>
       <button type="button" class="flt-tab-btn" id="flt-tab-report" data-flt-tab="report" role="tab" aria-selected="false">화면 오류제보</button>
     </div>
 
-    <!-- 탭 1: 자주 묻는 질문 + 원클릭 [📌 설계 핀] + VIP 견적 직행 -->
+    <!-- 탭 1: 자주 묻는 질문 + 원클릭 [📌 설계 핀] + 맞춤구축 견적 직행 -->
     <div class="flt-panel" id="flt-panel-qa">
       <div class="qa-faq-chips" id="qa-faq-chips">
         <button type="button" class="qa-faq-chip vip-chip-highlight">💎 견적 프로그램 제작 · API 연동 · 풀파워 분기 의뢰</button>
         <button type="button" class="qa-faq-chip vip-chip-highlight">설문 답변별로 모든 카톡을 다 다르게 보낼 수 있나요?</button>
-        <button type="button" class="qa-faq-chip">알림톡·친구톡 차이</button>
+        <button type="button" class="qa-faq-chip">알림톡 · 광고 차이</button>
         <button type="button" class="qa-faq-chip">구글폼 연동 되나요?</button>
         <button type="button" class="qa-faq-chip">마케팅 수신동의·M형</button>
         <button type="button" class="qa-faq-chip">Starter vs Pro 차이</button>
       </div>
       <div class="qa-stream" id="qa-stream">
-        <div class="qa-msg bot">안녕하세요 대표님! 고마워톡 기능·요금·맞춤 구축(300만 원 이상)까지 편하게 물어보세요.</div>
+        <div class="qa-msg bot">안녕하세요 파트너님! 고마워톡 기능·요금·맞춤 구축까지 무엇이든 물어보세요.</div>
       </div>
       <form class="qa-input-row" id="qa-form">
         <input type="text" id="qa-input" placeholder="궁금한 내용을 적어주세요" autocomplete="off">
@@ -3105,6 +3195,7 @@ const ST = {
     displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
   },
   userEditedQ: { 1: false, 2: false, 3: false, 4: false, 5: false },
+  openExampleIdx: -1,
   currentQPack: null,
   guardrail: null,
   notes: [],
@@ -3141,7 +3232,7 @@ function syncHeaderBadge() {
   const rawInput = String(ST.subIndustry || ($('#sub-industry-input') && $('#sub-industry-input').value) || '').trim();
   const cleanLabel = rawInput ? Consult.sanitizeSubIndustryLabel(rawInput, ST.sectorId).cleanLabel : '';
   const safeBiz = String(ST.brandName || ST.partnerInfo.businessName || '').trim();
-  const label = cleanLabel || (safeBiz && !/대표님\s*$/.test(safeBiz) ? safeBiz : '') || '업종 선택';
+  const label = cleanLabel || (safeBiz && !/(?:\uB300\uD45C\uB2D8|\uC0AC\uC7A5\uB2D8|\uD30C\uD2B8\uB108\uB2D8)\s*$/.test(safeBiz) ? safeBiz : '') || '업종 선택';
   badge.textContent = label;
   badge.title = label;
 }
@@ -3255,7 +3346,7 @@ function updateLoadingOverlayText(title, opts) {
   const titleEl = $('#loading-title');
   const subEl = $('#loading-sub');
   const iconEl = $('#loading-icon');
-  const penEl = $('#loading-pen-badge');
+  const stageEl = $('#loading-motion-stage');
   if (subjectEl && opts.subject !== undefined) {
     const subj = String(opts.subject || '').trim();
     if (subj) {
@@ -3269,7 +3360,9 @@ function updateLoadingOverlayText(title, opts) {
   if (titleEl && title) titleEl.textContent = String(title);
   if (subEl && opts.sub) subEl.textContent = String(opts.sub);
   if (iconEl && opts.icon) iconEl.textContent = String(opts.icon);
-  if (penEl && opts.icon) penEl.textContent = String(opts.icon);
+  if (stageEl && (opts.motion || opts.icon)) {
+    stageEl.dataset.motion = (opts.motion === 'plane' || opts.icon === '🚀') ? 'plane' : 'pencil';
+  }
   if (typeof opts.pct === 'number') setLoadingProgress(opts.pct);
 }
 
@@ -3284,7 +3377,7 @@ function showLoadingOverlay(title, opts) {
   const titleEl = $('#loading-title');
   const subEl = $('#loading-sub');
   const iconEl = $('#loading-icon');
-  const penEl = $('#loading-pen-badge');
+  const stageEl = $('#loading-motion-stage');
   if (subjectEl) {
     const subj = String(opts.subject || '').trim();
     if (subj) {
@@ -3297,8 +3390,10 @@ function showLoadingOverlay(title, opts) {
   }
   if (titleEl) titleEl.textContent = String(title || '잠시만 기다려 주세요');
   if (subEl) subEl.textContent = String(opts.sub || '잠시만 기다려 주시면 바로 다음 화면이 열립니다');
-  if (iconEl) iconEl.textContent = String(opts.icon || '💬');
-  if (penEl) penEl.textContent = String(opts.icon || '✏️');
+  if (iconEl) iconEl.textContent = String(opts.icon || '');
+  if (stageEl) {
+    stageEl.dataset.motion = (opts.motion === 'plane' || opts.icon === '🚀') ? 'plane' : 'pencil';
+  }
 
   LOADING_CTRL.active = true;
   setLoadingProgress(Number(opts.startPct) || 12);
@@ -3402,7 +3497,7 @@ function showQuotaBlockedGate(quota) {
   } else {
     if (iconEl) iconEl.textContent = '🎯';
     if (titleEl) titleEl.textContent = '무료 캠페인 설계 체험(2회)을 모두 완료하셨습니다';
-    if (descEl) descEl.textContent = q.message || '고마워톡을 도입하시면 전문가가 업종 맞춤 고화질 이미지 제작 및 채널 어드민 세팅을 100% 완료해 드립니다.';
+    if (descEl) descEl.textContent = q.message || '고마워톡을 도입하시면 전문가가 업종 맞춤 초기 세팅 및 채널 어드민 구축을 완료해 드립니다.';
     if (ctaEl) ctaEl.textContent = '🚀 고마워톡 도입 / 플랜 신청 문의하기';
   }
 }
@@ -3440,7 +3535,7 @@ async function verifyUserAndQuotaWithBackend(authPayload) {
     ST.userToken = res.userToken || '';
     ST.user = {
       kakao_user_id: String(userObj.kakao_user_id || ''),
-      name: String(userObj.name || '대표님'),
+      name: String(userObj.name || '파트너님'),
       phone: normalizeKakaoPhone(userObj.phone || ''),
       email: String(userObj.email || '')
     };
@@ -3458,7 +3553,7 @@ async function verifyUserAndQuotaWithBackend(authPayload) {
 
     const rawBizName = String(userObj.businessName || '').trim();
     const partnerInfo = {
-      businessName: (rawBizName && !/대표님\s*$/.test(rawBizName)) ? rawBizName : '',
+      businessName: (rawBizName && !/(?:\uB300\uD45C\uB2D8|\uC0AC\uC7A5\uB2D8|\uD30C\uD2B8\uB108\uB2D8)\s*$/.test(rawBizName)) ? rawBizName : '',
       ownerName: ST.user.name || '',
       phone: ST.user.phone,
       email: ST.user.email,
@@ -3617,7 +3712,7 @@ function unlockPartnerApp(partnerInfo, token, isAdminBypass, quotaInfo) {
 
   const cleanBiz = String(partnerInfo.businessName || '').trim();
   ST.partnerInfo = {
-    businessName: (cleanBiz && !/대표님\s*$/.test(cleanBiz)) ? cleanBiz : '',
+    businessName: (cleanBiz && !/(?:\uB300\uD45C\uB2D8|\uC0AC\uC7A5\uB2D8|\uD30C\uD2B8\uB108\uB2D8)\s*$/.test(cleanBiz)) ? cleanBiz : '',
     ownerName: partnerInfo.ownerName || '',
     phone: normalizeKakaoPhone(partnerInfo.phone || '01000000000'),
     email: partnerInfo.email || '',
@@ -3651,7 +3746,7 @@ function buildMockQuotaForAdminTier(tierMode) {
     return {
       tier: '가망고객', quotaType: 'TOTAL', limit: 2, used: 2, remaining: 0, allowed: false,
       totalUsed: 2, monthlyUsed: 2, currentMonth: ym,
-      message: '무료 캠페인 설계 체험(2회)을 모두 완료하셨습니다. 고마워톡 Starter 또는 Pro 플랜 도입 시 전문가가 고화질 이미지 제작 및 세팅을 100% 완료해 드립니다.',
+      message: '무료 캠페인 설계 체험(2회)을 모두 완료하셨습니다. 고마워톡 Starter 또는 Pro 플랜 도입 시 전문가가 초기 세팅을 완료해 드립니다.',
       ctaType: 'UPGRADE_FROM_LEAD'
     };
   }
@@ -3660,7 +3755,7 @@ function buildMockQuotaForAdminTier(tierMode) {
 
 function bypassAuthForAdmin(customBiz, customOwner, customTierMode) {
   const biz = (customBiz || ($('#admin-biz-input') && $('#admin-biz-input').value) || '한빛 병의원 세무회계').trim();
-  const owner = (customOwner || ($('#admin-owner-input') && $('#admin-owner-input').value) || '김대표').trim();
+  const owner = (customOwner || ($('#admin-owner-input') && $('#admin-owner-input').value) || '김파트너').trim();
   const tierMode = customTierMode || ($('#admin-tier-select') && $('#admin-tier-select').value) || 'lead';
   const mockQuota = buildMockQuotaForAdminTier(tierMode);
 
@@ -3726,8 +3821,8 @@ function updateStickyCtaBar() {
     const isOtherNeedInput = ST.sectorId === 'other' && rawSub.length < 2;
     $('#btn-to-stage2').disabled = isOtherNeedInput;
     $('#btn-to-stage2').textContent = isOtherNeedInput
-      ? '세부 업종을 먼저 한 줄 적어주세요'
-      : '다음: 맞춤 카톡 흐름 보기 →';
+      ? '세부 업종을 적어주세요'
+      : '다음: 맞춤 흐름 보기 →';
     return;
   }
 
@@ -3740,7 +3835,7 @@ function updateStickyCtaBar() {
     cap.textContent = '✅ 선택됨: ' + (flow ? flow.title : '운영 흐름');
     const cta = $('#btn-to-stage3');
     cta.disabled = false;
-    cta.textContent = '이 흐름으로 질문 시작하기 →';
+    cta.textContent = '이 흐름으로 시작하기 →';
     return;
   }
 
@@ -3799,6 +3894,7 @@ function goStage(n) {
     requestAnimationFrame(() => {
       if ($('#stage-viewport')) $('#stage-viewport').scrollTop = 0;
       if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') window.scrollTo(0, 0);
+      if (n === 3) centerActiveCourseChip();
     });
   }
   updateStickyCtaBar();
@@ -3808,7 +3904,7 @@ function resetConsultFlow() {
   ST.sectorId = '';
   ST.rawSubIndustry = '';
   ST.subIndustry = '';
-  ST.brandName = (IS_ADMIN_ENV && ST.partnerInfo.businessName && !/대표님\s*$/.test(ST.partnerInfo.businessName))
+  ST.brandName = (IS_ADMIN_ENV && ST.partnerInfo.businessName && !/(?:\uB300\uD45C\uB2D8|\uC0AC\uC7A5\uB2D8|\uD30C\uD2B8\uB108\uB2D8)\s*$/.test(ST.partnerInfo.businessName))
     ? ST.partnerInfo.businessName
     : '';
   ST.extractedGoal = '';
@@ -3836,6 +3932,7 @@ function resetConsultFlow() {
     displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
   };
   ST.userEditedQ = { 1: false, 2: false, 3: false, 4: false, 5: false };
+  ST.openExampleIdx = -1;
   ST.currentQPack = null;
   ST.guardrail = null;
   ST.notes = [];
@@ -4170,11 +4267,11 @@ const Q4_INTERVAL_PRESETS = [
 ];
 
 const Q_PREVIEW_CTAS = {
-  1: '다음: ② 신청 질문 고르기 →',
-  2: '다음: ③ 첫 카톡 내용 정하기 →',
-  3: '다음: ④ 며칠 뒤 자동 카톡 →',
-  4: '다음: ⑤ 날짜·시간 지정 카톡 →',
-  5: '완료 · 브랜드 스타일 입력하기 →'
+  1: '다음: ② 신청질문 →',
+  2: '다음: ③ 첫카톡 →',
+  3: '다음: ④ 며칠뒤 자동 →',
+  4: '다음: ⑤ 날짜지정 →',
+  5: '다음: 브랜드 스타일 →'
 };
 
 function getDefaultFutureDateStr() {
@@ -4250,6 +4347,17 @@ function applyAutoTossFromText(sourceQ, text) {
   return hints;
 }
 
+function centerActiveCourseChip() {
+  const bar = $('#q-course-bar');
+  if (!bar) return;
+  const activeChip = bar.querySelector('.course-chip.active');
+  if (activeChip && typeof activeChip.scrollIntoView === 'function') {
+    try {
+      activeChip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    } catch (e) {}
+  }
+}
+
 function renderCourseBar() {
   const bar = $('#q-course-bar');
   if (!bar) return;
@@ -4272,6 +4380,8 @@ function renderCourseBar() {
       jumpToInterviewQuestion(targetQ);
     };
   });
+
+  centerActiveCourseChip();
 }
 
 function renderQDots() {
@@ -4766,7 +4876,7 @@ function renderGuardrailBox(guard) {
     $('#guardrail-reason').innerHTML = '<strong>' + esc(guard.exactMessage) + '</strong>';
   } else {
     $('#guardrail-reason').innerHTML =
-      '대표님, 고마워톡에서는 <strong>' + esc(guard.reason) + '</strong> 기능은 지원하지 않아요.';
+      '파트너님, 고마워톡에서는 <strong>' + esc(guard.reason) + '</strong> 기능은 지원하지 않아요.';
   }
   const altsWrap = $('#guardrail-alts');
   const alts = (guard.alternatives || []).slice(0, 2);
@@ -4813,8 +4923,118 @@ function fillTextareaWithDraft(text, toastMsg) {
   setTimeout(() => card.classList.remove('flash-fill'), 1200);
 }
 
+function makeExampleSummaryTitle(text, qNum) {
+  const raw = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!raw) return '맞춤 예시 보기';
+  let first = raw.split(/[.!?]\s+|\s+—\s+|\s*\/\s*|\s*→\s*/)[0] || raw;
+  first = first.replace(/^["'「\[]+|["'」\]]+$/g, '').trim();
+  if (qNum === 2 && /보기\s*[:：]/.test(first)) {
+    first = first.split(/보기\s*[:：]/)[0].trim();
+  }
+  const chars = Array.from(first);
+  return chars.length > 22 ? (chars.slice(0, 22).join('') + '…') : first;
+}
+
+function applySelectedExample(pack, txt) {
+  ST.userEditedQ[pack.qNum] = true;
+  if (pack.qNum === 2) ST.skipFormQuestion = false;
+  if (pack.qNum === 4) {
+    const h4 = Consult.autoTossScheduleHints(txt);
+    if (h4.interval) {
+      ST.intervalConfig = Object.assign({}, h4.interval, { autoTossed: false });
+      renderSmartControlsForQ(4);
+    }
+    fillTextareaWithDraft(txt, '✏️ 예시가 입력칸에 채워졌어요! 필요하면 고쳐서 눌러주세요.');
+    updateMsgTypeBadgeForQ(4);
+  } else if (pack.qNum === 5) {
+    const h5 = Consult.autoTossScheduleHints(txt);
+    ST.dateReservation.mode = 'ONCE';
+    const slots = ensureQ5Slots();
+    let targetIdx = slots.findIndex(sl => !sl.message_hint);
+    if (targetIdx === -1) targetIdx = slots.length - 1;
+    if (h5 && h5.dateReservation && h5.dateReservation.slots && h5.dateReservation.slots.length) {
+      slots[targetIdx] = createDefaultQ5Slot(targetIdx, {
+        date: h5.dateReservation.slots[0].date || slots[targetIdx].date,
+        time24: h5.dateReservation.slots[0].time24 || slots[targetIdx].time24,
+        message_hint: txt
+      });
+    } else {
+      slots[targetIdx].message_hint = txt;
+    }
+    syncQ5LegacyFlatFields();
+    renderSmartControlsForQ(5);
+    const msgInp = $('#q5-slot-msg-' + targetIdx);
+    if (msgInp) msgInp.focus();
+    showBotToast('✏️ ' + (targetIdx + 1) + '차 발송 카드에 예시가 채워졌어요!');
+  } else {
+    fillTextareaWithDraft(txt, '✏️ 예시가 입력칸에 채워졌어요! 필요하면 고쳐서 눌러주세요.');
+    updateMsgTypeBadgeForQ(pack.qNum);
+  }
+}
+
+function renderExampleAccordionList(pack) {
+  const chipsWrap = $('#example-chips-list');
+  if (!chipsWrap || !pack) return;
+  const examples = (pack.exampleChips || []).slice(0, 3);
+
+  let goalHintHtml = '';
+  if (pack.qNum === 1 && ST.extractedGoal && !ST.answers[1]) {
+    const isGoalOpen = ST.openExampleIdx === 99;
+    goalHintHtml =
+      '<div class="example-acc-item goal-item' + (isGoalOpen ? ' open' : '') + '">' +
+        '<button type="button" class="example-acc-head" data-ex-toggle="99" aria-expanded="' + (isGoalOpen ? 'true' : 'false') + '">' +
+          '<span class="example-acc-title">🎯 방금 적어주신 목표: ' + esc(makeExampleSummaryTitle(ST.extractedGoal, 1)) + '</span>' +
+          '<span class="example-acc-chev">▾</span>' +
+        '</button>' +
+        '<div class="example-acc-body"' + (isGoalOpen ? '' : ' hidden') + '>' +
+          '<div class="example-acc-text">' + esc(ST.extractedGoal) + '</div>' +
+          '<button type="button" class="btn-select-example" id="btn-fill-extracted-goal">이 내용 선택</button>' +
+        '</div>' +
+      '</div>';
+  }
+
+  chipsWrap.innerHTML = goalHintHtml + examples.map((chip, idx) => {
+    const isOpen = ST.openExampleIdx === idx;
+    const summaryTitle = makeExampleSummaryTitle(chip, pack.qNum);
+    return '<div class="example-acc-item' + (isOpen ? ' open' : '') + '" data-ex-card="' + idx + '">' +
+      '<button type="button" class="example-acc-head" data-ex-toggle="' + idx + '" aria-expanded="' + (isOpen ? 'true' : 'false') + '">' +
+        '<span class="example-acc-title">💡 ' + esc(summaryTitle) + '</span>' +
+        '<span class="example-acc-chev">▾</span>' +
+      '</button>' +
+      '<div class="example-acc-body"' + (isOpen ? '' : ' hidden') + '>' +
+        '<div class="example-acc-text">' + esc(chip) + '</div>' +
+        '<button type="button" class="btn-select-example" data-ex-idx="' + idx + '">이 내용 선택</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  $$('[data-ex-toggle]', chipsWrap).forEach(btn => {
+    btn.onclick = () => {
+      const idx = Number(btn.dataset.exToggle);
+      ST.openExampleIdx = (ST.openExampleIdx === idx) ? -1 : idx;
+      renderExampleAccordionList(pack);
+    };
+  });
+
+  const goalHintBtn = $('#btn-fill-extracted-goal');
+  if (goalHintBtn) {
+    goalHintBtn.onclick = () => {
+      ST.userEditedQ[1] = true;
+      fillTextareaWithDraft(ST.extractedGoal, '✅ 적어주신 목표가 입력칸에 채워졌어요!');
+    };
+  }
+
+  $$('[data-ex-idx]', chipsWrap).forEach(btn => {
+    btn.onclick = () => {
+      const txt = pack.exampleChips[Number(btn.dataset.exIdx)];
+      applySelectedExample(pack, txt);
+    };
+  });
+}
+
 function renderCurrentQuestionPack(pack) {
   ST.currentQPack = pack;
+  ST.openExampleIdx = -1;
   ST.guardrail = null;
   renderGuardrailBox(null);
   renderQDots();
@@ -4830,70 +5050,8 @@ function renderCurrentQuestionPack(pack) {
   // V2.7: 문항별 스마트 컨트롤(Q2 패스 칩 / Q4 간격 프리셋 / Q5 3대 카드·달력 픽커) 및 자동 토스 배지 렌더링
   renderSmartControlsForQ(pack.qNum);
 
-  // 입력창 아래쪽 Tap-to-Edit 예시 카드 3종 렌더링
-  const chipsWrap = $('#example-chips-list');
-  let goalHintHtml = '';
-  if (pack.qNum === 1 && ST.extractedGoal && !ST.answers[1]) {
-    goalHintHtml =
-      '<button type="button" class="example-chip" id="btn-fill-extracted-goal" style="border-color:#93C5FD;background:#EFF6FF">' +
-        '<span><strong style="color:var(--blue-dk)">🎯 방금 적어주신 목표:</strong> ' + esc(ST.extractedGoal) + '</span>' +
-        '<span class="example-chip-tag">이 내용 채우기</span>' +
-      '</button>';
-  }
-  chipsWrap.innerHTML = goalHintHtml + (pack.exampleChips || []).slice(0, 3).map((chip, idx) =>
-    '<button type="button" class="example-chip" data-ex-idx="' + idx + '">' +
-      '<span>' + esc(chip) + '</span>' +
-      '<span class="example-chip-tag">이 내용 채우기</span>' +
-    '</button>'
-  ).join('');
-
-  const goalHintBtn = $('#btn-fill-extracted-goal');
-  if (goalHintBtn) {
-    goalHintBtn.onclick = () => {
-      ST.userEditedQ[1] = true;
-      fillTextareaWithDraft(ST.extractedGoal, '✅ 적어주신 목표가 입력칸에 채워졌어요!');
-    };
-  }
-
-  $$('[data-ex-idx]', chipsWrap).forEach(btn => {
-    btn.onclick = () => {
-      const txt = pack.exampleChips[Number(btn.dataset.exIdx)];
-      ST.userEditedQ[pack.qNum] = true;
-      if (pack.qNum === 2) ST.skipFormQuestion = false;
-      if (pack.qNum === 4) {
-        const h4 = Consult.autoTossScheduleHints(txt);
-        if (h4.interval) {
-          ST.intervalConfig = Object.assign({}, h4.interval, { autoTossed: false });
-          renderSmartControlsForQ(4);
-        }
-        fillTextareaWithDraft(txt, '✏️ 예시가 입력칸에 채워졌어요! 필요하면 고쳐서 눌러주세요.');
-        updateMsgTypeBadgeForQ(4);
-      } else if (pack.qNum === 5) {
-        const h5 = Consult.autoTossScheduleHints(txt);
-        ST.dateReservation.mode = 'ONCE';
-        const slots = ensureQ5Slots();
-        let targetIdx = slots.findIndex(sl => !sl.message_hint);
-        if (targetIdx === -1) targetIdx = slots.length - 1;
-        if (h5 && h5.dateReservation && h5.dateReservation.slots && h5.dateReservation.slots.length) {
-          slots[targetIdx] = createDefaultQ5Slot(targetIdx, {
-            date: h5.dateReservation.slots[0].date || slots[targetIdx].date,
-            time24: h5.dateReservation.slots[0].time24 || slots[targetIdx].time24,
-            message_hint: txt
-          });
-        } else {
-          slots[targetIdx].message_hint = txt;
-        }
-        syncQ5LegacyFlatFields();
-        renderSmartControlsForQ(5);
-        const msgInp = $('#q5-slot-msg-' + targetIdx);
-        if (msgInp) msgInp.focus();
-        showBotToast('✏️ ' + (targetIdx + 1) + '차 발송 카드에 예시가 채워졌어요!');
-      } else {
-        fillTextareaWithDraft(txt, '✏️ 예시가 입력칸에 채워졌어요! 필요하면 고쳐서 눌러주세요.');
-        updateMsgTypeBadgeForQ(pack.qNum);
-      }
-    };
-  });
+  // V3.0 입력창 아래쪽: 1줄 요약 타이틀 아코디언 예시 3종 (기본 모두 접힘 -> 클릭 시 펼침 + [이 내용 선택])
+  renderExampleAccordionList(pack);
 
   const ta = $('#interview-textarea');
   ta.value = ST.answers[pack.qNum] || '';
@@ -4983,7 +5141,7 @@ async function submitCurrentInterviewAnswer() {
     if (ta) ta.value = txt;
   }
 
-  // Q5: 특정 날짜·시각 슬롯(최대 3개) 동기화 및 슬롯별 야간 규정(20:00~08:00, 홍보·소식만 제한) 검사
+  // Q5: 특정 날짜·시각 슬롯(최대 3개) 동기화 및 슬롯별 야간 규정(20:00~08:00, 광고 메시지만 제한) 검사
   if (ST.qNum === 5) {
     if (ST.dateReservation.mode === 'SKIP') {
       ST.answers[5] = '날짜 지정 카톡은 안 보냄 (건너뛰기)';
@@ -5005,7 +5163,7 @@ async function submitCurrentInterviewAnswer() {
           exactMessage: nightCheck.message,
           alternatives: [
             { label: '오후 7:30 이전으로 맞추기', detail: '카카오 정책 허용 시각인 오후 7:30에 맞춰 발송합니다.', suggestedTime24: '19:30' },
-            { label: '다음 날 오전 8:00 이후로 맞추기', detail: '오전 8:00에 맞춰 홍보·소식 카톡을 발송합니다.', suggestedTime24: '08:00' }
+            { label: '다음 날 오전 8:00 이후로 맞추기', detail: '오전 8:00에 맞춰 광고 메시지를 발송합니다.', suggestedTime24: '08:00' }
           ]
         };
         ST.guardrail = guard;
@@ -5696,12 +5854,12 @@ async function enterStage5Summary(revisionText) {
   const submitBtn = $('#btn-submit-campaign');
   if (submitBtn) {
     submitBtn.disabled = true;
-    submitBtn.textContent = '✅ 이대로 접수 신청하기';
+    submitBtn.textContent = '이대로 접수 신청하기';
   }
   const errEl = $('#step5-submit-err');
   if (errEl) { errEl.hidden = true; errEl.textContent = ''; }
 
-  showLoadingOverlay('맞춤 카톡 흐름을 최종 정리하고 있어요', { subject: ST.brandName || ST.subIndustry || '', icon: '📋' });
+  showLoadingOverlay('맞춤 카톡 흐름을 최종 정리하고 있어요', { subject: ST.brandName || ST.subIndustry || '', motion: 'pencil' });
 
   const sumTask = Consult.summarize({
     mode: getAiMode(),
@@ -5951,7 +6109,7 @@ async function generateAndSubmitCampaign() {
 
   showLoadingOverlay('요청하신 내용을 정리하고 있어요...', {
     subject: ST.brandName || ST.subIndustry || '',
-    icon: '📋',
+    motion: 'pencil',
     startPct: 18,
     sub: '잠시만 기다려 주시면 접수 완료 화면이 열립니다'
   });
@@ -6013,7 +6171,7 @@ async function generateAndSubmitCampaign() {
     ST.lastGeneratedCampaign = master;
     Engine.saveBridgeCampaign(master);
 
-    updateLoadingOverlayText('전담 캠페인 전문가팀에 전달 중이에요...', { icon: '🚀', pct: 68 });
+    updateLoadingOverlayText('전담 캠페인 전문가팀에 전달 중이에요...', { motion: 'plane', icon: '🚀', pct: 68 });
 
     let cloudResult = null;
     const proxyUrl = getProxyUrl();
@@ -6051,14 +6209,14 @@ async function generateAndSubmitCampaign() {
       ST.quota = Object.assign({}, ST.quota, blockedQuota, { tier: normalizeTier(blockedQuota.tier) });
       ST.isSubmitting = false;
       ST.isBusy = false;
-      if (btn) { btn.disabled = false; btn.textContent = '✅ 이대로 접수 신청하기'; }
+      if (btn) { btn.disabled = false; btn.textContent = '이대로 접수 신청하기'; }
       renderQuotaBadge();
       showQuotaBlockedGate(ST.quota);
       hideLoadingOverlay(false);
       return null;
     }
 
-    updateLoadingOverlayText('접수가 완료되었습니다!', { icon: '✅', pct: 100 });
+    updateLoadingOverlayText('접수가 완료되었습니다!', { motion: 'plane', icon: '✅', pct: 100 });
 
     ST.isSubmitting = false;
     ST.isBusy = false;
@@ -6111,6 +6269,10 @@ async function generateAndSubmitCampaign() {
       '</div>' +
       '<div class="ty-delivery-box">' +
         '전담 전문가가 업종과 카카오 규정에 맞춰 꼼꼼히 검토한 뒤, <strong>영업일 기준 24시간 이내</strong>에 카카오 로그인하신 계정의 카카오톡으로 맞춤 시연 제안서를 보내드립니다.' +
+      '</div>' +
+      '<div class="ty-reassure-box" id="ty-reassure-box">' +
+        '<strong>초기 초안 안내 · 언제든 직접 수정 가능</strong><br>' +
+        '지금 접수하신 내용은 빠른 시작을 돕는 초기 초안입니다. 전문가가 검수해 초기 세팅을 완료해 드린 뒤에도, 고마워톡 관리자 페이지에서 파트너님이 직접 모든 문구·이미지·발송 일정을 언제든 자유롭게 수정하실 수 있습니다.' +
       '</div>' +
       '<button type="button" class="btn-thankyou-home" id="btn-thankyou-home">처음 화면으로 돌아가기</button>' +
       adminBtnsHtml;
@@ -6411,6 +6573,8 @@ window.BOT = {
   startStage3Interview,
   jumpToInterviewQuestion,
   renderCourseBar,
+  centerActiveCourseChip,
+  makeExampleSummaryTitle,
   applyAutoTossFromText,
   selectQ4Preset,
   selectQ5Mode,

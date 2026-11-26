@@ -416,6 +416,23 @@ body.capturing .li-text:hover,body.capturing .li-text:focus{background:none;box-
 .br-tabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--g100)}
 .br-tab{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;background:var(--g100);color:var(--g500);border:1px solid transparent}
 .br-tab.on{background:var(--purple-lt);color:var(--purple);border-color:var(--purple-bd)}
+/* V2.8.2 원포인트 맞춤 분기 2칸 초고속 복붙 카드 & 공통 단일 원고 복사 바 */
+.single-copy-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;border-radius:11px;background:#F8FAFC;border:1px solid var(--g200);margin-bottom:14px}
+.single-copy-bar b{font-size:12.5px;color:var(--g800)}
+.spotlight-copy-wrap{margin-bottom:16px;padding:14px;border-radius:13px;background:linear-gradient(135deg,#FAF5FF 0%,#EFF6FF 100%);border:1.5px solid #C4B5FD}
+.spotlight-copy-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.spotlight-copy-title{font-size:13px;font-weight:900;color:#4C1D95}
+.spotlight-copy-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:960px){.spotlight-copy-grid{grid-template-columns:1fr}}
+.spotlight-copy-card{background:#fff;border:1.5px solid #DDD6FE;border-radius:11px;padding:12px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s,box-shadow .15s}
+.spotlight-copy-card.on{border-color:#7C3AED;box-shadow:0 4px 14px rgba(124,58,237,.14)}
+.spotlight-copy-card-h{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.spotlight-rank-badge{padding:3px 9px;border-radius:99px;font-size:11px;font-weight:900}
+.spotlight-rank-badge.r1{background:#EDE9FE;color:#5B21B6}
+.spotlight-rank-badge.r2{background:#E0F2FE;color:#0369A1}
+.spotlight-copy-preview{font-size:12px;line-height:1.55;color:var(--g700);background:var(--g50);border:1px solid var(--g200);border-radius:8px;padding:8px 10px;white-space:pre-wrap;word-break:break-word}
+.spotlight-copy-btn{width:100%;padding:9px 12px;border-radius:8px;background:var(--g900);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px}
+.spotlight-copy-btn:hover{background:#4C1D95}
 .msg-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:start}
 @media(max-width:1280px){.msg-grid{grid-template-columns:1fr}}
 .chip-bar{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
@@ -715,8 +732,8 @@ body:not(.wz-on) .wz-only{display:none}
         <div class="sw req"><div class="sw-t"><div class="sw-n">📌 상단바 보이기 <span class="badge r">강제 ON</span></div><div class="sw-d">상단 노란색 [채널 추가] 유도 영역 — Off 시 채널 추가 유도가 불가능합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
         <div class="sw"><div class="sw-t"><div class="sw-n">🧩 화면 모드</div><div class="sw-d">일반 모드 = 신청페이지 + 폼 / 폼전용 모드 = 현장 접수·QR 체크인용 (특수 뷰 6-A)</div></div>
           <div class="seg"><label><input type="radio" name="formmode" value="normal" checked>일반 모드</label><label><input type="radio" name="formmode" value="formonly">폼전용 모드</label></div></div>
-        <div class="sw req"><div class="sw-t"><div class="sw-n">🔔 실패시 안내 알림톡 <span class="badge r">강제 ON</span></div><div class="sw-d">미친추(채널 미추가) 고객에게 친구톡이 실패하면 [채널 추가] 안내 알림톡을 자동 발송합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
-        <div class="sw req"><div class="sw-t"><div class="sw-n">🔁 실패시 다음날 재시도 (익일 09시 2회 루프) <span class="badge r">강제 ON</span></div><div class="sw-d">미친추 2회 자동 구제 — 다음날 오전 9시에 최대 2회 재시도하여 도달률을 극대화합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
+        <div class="sw req"><div class="sw-t"><div class="sw-n">🔔 실패시 안내 알림톡 <span class="badge r">강제 ON</span></div><div class="sw-d">채널 추가 전 고객에게 친구톡이 실패하면 안내 알림톡을 자동 발송합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
+        <div class="sw req"><div class="sw-t"><div class="sw-n">🔁 실패시 다음날 재시도 (익일 09시 2회 루프) <span class="badge r">강제 ON</span></div><div class="sw-d">채널 추가 전 고객 2회 자동 안내 — 다음날 오전 9시에 최대 2회 재시도하여 도달률을 극대화합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
         <div class="sw req"><div class="sw-t"><div class="sw-n">✅ 신청시 마케팅 수신동의 팝업 표시 <span class="badge r">강제 ON</span></div><div class="sw-d">친구톡·브랜드메시지(M형) 발송 대상 확보에 필수 — Off 시 이후 발송 대상이 급감합니다.</div></div><label class="tg"><input type="checkbox" data-lock checked><span></span></label></div>
       </div>
     </div>
@@ -881,7 +898,7 @@ body:not(.wz-on) .wz-only{display:none}
           <label><input type="radio" name="t5mode" value="full" checked>📋 전체 연동 모드</label>
           <label><input type="radio" name="t5mode" value="quick">⚡ 단독 공지/이벤트 1건 퀵 모드</label>
         </div>
-        <span class="badge g">브랜드메시지 M형 (25원) · 미친추 마케팅 수신동의자 포괄</span>
+        <span class="badge g">브랜드메시지 M형 (25원) · 채널 추가 전 마케팅 수신동의자 포괄</span>
       </div>
       <div class="row" style="flex-wrap:wrap">
         <button class="act" data-act="tpl-modal-open">📥 알림톡 템플릿 JSON 업데이트</button>
@@ -889,7 +906,7 @@ body:not(.wz-on) .wz-only{display:none}
       </div>
     </div>
 
-    <div class="warn blue"><span style="font-size:18px">💡</span><div><b>날짜발송 &amp; 브랜드메시지 M형 활용 가이드:</b><br>• 특정 발송 일시(<code>YYYY-MM-DD HH:mm</code>)에 대상자 전체에게 동시 발송합니다 (행사 D-3/D-1 리마인드, 시즌 오픈, 긴급 공지).<br>• 과거 발송 완료 메시지는 카드 우측 <b>[📋 복제]</b> 버튼으로 즉시 재활용할 수 있으며, 야간 제한 시간(20:30~익일 08:00)에는 친구톡/브랜드메시지 발송이 제한됩니다.</div></div>
+    <div class="warn blue"><span style="font-size:18px">💡</span><div><b>날짜발송 &amp; 브랜드메시지 M형 활용 가이드:</b><br>• 특정 발송 일시(<code>YYYY-MM-DD HH:mm</code>)에 대상자 전체에게 동시 발송합니다 (행사 D-3/D-1 리마인드, 시즌 오픈, 긴급 공지).<br>• 과거 발송 완료 메시지는 카드 우측 <b>[📋 복제]</b> 버튼으로 즉시 재활용할 수 있으며, 야간 제한 시간(20:00~익일 08:00)에는 친구톡/브랜드메시지 발송이 제한됩니다.</div></div>
     <div id="t5-ref-banner"></div>
     <div class="timeline" id="t5-list"></div>
   </div>
@@ -1100,7 +1117,7 @@ const TPL_TYPES = [
   { v: 'ALIMTALK', l: '📩 알림톡 (공용/전용 · 100% 도달)' },
   { v: 'FREE_FRIENDTALK', l: '💬 자유작성 친구톡 (800×400 JPG · 쿠폰/유튜브)' },
   { v: 'BRAND_CAROUSEL', l: '🎠 브랜드 캐러셀 (800×600 · 2~6장)' },
-  { v: 'BRAND_M', l: '📣 브랜드메시지 M형 (25원 · 미친추 포괄)' }
+  { v: 'BRAND_M', l: '📣 브랜드메시지 M형 (25원 · 채널 추가 전 포괄)' }
 ];
 const BTN_TYPES = { WL: '🌐 일반 웹링크', YT: '▶ 유튜브 앱 직행', CP: '🎟️ 카톡 쿠폰 링크' };
 let WEBZINE_ANCHORS = [
@@ -1373,9 +1390,18 @@ function buildTab5FromPreset(d, t1Title) {
 function normalizeMessageItem(raw, isDate) {
   const item = isDate ? newDateMsg(raw.template_type || 'BRAND_CAROUSEL', raw.send_datetime) : newIntervalStep(raw.step || 1, raw.template_type || 'ALIMTALK', raw.timing || 'IMMEDIATE');
   if (isDate && raw.title) item.title = raw.title;
-  if (Array.isArray(raw.branches) && raw.branches.length) {
-    item.branches = raw.branches.map((rb, i) => {
+  item.has_spotlight_branch = !!raw.has_spotlight_branch;
+  item.spotlight_meta = raw.spotlight_meta ? clone(raw.spotlight_meta) : null;
+  const rawBranches = (Array.isArray(raw.branch_pair) && raw.branch_pair.length >= 2)
+    ? raw.branch_pair
+    : ((Array.isArray(raw.branches) && raw.branches.length) ? raw.branches : null);
+  if (rawBranches && rawBranches.length) {
+    item.branches = rawBranches.map((rb, i) => {
       const b = newBranch(rb.priority || i + 1, rb.condition_desc, item.template_type);
+      if (rb.option_label) b.option_label = rb.option_label;
+      if (rb.tag) b.tag = rb.tag;
+      if (rb.persona_name) b.persona_name = rb.persona_name;
+      if (rb.persona_icon) b.persona_icon = rb.persona_icon;
       if (raw.template_id) b.template_id = raw.template_id;
       if (rb.template_id) b.template_id = rb.template_id;
       if (rb.variables) b.variables = clone(rb.variables);
@@ -1608,9 +1634,17 @@ function toCampaignMaster() {
     tab4_interval_messages: {
       quick_single_mode: S.t4.quick_single_mode,
       exclude_days: S.t4.exclude_days.slice(),
-      sequence: S.t4.sequence.map((m, i) => ({ step: i + 1, timing: m.timing, template_type: m.template_type, template_id: m.branches[0] ? m.branches[0].template_id : '', branches: m.branches.map(serializeBranch) }))
+      sequence: S.t4.sequence.map((m, i) => {
+        const serBranches = m.branches.map(serializeBranch);
+        const isSpot = !!(m.has_spotlight_branch && serBranches.length >= 2);
+        return { step: i + 1, timing: m.timing, template_type: m.template_type, template_id: m.branches[0] ? m.branches[0].template_id : '', has_spotlight_branch: isSpot, branch_pair: isSpot ? serBranches.slice(0, 2) : null, branches: serBranches };
+      })
     },
-    tab5_date_messages: S.t5.items.map(m => ({ quick_single_mode: S.t5.quick_single_mode, send_datetime: m.send_datetime, title: m.title, template_type: m.template_type, branches: m.branches.map(serializeBranch) }))
+    tab5_date_messages: S.t5.items.map(m => {
+      const serBranches = m.branches.map(serializeBranch);
+      const isSpot = !!(m.has_spotlight_branch && serBranches.length >= 2);
+      return { quick_single_mode: S.t5.quick_single_mode, send_datetime: m.send_datetime, title: m.title, template_type: m.template_type, has_spotlight_branch: isSpot, branch_pair: isSpot ? serBranches.slice(0, 2) : null, branches: serBranches };
+    })
   };
   if (Array.isArray(S.pinned_consult_notes) && S.pinned_consult_notes.length) {
     out.pinned_consult_notes = S.pinned_consult_notes.slice();
@@ -2178,14 +2212,83 @@ function sheetFallbackHTML(scope, mi, bi, texts, br) {
   return html;
 }
 
+function formatBranchQuickCopyText(msg, br) {
+  if (!msg || !br) return '';
+  if (msg.template_type === 'ALIMTALK') {
+    const vars = br.variables || {};
+    const btns = (br.buttons || []).map(b => b.name).filter(Boolean).join(' / ');
+    return '[조건] ' + (br.condition_desc || '모두 (전체 신청자)') + '\n' +
+      '[제목] ' + (vars['콘텐츠 제목'] || '') + '\n' +
+      '[본문] ' + (vars['콘텐츠 소개'] || '') +
+      (btns ? ('\n[버튼] ' + btns) : '');
+  }
+  if (msg.template_type === 'BRAND_CAROUSEL') {
+    const cardsTxt = (br.cards_800x600 || []).map((c, idx) => '카드' + (idx + 1) + '. ' + (c.header_20chars || '') + ' — ' + (c.body_180chars || '') + ' [' + (c.button_8chars || '자세히보기') + ']').join('\n');
+    return '[조건] ' + (br.condition_desc || '모두 (전체 신청자)') + '\n' + cardsTxt;
+  }
+  const ic = br.image_copy || {};
+  const btns = (br.buttons || []).map(b => b.name).filter(Boolean).join(' / ');
+  return '[조건] ' + (br.condition_desc || '모두 (전체 신청자)') + '\n' +
+    '[배너 헤드라인] ' + (ic.headline || '') + '\n' +
+    '[본문]\n' + (br.body_text_400chars || '') +
+    (btns ? ('\n[버튼] ' + btns) : '');
+}
+
 function renderMessageBody(scope, mi, msg, refs) {
   const bi = Math.min(msg.activeBranch || 0, msg.branches.length - 1);
   const br = msg.branches[bi];
   const chName = S.partner.channel_name || '고마워톡 채널';
   const tt = msg.template_type;
+  const isSpotlight = !!(msg.has_spotlight_branch && msg.branches.length >= 2);
+
+  // V2.8.2: 원포인트 맞춤 분기(단 1개 회차)는 1순위[태그A] vs 2순위[나머지 모두(선택지B)] 2칸 나란히 초고속 복붙, 나머지 공통 회차는 단일 [📋 복사] 1개
+  let quickCopyPanel = '';
+  if (isSpotlight) {
+    const b1 = msg.branches[0];
+    const b2 = msg.branches[1];
+    const lblA = b1.option_label || (b1.condition_desc || '선택지A').replace(/^태그\s*=\s*/, '');
+    const lblB = b2.option_label || (b2.condition_desc || '선택지B').replace(/^나머지\s*모두\s*\(?|\)?$/g, '') || '나머지';
+    const previewOf = b => {
+      if (tt === 'ALIMTALK') return ((b.variables && b.variables['콘텐츠 제목']) || '') + '\n' + ((b.variables && b.variables['콘텐츠 소개']) || '');
+      const h = (b.image_copy && b.image_copy.headline) ? ('[' + b.image_copy.headline + ']\n') : '';
+      return h + (b.body_text_400chars || '');
+    };
+    const btnNameOf = b => ((b.buttons && b.buttons[0] && b.buttons[0].name) || '자세히 보기');
+    quickCopyPanel =
+      '<div class="spotlight-copy-wrap" data-spotlight-panel="1">' +
+        '<div class="spotlight-copy-head">' +
+          '<span class="spotlight-copy-title">⚡ 원포인트 맞춤 분기 (2종 대비) · 고마워톡 어드민 30초 복붙용</span>' +
+          '<span class="badge">1순위 태그 분기 + 2순위 나머지 모두</span>' +
+        '</div>' +
+        '<div class="spotlight-copy-grid">' +
+          '<div class="spotlight-copy-card' + (bi === 0 ? ' on' : '') + '">' +
+            '<div class="spotlight-copy-card-h">' +
+              '<span class="spotlight-rank-badge r1">1순위 [태그: ' + esc(lblA) + ']</span>' +
+              '<button class="act sm" data-act="br-sel" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="0">편집 열기</button>' +
+            '</div>' +
+            '<div class="spotlight-copy-preview">' + esc(previewOf(b1)) + '\n🔘 버튼: ' + esc(btnNameOf(b1)) + '</div>' +
+            '<button class="spotlight-copy-btn" data-act="spotlight-copy" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="0">📋 1순위 [태그: ' + esc(lblA) + '] 맞춤 원고 복사</button>' +
+          '</div>' +
+          '<div class="spotlight-copy-card' + (bi === 1 ? ' on' : '') + '">' +
+            '<div class="spotlight-copy-card-h">' +
+              '<span class="spotlight-rank-badge r2">2순위 [나머지 모두 (' + esc(lblB) + ')]</span>' +
+              '<button class="act sm" data-act="br-sel" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="1">편집 열기</button>' +
+            '</div>' +
+            '<div class="spotlight-copy-preview">' + esc(previewOf(b2)) + '\n🔘 버튼: ' + esc(btnNameOf(b2)) + '</div>' +
+            '<button class="spotlight-copy-btn" data-act="spotlight-copy" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="1">📋 2순위 [나머지 모두 (' + esc(lblB) + ')] 맞춤 원고 복사</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  } else {
+    quickCopyPanel =
+      '<div class="single-copy-bar" data-single-copy-bar="1">' +
+        '<div><b>💬 공통 단일 원고</b> <span class="hint">· 분기 없이 전체 신청자에게 동일 발송</span></div>' +
+        '<button class="copy" data-act="single-full-copy" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="0">📋 복사</button>' +
+      '</div>';
+  }
 
   // 뜰채 분기 탭 + 조건 빌더
-  const brTabs = '<div class="br-tabs"><span class="hint" style="font-weight:800">🎯 뜰채 분기 (1~5순위+나머지):</span>' +
+  const brTabs = quickCopyPanel + '<div class="br-tabs"><span class="hint" style="font-weight:800">🎯 뜰채 분기 (1~5순위+나머지):</span>' +
     msg.branches.map((b, i) => '<button class="br-tab' + (i === bi ? ' on' : '') + '" data-act="br-sel" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + i + '">' + (i + 1) + '순위 · ' + esc(b.condition_desc.slice(0, 14)) + '</button>').join('') +
     (msg.branches.length < 6 ? '<button class="act sm" data-act="br-add" data-sc="' + scope + '" data-mi="' + mi + '">+ 분기 추가</button>' : '') +
     (msg.branches.length > 1 ? '<button class="act sm danger" style="margin-left:auto" data-act="br-del" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '">이 분기 삭제</button>' : '') +
@@ -2254,7 +2357,7 @@ function renderMessageBody(scope, mi, msg, refs) {
     const bodyLen = cpLen(br.body_text_400chars);
 
     const left = condRow +
-      (isM ? '<div class="warn blue" style="margin-bottom:12px"><span style="font-size:15px">📣</span><div><b>브랜드메시지 M형 (건당 25원):</b> 채널을 추가하지 않은 <b>마케팅 수신동의 고객</b>까지 포괄 발송합니다. (야간 20:30~08:00 발송 제한)</div></div>' : '') +
+      (isM ? '<div class="warn blue" style="margin-bottom:12px"><span style="font-size:15px">📣</span><div><b>브랜드메시지 M형 (건당 25원):</b> 채널을 추가하지 않은 <b>마케팅 수신동의 고객</b>까지 포괄 발송합니다. (야간 20:00~08:00 발송 제한)</div></div>' : '') +
       '<div class="field"><div class="lbl">📐 배너 비율 &amp; JPG 캡처 <span class="badge g">500KB 이하 JPG 자동 압축</span></div>' +
       '<div class="row" style="flex-wrap:wrap"><div class="seg"><label><input type="radio" name="ftr-' + canvasId + '" value="2:1"' + (!r15 ? ' checked' : '') + ' data-ftr data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '">800×400 (2:1)</label><label><input type="radio" name="ftr-' + canvasId + '" value="1.5:1"' + (r15 ? ' checked' : '') + ' data-ftr data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '">800×533 (1.5:1)</label></div>' +
       '<label class="act sm" style="cursor:pointer">🖼️ 배너 사진 교체<input type="file" accept="image/*" hidden data-act="ft-img" data-sc="' + scope + '" data-mi="' + mi + '" data-bi="' + bi + '"></label>' +
@@ -2325,6 +2428,7 @@ function renderT4() {
       '<select class="in" style="width:230px" data-mtiming data-mi="' + mi + '">' + TIMING_OPTS.map(o => '<option value="' + o.v + '"' + (m.timing === o.v ? ' selected' : '') + '>' + o.l + '</option>').join('') + '</select>' +
       '<select class="in" style="width:280px" data-mtype data-sc="t4" data-mi="' + mi + '">' + TPL_TYPES.map(o => '<option value="' + o.v + '"' + (m.template_type === o.v ? ' selected' : '') + '>' + o.l + '</option>').join('') + '</select>' +
       (mi === 0 ? '<span class="badge g">1회차 알림톡 100% 도달 권장</span>' : '') +
+      (m.has_spotlight_branch && m.branches.length >= 2 ? '<span class="badge" style="background:#EDE9FE;color:#5B21B6;border-color:#C4B5FD">⚡ 원포인트 맞춤 분기</span>' : '') +
       '<div class="row" style="margin-left:auto">' +
       '<button class="act sm" data-act="m-dup" data-sc="t4" data-mi="' + mi + '">📋 복제</button>' +
       '<button class="act sm" data-act="m-up" data-sc="t4" data-mi="' + mi + '">▲</button>' +
@@ -2351,6 +2455,7 @@ function renderT5() {
       '<input type="datetime-local" class="in" style="width:195px" data-mdatetime data-mi="' + mi + '" value="' + esc(dtVal) + '">' +
       '<button class="copy" data-act="dt-copy" data-mi="' + mi + '">일시 복사</button>' +
       '<select class="in" style="width:270px" data-mtype data-sc="t5" data-mi="' + mi + '">' + TPL_TYPES.map(o => '<option value="' + o.v + '"' + (m.template_type === o.v ? ' selected' : '') + '>' + o.l + '</option>').join('') + '</select>' +
+      (m.has_spotlight_branch && m.branches.length >= 2 ? '<span class="badge" style="background:#EDE9FE;color:#5B21B6;border-color:#C4B5FD">⚡ 원포인트 맞춤 분기</span>' : '') +
       '<div class="row" style="margin-left:auto">' +
       '<button class="act sm" data-act="m-dup" data-sc="t5" data-mi="' + mi + '">📋 복제 재활용</button>' +
       (S.t5.items.length > 1 ? '<button class="act sm danger" data-act="m-del" data-sc="t5" data-mi="' + mi + '">삭제</button>' : '') +
@@ -3462,6 +3567,12 @@ function bind() {
         }
         case 'mvar-copy': return copyText(getMsgList(sc)[mi].branches[bi].variables[a.dataset.var] || '', a);
         case 'mbody-copy': return copyText(getMsgList(sc)[mi].branches[bi].body_text_400chars || '', a);
+        case 'single-full-copy':
+        case 'spotlight-copy': {
+          const msgObj = getMsgList(sc)[mi];
+          const brObj = msgObj && msgObj.branches && msgObj.branches[bi];
+          return copyText(formatBranchQuickCopyText(msgObj, brObj), a);
+        }
         case 'mfb-copy': return copyText(a.dataset.val || '', a);
         case 'mbtn-add': getMsgList(sc)[mi].branches[bi].buttons.push({ name: '새 버튼', link_type: 'WL', webzine_anchor: '#sec-1', url: 'https://gomawartalk.com' }); return rerenderScope(sc);
         case 'mbtn-del': getMsgList(sc)[mi].branches[bi].buttons.splice(idx, 1); return rerenderScope(sc);

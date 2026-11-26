@@ -1,11 +1,11 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-26 (KST · V2.8 통합 개편 — 인터뷰봇 4대 교정 + 제안서 밝은 실버 목업·순정/Pro 알림톡·설문분기 강조·미친추 체험·등급별 하단 실시간 연동 완료)
-- **기준 버전:** Master PRD V2.8 / `InterviewBot.html` V2.8 / `Proposal.html` V2.8 / `Backend_Proxy.gs` V2.8-0 (V2.2~V2.7 As-Built 100% 무손실 보존)
+- **최종 갱신일시:** 2026-11-26 (KST · V2.8.2 원포인트 맞춤 분기 & 용어·레이아웃 정돈 패치 완료 — 단 1개 핵심 회차 × 2종 진짜 맞춤 원고 · 스포트라이트 A↔B 전환 연출 · `미친추`/`미친구` 0건 퇴출 · 우하단 버튼 비간섭 분리)
+- **기준 버전:** Master PRD V2.8.2 / `InterviewBot.html` V2.8 / `Proposal.html` V2.8.2 / `LandingBuilder.html` V2.8.2 / `engines/RagInterviewEngine.js` V2.8.2 / `Backend_Proxy.gs` V2.8-0 (V2.2~V2.8 As-Built 100% 무손실 보존)
 - **본체 프로젝트 완공 목표일:** **2026년 11월 30일(월)** *(개발 팀장님 본체 어드민 내 구글 폼·시트 연동 마감일 **12월 7일**과 별도 구분)*
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
 - **실서버 배포 URL:** `https://anoanong-bot.github.io/gomawartalk-ai-builder/`
-- **코드 검증 상태:** 전 파일(10/10) V8 구문 · 보안(비밀키 0건, 금지어 0건, 구형 모델 0건, GAS 백틱 0건, 가짜 기능 0건) · `test_v25_widget_sockets.js` · `test_subindustry_examples.js` · `test_proposal_sim.js` · `test_v23_3.js` · `test_v23_full_e2e.js` **전원 PASS**
+- **코드 검증 상태:** 전 파일(10/10) V8 구문 · 보안(비밀키 0건, 금지어 0건, 구형 모델 0건, `미친추`/`미친구` 0건, 구형 `20:30` 0건, GAS 백틱 0건, 가짜 기능 0건) · `test_v25_widget_sockets.js`(152/152) · `test_subindustry_examples.js` · `test_proposal_sim.js` · `test_v23_3.js` · `test_v23_full_e2e.js` **전원 PASS**
 
 ---
 
@@ -82,6 +82,17 @@
       - ③ 설문 분기 체감도 극대화: 기계적 반복 문구 퇴출, 보기(A/B/C)별 구체적으로 달라지는 제목·`▶ 맞춤 안내`·버튼 + 상단 리모컨(`🎯 신청폼 선택에 따라 도착하는 카톡이 달라집니다` + 1줄 요약 배지) + 말풍선 포커스 전환 애니메이션.
       - ④ 하단 `#sec-extra-features` 제거로 산만함 해소, 시뮬레이터 `[🛡️ 미친추 고객이면 어떻게 되나요? (자동 구제 체험)]` 폰 내부 3단계 시연 신설, Q&A 상단 칩에 `👑 공용 알림톡 vs Pro 내 로고 맞춤 알림톡 차이`·`문자·일반 카톡과 무엇이 다른가요?` 및 시각적 미니 비교 카드 통합.
       - ⑤ `Backend_Proxy.gs` `handleLoadProposal_` 실시간 `F열 등급`(`liveTier`) 최우선 반환(이전 회차 `fileId` 포함) + `Proposal.html` 14개 DOM ID 보존 3단 분기(`가망고객` 요금 선택 / `Starter` 가입비 숨김+Pro 1줄 업그레이드 토글 / `Pro` 가격·결제·업그레이드 0%+Pro 맞춤 알림톡 자동 적용+전용 2버튼). 5종 테스트 스위트 전원 PASS(144/144 포함).
+14. **V2.8.2 원포인트 맞춤 분기 & 용어·레이아웃 정돈 패치 *(2026-11-26 완료)*:**
+    - **「단 1개 핵심 회차 × 2종 진짜 맞춤 원고」 (`engines/RagInterviewEngine.js` · `LandingBuilder.html`):**
+      - `applyOnePointSpotlightBranch()`로 캠페인당 정확히 단 1개 핵심 단계(기본 `④ 간격발송 2회차`, ④ 미사용 시 `⑤ 날짜발송` 또는 `③ 첫카톡` 1곳)에만 `has_spotlight_branch: true` + `branch_pair: [원고A, 원고B]` 생성, 나머지 모든 회차는 `has_spotlight_branch: false` 공통 단일 원고 1개로 정리(Q2 설문 생략 시 0곳).
+      - `[예]`/`[모름]`/`선택하신 「...」 기준에 맞춰`/`신청자 전용 가이드`/`집중 완성 로드맵` 기계식 단어 치환 100% 폐기(`isMechanicalBranchCopy` 가드 + `buildSpotlightBranchPair` 도메인·눈높이별 대비 원고 생성 + AI 프롬프트 강화).
+      - `LandingBuilder.html` 조종석에서 공통 회차는 `💬 공통 단일 원고` + `[📋 복사]` 1개, 원포인트 분기 1개 회차에는 **`1순위 [태그: 선택지A] 맞춤 원고 복사`** ↔ **`2순위 [나머지 모두 (선택지B)] 맞춤 원고 복사`** 2칸 나란히 초고속 복붙 카드(`.spotlight-copy-grid`) 배치.
+    - **`Proposal.html` 스포트라이트 A↔B 전환 연출 & 비분기 단계 완전 숨김:**
+      - 공통 단계(①·② 및 분기 없는 ③·⑤ 등)에서 `#sim-remote-panel`을 `hidden` + `display: none`으로 완전 숨김.
+      - 오직 분기되는 단 1개 스텝에만 상단 **`⚡맞춤분기`** 배지 표시 + 진입 시 **`⚡ 고마워톡 핵심 무기 · 신청폼 답변에 따라 전혀 다른 카톡이 자동 발송됩니다`** 스포트라이트 카드 오픈 + **`[🙋‍♀️ '선택지A' 고른 김민지 님 카톡]` ↔ `[🙋‍♂️ '선택지B' 고른 박준호 님 카톡]`** 스위치 + 첫 진입 1.2초 후 1회 자동 전환 시연 + 1.5초 슬라이드·포커스 광채(`bubbleFocusSwap 1.5s`) 연출(폰 액정 내부 100% 순정 카톡 유지).
+    - **표준 용어 통일 & 우하단 비간섭 레이아웃 (`Proposal.html` · `LandingBuilder.html` · `RagInterviewEngine.js` · `GomawartalkManual.js`):**
+      - 전체 코드·UI·매뉴얼에서 `미친추`·`미친구` 0건 퇴출 ➔ **`채널 추가 전`** / **`채널 추가 전 고객 2회 자동 안내`** / 시뮬레이터 버튼 **`🛡️ 채널 추가 안 한 고객은 어떻게 받나요?`** 통일 + 잔존 `20:30` 오기 0건 해소.
+      - `Proposal.html` 우하단 `#flt-pill-label` 2.5초 후·스크롤 시 `0px` 자동 접힘(`collapseFloatingPill`) + 슬림 FAB(`48px`) + `.sim-ext-nav` `332px` 정렬 + `#btn-sim-next` 코치마크(`👆`) 좌측 중앙(`0.32`) 배치로 버튼 간섭 완전 해소. 5종 테스트 스위트 전원 PASS(`152/152` 포함).
 
 ---
 

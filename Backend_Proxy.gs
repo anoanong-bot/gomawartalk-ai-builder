@@ -391,7 +391,7 @@ function setupV23ControlTowerSheet() {
       "한도 기준",
       "가망:누적2 / Starter:월2 / Pro:월10",
       "버전",
-      "V2.5-0",
+      "V2.8-0",
       "외부소켓",
       "본체:NATIVE / 외부앱:연동코드",
       ""
@@ -582,7 +582,7 @@ function doGet(e) {
       return jsonResponse_({
         ok: true,
         service: "Gomawartalk Backend_Proxy",
-        version: "V2.6-0",
+        version: "V2.8-0",
         defaultModel: DEFAULT_GEMINI_MODEL,
         currentMonth: getCurrentYearMonth_(),
         webhookConfigured: !!getGoogleChatWebhookUrl_(),
@@ -1585,10 +1585,20 @@ function handleLoadProposal_(fileId) {
   var parsed = JSON.parse(rawText);
   var sanitized = sanitizeProposalCampaignJson_(parsed);
 
-  // 시트에서 비민감 제안서 상태 메타데이터 보강
+  var parsedPartner = (parsed && parsed.partner_info) ? parsed.partner_info : {};
+  var parsedTier = parsedPartner.tier ? normalizeTier_(parsedPartner.tier) : TIER_LEAD;
+  var lookupKakaoId = String(parsedPartner.kakao_user_id || (parsed && parsed.kakao_user_id) || "").trim();
+  var lookupPhone = normalizePhone_(parsedPartner.phone || (parsed && parsed.phone) || "");
+
+  // 시트에서 비민감 제안서 상태 메타데이터 보강 (V2.8: 파트너캠페인관제탑 F열 실시간 liveTier 최우선 연동)
+  var liveTier = parsedTier;
+  var foundLiveControlTier = false;
+  var foundControlByFileId = false;
+
   var proposalMeta = {
     fileId: fileId,
-    tier: TIER_LEAD,
+    tier: liveTier,
+    liveTier: liveTier,
     confirmStatus: CONFIRM_UNCHECKED,
     hasRevisionMemo: false,
     createdAt: Utilities.formatDate(file.getDateCreated(), "Asia/Seoul", "yyyy-MM-dd HH:mm")
@@ -1596,34 +1606,69 @@ function handleLoadProposal_(fileId) {
 
   try {
     var sheet = getOrInitControlSheet_();
+    var headerRow = 4;
     if (sheet) {
-      var headerRow = detectControlHeaderRow_(sheet);
+      headerRow = detectControlHeaderRow_(sheet);
       var lastRow = sheet.getLastRow();
       if (lastRow > headerRow) {
         var rows = sheet.getRange(headerRow + 1, 1, lastRow - headerRow, CONTROL_HEADERS_V23.length).getValues();
         for (var i = 0; i < rows.length; i++) {
           if (String(rows[i][COL_FILE_ID] || "").trim() === fileId) {
-            proposalMeta.tier = normalizeTier_(rows[i][COL_TIER]);
+            foundControlByFileId = true;
+            foundLiveControlTier = true;
+            liveTier = normalizeTier_(rows[i][COL_TIER]);
+            proposalMeta.tier = liveTier;
+            proposalMeta.liveTier = liveTier;
             proposalMeta.confirmStatus = String(rows[i][COL_CONFIRM_STATUS] || CONFIRM_UNCHECKED).trim();
             proposalMeta.hasRevisionMemo = (String(rows[i][COL_REVISION_MEMO] || "").trim() !== "");
             proposalMeta.createdAt = formatCellTimestamp_(rows[i][COL_CREATED_AT]) || proposalMeta.createdAt;
+            if (!lookupKakaoId) lookupKakaoId = String(rows[i][COL_KAKAO_ID] || "").trim();
+            if (!lookupPhone) lookupPhone = normalizePhone_(rows[i][COL_PHONE] || "");
             break;
           }
         }
       }
     }
-    // 메인 관제탑에 없는 이전 회차 fileId인 경우 [캠페인접수이력] 보조 탭에서 조회
-    var hSheetMeta = getControlSpreadsheet_() ? getControlSpreadsheet_().getSheetByName(SHEET_NAME_HISTORY) : null;
-    if (hSheetMeta && hSheetMeta.getLastRow() > 1) {
-      var hRows = hSheetMeta.getRange(2, 1, hSheetMeta.getLastRow() - 1, HISTORY_HEADERS_V25.length).getValues();
-      for (var hi = hRows.length - 1; hi >= 0; hi--) {
-        if (String(hRows[hi][HCOL_FILE_ID] || "").trim() === fileId) {
-          proposalMeta.tier = normalizeTier_(hRows[hi][HCOL_TIER]);
-          proposalMeta.confirmStatus = String(hRows[hi][HCOL_CONFIRM_STATUS] || CONFIRM_UNCHECKED).trim();
-          proposalMeta.hasRevisionMemo = (String(hRows[hi][HCOL_REVISION_MEMO] || "").trim() !== "");
-          proposalMeta.createdAt = formatCellTimestamp_(hRows[hi][HCOL_CREATED_AT]) || proposalMeta.createdAt;
-          break;
+
+    // 메인 관제탑에 없는 이전 회차 fileId인 경우 [캠페인접수이력] 보조 탭에서 접수 상태/소유자 조회
+    var historyRowFound = null;
+    if (!foundControlByFileId) {
+      var hSheetMeta = getControlSpreadsheet_() ? getControlSpreadsheet_().getSheetByName(SHEET_NAME_HISTORY) : null;
+      if (hSheetMeta && hSheetMeta.getLastRow() > 1) {
+        var hRows = hSheetMeta.getRange(2, 1, hSheetMeta.getLastRow() - 1, HISTORY_HEADERS_V25.length).getValues();
+        for (var hi = hRows.length - 1; hi >= 0; hi--) {
+          if (String(hRows[hi][HCOL_FILE_ID] || "").trim() === fileId) {
+            historyRowFound = hRows[hi];
+            proposalMeta.tier = normalizeTier_(hRows[hi][HCOL_TIER]);
+            proposalMeta.liveTier = proposalMeta.tier;
+            liveTier = proposalMeta.tier;
+            proposalMeta.confirmStatus = String(hRows[hi][HCOL_CONFIRM_STATUS] || CONFIRM_UNCHECKED).trim();
+            proposalMeta.hasRevisionMemo = (String(hRows[hi][HCOL_REVISION_MEMO] || "").trim() !== "");
+            proposalMeta.createdAt = formatCellTimestamp_(hRows[hi][HCOL_CREATED_AT]) || proposalMeta.createdAt;
+            if (!lookupKakaoId) lookupKakaoId = String(hRows[hi][HCOL_KAKAO_ID] || "").trim();
+            if (!lookupPhone) lookupPhone = normalizePhone_(hRows[hi][HCOL_PHONE] || "");
+            break;
+          }
         }
+      }
+    }
+
+    // 이전 회차 fileId이거나 직접 fileId 매칭이 없더라도, 파트너캠페인관제탑 동일인 행의 실시간 F열 등급(liveTier) 최우선 적용
+    if (sheet && !foundLiveControlTier && (lookupKakaoId || lookupPhone)) {
+      var ownerLookup = findUserRowsInControlSheet_(sheet, headerRow, lookupKakaoId, lookupPhone);
+      if (ownerLookup && ownerLookup.matchedIndices && ownerLookup.matchedIndices.length > 0) {
+        var bestTier = TIER_LEAD;
+        for (var oi = 0; oi < ownerLookup.matchedIndices.length; oi++) {
+          var rowIdx = ownerLookup.matchedIndices[oi];
+          var cellTier = normalizeTier_(sheet.getRange(rowIdx, COL_TIER + 1).getValue());
+          if (tierRank_(cellTier) > tierRank_(bestTier)) {
+            bestTier = cellTier;
+          }
+        }
+        liveTier = bestTier;
+        foundLiveControlTier = true;
+        proposalMeta.tier = liveTier;
+        proposalMeta.liveTier = liveTier;
       }
     }
   } catch (metaErr) {
@@ -1633,6 +1678,7 @@ function handleLoadProposal_(fileId) {
   return {
     ok: true,
     fileId: fileId,
+    liveTier: liveTier,
     campaign: sanitized,
     proposalMeta: proposalMeta
   };

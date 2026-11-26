@@ -1,7 +1,7 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-26 (KST · V2.7 인터뷰봇 「5단 오픈 코스 UI + 간격/날짜 스마트 선택기 + AI 자동 토스」 및 `Proposal.html` 정각 날짜·시각 예약 연동 완료)
-- **기준 버전:** Master PRD V2.7 / `InterviewBot.html` V2.7 / `Proposal.html` V2.7 / `Backend_Proxy.gs` V2.6-0 (V2.2~V2.6 As-Built 100% 무손실 보존)
+- **최종 갱신일시:** 2026-11-26 (KST · V2.8 통합 개편 — 인터뷰봇 4대 교정 + 제안서 밝은 실버 목업·순정/Pro 알림톡·설문분기 강조·미친추 체험·등급별 하단 실시간 연동 완료)
+- **기준 버전:** Master PRD V2.8 / `InterviewBot.html` V2.8 / `Proposal.html` V2.8 / `Backend_Proxy.gs` V2.8-0 (V2.2~V2.7 As-Built 100% 무손실 보존)
 - **본체 프로젝트 완공 목표일:** **2026년 11월 30일(월)** *(개발 팀장님 본체 어드민 내 구글 폼·시트 연동 마감일 **12월 7일**과 별도 구분)*
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
 - **실서버 배포 URL:** `https://anoanong-bot.github.io/gomawartalk-ai-builder/`
@@ -70,6 +70,18 @@
     - **토스식 오픈 캔버스 · 5단 한글 코스 바 · 예고편 버튼 (`InterviewBot.html`):** STEP 3 상단에 추가 면적 소모 없이 **`[① 신청화면] ─ [② 신청질문] ─ [③ 첫카톡] ─ [④ 며칠뒤 자동] ─ [⑤ 날짜지정]`** 5단 한글 코스 바(`✓`/`●`/자유 점프) 탑재, 화이트 오픈 캔버스 + 입력창 상단 우선(Input-First) + 하단 예시 3종(`👇 막막하시면 예시를 눌러 바로 채워보세요`) + 예고편 CTA 버튼(`다음: ② 신청 질문 고르기 →` … `완료 · 브랜드 스타일 입력하기 →`) 구현.
     - **스마트 자동 토스(Auto-Toss) 엔진 (`RagInterviewEngine.js` & `InterviewBot.html`):** Q1~Q3 입력에서 미래 날짜·시각(`"12월 24일 오전 9시 30분..."`), 정기 날짜(`"매달 1일..."`), 간격(`"3일 간격..."`)을 `Consult.autoTossScheduleHints()`로 자동 감지해 Q4/Q5 픽커·초안을 미리 세팅하고 도착 시 안내 배지 노출(사용자 직접 수정 문항은 덮어쓰지 않음).
     - **`Proposal.html` 정각 날짜·시각 100% 동기화:** `meta.schedule_config`(`interval_config`, `date_reservation`) 및 `tab4_interval_messages`·`tab5_date_messages` 저장·연동. Q5 `ONCE`(`2026-12-24 09:30`) / `RECURRING`(`매월 1일 오전 10:00`) 설정 시 스텝 바 라벨(`12/24(목) 09:30 예약` / `매월 1일 10:00`), 타임워프(`🗓️ 지정하신 2026년 12월 24일 오전 9:30 정각 동시 발송`), 순정 카톡 날짜 캡슐(`2026년 12월 24일 목요일`), 말풍선 우측 하단 시각(`오전 9:30`) 100% 일치 렌더링(Q4 건너뛰기+Q5 지정 시 4스텝 직결 지원). 5종 테스트 스위트 전원 PASS.
+13. **V2.8 통합 개편 — 고마워톡 실제 기능·카카오 심사 규정·시니어 친화 UI 100% 정렬 *(2026-11-26 완료)*:**
+    - **인터뷰봇 4대 교정 (`InterviewBot.html`, `engines/RagInterviewEngine.js`, `data/GomawartalkManual.js`, `data/AlimtalkTemplates.js`, `data/IndustryPresets.js`):**
+      - ① 생동감 있는 모션 로딩 모달(`.loading-motion-stage`) + 윗줄 `「상호명 또는 업종명」` 컬러 캡슐 배지(`#loading-subject-badge`)와 아랫줄 `맞춤 카톡 흐름을 설계하고 있어요` 줄 분리.
+      - ② 카카오 야간 발송 제한 정확 교정(`20:30` 전면 제거 ➔ `20:00 ~ 08:00`, 정보성 알림톡 24시간 허용) + 입력 자동 분류 배지(`③ 첫카톡`: 24시간 정보성 알림톡 고정, `④ 며칠뒤 자동`·`⑤ 날짜지정`: 정보성 알림톡 비차단 vs 홍보·소식 카톡 `20:00~07:59` 선택 시에만 전용 대안 카드·원클릭 시각 보정).
+      - ③ 알림톡 본문 내 `'채널 추가 유도 문구'` 전수 삭제 및 `stripAlimtalkChannelAddSolicitation` 후처리·AI 프롬프트 차단(카카오 심사 규정 엄수).
+      - ④ `⑤ 날짜지정` 미지원 `매월/매주 반복`(`RECURRING`) 전면 삭제 + 기본 1개 `📅 1차 발송 날짜·시각 선택` 카드·`[+ 발송 날짜 하나 더 추가하기]`(초기 최대 3개 슬롯)·건너뛰기·무제한 추가 안심 배지(`#q5-unlimited-notice`) 구현(정기 연재 표현은 `④ 며칠뒤 자동`으로 자동 토스).
+    - **제안서 5대 개편 & 관제탑 등급 실시간 연동 (`Proposal.html`, `Backend_Proxy.gs` `V2.8-0`):**
+      - ① 밝은 실버·플래티넘 메탈릭 폰 목업(`332px` 슬림 유지) 적용 및 Step 1 `[처음/이미 신청한 고객]` 투머치 토글 완전 삭제.
+      - ② 실제 카카오톡 알림톡 UI 100% 재현(노란 `알림톡 도착` 바 + 우상단 원형 `kakao` 배지 + 미친추 시스템 회색 안내 + 최상단 노란 `[Ch+ 채널 추가]` 버튼; 공용 감사 일러스트 배너+1버튼 vs Pro 브랜드 로고 락업 배너+전용 다중 버튼 2~3개).
+      - ③ 설문 분기 체감도 극대화: 기계적 반복 문구 퇴출, 보기(A/B/C)별 구체적으로 달라지는 제목·`▶ 맞춤 안내`·버튼 + 상단 리모컨(`🎯 신청폼 선택에 따라 도착하는 카톡이 달라집니다` + 1줄 요약 배지) + 말풍선 포커스 전환 애니메이션.
+      - ④ 하단 `#sec-extra-features` 제거로 산만함 해소, 시뮬레이터 `[🛡️ 미친추 고객이면 어떻게 되나요? (자동 구제 체험)]` 폰 내부 3단계 시연 신설, Q&A 상단 칩에 `👑 공용 알림톡 vs Pro 내 로고 맞춤 알림톡 차이`·`문자·일반 카톡과 무엇이 다른가요?` 및 시각적 미니 비교 카드 통합.
+      - ⑤ `Backend_Proxy.gs` `handleLoadProposal_` 실시간 `F열 등급`(`liveTier`) 최우선 반환(이전 회차 `fileId` 포함) + `Proposal.html` 14개 DOM ID 보존 3단 분기(`가망고객` 요금 선택 / `Starter` 가입비 숨김+Pro 1줄 업그레이드 토글 / `Pro` 가격·결제·업그레이드 0%+Pro 맞춤 알림톡 자동 적용+전용 2버튼). 5종 테스트 스위트 전원 PASS(144/144 포함).
 
 ---
 
@@ -87,9 +99,9 @@
    - [ ] `Backend_Proxy.gs`에서 카카오 사용자 정보 응답(`kakao_account.phone_number` 국제번호/하이픈 포맷 및 권한 미반환 케이스) 파싱 로직과 시트 기록 과정을 정밀 진단해 `01000000000` 폴백 발생 원인 완전 해소
 2. **[P0 · 인프라 영구 해결] 모바일 접속 시 카카오 REST API 호출 서버 유동 IP(`-401`) 영구 해결:**
    - [ ] Google Apps Script(`UrlFetchApp`) 아웃바운드 유동 IP 특성으로 인해 모바일 접속 시 카카오 REST API `-401` 차단이 발생하는 이슈의 영구 해결책 적용(허용 IP 정책 정리 또는 고정 프록시/인증 흐름 확정)
-3. **[P1 · 배포 반영] 로컬 커밋 원격 Push & GAS 웹 앱 V2.6-0 재배포:**
-   - [ ] GitHub Desktop에서 로컬 커밋을 `origin/master`로 Push (`InterviewBot.html`, `Proposal.html`, `engines/RagInterviewEngine.js`, `data/GomawartalkManual.js`, `Backend_Proxy.gs`, `PRD.md`, `HANDOFF_NEXT_SESSION.md` 실서버 반영)
-   - [ ] Google Apps Script 편집기에 갱신된 `Backend_Proxy.gs` (`V2.6-0`) 반영 후 `[배포 > 배포 관리 > 새 버전]` 배포 + 에디터에서 `testGoogleChatWebhook()` 1회 실행해 구글 챗 수신 확인 (`GOOGLE_CHAT_WEBHOOK_URL` 스크립트 속성 등록 여부 점검)
+3. **[P1 · 배포 반영] 로컬 커밋 원격 Push & GAS 웹 앱 V2.8-0 재배포:**
+   - [ ] GitHub Desktop에서 로컬 커밋을 `origin/master`로 Push (`InterviewBot.html`, `Proposal.html`, `engines/RagInterviewEngine.js`, `data/GomawartalkManual.js`, `data/AlimtalkTemplates.js`, `data/IndustryPresets.js`, `Backend_Proxy.gs`, `PRD.md`, `HANDOFF_NEXT_SESSION.md` 실서버 반영)
+   - [ ] Google Apps Script 편집기에 갱신된 `Backend_Proxy.gs` (`V2.8-0`) 반영 후 `[배포 > 배포 관리 > 새 버전]` 배포 + 에디터에서 `testGoogleChatWebhook()` 1회 실행해 구글 챗 수신 확인 (`GOOGLE_CHAT_WEBHOOK_URL` 스크립트 속성 등록 여부 점검)
 4. **[P1 · 11/30 본체 완공 마감] 모바일 카톡 인앱 E2E 최종 검수:**
    - [ ] **11월 30일(월) 완공 목표:** 실전 스마트폰 카톡 인앱 브라우저에서 `카카오싱크 로그인(실제 전화번호 정상 기록)` ➔ `인터뷰봇 무료 체험 + 플로팅 위젯 Q&A 설계 핀·1초 제보` ➔ `파트너캠페인관제탑(18컬럼)·파트너제보함(9컬럼) 기록` ➔ `Proposal.html V2.5 시뮬레이터 & 1회 수정메모 연동·확정 제출` ➔ `Google Chat 알림 수신` ➔ `LandingBuilder.html 유료 조종석 포스트잇·AI 이미지 채우기`까지 전 구간 E2E 최종 검수 완료
 5. **[Post 11/30 · Wave 1 착수] 독자 외부 스토어 공식 앱 (Track B):**

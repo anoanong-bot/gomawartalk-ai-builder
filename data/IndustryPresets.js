@@ -207,7 +207,7 @@ window.GOMAWARTALK_INDUSTRY_PRESETS = {
       ],
     },
     tab4_interval_sequence: [
-      { step: 1, timing: "IMMEDIATE", template_type: "ALIMTALK", note: "알림톡 공용 — 신청 접수 확인 + 1편 로드맵 링크 + 채널 추가 유도" },
+      { step: 1, timing: "IMMEDIATE", template_type: "ALIMTALK", note: "알림톡 공용 — 신청 접수 확인 + 1편 로드맵 링크 (본문 내 채널 추가 유도 문구 금지)" },
       { step: 2, timing: "AFTER_1_DAY_0900", template_type: "FREE_FRIENDTALK", branch_condition: "태그 = 예비고1학부모", note: "친구톡 — 예비 고1 맞춤 킬러 단원 칼럼" },
       { step: 3, timing: "AFTER_3_DAYS_0900", template_type: "BRAND_CAROUSEL", note: "캐러셀 — 학년별 겨울방학 커리큘럼 소개 2~3장" },
     ],

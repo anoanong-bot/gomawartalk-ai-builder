@@ -447,8 +447,18 @@ button { cursor: pointer; border: none; background: none; }
   color: var(--g500);
   line-height: 1.4;
 }
+.remote-branch-summary {
+  padding: 8px 11px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EFF6FF 100%);
+  border: 1px solid #DDD6FE;
+  color: #4C1D95;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1.38;
+}
 
-/* 플래그십 슬림 스마트폰 프레임 (332px 슬림 고정폭 · 다크 티타늄 더블 베젤 · Dynamic Island) */
+/* 밝은 실버·플래티넘 메탈릭 슬림 스마트폰 프레임 (332px 슬림 비율 유지) */
 .sim-phone-shell {
   position: relative;
   width: 332px;
@@ -456,12 +466,12 @@ button { cursor: pointer; border: none; background: none; }
   margin: 0 auto;
   padding: 10px;
   border-radius: 44px;
-  background: linear-gradient(155deg, #334155 0%, #1E293B 26%, #0F172A 65%, #020617 100%);
+  background: linear-gradient(145deg, #F8FAFC 0%, #E2E8F0 52%, #CBD5E1 100%);
+  border: 1.5px solid #94A3B8;
   box-shadow:
-    0 28px 60px rgba(15, 23, 42, 0.28),
-    0 6px 18px rgba(15, 23, 42, 0.16),
-    0 0 0 1.5px rgba(255, 255, 255, 0.22) inset,
-    0 0 0 1px rgba(15, 23, 42, 0.45);
+    0 24px 52px rgba(15, 23, 42, 0.14),
+    0 6px 18px rgba(15, 23, 42, 0.08),
+    0 1.5px 0 rgba(255, 255, 255, 0.92) inset;
 }
 .sim-phone-screen {
   position: relative;
@@ -567,6 +577,33 @@ button { cursor: pointer; border: none; background: none; }
   transition: all 0.15s ease;
 }
 .btn-ext-next:active { transform: scale(0.98); }
+
+/* 미친추 2회 자동 구제 체험 토글 버튼 */
+.btn-sim-rescue-toggle {
+  width: 100%;
+  max-width: 392px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 13px;
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  color: #1E293B;
+  font-size: 12.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
+  transition: all 0.16s ease;
+}
+.btn-sim-rescue-toggle:hover { border-color: #7C3AED; background: #FAF5FF; color: #5B21B6; }
+.btn-sim-rescue-toggle.active {
+  background: linear-gradient(135deg, #FEF9C3 0%, #FDE68A 100%);
+  border-color: #D97706;
+  color: #78350F;
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.18);
+}
 
 /* 깜빡이며 통통 튀는 손가락 코치마크 (👆 + 동심원 파동) */
 .sim-coachmark {
@@ -1173,36 +1210,162 @@ button { cursor: pointer; border: none; background: none; }
   flex-shrink: 0;
   margin-bottom: 2px;
 }
+.kk-alimtalk-shell {
+  position: relative;
+  width: 100%;
+  max-width: 224px;
+}
+.kk-kakao-corner-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  z-index: 4;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #3B3B3B;
+  color: #FFFFFF;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+  border: 1.5px solid #FFFFFF;
+}
 .kk-alimtalk-card, .kk-friend-card {
   width: 100%;
-  max-width: 222px;
+  max-width: 224px;
   border-radius: 13px;
   overflow: hidden;
   background: #FFFFFF;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.11);
 }
+.kk-alimtalk-card.bubble-focus-swap,
+.kk-friend-card.bubble-focus-swap {
+  animation: bubbleFocusSwap 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes bubbleFocusSwap {
+  0% { opacity: 0.35; transform: translateY(5px) scale(0.97); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.28); }
+  100% { opacity: 1; transform: translateY(0) scale(1); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.11); }
+}
 .kk-alimtalk-top {
   background: var(--kakao-yellow);
   color: var(--kakao-ink);
-  padding: 8px 10px;
+  padding: 8px 26px 8px 11px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+.kk-alimtalk-label { font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; color: #191919; }
+.kk-alimtalk-public-banner {
+  background: #F4F5F7;
+  border-bottom: 1px solid #EAECEF;
+  padding: 11px 11px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 8px;
 }
-.kk-alimtalk-top.pro-custom {
-  background: linear-gradient(135deg, var(--brand) 0%, #0F172A 100%);
+.kk-public-banner-copy {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #1F2937;
+  line-height: 1.32;
+}
+.kk-public-banner-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #6B7280;
+}
+.kk-alimtalk-pro-banner {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
+  border-bottom: 1px solid #E2E8F0;
+  padding: 10px 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.kk-pro-lockup-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--brand);
   color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.08);
 }
-.kk-alimtalk-label { font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; }
-.kk-ch-add-pill {
-  padding: 2px 7px;
-  border-radius: 99px;
+.kk-pro-lockup-logo img { width: 100%; height: 100%; object-fit: contain; background: #FFFFFF; padding: 2px; }
+.kk-pro-lockup-meta { min-width: 0; flex: 1; }
+.kk-pro-lockup-name {
+  font-size: 12px;
+  font-weight: 900;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kk-pro-lockup-sub {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #64748B;
+}
+.kk-alimtalk-sys-note {
+  margin: 0 11px 8px;
+  padding-top: 7px;
+  border-top: 1px solid #F1F5F9;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #8C8C8C;
+  line-height: 1.38;
+}
+.kk-btn-ch-add {
+  width: 100%;
+  padding: 8px 9px;
+  border-radius: 8px;
+  background: var(--kakao-yellow);
+  border: 1px solid #F0D600;
+  color: #191919;
+  font-size: 11.5px;
+  font-weight: 900;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.kk-ch-badge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 4px;
+  border-radius: 4px;
   background: #191919;
   color: var(--kakao-yellow);
-  font-size: 9.5px;
+  font-size: 9px;
+  font-weight: 900;
+}
+.kk-rescue-sys-pill {
+  align-self: center;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background: rgba(190, 18, 60, 0.86);
+  color: #FFFFFF;
+  font-size: 10px;
   font-weight: 800;
-  white-space: nowrap;
+  text-align: center;
+  line-height: 1.35;
+}
+.kk-rescue-sys-pill.ok {
+  background: rgba(5, 150, 105, 0.9);
 }
 .kk-card-body {
   padding: 10px 11px 9px;
@@ -1353,110 +1516,141 @@ button { cursor: pointer; border: none; background: none; }
   flex-shrink: 0;
 }
 
-/* ═════════ [독립 섹션: 대표님을 위한 고마워톡 핵심 부가 기능 2종] ═════════ */
-.extra-feat-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.extra-feat-card {
-  background: #FFFFFF;
-  border-radius: 20px;
-  padding: 18px 16px;
-  border: 1px solid rgba(15, 23, 42, 0.07);
-  box-shadow: var(--shadow-card);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.extra-feat-head {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.extra-feat-tag {
-  align-self: flex-start;
-  padding: 3px 9px;
+/* ═════════ 등급별 하단 분기 카드 (Starter 업그레이드 1줄 토글 / Pro 전용 배지) & Q&A 미니 비교 카드 ═════════ */
+.tier-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
   border-radius: 99px;
-  background: var(--purple-lt);
-  color: var(--purple);
+  font-size: 12.5px;
+  font-weight: 900;
+  line-height: 1.35;
+  text-align: center;
+}
+.tier-status-badge.starter {
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  color: #1D4ED8;
+}
+.tier-status-badge.pro {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border: 1.5px solid #F59E0B;
+  color: #78350F;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.16);
+}
+.starter-upgrade-card {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #FAF5FF 0%, #EFF6FF 100%);
+  border: 1.5px solid #C4B5FD;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+  transition: all 0.16s ease;
+}
+.starter-upgrade-card.active {
+  background: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%);
+  border-color: #7C3AED;
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.16);
+}
+.starter-upgrade-text b {
+  display: block;
+  font-size: 13px;
+  font-weight: 900;
+  color: #4C1D95;
+  line-height: 1.35;
+}
+.starter-upgrade-text small {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748B;
+  margin-top: 2px;
+}
+.starter-upgrade-pill {
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border-radius: 99px;
+  background: #FFFFFF;
+  border: 1px solid #C4B5FD;
+  color: #6D28D9;
   font-size: 11px;
   font-weight: 900;
 }
-.extra-feat-head h3 {
-  font-size: 16px;
-  font-weight: 900;
-  color: var(--g900);
-  line-height: 1.35;
+.starter-upgrade-card.active .starter-upgrade-pill {
+  background: #7C3AED;
+  border-color: #7C3AED;
+  color: #FFFFFF;
 }
-.extra-feat-head p {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--g500);
-  line-height: 1.46;
-}
-.rescue-flow-list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-.rescue-step-chip {
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-size: 12.5px;
-  font-weight: 700;
-  line-height: 1.44;
-}
-.rescue-step-chip.fail { background: #FFF1F2; color: #BE123C; border: 1px solid #FECDD3; }
-.rescue-step-chip.warn { background: #FEF9C3; color: #713F12; border: 1px solid #FDE047; }
-.rescue-step-chip.ok { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
-
-.pro-cmp-grid {
+.pro-quick-action-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
-@media (max-width: 390px) {
-  .pro-cmp-grid { grid-template-columns: 1fr; }
-}
-.pro-cmp-box {
+.btn-pro-quick {
+  min-height: 46px;
+  padding: 10px 10px;
   border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--g200);
-  background: #FFFFFF;
-  display: flex;
-  flex-direction: column;
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+  border: 1.5px solid var(--g200);
+  background: var(--g50);
+  color: var(--g900);
+  transition: all 0.15s ease;
 }
-.pro-cmp-box.best { border: 2px solid #9945FF; box-shadow: 0 6px 14px rgba(153, 69, 255, 0.14); }
-.pro-cmp-label {
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 800;
-  background: var(--g100);
-  color: var(--g700);
-}
-.pro-cmp-box.best .pro-cmp-label {
-  background: var(--purple-lt);
+.btn-pro-quick.active {
+  border-color: var(--purple-md);
+  background: #F5F3FF;
   color: var(--purple);
 }
-.pro-cmp-body {
-  padding: 9px 10px;
-  font-size: 11.5px;
-  color: var(--g700);
-  line-height: 1.42;
+.qa-pro-cmp-card {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
 }
-.btn-pro-jump {
-  width: 100%;
-  min-height: 44px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #9945FF 0%, #6D28D9 100%);
-  color: #FFFFFF;
-  font-size: 13px;
+.qa-pro-mini {
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  overflow: hidden;
+  font-size: 10.5px;
+  line-height: 1.38;
+}
+.qa-pro-mini.pro { border: 1.5px solid #7C3AED; }
+.qa-pro-mini-top {
+  background: #FEE500;
+  color: #191919;
+  padding: 4px 7px;
+  font-size: 9.5px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.qa-pro-mini-body {
+  padding: 7px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #334155;
+}
+.qa-pro-mini-btn {
+  padding: 3px 5px;
+  border-radius: 5px;
+  background: #F1F5F9;
+  color: #1E293B;
+  font-size: 9.5px;
   font-weight: 800;
   text-align: center;
-  box-shadow: 0 6px 14px rgba(109, 40, 217, 0.22);
 }
+.qa-pro-mini-btn.ch { background: #FEE500; color: #191919; }
 
 /* ═════════ [컴팩트 시나리오 타임라인 요약 카드] ═════════ */
 .stage-section {
@@ -1921,7 +2115,6 @@ button { cursor: pointer; border: none; background: none; }
   <div class="pc-rail-title">맞춤 설계안 목차</div>
   <a class="pc-rail-link active" href="#sec-cover" data-rail="sec-cover"><span class="pc-rail-dot"></span>설계안 요약</a>
   <a class="pc-rail-link" href="#sec-sim" data-rail="sec-sim"><span class="pc-rail-dot"></span>5단계 모바일 시뮬레이터</a>
-  <a class="pc-rail-link" href="#sec-extra-features" data-rail="sec-extra-features"><span class="pc-rail-dot"></span>핵심 부가 기능</a>
   <a class="pc-rail-link" href="#sec-summary" data-rail="sec-summary"><span class="pc-rail-dot"></span>시나리오 타임라인</a>
   <a class="pc-rail-link" href="#sec-4" data-rail="sec-4"><span class="pc-rail-dot"></span>④ 고마워톡 핵심 차이</a>
   <a class="pc-rail-link" href="#sec-confirm" data-rail="sec-confirm"><span class="pc-rail-dot"></span>세팅 확정 신청</a>
@@ -2005,22 +2198,16 @@ button { cursor: pointer; border: none; background: none; }
           <span class="coach-hand">👆</span>
         </div>
 
-        <!-- 폰 프레임 위: 시뮬레이터 체험 리모컨 -->
-        <div class="sim-remote-panel" id="sim-remote-panel">
-          <div id="remote-step1-bar">
-            <div class="remote-caption">🎛️ 방문자 화면 전환</div>
-            <div class="remote-pill-row" role="group" aria-label="방문자 화면 전환">
-              <button type="button" class="remote-visit-btn on" id="btn-s1-new">처음 들어온 고객</button>
-              <button type="button" class="remote-visit-btn" id="btn-s1-revisit">이미 신청한 고객 (취소 버튼)</button>
-            </div>
-          </div>
+        <!-- 폰 프레임 위: 시뮬레이터 체험 리모컨 (Step 1에서는 투머치 토글 없이 숨김) -->
+        <div class="sim-remote-panel" id="sim-remote-panel" hidden>
           <div id="remote-step2-bar" hidden>
             <div class="remote-caption">🎛️ 신청폼 체험 가이드</div>
             <div class="remote-step2-note">아래 스마트폰 화면에서 고객이 고를 답변을 누르고 [제출하기]를 눌러보세요.</div>
           </div>
           <div id="remote-branch-bar" hidden>
-            <div class="remote-caption">👆 설문에서 다른 답을 고른 고객 화면 보기</div>
+            <div class="remote-caption">🎯 신청폼 선택에 따라 도착하는 카톡이 달라집니다</div>
             <div class="remote-pill-row" id="ext-branch-pills"></div>
+            <div class="remote-branch-summary" id="remote-branch-summary"></div>
           </div>
         </div>
 
@@ -2063,7 +2250,6 @@ button { cursor: pointer; border: none; background: none; }
                   <div class="s1-checks" id="lp-points-list"></div>
                   <div class="s1-cta-area">
                     <button type="button" class="btn-sim-apply" id="btn-s1-apply">신청하기</button>
-                    <button type="button" class="btn-sim-cancel" id="btn-s1-cancel" hidden>소식 그만 받기 (신청취소)</button>
                   </div>
                 </div>
               </div>
@@ -2184,65 +2370,13 @@ button { cursor: pointer; border: none; background: none; }
           </div>
         </div>
 
-        <!-- 폰 프레임 아래: 외부 장면 전환 버튼 -->
+        <!-- 폰 프레임 아래: 외부 장면 전환 버튼 + 미친추 2회 자동 구제 체험 토글 -->
         <div class="sim-ext-nav">
           <button type="button" class="btn-ext-prev" id="btn-sim-prev" disabled>◀ 이전 장면</button>
           <button type="button" class="btn-ext-next" id="btn-sim-next">다음 장면 보기 ▶</button>
         </div>
+        <button type="button" class="btn-sim-rescue-toggle" id="btn-sim-rescue-toggle">🛡️ 미친추 고객이면 어떻게 되나요? (자동 구제 체험)</button>
 
-      </div>
-    </section>
-
-    <!-- ═════════ 2-B. 독립 섹션: 대표님을 위한 고마워톡 핵심 부가 기능 2종 ═════════ -->
-    <section class="stage-section alt-bg" id="sec-extra-features">
-      <div class="sec-head-center reveal">
-        <div class="sec-num-circle">💡</div>
-        <h2 class="sec-title">대표님을 위한 고마워톡<br>핵심 부가 기능</h2>
-        <p class="sec-desc">실제 운영 시 도달률과 브랜드 신뢰도를 크게 높여주는 자동 보호 장치입니다.</p>
-      </div>
-
-      <div class="extra-feat-stack">
-        <!-- 카드 1: 채널 미추가 고객 2회 자동 구제 -->
-        <div class="extra-feat-card reveal delay-1">
-          <div class="extra-feat-head">
-            <span class="extra-feat-tag">🛡️ 도달률 보호 · 자동 구제</span>
-            <h3>채널 미추가 고객 2회 자동 구제 루프</h3>
-            <p>고객이 채널 추가를 깜빡해도 놓치지 않고 알림톡 안내 후 익일 오전 9시에 자동으로 재발송합니다.</p>
-          </div>
-          <div class="rescue-flow-list">
-            <div class="rescue-step-chip fail">① 친구톡 실패 감지 ➔ 채널 미추가 고객 자동 포착</div>
-            <div class="rescue-step-chip warn">② 즉시 <b>[채널 추가 안내 알림톡]</b> 발송 ➔ 상단 노란색 [+ 채널 추가] 유도</div>
-            <div class="rescue-step-chip ok">③ 익일 오전 09:00 자동 재발송 (최대 2회 끝까지 구제)</div>
-          </div>
-        </div>
-
-        <!-- 카드 2: 공용 알림톡 vs Pro 내 로고 맞춤 알림톡 시각 비교 -->
-        <div class="extra-feat-card reveal delay-2">
-          <div class="extra-feat-head">
-            <span class="extra-feat-tag">👑 브랜드 신뢰도 비교</span>
-            <h3>공용 알림톡 vs Pro 내 로고 맞춤 알림톡</h3>
-            <p>첫 알림톡부터 대표님 브랜드 로고와 공식 헤더를 띄워 스팸 오해 없이 신뢰를 높일 수 있습니다.</p>
-          </div>
-          <div class="pro-cmp-grid">
-            <div class="pro-cmp-box">
-              <div class="pro-cmp-label">Starter · 기본 공용 텍스트 헤더</div>
-              <div class="kk-alimtalk-top">
-                <span class="kk-alimtalk-label">💬 알림톡 도착</span>
-                <span class="kk-ch-add-pill">+ 채널 추가</span>
-              </div>
-              <div class="pro-cmp-body">고마워톡 공용 승인 양식으로 빠르고 간편하게 즉시 발송</div>
-            </div>
-            <div class="pro-cmp-box best">
-              <div class="pro-cmp-label">👑 Pro · 우리 브랜드 로고 전용 헤더</div>
-              <div class="kk-alimtalk-top pro-custom">
-                <span class="kk-alimtalk-label"><span id="extra-pro-logo-slot">✦</span> <span id="extra-pro-brand-label">대표님 채널 공식 안내</span></span>
-                <span class="kk-ch-add-pill">+ 채널 추가</span>
-              </div>
-              <div class="pro-cmp-body">우리 브랜드 로고·컬러가 상단에 노출되는 전용 맞춤 알림톡</div>
-            </div>
-          </div>
-          <button type="button" class="btn-pro-jump" id="btn-extra-pick-pro">👑 Pro 플랜으로 확정하기 ↓</button>
-        </div>
       </div>
     </section>
 
@@ -2294,11 +2428,13 @@ button { cursor: pointer; border: none; background: none; }
       </div>
     </section>
 
-    <!-- ═════════ 5. [기존 세팅 확정 신청하기 폼 — DOM ID·이벤트·페이로드 100% 보존] ═════════ -->
+    <!-- ═════════ 5. [등급별 실시간 연동 무인 세팅 확정 폼 — 필수 14개 DOM ID 100% 보존] ═════════ -->
     <section class="confirm-section" id="sec-confirm">
       <div class="sec-head-center reveal">
-        <h2 class="sec-title">채팅 기다림 없이 30초 만에<br>세팅 확정 신청하기</h2>
-        <p class="sec-desc">요금제와 세팅 방식을 골라 제출하면 담당 전문가가 바로 시작합니다.</p>
+        <div class="tier-status-badge starter" id="starter-tier-badge" hidden>⭐ Starter 파트너 세팅 확정 신청</div>
+        <div class="tier-status-badge pro" id="pro-partner-badge" hidden>👑 Pro 파트너 전용 (나만의 브랜드 알림톡 · 영업일 1일 패스트트랙)</div>
+        <h2 class="sec-title" id="confirm-sec-title">채팅 기다림 없이 30초 만에<br>세팅 확정 신청하기</h2>
+        <p class="sec-desc" id="confirm-sec-desc">요금제와 세팅 방식을 골라 제출하면 담당 전문가가 바로 시작합니다.</p>
       </div>
 
       <div class="already-confirmed-banner" id="already-confirmed-banner" hidden>
@@ -2306,7 +2442,8 @@ button { cursor: pointer; border: none; background: none; }
       </div>
 
       <div class="e-card reveal" id="confirm-form-card">
-        <div>
+        <!-- 가망고객 전용: Starter / Pro 요금제 선택 블록 (Starter/Pro 유료 파트너는 hidden) -->
+        <div id="confirm-plan-block">
           <div style="font-size:13.5px;font-weight:800;color:var(--g900);margin-bottom:9px">1. 요금제를 선택해 주세요</div>
           <div class="plan-select-stack" id="plan-select-stack">
             <button type="button" class="plan-option-card selected" data-plan="Pro">
@@ -2319,7 +2456,7 @@ button { cursor: pointer; border: none; background: none; }
               </div>
               <div class="plan-feats">
                 <span>• 매월 <strong>10회</strong> 캠페인 제작 · <strong>영업일 1일</strong> 패스트트랙 세팅</span>
-                <span>• <strong>내 브랜드 로고 맞춤 알림톡</strong> 지원 · 발송 단가 할인</span>
+                <span>• <strong>내 브랜드 로고·전용 버튼 맞춤 알림톡</strong> 지원 · 발송 단가 할인</span>
               </div>
             </button>
 
@@ -2336,9 +2473,24 @@ button { cursor: pointer; border: none; background: none; }
           </div>
         </div>
 
-        <div>
-          <div style="font-size:13.5px;font-weight:800;color:var(--g900);margin-bottom:9px">2. 세팅 방식을 선택해 주세요</div>
-          <div class="mode-radio-stack">
+        <!-- Starter 파트너 전용: 1줄 깔끔 업그레이드 토글 카드 (Pro/가망고객은 hidden) -->
+        <button type="button" class="starter-upgrade-card" id="starter-upgrade-card" hidden>
+          <div class="starter-upgrade-text">
+            <b>👑 Pro로 업그레이드하고 내 로고·전용 버튼 알림톡으로 세팅하기</b>
+            <small id="starter-upgrade-sub">누르면 상단 핸드폰 화면이 내 로고 맞춤 알림톡으로 바로 바뀝니다</small>
+          </div>
+          <span class="starter-upgrade-pill" id="starter-upgrade-pill">선택</span>
+        </button>
+
+        <!-- Pro 파트너 전용: 가격·결제 UI 0% · 심플 2버튼 (기존 라디오와 완전 동기화) -->
+        <div class="pro-quick-action-row" id="pro-quick-action-row" hidden>
+          <button type="button" class="btn-pro-quick active" id="btn-pro-asis">✅ 이대로 세팅 확정하기</button>
+          <button type="button" class="btn-pro-quick" id="btn-pro-edit">✏️ 1회 수정 요청하기</button>
+        </div>
+
+        <div id="confirm-mode-block">
+          <div id="confirm-mode-heading" style="font-size:13.5px;font-weight:800;color:var(--g900);margin-bottom:9px">2. 세팅 방식을 선택해 주세요</div>
+          <div class="mode-radio-stack" id="mode-radio-stack">
             <label class="mode-radio-card selected" id="mode-card-asis">
               <input type="radio" name="setting_mode" value="AS_IS" checked>
               <div class="mode-radio-text">
@@ -2413,6 +2565,8 @@ button { cursor: pointer; border: none; background: none; }
         궁금한 기능·요금을 바로 물어보세요. 바꾸고 싶은 내용은 <strong>[✏️ 1회 수정 메모에 담기]</strong>로 하단 신청란에 자동 연결됩니다.
       </div>
       <div class="flt-faq-chips" id="flt-faq-chips">
+        <button type="button" class="flt-faq-chip">👑 공용 알림톡 vs Pro 내 로고 맞춤 알림톡 차이</button>
+        <button type="button" class="flt-faq-chip">문자·일반 카톡과 무엇이 다른가요?</button>
         <button type="button" class="flt-faq-chip">알림톡·친구톡 차이</button>
         <button type="button" class="flt-faq-chip">구글폼 연동 되나요?</button>
         <button type="button" class="flt-faq-chip">마케팅 수신동의·M형</button>
@@ -2468,6 +2622,20 @@ const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g,
 const BANNED_RE = new RegExp('\\uB274\\uC2A4\\uB808\\uD130', 'g');
 function cleanText(s) {
   return String(s == null ? '' : s).replace(BANNED_RE, '정기 소식');
+}
+function stripAlimtalkChannelAddCopy(text) {
+  let s = cleanText(text || '');
+  const lines = s.split(/\r?\n/).filter(line => {
+    const t = line.trim();
+    if (!t) return true;
+    if (/채널\s*추가.{0,22}(눌러|부탁|해\s*주|해주|클릭|필수|하시면|하셔야|후|권장|유도|미리)/.test(t)) return false;
+    if (/(상단|노란색|우측|오른쪽).{0,14}\[?\+?\s*채널\s*추가\]?/.test(t)) return false;
+    return true;
+  });
+  return lines.join('\n')
+    .replace(/\([^)]*채널\s*추가[^)]*\)/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 function shortText(s, max) {
   const arr = Array.from(cleanText(s || '').replace(/\s+/g, ' ').trim());
@@ -2578,31 +2746,66 @@ const DEMO_CAMPAIGN = {
           condition_desc: '모두 (전체 신청자)',
           variables: {
             '콘텐츠 제목': '1등급 오답노트 자료집 접수 확인',
-            '콘텐츠 소개': '#{@고객진단.학년} 맞춤 겨울방학 수학 로드맵이 준비되었습니다.\n(내일 오전 9시 2편 칼럼 수신을 위해 상단 노란색 [채널 추가]를 눌러두세요!)'
+            '콘텐츠 소개': '#{@고객진단.학년} 맞춤 겨울방학 수학 로드맵과 오답노트 자료집 신청이 정상 접수되었습니다.'
           },
           sheet_fallback_strings: { '고객진단.학년': '우리 아이' },
-          buttons: [{ name: '1편 로드맵 & 자료집 보기', link_type: 'WL' }]
+          buttons: [
+            { name: '가이드(카드형) 보기', link_type: 'WL' },
+            { name: '학년별 오답노트 양식 받기', link_type: 'WL' }
+          ]
         }]
       },
       {
         step: 2,
         timing: 'AFTER_1_DAY_0900',
         template_type: 'FREE_FRIENDTALK',
-        branches: [{
-          priority: 1,
-          condition_desc: '설문 태그 맞춤 분기',
-          image_copy: {
-            badge: '학년별 맞춤 심화 칼럼',
-            headline: '왜 중학교 90점대 아이가 첫 중간고사에서 흔들릴까요?',
-            subtext: '킬러 단원 분석 리포트'
+        branches: [
+          {
+            priority: 1,
+            condition_desc: '중등 기초 (중1~2)',
+            image_copy: {
+              badge: '중1~2 기초 개념 완성 리포트',
+              headline: '중등 수학에서 반드시 잡아야 할 3대 연산·함수 습관',
+              subtext: '중등 기초 맞춤 학습 처방'
+            },
+            body_text_400chars: '#{이름} 학부모님! 어제 선택하신 중등 기초(중1~2) 기준에 맞춰, 연산 실수를 80% 줄이는 오답 체크표와 방학 4주 개념 완성 계획표를 보내드립니다.',
+            sheet_fallback_strings: { '고객진단.학년': '중1~2학년' },
+            buttons: [
+              { name: '중등 개념 체크표 받기', link_type: 'WL' },
+              { name: '기초 진단 테스트 예약', link_type: 'WL' }
+            ]
           },
-          body_text_400chars: '#{이름} 학부모님! 어제 확인하신 #{@고객진단.학년} 로드맵에 이어 핵심 킬러 단원 분석 칼럼과 레벨테스트 일정을 보내드립니다.',
-          sheet_fallback_strings: { '고객진단.학년': '예비고1·고등' },
-          buttons: [
-            { name: '킬러 단원 분석 보기', link_type: 'WL' },
-            { name: '원장 1:1 진단 예약', link_type: 'WL' }
-          ]
-        }]
+          {
+            priority: 2,
+            condition_desc: '예비 고1·고등 내신',
+            image_copy: {
+              badge: '예비 고1·고등 내신 킬러 분석',
+              headline: '왜 중학교 90점대 아이가 첫 고등 내신에서 흔들릴까요?',
+              subtext: '고등 내신 1등급 전략 리포트'
+            },
+            body_text_400chars: '#{이름} 학부모님! 선택하신 예비 고1·고등 내신 전형에 맞춰, 시험 시간 15분을 줄이는 서술형·킬러 문항 오답 공식과 내신 집중반 시간표를 보내드립니다.',
+            sheet_fallback_strings: { '고객진단.학년': '예비고1·고등' },
+            buttons: [
+              { name: '고등 킬러 문항 분석 보기', link_type: 'WL' },
+              { name: '원장 1:1 내신 진단 예약', link_type: 'WL' }
+            ]
+          },
+          {
+            priority: 3,
+            condition_desc: '수능 집중 대비 (고3)',
+            image_copy: {
+              badge: '고3 수능 준킬러·킬러 돌파',
+              headline: '모의고사 2등급에서 1등급으로 올라가는 4점 문항 루틴',
+              subtext: '수능 실전 오답노트 전략'
+            },
+            body_text_400chars: '#{이름} 학부모님! 선택하신 고3 수능 집중 대비 과정에 맞춰, 최근 5개년 평가원 기출 오답 패턴 정리본과 실전 모의고사 파이널 반 안내를 보내드립니다.',
+            sheet_fallback_strings: { '고객진단.학년': '고3 수능' },
+            buttons: [
+              { name: '평가원 4점 오답 패턴 보기', link_type: 'WL' },
+              { name: '수능 파이널 1:1 상담 예약', link_type: 'WL' }
+            ]
+          }
+        ]
       },
       {
         step: 3,
@@ -2661,7 +2864,7 @@ const STATE = {
   fileId: '',
   sourceMode: 'demo', // 'server' | 'local_bridge' | 'demo'
   campaign: null,
-  proposalMeta: { confirmStatus: '미확인', tier: '가망고객', createdAt: '' },
+  proposalMeta: { confirmStatus: '미확인', tier: '가망고객', liveTier: '', createdAt: '' },
   mappedOpts: [],
   selectedOptIdx: 0,
   selectedTag: '',
@@ -2671,7 +2874,9 @@ const STATE = {
   simAutoPlay: true,
   simManualMode: false,
   simCompleted: false,
-  s1RevisitMode: false,
+  rescueSimMode: false,
+  rescuePrevStep: 4,
+  starterUpgradeToPro: false,
   s2Picked: false,
   s2AgreeChecked: true,
   schedule: null,
@@ -2680,6 +2885,36 @@ const STATE = {
   isSubmitting: false,
   confirmed: false
 };
+
+function normalizeTier(raw) {
+  const s = String(raw == null ? '' : raw).trim().toLowerCase();
+  if (s === 'pro') return 'Pro';
+  if (s === 'starter') return 'Starter';
+  return '가망고객';
+}
+
+function getEffectiveTier() {
+  try {
+    const qsTier = (new URLSearchParams(location.search).get('tier') || '').trim();
+    if (qsTier) return normalizeTier(qsTier);
+  } catch (e) {}
+  if (STATE.proposalMeta && STATE.proposalMeta.liveTier) {
+    return normalizeTier(STATE.proposalMeta.liveTier);
+  }
+  if (STATE.proposalMeta && STATE.proposalMeta.tier && STATE.proposalMeta.tier !== '가망고객') {
+    return normalizeTier(STATE.proposalMeta.tier);
+  }
+  const campTier = STATE.campaign && STATE.campaign.partner_info && STATE.campaign.partner_info.tier;
+  if (campTier) return normalizeTier(campTier);
+  return normalizeTier((STATE.proposalMeta && STATE.proposalMeta.tier) || '가망고객');
+}
+
+function isProAlimtalkMode() {
+  const tier = getEffectiveTier();
+  if (tier === 'Pro') return true;
+  if (tier === 'Starter' && STATE.starterUpgradeToPro) return true;
+  return false;
+}
 
 const SIM_TIMERS = [];
 function addSimTimer(fn, ms) {
@@ -2796,6 +3031,12 @@ async function loadProposalData() {
           STATE.sourceMode = 'server';
           STATE.campaign = sanitizeLocalCampaign(data.campaign);
           STATE.proposalMeta = Object.assign(STATE.proposalMeta, data.proposalMeta || {});
+          if (data.liveTier) {
+            STATE.proposalMeta.liveTier = normalizeTier(data.liveTier);
+            STATE.proposalMeta.tier = STATE.proposalMeta.liveTier;
+          } else if (STATE.proposalMeta.tier) {
+            STATE.proposalMeta.liveTier = normalizeTier(STATE.proposalMeta.tier);
+          }
           return;
         }
       }
@@ -2994,19 +3235,22 @@ function resolveCampaignSchedule(camp) {
 
   const schedCfg = m.schedule_config || {};
   const intervalCfg = schedCfg.interval_config || t4.interval_config || null;
-  let dateRes = (schedCfg.date_reservation && (schedCfg.date_reservation.mode === 'ONCE' || schedCfg.date_reservation.mode === 'RECURRING'))
+  let dateRes = (schedCfg.date_reservation && schedCfg.date_reservation.mode === 'ONCE')
     ? schedCfg.date_reservation
     : null;
-  if (!dateRes && t5First && (t5First.mode === 'ONCE' || t5First.mode === 'RECURRING')) {
+  if (!dateRes && t5First && t5First.mode === 'ONCE') {
     dateRes = {
-      mode: t5First.mode,
+      mode: 'ONCE',
       date: t5First.send_date || (t5First.send_datetime ? String(t5First.send_datetime).slice(0, 10) : ''),
       time24: t5First.send_time || (t5First.send_datetime && String(t5First.send_datetime).match(/(\d{2}:\d{2})/) ? String(t5First.send_datetime).match(/(\d{2}:\d{2})/)[1] : ''),
       timeKo: t5First.send_time_ko || '',
-      recurringFreq: t5First.recurring_freq || '',
-      recurringDay: t5First.recurring_day || '',
-      recurringLabel: t5First.recurring_label || t5First.send_datetime || '',
-      message_hint: t5First.message_hint || t5First.title || ''
+      message_hint: t5First.message_hint || t5First.title || '',
+      slots: t5List.slice(0, 3).map(item => ({
+        date: item.send_date || (item.send_datetime ? String(item.send_datetime).slice(0, 10) : ''),
+        time24: item.send_time || (item.send_datetime && String(item.send_datetime).match(/(\d{2}:\d{2})/) ? String(item.send_datetime).match(/(\d{2}:\d{2})/)[1] : '09:30'),
+        timeKo: item.send_time_ko || '',
+        message_hint: item.message_hint || item.title || ''
+      }))
     };
   }
   const intervalEnabled = !(
@@ -3233,62 +3477,42 @@ function resolveCampaignSchedule(camp) {
     };
   }
 
-  // ★ V2.7: Q5 지정 날짜·시각(ONCE) 또는 정기 날짜(RECURRING) 완벽 정각 동기화
+  // ★ V2.8: Q5 특정 날짜·시각(ONCE, 최대 3개 초기 슬롯) 정각 예약 동기화 (미지원 반복 모드 제거)
   cfg.intervalEnabled = intervalEnabled;
   cfg.skipStep4 = false;
   cfg.hasDateReservation = false;
 
-  if (dateRes && dateRes.mode === 'ONCE' && dateRes.date) {
-    const dParts = parseIsoYmdParts(dateRes.date);
-    const tParts = formatTime24Parts(dateRes.time24 || '09:00', dateRes.timeKo);
+  if (dateRes && dateRes.mode === 'ONCE') {
+    const slot0 = (Array.isArray(dateRes.slots) && dateRes.slots[0]) ? dateRes.slots[0] : dateRes;
+    const slotCount = (Array.isArray(dateRes.slots) && dateRes.slots.length) ? dateRes.slots.length : 1;
+    const dParts = parseIsoYmdParts(slot0.date || dateRes.date);
+    const tParts = formatTime24Parts(slot0.time24 || dateRes.time24 || '09:30', slot0.timeKo || dateRes.timeKo);
     if (dParts) {
       cfg.hasDateReservation = true;
       cfg.dateReservation = dateRes;
-      const pillLabel = dParts.shortWithDow + ' ' + tParts.time24 + ' 예약';
-      const hintText = cleanText(dateRes.message_hint || (t5First && (t5First.message_hint || t5First.title)) || '지정하신 일정 안내가 도착했습니다.');
+      const extraTag = slotCount > 1 ? (' 외 ' + (slotCount - 1) + '건') : '';
+      const pillLabel = dParts.shortWithDow + ' ' + tParts.time24;
+      const hintText = cleanText(slot0.message_hint || dateRes.message_hint || (t5First && (t5First.message_hint || t5First.title)) || '지정하신 일정 안내가 도착했습니다.');
       cfg.steps[5] = {
         isDateReserved: true,
         reserveMode: 'ONCE',
+        slotCount: slotCount,
         shortLabel: pillLabel,
         dateLabel: dParts.capsule,
         timeLabel: tParts.timeKo,
         clockLabel: tParts.clockLabel,
         twEmoji: '🗓️',
         twTitle: '🗓️ 지정하신 ' + dParts.fullNoDow + ' ' + tParts.timeKo + ' 정각 동시 발송',
-        twSub: '언제 신청했든 지정하신 정확한 날짜와 시각에 전원에게 동시 발송됩니다',
+        twSub: slotCount > 1
+          ? ('지정하신 ' + slotCount + '개 대표 일정에 맞춰 정각 자동 발송됩니다')
+          : '언제 신청했든 지정하신 정확한 날짜와 시각에 전원에게 동시 발송됩니다',
         nextBtnLabel: '처음부터 다시 보기 ↻',
-        tlTitle: dParts.shortWithDow + ' ' + tParts.timeKo + ' 정각 동시 예약 발송',
+        tlTitle: dParts.shortWithDow + ' ' + tParts.timeKo + ' 지정 날짜 예약' + extraTag,
         tlSub: shortText(hintText, 36),
         messageHint: hintText
       };
       cfg.steps[4].nextBtnLabel = pillLabel + ' 보기 ▶';
     }
-  } else if (dateRes && dateRes.mode === 'RECURRING' && (dateRes.recurringLabel || dateRes.recurringDay)) {
-    const tParts = formatTime24Parts(dateRes.time24 || '10:00', dateRes.timeKo);
-    const freqKo = String(dateRes.recurringFreq || '').toUpperCase() === 'WEEKLY' ? '매주' : '매월';
-    const dayStr = dateRes.recurringDay || (freqKo === '매주' ? '월요일' : '1일');
-    const recFull = dateRes.recurringLabel || (freqKo + ' ' + dayStr + ' ' + tParts.timeKo);
-    const pillShort = freqKo + ' ' + dayStr.replace(/요일$/, '') + ' ' + tParts.time24;
-    const nextCapsule = computeNextRecurringCapsule(baseDate, dateRes.recurringFreq, dayStr);
-    const hintText = cleanText(dateRes.message_hint || (t5First && (t5First.message_hint || t5First.title)) || '정기 예약 소식이 도착했습니다.');
-    cfg.hasDateReservation = true;
-    cfg.dateReservation = dateRes;
-    cfg.steps[5] = {
-      isDateReserved: true,
-      reserveMode: 'RECURRING',
-      shortLabel: pillShort,
-      dateLabel: nextCapsule,
-      timeLabel: tParts.timeKo,
-      clockLabel: tParts.clockLabel,
-      twEmoji: '🗓️',
-      twTitle: '🗓️ 지정하신 ' + recFull + ' 정각 동시 발송',
-      twSub: '정해진 날짜와 시각마다 신청자 전원에게 동시 발송됩니다',
-      nextBtnLabel: '처음부터 다시 보기 ↻',
-      tlTitle: recFull + ' 정기 동시 발송',
-      tlSub: shortText(hintText, 36),
-      messageHint: hintText
-    };
-    cfg.steps[4].nextBtnLabel = pillShort + ' 예약 보기 ▶';
   }
 
   // Q4를 건너뛰고 Q5(날짜지정)만 지정한 경우: 즉시 알림톡(Step 3) ➔ 지정 날짜 발송(Step 5) 직결
@@ -3333,36 +3557,289 @@ function renderStep1Hero() {
   }
 }
 
+function buildBranchContentForOption(optIdx, camp) {
+  camp = camp || STATE.campaign || DEMO_CAMPAIGN;
+  const { channelName } = getChannelMeta();
+  const sched = STATE.schedule || resolveCampaignSchedule(camp);
+  const safeIdx = Math.max(0, Math.min(Math.max(0, STATE.mappedOpts.length - 1), Number(optIdx) || 0));
+  const cur = STATE.mappedOpts[safeIdx] || { answerText: '맞춤 안내', tag: '맞춤고객', sheetVal: '맞춤 유형' };
+  const ans = cleanText(cur.answerText || cur.sheetVal || '맞춤 유형');
+  const val = cleanText(cur.sheetVal || ans);
+
+  const seq = (camp.tab4_interval_messages && Array.isArray(camp.tab4_interval_messages.sequence) && camp.tab4_interval_messages.sequence.length)
+    ? camp.tab4_interval_messages.sequence
+    : DEMO_CAMPAIGN.tab4_interval_messages.sequence;
+  const step2 = seq[1] || DEMO_CAMPAIGN.tab4_interval_messages.sequence[1];
+  const branches2 = (Array.isArray(step2.branches) && step2.branches.length) ? step2.branches : [];
+  const hasPerOptBranch = branches2.length > safeIdx && branches2.length > 1;
+  const b2 = hasPerOptBranch ? branches2[safeIdx] : (branches2[0] || {});
+  const imgCopy2 = b2.image_copy || {};
+
+  // 기계적 반복 문구("물음에 맞춰 필요한 핵심 얘기만 맞췄어요" 등) 전면 배제 + 보기별 확연히 다른 제목·안내·버튼 생성
+  const slotAngles = [
+    {
+      badge: val + ' 핵심 체크리스트',
+      title: '[' + shortText(val, 14) + '] 신청자 전용 가이드',
+      guidance: '▶ 맞춤 안내 : ' + val + ' 고객에게 가장 먼저 필요한 핵심 체크리스트와 실전 가이드를 준비했습니다.',
+      bodyLead: '#{이름}님! 선택하신 「' + val + '」 기준에 맞춰 꼭 확인하셔야 할 3가지 핵심 포인트와 실전 체크표를 정리해 보내드립니다.',
+      btn1: shortText(val, 8) + ' 가이드 보기',
+      btn2: '1:1 맞춤 진단 예약'
+    },
+    {
+      badge: val + ' 심화 전략 리포트',
+      title: '[' + shortText(val, 14) + '] 실전 전략 & 사례집',
+      guidance: '▶ 맞춤 안내 : ' + val + ' 상황에서 바로 성과를 내는 실제 적용 사례와 단계별 전략 자료를 담았습니다.',
+      bodyLead: '#{이름}님! 어제 고르신 「' + val + '」 맞춤 전략 편입니다. 실제 성공 사례 비교표와 단계별 실행 순서를 바로 확인해 보세요.',
+      btn1: shortText(val, 8) + ' 사례집 보기',
+      btn2: '전문가 전략 상담 신청'
+    },
+    {
+      badge: val + ' 집중 완성 로드맵',
+      title: '[' + shortText(val, 14) + '] 집중 완성 로드맵',
+      guidance: '▶ 맞춤 안내 : ' + val + ' 목표 달성에 초점을 맞춘 집중 일정표와 우선순위 점검 항목을 안내드립니다.',
+      bodyLead: '#{이름}님! 「' + val + '」 전용 집중 로드맵이 도착했습니다. 놓치기 쉬운 핵심 일정과 우선순위 점검표를 확인해 보세요.',
+      btn1: shortText(val, 8) + ' 로드맵 보기',
+      btn2: '우선 예약 바로가기'
+    },
+    {
+      badge: val + ' 전담 안내 패키지',
+      title: '[' + shortText(val, 14) + '] 전용 안내 패키지',
+      guidance: '▶ 맞춤 안내 : ' + val + ' 선택 고객 전용으로 준비한 요약 자료와 전담 안내 바로가기를 제공합니다.',
+      bodyLead: '#{이름}님! 「' + val + '」 선택에 맞춰 준비한 전용 요약 자료와 바로 확인 가능한 안내 링크를 보내드립니다.',
+      btn1: shortText(val, 8) + ' 자료 확인',
+      btn2: '전담 담당자 연결'
+    }
+  ];
+  const angle = slotAngles[safeIdx % slotAngles.length];
+
+  const sanitizeFiller = txt => cleanText(txt || '')
+    .replace(/물음에\s*맞춰\s*필요한\s*핵심\s*얘기만\s*맞췄어요\.?/g, '')
+    .replace(/에\s*맞춰\s*꼭\s*필요한\s*핵심\s*이야기만\s*담았어요\.?/g, '')
+    .trim();
+
+  let step4Headline = hasPerOptBranch && imgCopy2.headline
+    ? cleanText(imgCopy2.headline)
+    : angle.title;
+  let step4Badge = hasPerOptBranch && imgCopy2.badge
+    ? cleanText(imgCopy2.badge)
+    : angle.badge;
+  let step4Body = hasPerOptBranch && b2.body_text_400chars
+    ? sanitizeFiller(b2.body_text_400chars)
+    : angle.bodyLead;
+  let step4Buttons = hasPerOptBranch && Array.isArray(b2.buttons) && b2.buttons.length
+    ? b2.buttons.slice(0, 2)
+    : [{ name: sched.hasVideo ? ('▶ ' + shortText(val, 8) + ' 영상 바로 보기') : angle.btn1 }, { name: angle.btn2 }];
+
+  const proButtons = sched.hasVideo
+    ? [
+        { name: shortText(val, 8) + ' 가이드(카드형) 보기' },
+        { name: '인터뷰 영상 바로 보기' },
+        { name: channelName.length <= 8 ? (channelName + ' 일정 확인') : '신청 상세 확인' }
+      ]
+    : [
+        { name: shortText(val, 8) + ' 가이드(카드형) 보기' },
+        { name: angle.btn2 }
+      ];
+
+  return {
+    optIdx: safeIdx,
+    answerText: ans,
+    sheetVal: val,
+    step3Title: angle.title,
+    step3Guidance: angle.guidance,
+    step4Badge: step4Badge,
+    step4Headline: step4Headline,
+    step4Body: step4Body,
+    step4Buttons: step4Buttons,
+    proButtons: proButtons,
+    fallbackStrings: b2.sheet_fallback_strings || {}
+  };
+}
+
 function renderRemotePanel() {
   const step = STATE.simStep;
-  const s1Bar = $('#remote-step1-bar');
+  const panel = $('#sim-remote-panel');
   const s2Bar = $('#remote-step2-bar');
   const brBar = $('#remote-branch-bar');
-  if (s1Bar) s1Bar.hidden = (step !== 1);
+  const sumEl = $('#remote-branch-summary');
+
+  // Step 1: 투머치 토글 제거 -> 리모컨 패널 깔끔하게 숨김
+  if (panel) panel.hidden = (step === 1);
   if (s2Bar) s2Bar.hidden = (step !== 2);
   if (brBar) brBar.hidden = (step < 3);
 
   const pillWrap = $('#ext-branch-pills');
   if (pillWrap && step >= 3) {
-    // 내부 #태그 코드 대신 실제 고객이 고른 자연어 설문 보기 텍스트만 표시
+    const curOpt = STATE.mappedOpts[STATE.selectedOptIdx] || STATE.mappedOpts[0];
     pillWrap.innerHTML = STATE.mappedOpts.map((m, idx) =>
       '<button type="button" class="remote-branch-btn' + (STATE.selectedOptIdx === idx ? ' on' : '') + '" data-ext-opt="' + idx + '">' +
-        '"' + esc(shortText(m.answerText, 20)) + '"' +
+        '「' + esc(shortText(m.answerText, 20)) + '」' +
       '</button>'
     ).join('');
+    if (sumEl && curOpt) {
+      sumEl.textContent = '✨ 방금 고른 「' + shortText(curOpt.answerText, 18) + '」 고객에게만 발송되는 전용 맞춤 카톡입니다';
+    }
     $$('[data-ext-opt]', pillWrap).forEach(btn => {
       btn.onclick = () => {
         switchToManualMode();
+        STATE.rescueSimMode = false;
+        syncRescueButtonUI();
         STATE.s2Picked = true;
         syncSelectedOptionState(Number(btn.dataset.extOpt));
         renderStep2Survey();
-        renderKakaoStep3();
+        renderKakaoStep3(true);
         renderKakaoStep4(true);
-        renderKakaoStep5();
+        renderKakaoStep5(true);
         renderRemotePanel();
       };
     });
   }
+}
+
+function buildOfficialAlimtalkCardHtml(opts) {
+  opts = opts || {};
+  const isPro = !!opts.isPro;
+  const focusCls = opts.withFocusAnim ? ' bubble-focus-swap' : '';
+  const channelName = opts.channelName || '대표님 채널';
+  const logoBase64 = opts.logoBase64 || null;
+  const titleHtml = opts.titleHtml || '';
+  const bodyHtml = opts.bodyHtml || '';
+  const buttons = Array.isArray(opts.buttons) ? opts.buttons : [];
+
+  const bannerHtml = isPro
+    ? '<div class="kk-alimtalk-pro-banner">' +
+        '<div class="kk-pro-lockup-logo">' +
+          (logoBase64 ? ('<img src="' + logoBase64 + '" alt="로고">') : esc(channelName.trim().charAt(0) || 'P')) +
+        '</div>' +
+        '<div class="kk-pro-lockup-meta">' +
+          '<div class="kk-pro-lockup-name">' + esc(shortText(channelName, 16)) + '</div>' +
+          '<div class="kk-pro-lockup-sub">Pro 공식 브랜드 맞춤 알림톡</div>' +
+        '</div>' +
+      '</div>'
+    : '<div class="kk-alimtalk-public-banner">' +
+        '<div class="kk-public-banner-copy">신청해 주셔서 감사합니다.<span class="kk-public-banner-sub">고마워톡 공식 접수 안내</span></div>' +
+        '<svg width="42" height="34" viewBox="0 0 42 34" fill="none" aria-hidden="true">' +
+          '<rect x="3" y="5" width="36" height="24" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>' +
+          '<path d="M5 8L21 19L37 8" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<circle cx="33" cy="9" r="6" fill="#FEE500" stroke="#FFFFFF" stroke-width="1.5"/>' +
+          '<path d="M30.5 9L32.2 10.7L35.6 7.3" stroke="#191919" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>' +
+      '</div>';
+
+  const btnListHtml =
+    '<div class="kk-btn-ch-add"><span class="kk-ch-badge-icon">Ch+</span><span>채널 추가</span></div>' +
+    buttons.map(bt => '<div class="kk-btn-mock">' + esc(cleanText(bt.name || '자세히 보기')) + '</div>').join('');
+
+  return '<div class="kk-alimtalk-shell">' +
+    '<span class="kk-kakao-corner-badge" aria-hidden="true">kakao</span>' +
+    '<div class="kk-alimtalk-card' + focusCls + '">' +
+      '<div class="kk-alimtalk-top">' +
+        '<span class="kk-alimtalk-label">알림톡 도착</span>' +
+      '</div>' +
+      bannerHtml +
+      '<div class="kk-card-body">' +
+        (titleHtml ? ('<div class="kk-card-title">' + titleHtml + '</div>') : '') +
+        bodyHtml +
+      '</div>' +
+      '<div class="kk-alimtalk-sys-note">채널 추가하고 이 채널의 마케팅 메시지 등을 카카오톡으로 받기</div>' +
+      '<div class="kk-card-btns">' + btnListHtml + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderRescueSimulationInBody(bodyEl) {
+  if (!bodyEl) return;
+  const { camp, ba, channelName, avatarHtml } = getChannelMeta();
+  const sched = STATE.schedule || resolveCampaignSchedule(camp);
+  const br = buildBranchContentForOption(STATE.selectedOptIdx, camp);
+  const isPro = isProAlimtalkMode();
+
+  const rescueAlimtalkHtml = buildOfficialAlimtalkCardHtml({
+    isPro: isPro,
+    withFocusAnim: true,
+    channelName: channelName,
+    logoBase64: ba.logo_base64,
+    titleHtml: esc('[' + shortText(channelName, 12) + '] 예약 소식 수신 안내'),
+    bodyHtml:
+      '안녕하세요 <span class="kk-var">' + CUSTOMER_NAME + '</span>님!\n' +
+      '📋 안내 정보\n' +
+      '• 신청 항목 : <span class="kk-var">' + esc(br.sheetVal) + '</span>\n' +
+      '• 발송 예정 : 익일 오전 09:00 자동 재발송 (최대 2회)',
+    buttons: isPro
+      ? br.proButtons.slice(0, 2)
+      : [{ name: '신청페이지 바로가기' }]
+  });
+
+  bodyEl.classList.remove('morph-in');
+  try { void bodyEl.offsetWidth; } catch (e) {}
+  bodyEl.classList.add('morph-in');
+
+  bodyEl.innerHTML =
+    '<div class="kk-rescue-sys-pill">① 채널 미추가 감지 · 홍보톡 미도달 포착</div>' +
+    '<div class="kk-msg-row">' +
+      avatarHtml +
+      '<div class="kk-msg-col">' +
+        '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
+        '<div class="kk-bubble-wrap">' +
+          rescueAlimtalkHtml +
+          '<span class="kk-time">즉시 발송</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="kk-date-divider">다음 날 · 익일 오전 09:00 자동 재발송 (최대 2회)</div>' +
+    '<div class="kk-rescue-sys-pill ok">③ 채널 추가 완료 ➔ 본 맞춤 카톡 100% 도달!</div>' +
+    '<div class="kk-msg-row">' +
+      avatarHtml +
+      '<div class="kk-msg-col">' +
+        '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
+        '<div class="kk-bubble-wrap">' +
+          '<div class="kk-friend-card bubble-focus-swap">' +
+            '<div class="kk-friend-banner">' +
+              '<div style="font-size:10px;font-weight:700;opacity:0.86">' + esc(br.step4Badge) + '</div>' +
+              '<div style="font-size:12.5px;font-weight:800;line-height:1.3">' + esc(shortText(br.step4Headline, 30)) + '</div>' +
+            '</div>' +
+            '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
+            '<div class="kk-card-body">' + renderKakaoTextWithVars(br.step4Body, br.fallbackStrings) + '</div>' +
+            '<div class="kk-card-btns">' +
+              br.step4Buttons.slice(0, 2).map(bt => '<div class="kk-btn-mock">' + esc(cleanText(bt.name)) + '</div>').join('') +
+            '</div>' +
+          '</div>' +
+          '<span class="kk-time">오전 9:00</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function syncRescueButtonUI() {
+  const btn = $('#btn-sim-rescue-toggle');
+  if (!btn) return;
+  const on = !!STATE.rescueSimMode;
+  btn.classList.toggle('active', on);
+  btn.textContent = on
+    ? '🔄 원래 시나리오 화면으로 돌아가기 (자동 구제 체험 중)'
+    : '🛡️ 미친추 고객이면 어떻게 되나요? (자동 구제 체험)';
+}
+
+function toggleRescueSimMode(forceState) {
+  switchToManualMode();
+  const next = (typeof forceState === 'boolean') ? forceState : !STATE.rescueSimMode;
+  STATE.rescueSimMode = next;
+  syncRescueButtonUI();
+
+  if (next) {
+    STATE.rescuePrevStep = STATE.simStep;
+    const targetKakaoStep = STATE.simStep >= 3 ? STATE.simStep : 4;
+    STATE.simStep = targetKakaoStep;
+    STATE.s2Picked = true;
+    updateSimChrome();
+    const targetBody = targetKakaoStep === 3 ? $('#kakao-chat-body') : (targetKakaoStep === 5 ? $('#s5-chat-body') : $('#s4-chat-body'));
+    renderRescueSimulationInBody(targetBody);
+    hideCoachmark();
+  } else {
+    const restoreStep = STATE.rescuePrevStep || STATE.simStep || 4;
+    goSimStep(restoreStep, false);
+  }
+  return STATE.rescueSimMode;
 }
 
 function renderStep2Survey() {
@@ -3389,22 +3866,34 @@ function renderStep2Survey() {
 function selectStep2Option(optIdx) {
   STATE.s2Picked = true;
   STATE.s2AgreeChecked = true;
+  STATE.rescueSimMode = false;
+  syncRescueButtonUI();
   syncSelectedOptionState(optIdx);
   renderStep2Survey();
-  renderKakaoStep3();
+  renderKakaoStep3(false);
   renderKakaoStep4(false);
-  renderKakaoStep5();
+  renderKakaoStep5(false);
   renderRemotePanel();
   if (!STATE.simAutoPlay) {
     refreshCoachmark();
   }
 }
 
-function renderKakaoStep3() {
-  const { camp, channelName, avatarHtml } = getChannelMeta();
+function renderKakaoStep3(withFocusAnim) {
+  const bodyEl = $('#kakao-chat-body');
+  if (!bodyEl) return;
+  if (STATE.rescueSimMode && STATE.simStep === 3) {
+    renderRescueSimulationInBody(bodyEl);
+    return;
+  }
+
+  const { camp, ba, channelName, avatarHtml } = getChannelMeta();
   const sched = STATE.schedule || resolveCampaignSchedule(camp);
   const st3 = sched.steps[3];
   syncSelectedOptionState(STATE.selectedOptIdx);
+  const br = buildBranchContentForOption(STATE.selectedOptIdx, camp);
+  const isPro = isProAlimtalkMode();
+
   const t1 = camp.tab1_basic_settings || {};
   const seq = (camp.tab4_interval_messages && Array.isArray(camp.tab4_interval_messages.sequence) && camp.tab4_interval_messages.sequence.length)
     ? camp.tab4_interval_messages.sequence
@@ -3413,12 +3902,32 @@ function renderKakaoStep3() {
   const step1 = seq[0] || DEMO_CAMPAIGN.tab4_interval_messages.sequence[0];
   const b1 = (step1.branches && step1.branches[0]) || {};
   const v1 = b1.variables || {};
-  const s1Title = cleanText(v1['콘텐츠 제목'] || (t1.title_30chars || channelName + ' 접수 확인'));
-  const s1Intro = cleanText(v1['콘텐츠 소개'] || '신청이 정상 접수되었습니다. 아래 버튼에서 첫 안내를 바로 확인하세요.');
-  const s1Btn = (b1.buttons && b1.buttons[0] && b1.buttons[0].name) ? cleanText(b1.buttons[0].name) : '첫 안내 바로 보기';
+  const rawTitle = cleanText(v1['콘텐츠 제목'] || (t1.title_30chars || channelName + ' 접수 확인'));
+  const rawIntro = stripAlimtalkChannelAddCopy(v1['콘텐츠 소개'] || '신청이 정상 접수되었습니다.');
 
-  const bodyEl = $('#kakao-chat-body');
-  if (!bodyEl) return;
+  const bodyHtml = isPro
+    ? '안녕하세요 <span class="kk-var">' + CUSTOMER_NAME + '</span>님!\n' +
+      '📋 안내 정보\n' +
+      '• 신청 항목 : <span class="kk-var">' + esc(br.sheetVal) + '</span>\n' +
+      '• ' + esc(br.step3Guidance)
+    : '안녕하세요 <span class="kk-var">' + CUSTOMER_NAME + '</span>님!\n' +
+      renderKakaoTextWithVars(rawIntro, b1.sheet_fallback_strings) + '\n' +
+      esc(br.step3Guidance);
+
+  const buttons = isPro
+    ? br.proButtons
+    : [{ name: '신청페이지 바로가기' }];
+
+  const cardHtml = buildOfficialAlimtalkCardHtml({
+    isPro: isPro,
+    withFocusAnim: !!withFocusAnim,
+    channelName: channelName,
+    logoBase64: ba.logo_base64,
+    titleHtml: esc(isPro ? br.step3Title : (rawTitle + ' · ' + shortText(br.sheetVal, 10))),
+    bodyHtml: bodyHtml,
+    buttons: buttons
+  });
+
   bodyEl.innerHTML =
     '<div class="kk-date-divider">' + esc(st3.dateLabel) + '</div>' +
     '<div class="kk-msg-row">' +
@@ -3426,18 +3935,7 @@ function renderKakaoStep3() {
       '<div class="kk-msg-col">' +
         '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
         '<div class="kk-bubble-wrap">' +
-          '<div class="kk-alimtalk-card">' +
-            '<div class="kk-alimtalk-top">' +
-              '<span class="kk-alimtalk-label">💬 알림톡 도착</span>' +
-              '<span class="kk-ch-add-pill">+ 채널 추가</span>' +
-            '</div>' +
-            '<div class="kk-card-body">' +
-              '<div class="kk-card-title">' + esc(s1Title) + '</div>' +
-              '안녕하세요 <span class="kk-var">' + CUSTOMER_NAME + '</span>님!\n' +
-              renderKakaoTextWithVars(s1Intro, b1.sheet_fallback_strings) +
-            '</div>' +
-            '<div class="kk-card-btns"><div class="kk-btn-mock">' + esc(s1Btn) + '</div></div>' +
-          '</div>' +
+          cardHtml +
           '<span class="kk-time">' + esc(st3.timeLabel) + '</span>' +
         '</div>' +
       '</div>' +
@@ -3445,10 +3943,18 @@ function renderKakaoStep3() {
 }
 
 function renderKakaoStep4(withMorph) {
+  const bodyEl = $('#s4-chat-body');
+  if (!bodyEl) return;
+  if (STATE.rescueSimMode && STATE.simStep === 4) {
+    renderRescueSimulationInBody(bodyEl);
+    return;
+  }
+
   const { camp, channelName, avatarHtml } = getChannelMeta();
   const sched = STATE.schedule || resolveCampaignSchedule(camp);
   const st4 = sched.steps[4];
-  const cur = syncSelectedOptionState(STATE.selectedOptIdx);
+  syncSelectedOptionState(STATE.selectedOptIdx);
+  const br = buildBranchContentForOption(STATE.selectedOptIdx, camp);
 
   const seq = (camp.tab4_interval_messages && Array.isArray(camp.tab4_interval_messages.sequence) && camp.tab4_interval_messages.sequence.length)
     ? camp.tab4_interval_messages.sequence
@@ -3456,32 +3962,23 @@ function renderKakaoStep4(withMorph) {
   const step2 = seq[1] || DEMO_CAMPAIGN.tab4_interval_messages.sequence[1];
   const branches = (Array.isArray(step2.branches) && step2.branches.length) ? step2.branches : [DEMO_CAMPAIGN.tab4_interval_messages.sequence[1].branches[0]];
   const b2 = branches[Math.min(STATE.selectedOptIdx, branches.length - 1)] || branches[0];
-  const imgCopy2 = b2.image_copy || {};
   const media2 = b2.media_preview || step2.media_preview || null;
   const isYt2 = !!(sched.hasVideo || (media2 && media2.type === 'YOUTUBE'));
 
-  const s2RawBody = cleanText(b2.body_text_400chars || (sched.type === 'MONTHLY'
-    ? '#{이름}님, 이번 달 정기 소식이 도착했습니다. #{@고객진단.유형} 맞춤 핵심 내용을 확인해 보세요.'
-    : '#{이름}님! 선택하신 #{@고객진단.유형} 맞춤 핵심 안내를 보내드립니다.'));
-  const hasVarInBody = /#\{@[^}]+\}/.test(s2RawBody);
-  const s2Body = hasVarInBody ? s2RawBody : (cur.sheetVal + ' 맞춤 안내 — ' + s2RawBody);
-  const s2Btns = (Array.isArray(b2.buttons) && b2.buttons.length)
-    ? b2.buttons.slice(0, 2)
-    : [{ name: isYt2 ? '▶ 유튜브에서 영상 바로 보기' : '맞춤 가이드 보기' }];
+  const s2Btns = br.step4Buttons;
+  const focusCls = withMorph ? ' bubble-focus-swap' : '';
 
   const topVisualHtml = isYt2
     ? '<div class="kk-yt-thumb">' +
         '<div class="yt-top-row"><span class="yt-badge">▶ YOUTUBE</span><span class="yt-dur">' + esc((media2 && media2.duration) || '04:32') + '</span></div>' +
         '<div class="yt-play-center">▶</div>' +
-        '<div class="yt-caption">' + esc(shortText((media2 && media2.title) || (sched.type === 'MONTHLY' ? ('[월간 1호 인터뷰] ' + channelName) : (imgCopy2.headline || channelName + ' 인터뷰 영상')), 28)) + '</div>' +
+        '<div class="yt-caption">' + esc(shortText(br.step4Headline, 28)) + '</div>' +
       '</div>'
     : '<div class="kk-friend-banner">' +
-        '<div style="font-size:10px;font-weight:700;opacity:0.86">' + esc(cleanText(imgCopy2.badge || channelName)) + '</div>' +
-        '<div style="font-size:13px;font-weight:800;line-height:1.3">' + esc(shortText(imgCopy2.headline || (cur.sheetVal + ' 핵심 안내'), 32)) + '</div>' +
+        '<div style="font-size:10px;font-weight:700;opacity:0.86">' + esc(br.step4Badge) + '</div>' +
+        '<div style="font-size:13px;font-weight:800;line-height:1.3">' + esc(shortText(br.step4Headline, 32)) + '</div>' +
       '</div>';
 
-  const bodyEl = $('#s4-chat-body');
-  if (!bodyEl) return;
   if (withMorph) {
     bodyEl.classList.remove('morph-in');
     try { void bodyEl.offsetWidth; } catch (e) {}
@@ -3494,11 +3991,11 @@ function renderKakaoStep4(withMorph) {
       '<div class="kk-msg-col">' +
         '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
         '<div class="kk-bubble-wrap">' +
-          '<div class="kk-friend-card">' +
+          '<div class="kk-friend-card' + focusCls + '">' +
             topVisualHtml +
             '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
             '<div class="kk-card-body">' +
-              renderKakaoTextWithVars(s2Body, b2.sheet_fallback_strings) +
+              renderKakaoTextWithVars(br.step4Body, br.fallbackStrings) +
             '</div>' +
             '<div class="kk-card-btns">' +
               s2Btns.map(bt => {
@@ -3514,11 +4011,19 @@ function renderKakaoStep4(withMorph) {
     '</div>';
 }
 
-function renderKakaoStep5() {
+function renderKakaoStep5(withMorph) {
+  const bodyEl = $('#s5-chat-body');
+  if (!bodyEl) return;
+  if (STATE.rescueSimMode && STATE.simStep === 5) {
+    renderRescueSimulationInBody(bodyEl);
+    return;
+  }
+
   const { camp, channelName, avatarHtml } = getChannelMeta();
   const sched = STATE.schedule || resolveCampaignSchedule(camp);
   const st5 = sched.steps[5];
   const cur = syncSelectedOptionState(STATE.selectedOptIdx);
+  const br = buildBranchContentForOption(STATE.selectedOptIdx, camp);
   const seq = (camp.tab4_interval_messages && Array.isArray(camp.tab4_interval_messages.sequence) && camp.tab4_interval_messages.sequence.length)
     ? camp.tab4_interval_messages.sequence
     : DEMO_CAMPAIGN.tab4_interval_messages.sequence;
@@ -3533,24 +4038,22 @@ function renderKakaoStep5() {
       ? step3.cards_800x600
       : DEMO_CAMPAIGN.tab4_interval_messages.sequence[2].branches[0].cards_800x600);
 
-  const bodyEl = $('#s5-chat-body');
-  if (!bodyEl) return;
-
   const t5List = Array.isArray(camp.tab5_date_messages) ? camp.tab5_date_messages : [];
   const t5First = t5List[0] || null;
   const t5Branch = (t5First && Array.isArray(t5First.branches) && t5First.branches[0]) || {};
+  const focusCls = withMorph ? ' bubble-focus-swap' : '';
 
   let bubbleHtml = '';
   if (st5.isDateReserved && !isYt3) {
-    const resBadge = st5.reserveMode === 'RECURRING' ? '정기 예약 발송' : '지정 날짜 정각 예약';
+    const resBadge = '지정 날짜 정각 예약';
     const resTitle = cleanText((t5First && t5First.title) || st5.messageHint || (channelName + ' 예약 안내'));
-    const resBody = cleanText(t5Branch.body_text_400chars || ('#{이름}님, 안내드린 일정이 다가왔습니다.\n' + (st5.messageHint || '자세한 내용은 아래 버튼을 눌러 확인해 주세요.')));
+    const resBody = cleanText(t5Branch.body_text_400chars || ('#{이름}님, 안내드린 일정이 다가왔습니다.\n' + br.step3Guidance));
     const resBtn = (t5Branch.buttons && t5Branch.buttons[0] && t5Branch.buttons[0].name)
       ? cleanText(t5Branch.buttons[0].name)
-      : '상세 안내 바로 보기';
+      : br.step4Buttons[0].name;
     bubbleHtml =
       '<div class="kk-bubble-wrap">' +
-        '<div class="kk-friend-card">' +
+        '<div class="kk-friend-card' + focusCls + '">' +
           '<div class="kk-friend-banner">' +
             '<div style="font-size:10px;font-weight:700;opacity:0.86">' + esc(resBadge + ' · ' + st5.timeLabel) + '</div>' +
             '<div style="font-size:13px;font-weight:800;line-height:1.3">' + esc(shortText(resTitle, 30)) + '</div>' +
@@ -3564,11 +4067,11 @@ function renderKakaoStep5() {
   } else if (isYt3) {
     const ytTitle = (media3 && media3.title) || (st5.isDateReserved ? (st5.messageHint || channelName + ' 예약 영상') : (sched.type === 'MONTHLY' ? ('[월간 2호 인터뷰] ' + channelName) : (channelName + ' 후속 인터뷰 영상')));
     const ytDur = (media3 && media3.duration) || '06:18';
-    const ytBody = cleanText((st5.isDateReserved && t5Branch.body_text_400chars) || b3.body_text_400chars || ('#{이름}님, ' + (sched.type === 'MONTHLY' ? '두 번째 월간 인터뷰 영상이 도착했습니다.' : '후속 영상 콘텐츠가 공개되었습니다.') + ' 아래 버튼을 눌러 유튜브에서 바로 시청해 보세요.'));
+    const ytBody = cleanText((st5.isDateReserved && t5Branch.body_text_400chars) || b3.body_text_400chars || ('#{이름}님, 「' + br.sheetVal + '」 후속 영상이 공개되었습니다. 아래 버튼을 눌러 유튜브에서 바로 시청해 보세요.'));
     const ytBtn = (b3.buttons && b3.buttons[0] && b3.buttons[0].name) ? cleanText(b3.buttons[0].name) : '▶ 유튜브에서 영상 바로 보기';
     bubbleHtml =
       '<div class="kk-bubble-wrap">' +
-        '<div class="kk-friend-card">' +
+        '<div class="kk-friend-card' + focusCls + '">' +
           '<div class="kk-yt-thumb">' +
             '<div class="yt-top-row"><span class="yt-badge">▶ YOUTUBE</span><span class="yt-dur">' + esc(ytDur) + '</span></div>' +
             '<div class="yt-play-center">▶</div>' +
@@ -3584,9 +4087,9 @@ function renderKakaoStep5() {
     bubbleHtml =
       '<div class="kk-carousel-track">' +
         cards3.slice(0, 6).map((c, ci) =>
-          '<div class="kk-carousel-card">' +
+          '<div class="kk-carousel-card' + focusCls + '">' +
             '<div class="kk-carousel-thumb">' +
-              '<span style="font-size:10px;font-weight:700;opacity:0.86">' + esc(shortText(channelName, 14)) + '</span>' +
+              '<span style="font-size:10px;font-weight:700;opacity:0.86">' + esc(shortText(cur.sheetVal, 14)) + '</span>' +
               '<span style="font-size:12px;font-weight:800;line-height:1.25">' + esc(shortText(c.header_20chars || (cur.sheetVal + ' 안내'), 18)) + '</span>' +
             '</div>' +
             '<div class="kk-carousel-body">' +
@@ -3610,18 +4113,6 @@ function renderKakaoStep5() {
     '</div>';
 }
 
-function renderExtraFeatures() {
-  const { ba, channelName } = getChannelMeta();
-  const brandLabelEl = $('#extra-pro-brand-label');
-  const logoSlotEl = $('#extra-pro-logo-slot');
-  if (brandLabelEl) brandLabelEl.textContent = shortText(channelName, 14) + ' 공식 안내';
-  if (logoSlotEl) {
-    logoSlotEl.innerHTML = ba.logo_base64
-      ? '<img src="' + ba.logo_base64 + '" style="height:15px;vertical-align:middle;background:#fff;padding:1px 3px;border-radius:3px" alt="로고">'
-      : '✦';
-  }
-}
-
 /* ── 깜빡이는 손가락 코치마크 (👆 + 동심원 파동 — 폰 내부 신청/설문 또는 폰 외부 [다음 장면]만 지목) ── */
 function hideCoachmark() {
   const cm = $('#sim-coachmark');
@@ -3632,7 +4123,7 @@ function hideCoachmark() {
 function getCoachmarkTargetForCurrentStep() {
   const step = STATE.simStep;
   if (step === 1) {
-    return STATE.s1RevisitMode ? $('#btn-s1-cancel') : $('#btn-s1-apply');
+    return $('#btn-s1-apply');
   }
   if (step === 2) {
     if (!STATE.s2Picked) return $('[data-s2-opt="0"]', $('#s2-options'));
@@ -3791,8 +4282,6 @@ function scheduleAutoAdvance() {
   }
 
   if (step === 1) {
-    STATE.s1RevisitMode = false;
-    applyStep1VisitMode();
     positionCoachmarkOn($('#btn-s1-apply'));
     addSimTimer(() => {
       if (!STATE.simAutoPlay) return;
@@ -3853,24 +4342,83 @@ function startAutoPlayFrom(startStep) {
   STATE.simAutoPlay = true;
   STATE.simManualMode = false;
   STATE.simCompleted = false;
-  STATE.s1RevisitMode = false;
+  STATE.rescueSimMode = false;
+  syncRescueButtonUI();
   STATE.s2Picked = false;
   STATE.s2AgreeChecked = true;
   syncSelectedOptionState(0);
-  applyStep1VisitMode();
   goSimStep(startStep || 1, false);
 }
 
-function applyStep1VisitMode() {
-  const isRev = !!STATE.s1RevisitMode;
-  const newBtn = $('#btn-s1-new');
-  const revBtn = $('#btn-s1-revisit');
-  if (newBtn) newBtn.classList.toggle('on', !isRev);
-  if (revBtn) revBtn.classList.toggle('on', isRev);
-  const applyEl = $('#btn-s1-apply');
-  const cancelEl = $('#btn-s1-cancel');
-  if (applyEl) applyEl.hidden = isRev;
-  if (cancelEl) cancelEl.hidden = !isRev;
+/* ═══════════════ 등급별(가망고객 / Starter / Pro) 하단 세팅 확정 영역 실시간 분기 ═══════════════ */
+function applyTierBranchUI() {
+  const tier = getEffectiveTier();
+  const planBlock = $('#confirm-plan-block');
+  const starterBadge = $('#starter-tier-badge');
+  const proBadge = $('#pro-partner-badge');
+  const starterUpgradeCard = $('#starter-upgrade-card');
+  const starterUpgradePill = $('#starter-upgrade-pill');
+  const starterUpgradeSub = $('#starter-upgrade-sub');
+  const proQuickRow = $('#pro-quick-action-row');
+  const modeHeading = $('#confirm-mode-heading');
+  const modeRadioStack = $('#mode-radio-stack');
+  const secTitle = $('#confirm-sec-title');
+  const secDesc = $('#confirm-sec-desc');
+  const submitBtn = $('#btn-confirm-submit');
+  const stickyBtn = $('#btn-sticky-go');
+
+  if (tier === 'Pro') {
+    STATE.selectedPlan = 'Pro';
+    if (planBlock) planBlock.hidden = true;
+    if (starterBadge) starterBadge.hidden = true;
+    if (starterUpgradeCard) starterUpgradeCard.hidden = true;
+    if (proBadge) proBadge.hidden = false;
+    if (proQuickRow) proQuickRow.hidden = false;
+    if (modeHeading) modeHeading.hidden = true;
+    if (modeRadioStack) modeRadioStack.hidden = true;
+    if (secTitle) secTitle.innerHTML = '👑 Pro 파트너 전용<br>빠른 세팅 확정 신청';
+    if (secDesc) secDesc.textContent = '나만의 브랜드 로고 맞춤 알림톡과 영업일 1일 패스트트랙으로 바로 세팅해 드립니다.';
+    if (submitBtn) submitBtn.textContent = STATE.settingMode === 'EDIT_ONCE' ? '✏️ 1회 수정 요청 후 세팅 확정하기' : '✅ 이대로 세팅 확정하기';
+    if (stickyBtn) stickyBtn.textContent = '👑 Pro 파트너 · 이대로 세팅 확정하기';
+  } else if (tier === 'Starter') {
+    STATE.selectedPlan = STATE.starterUpgradeToPro ? 'Pro' : 'Starter';
+    if (planBlock) planBlock.hidden = true;
+    if (starterBadge) starterBadge.hidden = false;
+    if (proBadge) proBadge.hidden = true;
+    if (proQuickRow) proQuickRow.hidden = true;
+    if (starterUpgradeCard) {
+      starterUpgradeCard.hidden = false;
+      starterUpgradeCard.classList.toggle('active', !!STATE.starterUpgradeToPro);
+    }
+    if (starterUpgradePill) starterUpgradePill.textContent = STATE.starterUpgradeToPro ? '✅ Pro 선택됨' : '업그레이드';
+    if (starterUpgradeSub) {
+      starterUpgradeSub.textContent = STATE.starterUpgradeToPro
+        ? '상단 핸드폰 화면에 내 로고·전용 버튼 맞춤 알림톡이 적용되었습니다'
+        : '누르면 상단 핸드폰 화면이 내 로고 맞춤 알림톡으로 바로 바뀝니다';
+    }
+    if (modeHeading) { modeHeading.hidden = false; modeHeading.textContent = '세팅 방식을 선택해 주세요'; }
+    if (modeRadioStack) modeRadioStack.hidden = false;
+    if (secTitle) secTitle.innerHTML = '⭐ Starter 파트너<br>세팅 확정 신청';
+    if (secDesc) secDesc.textContent = '기존 Starter 플랜 그대로 진행하거나, 원하시면 Pro 맞춤 알림톡으로 바로 업그레이드할 수 있어요.';
+    if (submitBtn) submitBtn.textContent = STATE.starterUpgradeToPro ? '👑 Pro 업그레이드 + 세팅 확정 신청하기' : '✅ Starter 파트너 세팅 확정 신청하기';
+    if (stickyBtn) stickyBtn.textContent = '⭐ Starter 파트너 세팅 확정 신청하기';
+  } else {
+    // 가망고객
+    if (planBlock) planBlock.hidden = false;
+    if (starterBadge) starterBadge.hidden = true;
+    if (proBadge) proBadge.hidden = true;
+    if (starterUpgradeCard) starterUpgradeCard.hidden = true;
+    if (proQuickRow) proQuickRow.hidden = true;
+    if (modeHeading) { modeHeading.hidden = false; modeHeading.textContent = '2. 세팅 방식을 선택해 주세요'; }
+    if (modeRadioStack) modeRadioStack.hidden = false;
+    if (secTitle) secTitle.innerHTML = '채팅 기다림 없이 30초 만에<br>세팅 확정 신청하기';
+    if (secDesc) secDesc.textContent = '요금제와 세팅 방식을 골라 제출하면 담당 전문가가 바로 시작합니다.';
+    if (submitBtn) submitBtn.textContent = '✅ 세팅 확정 신청하기';
+    if (stickyBtn) stickyBtn.textContent = '🚀 이 설계안 그대로 내 채널에 세팅 신청하기';
+  }
+
+  $$('[data-plan]').forEach(b => b.classList.toggle('selected', b.dataset.plan === STATE.selectedPlan));
+  return tier;
 }
 
 function renderCompactSummaryCard() {
@@ -3974,7 +4522,6 @@ function renderProposal() {
   renderStep1Hero();
   $('#lp-hero-title').textContent = shortText(heroBlock.title || (t1.thumbnail_500x280 && t1.thumbnail_500x280.headline) || (channelName + ' 맞춤 신청'), 40);
   $('#btn-s1-apply').textContent = cleanText(t1.apply_btn_text || '신청하기');
-  $('#btn-s1-cancel').textContent = cleanText(t1.cancel_btn_text || '소식 그만 받기 (신청취소)');
 
   const pts = [];
   if (heroBlock.spec_1) pts.push(heroBlock.spec_1);
@@ -4000,14 +4547,16 @@ function renderProposal() {
   STATE.s2AgreeChecked = true;
   syncSelectedOptionState(0);
 
+  // 등급별 하단 세팅 확정 영역 및 Pro 맞춤 알림톡 모드 우선 동기화
+  applyTierBranchUI();
+
   // 모든 스크린 사전 렌더링 (초기 로드 즉시 DOM 완성 -> 부드러운 전환 & 테스트 호환)
   renderStep2Survey();
-  renderKakaoStep3();
+  renderKakaoStep3(false);
   renderKakaoStep4(false);
-  renderKakaoStep5();
-  renderExtraFeatures();
+  renderKakaoStep5(false);
   renderCompactSummaryCard();
-  applyStep1VisitMode();
+  syncRescueButtonUI();
 
   // 이미 확정된 설계안 잠금 안내 배너
   if (STATE.proposalMeta.confirmStatus === '결제·세팅요청' || STATE.proposalMeta.confirmStatus === '세팅완료') {
@@ -4056,27 +4605,17 @@ function bindSimulatorEvents() {
     startAutoPlayFrom(1);
   };
 
-  // 폰 외부 리모컨: Step 1 신규 vs 재방문(취소) 토글
-  $('#btn-s1-new').onclick = () => {
-    switchToManualMode();
-    STATE.s1RevisitMode = false;
-    applyStep1VisitMode();
-    refreshCoachmark();
-  };
-  $('#btn-s1-revisit').onclick = () => {
-    switchToManualMode();
-    STATE.s1RevisitMode = true;
-    applyStep1VisitMode();
-    refreshCoachmark();
-  };
+  // Step 1 신청하기 버튼
   $('#btn-s1-apply').onclick = () => {
     switchToManualMode();
     goSimStep(2, false);
   };
-  $('#btn-s1-cancel').onclick = () => {
-    switchToManualMode();
-    showToast('🟡 기존 신청 고객이 재방문 시 노란색 [신청취소] 버튼이 자동 노출됩니다.');
-  };
+
+  // 미친추 2회 자동 구제 체험 토글 버튼
+  const rescueBtn = $('#btn-sim-rescue-toggle');
+  if (rescueBtn) {
+    rescueBtn.onclick = () => toggleRescueSimMode();
+  }
 
   // Step 2 순정 신청폼 닫기/취소/약관동의/제출하기
   const backToStep1 = () => {
@@ -4135,19 +4674,10 @@ function bindSimulatorEvents() {
       renderKakaoStep5();
     }
     const nextStep = (STATE.simStep === 3 && sched.skipStep4) ? 5 : (STATE.simStep + 1);
+    STATE.rescueSimMode = false;
+    syncRescueButtonUI();
     goSimStep(nextStep, nextStep === 4 || nextStep === 5);
   };
-
-  // 독립 부가 기능 섹션: Pro 플랜 확정 바로가기
-  const extraProBtn = $('#btn-extra-pick-pro');
-  if (extraProBtn) {
-    extraProBtn.onclick = () => {
-      STATE.selectedPlan = 'Pro';
-      $$('[data-plan]').forEach(b => b.classList.toggle('selected', b.dataset.plan === 'Pro'));
-      const target = $('#sec-confirm');
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-  }
 }
 
 /* ═══════════════ 4. IntersectionObserver 순차 등장 & 내비 동기화 ═══════════════ */
@@ -4176,7 +4706,7 @@ function setupScrollObservers() {
     ctaObs.observe(confirmEl);
   }
 
-  const sectionIds = ['sec-cover', 'sec-sim', 'sec-extra-features', 'sec-summary', 'sec-4', 'sec-confirm'];
+  const sectionIds = ['sec-cover', 'sec-sim', 'sec-summary', 'sec-4', 'sec-confirm'];
   if ('IntersectionObserver' in window) {
     const navObs = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -4194,6 +4724,24 @@ function setupScrollObservers() {
 }
 
 /* ═══════════════ 5. 무인 확정 폼 (confirm_proposal 100% 보존 — 절대 변경 없음) ═══════════════ */
+function setSettingModeUI(nextMode) {
+  STATE.settingMode = nextMode === 'EDIT_ONCE' ? 'EDIT_ONCE' : 'AS_IS';
+  const asisRadio = document.querySelector('input[name="setting_mode"][value="AS_IS"]');
+  const editRadio = document.querySelector('input[name="setting_mode"][value="EDIT_ONCE"]');
+  if (asisRadio) asisRadio.checked = (STATE.settingMode === 'AS_IS');
+  if (editRadio) editRadio.checked = (STATE.settingMode === 'EDIT_ONCE');
+  if ($('#mode-card-asis')) $('#mode-card-asis').classList.toggle('selected', STATE.settingMode === 'AS_IS');
+  if ($('#mode-card-edit')) $('#mode-card-edit').classList.toggle('selected', STATE.settingMode === 'EDIT_ONCE');
+  if ($('#btn-pro-asis')) $('#btn-pro-asis').classList.toggle('active', STATE.settingMode === 'AS_IS');
+  if ($('#btn-pro-edit')) $('#btn-pro-edit').classList.toggle('active', STATE.settingMode === 'EDIT_ONCE');
+  const memoWrap = $('#memo-box-wrap');
+  if (memoWrap) memoWrap.hidden = (STATE.settingMode !== 'EDIT_ONCE');
+  if (STATE.settingMode === 'EDIT_ONCE' && $('#confirm-memo-input')) $('#confirm-memo-input').focus();
+  if (getEffectiveTier() === 'Pro' && $('#btn-confirm-submit')) {
+    $('#btn-confirm-submit').textContent = STATE.settingMode === 'EDIT_ONCE' ? '✏️ 1회 수정 요청 후 세팅 확정하기' : '✅ 이대로 세팅 확정하기';
+  }
+}
+
 function bindConfirmFormEvents() {
   $$('[data-plan]').forEach(btn => {
     btn.onclick = () => {
@@ -4202,14 +4750,26 @@ function bindConfirmFormEvents() {
     };
   });
 
+  const starterUpgradeBtn = $('#starter-upgrade-card');
+  if (starterUpgradeBtn) {
+    starterUpgradeBtn.onclick = () => {
+      STATE.starterUpgradeToPro = !STATE.starterUpgradeToPro;
+      applyTierBranchUI();
+      renderKakaoStep3(true);
+      showToast(STATE.starterUpgradeToPro
+        ? '👑 상단 핸드폰에 Pro 내 로고 맞춤 알림톡이 미리 적용되었어요!'
+        : '⭐ 기존 Starter 공용 알림톡으로 돌아왔어요.');
+    };
+  }
+
+  const proAsisBtn = $('#btn-pro-asis');
+  const proEditBtn = $('#btn-pro-edit');
+  if (proAsisBtn) proAsisBtn.onclick = () => setSettingModeUI('AS_IS');
+  if (proEditBtn) proEditBtn.onclick = () => setSettingModeUI('EDIT_ONCE');
+
   $$('input[name="setting_mode"]').forEach(radio => {
     radio.addEventListener('change', () => {
-      STATE.settingMode = radio.value === 'EDIT_ONCE' ? 'EDIT_ONCE' : 'AS_IS';
-      $('#mode-card-asis').classList.toggle('selected', STATE.settingMode === 'AS_IS');
-      $('#mode-card-edit').classList.toggle('selected', STATE.settingMode === 'EDIT_ONCE');
-      const memoWrap = $('#memo-box-wrap');
-      memoWrap.hidden = (STATE.settingMode !== 'EDIT_ONCE');
-      if (STATE.settingMode === 'EDIT_ONCE') $('#confirm-memo-input').focus();
+      setSettingModeUI(radio.value === 'EDIT_ONCE' ? 'EDIT_ONCE' : 'AS_IS');
     });
   });
 
@@ -4383,19 +4943,50 @@ function switchFloatingTab(tabName) {
 
 function answerProposalManualLocal(q) {
   const s = String(q || '');
+  if (/공용\s*알림톡|내\s*로고|맞춤\s*알림톡/.test(s)) {
+    return '두 알림톡 모두 상단 노란색 [알림톡 도착] 바와 우상단 원형 kakao 배지, 하단 노란색 [Ch+ 채널 추가] 공식 틀은 동일합니다. 공용 알림톡(Starter)은 기본 감사 배너와 [신청페이지 바로가기] 공용 버튼 1개가 제공되며, Pro 나만 쓰는 맞춤 알림톡은 대표님 브랜드 로고 배너 고정 + 내 업종 전용 항목 포맷 + 캠페인 목적에 맞춘 전용 다중 버튼(2~3개)을 자유롭게 구성할 수 있습니다.';
+  }
+  if (/문자|일반\s*카톡|무엇이\s*다른/.test(s)) {
+    return '일반 문자·수동 카톡은 매번 명단을 추려 수동 발송해야 하고 스팸으로 무시되기 쉽습니다. 고마워톡은 카카오 1초 실명 수집 ➔ 설문 답변별 자동 분기 ➔ 신청 즉시 알림톡 & 며칠 뒤 자동 발송 ➔ 미친추 2회 자동 구제까지 365일 무인으로 돌아갑니다.';
+  }
   if (/알림톡|친구톡|차이|광고/.test(s)) {
-    return '알림톡은 신청 접수 확인·일정 안내 등 정보성 메시지를 채널 미추가 고객에게도 100% 도달시키는 용도이고, 친구톡(브랜드 메시지)은 채널 추가 고객에게 이미지·카드형 혜택·홍보 소식을 보낼 때 사용합니다.';
+    return '알림톡은 신청 접수 확인·일정 안내 등 정보성 메시지를 야간 포함 24시간 언제든 채널 미추가 고객에게도 100% 도달시키는 용도이고, 친구톡(브랜드 메시지)은 채널 추가 고객에게 이미지·카드형 혜택·홍보 소식을 보낼 때 사용합니다(카카오 정책상 홍보·소식 카톡은 오후 8시~오전 8시 발송 제한).';
   }
   if (/구글\s*폼|google\s*form|시트|연동/.test(s)) {
     return '네! 고마워톡은 카카오 1초 자체 신청폼뿐 아니라 구글 폼·구글 시트 연동을 통해 기존 신청 응답자도 자동으로 카톡 시나리오에 연결할 수 있어요. 세팅 시 원하시는 연동 방식을 알려주시면 함께 반영해 드립니다.';
   }
   if (/마케팅|수신\s*동의|m형|M형|미친추/.test(s)) {
-    return '고마워톡은 카카오 규정상 광고성 메시지(M형·친구톡)를 안전하게 보낼 수 있도록 신청 단계에서 마케팅 수신동의 팝업을 기본 지원하며, 채널 미추가 고객도 안내 알림톡 + 익일 09시 재발송 2회 루프로 자연스럽게 채널 추가를 유도합니다.';
+    return '고마워톡은 카카오 규정상 광고성 메시지(M형·친구톡)를 안전하게 보낼 수 있도록 신청 단계에서 마케팅 수신동의 팝업을 기본 지원하며, 채널 미추가 고객도 즉시 안내 알림톡 + 익일 오전 09:00 자동 재발송(최대 2회)으로 도달률을 지켜줍니다.';
   }
   if (/starter|pro|요금|가격|비교|차이|플랜/.test(s)) {
-    return 'Starter(연 24만 원)는 매월 2회 제작·영업일 3일 이내 세팅·공용 승인 알림톡을 지원하며, Pro(연 40만 원)는 매월 10회 제작·영업일 1일 패스트트랙·대표님 브랜드 로고 맞춤 알림톡과 발송 단가 할인까지 포함됩니다.';
+    return 'Starter(연 24만 원)는 매월 2회 제작·영업일 3일 이내 세팅·공용 승인 알림톡을 지원하며, Pro(연 40만 원)는 매월 10회 제작·영업일 1일 패스트트랙·대표님 브랜드 로고 배너 & 전용 다중 버튼 맞춤 알림톡과 발송 단가 할인까지 포함됩니다.';
   }
-  return '고마워톡은 랜딩 신청부터 설문 자동 태그·시트 분류, 신청 즉시 알림톡, D+1/D+3 맞춤 분기 발송까지 전 과정을 자동화합니다. 이 설계안에서 바꾸고 싶은 문구·날짜·조건이 있다면 아래 [✏️ 1회 수정 메모에 담기]를 눌러 바로 전달해 주세요!';
+  return '고마워톡은 랜딩 신청부터 설문 자동 태그·시트 분류, 신청 즉시 알림톡, 며칠 뒤 맞춤 분기 발송까지 전 과정을 자동화합니다. 이 설계안에서 바꾸고 싶은 문구·날짜·조건이 있다면 아래 [✏️ 1회 수정 메모에 담기]를 눌러 바로 전달해 주세요!';
+}
+
+function buildProAlimtalkMiniCompareHtml() {
+  const { channelName } = getChannelMeta();
+  return '<div class="qa-pro-cmp-card">' +
+    '<div class="qa-pro-mini">' +
+      '<div class="qa-pro-mini-top"><span>알림톡 도착</span><span>kakao</span></div>' +
+      '<div class="qa-pro-mini-body">' +
+        '<b>공용 알림톡 (Starter)</b>' +
+        '<span>• 기본 감사 일러스트 배너</span>' +
+        '<div class="qa-pro-mini-btn ch">Ch+ 채널 추가</div>' +
+        '<div class="qa-pro-mini-btn">신청페이지 바로가기</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="qa-pro-mini pro">' +
+      '<div class="qa-pro-mini-top"><span>알림톡 도착</span><span>kakao</span></div>' +
+      '<div class="qa-pro-mini-body">' +
+        '<b>👑 Pro 내 로고 맞춤</b>' +
+        '<span>• <b>' + esc(shortText(channelName, 9)) + '</b> 로고 배너 고정</span>' +
+        '<div class="qa-pro-mini-btn ch">Ch+ 채널 추가</div>' +
+        '<div class="qa-pro-mini-btn">가이드(카드형) 보기</div>' +
+        '<div class="qa-pro-mini-btn">인터뷰 영상 바로 보기</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
 }
 
 function appendToProposalMemo(requestText) {
@@ -4462,8 +5053,10 @@ async function askProposalQA(questionText) {
     } catch (e) {}
   }
 
+  const showProCompareCard = /공용\s*알림톡|내\s*로고|맞춤\s*알림톡|Starter\s*vs\s*Pro/i.test(q);
   const memoLine = shortText(q + ' 반영 요청', 80);
   bEl.innerHTML = '<div>' + esc(ans).replace(/\r?\n/g, '<br>') + '</div>' +
+    (showProCompareCard ? buildProAlimtalkMiniCompareHtml() : '') +
     '<button type="button" class="qa-memo-btn">✏️ 1회 수정 메모에 담기</button>';
   const memoBtn = bEl.querySelector('.qa-memo-btn');
   if (memoBtn) {
@@ -4631,6 +5224,12 @@ window.PROPOSAL = {
   refreshCoachmark,
   startAutoPlayFrom,
   switchToManualMode,
+  toggleRescueSimMode,
+  getEffectiveTier,
+  isProAlimtalkMode,
+  applyTierBranchUI,
+  buildBranchContentForOption,
+  stripAlimtalkChannelAddCopy,
   submitConfirmProposal,
   openFloatingWidget,
   closeFloatingWidget,

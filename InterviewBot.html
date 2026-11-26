@@ -1253,24 +1253,141 @@ button { cursor: pointer; border: none; background: none; }
   outline: none;
 }
 .picker-select:focus { border-color: var(--blue); }
-.rec-freq-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.q5-unlimited-notice {
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  color: #1E3A8A;
+  font-size: 14.5px;
+  font-weight: 800;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+.msg-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 7px 12px;
+  border-radius: 99px;
+  font-size: 13.5px;
+  font-weight: 800;
+  line-height: 1.3;
+  word-break: keep-all;
+}
+.msg-type-badge.info {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1.5px solid #BFDBFE;
+}
+.msg-type-badge.promo {
+  background: #FFFBEB;
+  color: #B45309;
+  border: 1.5px solid #FDE68A;
+}
+.q5-slots-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.q5-slot-card {
+  padding: 16px 14px;
+  border-radius: 16px;
+  background: #F8FAFC;
+  border: 1.5px solid #BFDBFE;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  animation: fadeSlide 0.16s ease;
+}
+.q5-slot-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
 }
-.rec-freq-btn {
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1.5px solid #CBD5E1;
-  background: #FFFFFF;
-  color: #334155;
-  font-size: 16.5px;
+.q5-slot-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--g900);
+}
+.btn-q5-del-slot {
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--red-lt);
+  color: var(--red);
+  font-size: 13px;
   font-weight: 800;
 }
-.rec-freq-btn.active {
-  background: var(--blue);
+.q5-slot-msg-in {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 13px;
+  border-radius: 12px;
+  border: 1.5px solid #94A3B8;
+  background: #FFFFFF;
+  color: var(--g900);
+  font-size: 17px;
+  font-weight: 600;
+  outline: none;
+}
+.q5-slot-msg-in:focus {
   border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.14);
+}
+.q5-slot-night-warn {
+  padding: 12px 13px;
+  border-radius: 13px;
+  background: #FFFBEB;
+  border: 1.5px solid #F59E0B;
+  color: #92400E;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  word-break: keep-all;
+}
+.q5-night-fix-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.btn-q5-night-fix {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--blue);
   color: #FFFFFF;
+  font-size: 13.5px;
+  font-weight: 800;
+}
+.btn-q5-add-slot {
+  width: 100%;
+  min-height: 52px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 1.5px dashed var(--blue);
+  color: var(--blue-dk);
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  transition: all 0.14s ease;
+}
+.btn-q5-add-slot:hover, .btn-q5-add-slot:active {
+  background: var(--blue-lt);
+}
+.q5-max-pill {
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: var(--green-lt);
+  border: 1px solid var(--green-bd);
+  color: #065F46;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
 }
 .picker-summary-pill {
   padding: 10px 13px;
@@ -1936,29 +2053,121 @@ button { cursor: pointer; border: none; background: none; }
 }
 .loading-spinner-wrap {
   position: relative;
-  width: 64px;
-  height: 64px;
-  display: grid;
-  place-items: center;
+  width: 84px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.loading-spinner-ring {
+.loading-motion-stage {
+  position: relative;
+  width: 84px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loading-orbit-ring {
   position: absolute;
-  inset: 0;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
-  border: 5px solid #E2E8F0;
+  border: 3.5px solid #E2E8F0;
   border-top-color: #3182F6;
   border-right-color: #FEE500;
-  animation: spinRing 0.9s linear infinite;
+  animation: spinRing 0.95s cubic-bezier(0.55, 0.25, 0.45, 0.75) infinite;
+}
+.loading-bubble-actor {
+  position: relative;
+  z-index: 2;
+  width: 44px;
+  height: 36px;
+  border-radius: 14px;
+  background: #FEE500;
+  color: #191919;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 8px 18px rgba(250, 204, 21, 0.42);
+  animation: bubbleHop 0.9s ease-in-out infinite;
+}
+.loading-bubble-actor::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  bottom: -5px;
+  width: 10px;
+  height: 10px;
+  background: #FEE500;
+  transform: rotate(35deg);
+  border-radius: 2px;
+}
+.loading-bubble-dot {
+  width: 5.5px;
+  height: 5.5px;
+  border-radius: 50%;
+  background: #191919;
+  animation: dotWave 0.9s ease-in-out infinite;
+}
+.loading-bubble-dot:nth-child(2) { animation-delay: 0.14s; }
+.loading-bubble-dot:nth-child(3) { animation-delay: 0.28s; }
+.loading-pen-badge {
+  position: absolute;
+  right: 3px;
+  bottom: 4px;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #3182F6;
+  color: #FFFFFF;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 10px rgba(49, 130, 246, 0.36);
+  animation: penDraft 0.9s ease-in-out infinite;
 }
 .loading-spinner-icon {
-  font-size: 26px;
-  line-height: 1;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 @keyframes spinRing {
   to { transform: rotate(360deg); }
 }
+@keyframes bubbleHop {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.05); }
+}
+@keyframes dotWave {
+  0%, 100% { transform: translateY(0); opacity: 0.45; }
+  50% { transform: translateY(-3px); opacity: 1; }
+}
+@keyframes penDraft {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(3px, -4px) rotate(-14deg); }
+}
+.loading-subject-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: #EFF6FF;
+  border: 1.5px solid #93C5FD;
+  color: #1D4ED8;
+  font-size: 16.5px;
+  font-weight: 900;
+  line-height: 1.3;
+  max-width: 100%;
+  word-break: keep-all;
+}
 .loading-title {
-  font-size: 21px;
+  font-size: 20.5px;
   font-weight: 900;
   line-height: 1.38;
   color: #0F172A;
@@ -2324,6 +2533,9 @@ button { cursor: pointer; border: none; background: none; }
           <div id="guardrail-alts" style="display:flex;flex-direction:column;gap:8px"></div>
         </div>
 
+        <!-- 4-B) 카카오 메시지 성격 자동 분류 배지 (정보성 알림톡 vs 홍보·소식 카톡 20:00~08:00 안내) -->
+        <div class="msg-type-badge" id="q-msg-type-badge" hidden></div>
+
         <!-- 5) 입력창 상단 우선(Input-First): 스크롤 없이 한눈에 들어오는 18px 답변 입력창 -->
         <div class="answer-composer-card" id="answer-composer-card">
           <div class="composer-top-label" id="composer-top-label" hidden></div>
@@ -2510,13 +2722,22 @@ button { cursor: pointer; border: none; background: none; }
 
 </div>
 
-<!-- ═════════ Part 4: 전면 블러 로딩 오버레이 + 실시간 진행 게이지 바 ═════════ -->
+<!-- ═════════ Part 4 & V2.8: 생동감 있는 모션 로딩 오버레이 + 상호·업종 캡슐 분리 + 실시간 진행 게이지 ═════════ -->
 <div class="global-loading-overlay" id="global-loading-overlay" role="dialog" aria-modal="true" aria-live="polite" hidden>
   <div class="loading-card">
     <div class="loading-spinner-wrap" aria-hidden="true">
-      <div class="loading-spinner-ring"></div>
-      <span class="loading-spinner-icon" id="loading-icon">✨</span>
+      <div class="loading-motion-stage">
+        <div class="loading-orbit-ring"></div>
+        <div class="loading-bubble-actor">
+          <span class="loading-bubble-dot"></span>
+          <span class="loading-bubble-dot"></span>
+          <span class="loading-bubble-dot"></span>
+        </div>
+        <span class="loading-pen-badge" id="loading-pen-badge">✏️</span>
+        <span class="loading-spinner-icon" id="loading-icon">💬</span>
+      </div>
     </div>
+    <div class="loading-subject-badge" id="loading-subject-badge" hidden></div>
     <div class="loading-title" id="loading-title">잠시만 기다려 주세요</div>
     <div class="loading-gauge-wrap">
       <div class="loading-gauge-track">
@@ -2690,8 +2911,8 @@ const ST = {
     enabled: true, preset: '', label: '', days: [], displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
   },
   dateReservation: {
-    mode: '', date: '', time24: '09:00', timeKo: '오전 9:00', ampm: 'AM', hour12: 9, minute: 0,
-    recurringFreq: 'MONTHLY', recurringDay: '1일', recurringLabel: '', displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
+    mode: 'ONCE', slots: [], date: '', time24: '09:30', timeKo: '오전 9:30', ampm: 'AM', hour12: 9, minute: 30,
+    displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
   },
   userEditedQ: { 1: false, 2: false, 3: false, 4: false, 5: false },
   currentQPack: null,
@@ -2863,12 +3084,25 @@ function setLoadingProgress(pct) {
 
 function updateLoadingOverlayText(title, opts) {
   opts = opts || {};
+  const subjectEl = $('#loading-subject-badge');
   const titleEl = $('#loading-title');
   const subEl = $('#loading-sub');
   const iconEl = $('#loading-icon');
+  const penEl = $('#loading-pen-badge');
+  if (subjectEl && opts.subject !== undefined) {
+    const subj = String(opts.subject || '').trim();
+    if (subj) {
+      subjectEl.textContent = '「' + subj + '」';
+      subjectEl.hidden = false;
+    } else {
+      subjectEl.textContent = '';
+      subjectEl.hidden = true;
+    }
+  }
   if (titleEl && title) titleEl.textContent = String(title);
   if (subEl && opts.sub) subEl.textContent = String(opts.sub);
   if (iconEl && opts.icon) iconEl.textContent = String(opts.icon);
+  if (penEl && opts.icon) penEl.textContent = String(opts.icon);
   if (typeof opts.pct === 'number') setLoadingProgress(opts.pct);
 }
 
@@ -2879,12 +3113,25 @@ function showLoadingOverlay(title, opts) {
   if (LOADING_CTRL.timer) { clearInterval(LOADING_CTRL.timer); LOADING_CTRL.timer = null; }
   if (LOADING_CTRL.hideTimer) { clearTimeout(LOADING_CTRL.hideTimer); LOADING_CTRL.hideTimer = null; }
 
+  const subjectEl = $('#loading-subject-badge');
   const titleEl = $('#loading-title');
   const subEl = $('#loading-sub');
   const iconEl = $('#loading-icon');
+  const penEl = $('#loading-pen-badge');
+  if (subjectEl) {
+    const subj = String(opts.subject || '').trim();
+    if (subj) {
+      subjectEl.textContent = '「' + subj + '」';
+      subjectEl.hidden = false;
+    } else {
+      subjectEl.textContent = '';
+      subjectEl.hidden = true;
+    }
+  }
   if (titleEl) titleEl.textContent = String(title || '잠시만 기다려 주세요');
   if (subEl) subEl.textContent = String(opts.sub || '잠시만 기다려 주시면 바로 다음 화면이 열립니다');
-  if (iconEl) iconEl.textContent = String(opts.icon || '✨');
+  if (iconEl) iconEl.textContent = String(opts.icon || '💬');
+  if (penEl) penEl.textContent = String(opts.icon || '✏️');
 
   LOADING_CTRL.active = true;
   setLoadingProgress(Number(opts.startPct) || 12);
@@ -3418,8 +3665,8 @@ function resetConsultFlow() {
     enabled: true, preset: '', label: '', days: [], displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
   };
   ST.dateReservation = {
-    mode: '', date: '', time24: '09:00', timeKo: '오전 9:00', ampm: 'AM', hour12: 9, minute: 0,
-    recurringFreq: 'MONTHLY', recurringDay: '1일', recurringLabel: '', displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
+    mode: 'ONCE', slots: [], date: '', time24: '09:30', timeKo: '오전 9:30', ampm: 'AM', hour12: 9, minute: 30,
+    displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
   };
   ST.userEditedQ = { 1: false, 2: false, 3: false, 4: false, 5: false };
   ST.currentQPack = null;
@@ -3552,7 +3799,7 @@ async function proceedToStage2() {
   // AI가 연결돼 있으면 전면 블러 로딩 오버레이 상태에서 맞춤 6대 플로우를 완성한 뒤 STEP 2로 전환
   const hasAi = Consult.hasAiAvailable({ mode: getAiMode(), proxyUrl: getProxyUrl() });
   if (hasAi && rawSub.length >= 2) {
-    showLoadingOverlay((ST.subIndustry || '맞춤 업종') + ' 카톡 흐름을 준비 중이에요', { icon: '✨' });
+    showLoadingOverlay('맞춤 카톡 흐름을 설계하고 있어요', { subject: ST.subIndustry || '맞춤 업종', icon: '✏️' });
     try {
       const res = await Consult.generateSubIndustryFlows({
         mode: getAiMode(),
@@ -3717,7 +3964,7 @@ async function runFlowAiRecommend() {
   ST.isBusy = true;
   const btn = $('#btn-run-flow-ai');
   btn.disabled = true;
-  showLoadingOverlay('목표에 맞는 카톡 흐름을 찾고 있어요', { icon: '✨' });
+  showLoadingOverlay('목표에 맞는 카톡 흐름을 찾고 있어요', { subject: ST.subIndustry || '', icon: '✏️' });
   try {
     const res = await Consult.recommendFlow({
       mode: getAiMode(),
@@ -3786,13 +4033,18 @@ function autoResizeTextarea(ta) {
 
 function saveCurrentDraftQuietly() {
   if (ST.stage !== 3) return;
+  if (ST.qNum === 5) {
+    if (ST.dateReservation.mode !== 'SKIP') {
+      syncQ5SlotsFromDom();
+    }
+    return;
+  }
   const ta = $('#interview-textarea');
   if (!ta) return;
   const val = (ta.value || '').trim();
   if (val) {
     ST.answers[ST.qNum] = val;
     if (ST.qNum === 4) ST.intervalConfig.message_hint = val;
-    if (ST.qNum === 5) ST.dateReservation.message_hint = val;
     if (ST.qNum >= 1 && ST.qNum <= 3) {
       applyAutoTossFromText(ST.qNum, val);
     }
@@ -3809,7 +4061,23 @@ function applyAutoTossFromText(sourceQ, text) {
     ST.answers[4] = hints.interval.draftText;
   }
   if (hints.dateReservation && !ST.userEditedQ[5]) {
-    ST.dateReservation = Object.assign({}, hints.dateReservation, { sourceQ: sourceQ, autoTossed: true });
+    const rawSlots = Array.isArray(hints.dateReservation.slots) && hints.dateReservation.slots.length
+      ? hints.dateReservation.slots.slice(0, 3)
+      : [{
+          date: hints.dateReservation.date || '',
+          time24: hints.dateReservation.time24 || '09:30',
+          timeKo: hints.dateReservation.timeKo || '오전 9:30',
+          ampm: hints.dateReservation.ampm || 'AM',
+          hour12: hints.dateReservation.hour12 || 9,
+          minute: Number(hints.dateReservation.minute) || 0,
+          message_hint: hints.dateReservation.message_hint || ''
+        }];
+    ST.dateReservation = Object.assign({}, hints.dateReservation, {
+      mode: 'ONCE',
+      slots: rawSlots,
+      sourceQ: sourceQ,
+      autoTossed: true
+    });
     ST.answers[5] = hints.dateReservation.draftText;
   }
   return hints;
@@ -3889,80 +4157,232 @@ function selectQ4Preset(presetId) {
   renderSmartControlsForQ(4);
 }
 
-function syncQ5ReservationFromPickers() {
+const MAX_Q5_SLOTS = 3;
+
+function createDefaultQ5Slot(idx, seed) {
+  const s = seed || {};
+  const d = new Date();
+  d.setDate(d.getDate() + 7 * ((Number(idx) || 0) + 1));
+  const defDate = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const splitT = Consult.splitTime24(s.time24 || '09:30');
+  return {
+    date: String(s.date || defDate),
+    time24: splitT.time24,
+    timeKo: splitT.timeKo,
+    ampm: splitT.ampm,
+    hour12: splitT.hour12,
+    minute: splitT.minute,
+    message_hint: String(s.message_hint || '').trim()
+  };
+}
+
+function syncQ5LegacyFlatFields() {
   const dr = ST.dateReservation;
-  if (dr.mode === 'ONCE') {
-    const dateEl = $('#q5-once-date');
-    const ampmEl = $('#q5-once-ampm');
-    const hourEl = $('#q5-once-hour');
-    const minEl = $('#q5-once-min');
-    if (dateEl && dateEl.value) dr.date = dateEl.value;
-    if (ampmEl) dr.ampm = ampmEl.value || 'AM';
-    if (hourEl) dr.hour12 = Number(hourEl.value) || 9;
-    if (minEl) dr.minute = Number(minEl.value) || 0;
-    dr.time24 = Consult.toTime24(dr.ampm, dr.hour12, dr.minute);
-    dr.timeKo = Consult.formatTime24ToKo(dr.time24);
-    dr.recurringLabel = '';
-    const sumEl = $('#q5-picker-summary');
-    if (sumEl) {
-      sumEl.textContent = '📌 ' + (formatDateYmdKorean(dr.date) || dr.date) + ' · ' + dr.timeKo + ' 정각 동시 발송';
-    }
-  } else if (dr.mode === 'RECURRING') {
-    const dayEl = $('#q5-rec-day');
-    const ampmEl = $('#q5-rec-ampm');
-    const hourEl = $('#q5-rec-hour');
-    const minEl = $('#q5-rec-min');
-    if (dayEl && dayEl.value) dr.recurringDay = dayEl.value;
-    if (ampmEl) dr.ampm = ampmEl.value || 'AM';
-    if (hourEl) dr.hour12 = Number(hourEl.value) || 10;
-    if (minEl) dr.minute = Number(minEl.value) || 0;
-    dr.time24 = Consult.toTime24(dr.ampm, dr.hour12, dr.minute);
-    dr.timeKo = Consult.formatTime24ToKo(dr.time24);
-    const freqKo = dr.recurringFreq === 'WEEKLY' ? '매주' : '매월';
-    dr.recurringLabel = freqKo + ' ' + dr.recurringDay + ' ' + dr.timeKo;
+  if (dr.mode === 'SKIP') {
+    dr.slots = [];
     dr.date = '';
-    const sumEl = $('#q5-picker-summary');
-    if (sumEl) {
-      sumEl.textContent = '📌 ' + freqKo + ' ' + dr.recurringDay + ' · ' + dr.timeKo + ' 정기 동시 발송';
+    dr.time24 = '';
+    dr.timeKo = '';
+    dr.displayLabel = '';
+    dr.message_hint = '';
+    return;
+  }
+  dr.mode = 'ONCE';
+  if (!Array.isArray(dr.slots) || !dr.slots.length) {
+    dr.slots = [createDefaultQ5Slot(0, { date: dr.date, time24: dr.time24, message_hint: dr.message_hint })];
+  }
+  dr.slots = dr.slots.slice(0, MAX_Q5_SLOTS).map((sl, i) => createDefaultQ5Slot(i, sl));
+  const first = dr.slots[0];
+  dr.date = first.date;
+  dr.time24 = first.time24;
+  dr.timeKo = first.timeKo;
+  dr.ampm = first.ampm;
+  dr.hour12 = first.hour12;
+  dr.minute = first.minute;
+  dr.message_hint = first.message_hint;
+  dr.displayLabel = dr.slots.map(sl => (formatDateYmdKorean(sl.date) || sl.date) + ' ' + sl.timeKo).join(' · ');
+}
+
+function ensureQ5Slots() {
+  if (!ST.dateReservation || ST.dateReservation.mode === 'SKIP') return [];
+  ST.dateReservation.mode = 'ONCE';
+  syncQ5LegacyFlatFields();
+  return ST.dateReservation.slots;
+}
+
+function buildQ5SummaryString() {
+  const dr = ST.dateReservation;
+  if (dr.mode === 'SKIP') return '날짜 지정 카톡은 안 보냄 (건너뛰기)';
+  const slots = ensureQ5Slots();
+  return slots.map((sl, idx) => {
+    const dLabel = formatDateYmdKorean(sl.date) || sl.date;
+    const msg = sl.message_hint || ((ST.subIndustry || '맞춤') + ' 예약 안내');
+    return (slots.length > 1 ? ((idx + 1) + '차 ') : '') + dLabel + ' ' + sl.timeKo + ' — ' + msg;
+  }).join(' / ');
+}
+
+function updateMsgTypeBadgeForQ(qNum) {
+  const badge = $('#q-msg-type-badge');
+  if (!badge) return null;
+  if (qNum === 3) {
+    const cls = Consult.classifyKakaoMessageType(3, ($('#interview-textarea') && $('#interview-textarea').value) || '');
+    badge.hidden = false;
+    badge.className = 'msg-type-badge info';
+    badge.textContent = cls.badgeText;
+    return cls;
+  }
+  if (qNum === 4) {
+    const val = ($('#interview-textarea') && $('#interview-textarea').value) || ST.answers[4] || '';
+    const cls = Consult.classifyKakaoMessageType(4, val);
+    badge.hidden = false;
+    badge.className = 'msg-type-badge ' + (cls.type === 'INFO_ALIMTALK' ? 'info' : 'promo');
+    badge.textContent = cls.badgeText;
+    return cls;
+  }
+  if (qNum === 5) {
+    if (ST.dateReservation.mode === 'SKIP') {
+      badge.hidden = true;
+      badge.textContent = '';
+      return null;
+    }
+    const slots = ensureQ5Slots();
+    let activeCls = Consult.classifyKakaoMessageType(5, (slots[0] && slots[0].message_hint) || '');
+    for (let i = 0; i < slots.length; i++) {
+      const c = Consult.classifyKakaoMessageType(5, slots[i].message_hint || '');
+      if (c.type === 'PROMO_FRIENDTALK') { activeCls = c; break; }
+    }
+    badge.hidden = false;
+    badge.className = 'msg-type-badge ' + (activeCls.type === 'INFO_ALIMTALK' ? 'info' : 'promo');
+    badge.textContent = activeCls.badgeText;
+    return activeCls;
+  }
+  badge.hidden = true;
+  badge.textContent = '';
+  return null;
+}
+
+function updateSingleQ5SlotVisuals(idx) {
+  const slots = ensureQ5Slots();
+  const sl = slots[idx];
+  if (!sl) return;
+  const cls = Consult.classifyKakaoMessageType(5, sl.message_hint || '');
+  const badgeEl = $('#q5-slot-badge-' + idx);
+  if (badgeEl) {
+    badgeEl.className = 'msg-type-badge ' + (cls.type === 'INFO_ALIMTALK' ? 'info' : 'promo');
+    badgeEl.textContent = cls.badgeText;
+  }
+  const sumEl = $('#q5-slot-summary-' + idx);
+  if (sumEl) {
+    sumEl.textContent = '📌 ' + (formatDateYmdKorean(sl.date) || sl.date) + ' · ' + sl.timeKo + ' 동시 발송';
+  }
+  const warnEl = $('#q5-slot-warn-' + idx);
+  if (warnEl) {
+    const nightCheck = Consult.checkNightPolicyForMessage(5, sl.message_hint || '', [sl.time24]);
+    if (nightCheck.blocked) {
+      warnEl.hidden = false;
+      warnEl.innerHTML =
+        '<div>⚠️ ' + esc(nightCheck.message) + '</div>' +
+        '<div class="q5-night-fix-row">' +
+          '<button type="button" class="btn-q5-fix-time" data-fix-slot="' + idx + '" data-fix-time="19:30">오후 7:30으로 맞추기</button>' +
+          '<button type="button" class="btn-q5-fix-time" data-fix-slot="' + idx + '" data-fix-time="08:00">오전 8:00으로 맞추기</button>' +
+        '</div>';
+      $$('[data-fix-slot]', warnEl).forEach(btn => {
+        btn.onclick = () => applyQ5SlotTimeFix(Number(btn.dataset.fixSlot), btn.dataset.fixTime);
+      });
+    } else {
+      warnEl.hidden = true;
+      warnEl.innerHTML = '';
     }
   }
+  updateMsgTypeBadgeForQ(5);
+}
+
+function syncQ5SlotsFromDom() {
+  if (ST.dateReservation.mode === 'SKIP') return;
+  const slots = ensureQ5Slots();
+  for (let i = 0; i < slots.length; i++) {
+    const dateEl = $('#q5-slot-date-' + i);
+    const ampmEl = $('#q5-slot-' + i + '-ampm');
+    const hourEl = $('#q5-slot-' + i + '-hour');
+    const minEl = $('#q5-slot-' + i + '-min');
+    const msgEl = $('#q5-slot-msg-' + i);
+    if (dateEl && dateEl.value) slots[i].date = dateEl.value;
+    if (ampmEl) slots[i].ampm = ampmEl.value || 'AM';
+    if (hourEl) slots[i].hour12 = Number(hourEl.value) || 9;
+    if (minEl) slots[i].minute = Number(minEl.value) || 0;
+    slots[i].time24 = Consult.toTime24(slots[i].ampm, slots[i].hour12, slots[i].minute);
+    slots[i].timeKo = Consult.formatTime24ToKo(slots[i].time24);
+    if (msgEl) slots[i].message_hint = (msgEl.value || '').trim();
+    updateSingleQ5SlotVisuals(i);
+  }
+  syncQ5LegacyFlatFields();
+  const combined = buildQ5SummaryString();
+  const ta = $('#interview-textarea');
+  if (ta) ta.value = combined;
+}
+
+function applyQ5SlotTimeFix(slotIdx, targetTime24) {
+  const slots = ensureQ5Slots();
+  const sl = slots[slotIdx];
+  if (!sl) return;
+  const splitT = Consult.splitTime24(targetTime24 || '19:30');
+  sl.time24 = splitT.time24;
+  sl.timeKo = splitT.timeKo;
+  sl.ampm = splitT.ampm;
+  sl.hour12 = splitT.hour12;
+  sl.minute = splitT.minute;
+  ST.userEditedQ[5] = true;
+  ST.guardrail = null;
+  renderGuardrailBox(null);
+  renderSmartControlsForQ(5);
+  showBotToast('✅ ' + (slotIdx + 1) + '차 발송 시각을 ' + splitT.timeKo + '으로 맞췄어요!');
+}
+
+function addQ5DateSlot() {
+  ST.userEditedQ[5] = true;
+  ST.dateReservation.mode = 'ONCE';
+  syncQ5SlotsFromDom();
+  const slots = ensureQ5Slots();
+  if (slots.length >= MAX_Q5_SLOTS) return slots;
+  slots.push(createDefaultQ5Slot(slots.length));
+  syncQ5LegacyFlatFields();
+  renderSmartControlsForQ(5);
+  return slots;
+}
+
+function removeQ5DateSlot(idx) {
+  ST.userEditedQ[5] = true;
+  syncQ5SlotsFromDom();
+  const slots = ensureQ5Slots();
+  if (slots.length <= 1) return slots;
+  slots.splice(idx, 1);
+  syncQ5LegacyFlatFields();
+  renderSmartControlsForQ(5);
+  return slots;
+}
+
+function skipQ5DateReserve() {
+  ST.userEditedQ[5] = true;
+  ST.dateReservation = {
+    mode: 'SKIP', slots: [], date: '', time24: '', timeKo: '', ampm: 'AM', hour12: 9, minute: 30,
+    displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
+  };
+  ST.answers[5] = '날짜 지정 카톡은 안 보냄 (건너뛰기)';
+  const ta = $('#interview-textarea');
+  if (ta) ta.value = ST.answers[5];
+  renderStage4BrandAssets();
+  goStage(4);
 }
 
 function selectQ5Mode(mode, isManual) {
   if (isManual !== false) ST.userEditedQ[5] = true;
   if (mode === 'SKIP') {
-    ST.dateReservation = {
-      mode: 'SKIP', date: '', time24: '', timeKo: '', ampm: 'AM', hour12: 9, minute: 0,
-      recurringFreq: '', recurringDay: '', recurringLabel: '', displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
-    };
-    ST.answers[5] = '정해진 날짜 카톡은 없어요 (건너뛰기)';
-    renderStage4BrandAssets();
-    goStage(4);
+    skipQ5DateReserve();
     return;
   }
-  ST.dateReservation.mode = mode;
-  if (mode === 'ONCE') {
-    if (!ST.dateReservation.date) ST.dateReservation.date = getDefaultFutureDateStr();
-    if (!ST.dateReservation.time24) {
-      ST.dateReservation.time24 = '09:30';
-      ST.dateReservation.timeKo = '오전 9:30';
-      ST.dateReservation.ampm = 'AM';
-      ST.dateReservation.hour12 = 9;
-      ST.dateReservation.minute = 30;
-    }
-  } else if (mode === 'RECURRING') {
-    if (!ST.dateReservation.recurringFreq) ST.dateReservation.recurringFreq = 'MONTHLY';
-    if (!ST.dateReservation.recurringDay) {
-      ST.dateReservation.recurringDay = ST.dateReservation.recurringFreq === 'WEEKLY' ? '월요일' : '1일';
-    }
-    if (!ST.dateReservation.time24) {
-      ST.dateReservation.time24 = '10:00';
-      ST.dateReservation.timeKo = '오전 10:00';
-      ST.dateReservation.ampm = 'AM';
-      ST.dateReservation.hour12 = 10;
-      ST.dateReservation.minute = 0;
-    }
-  }
+  // V2.8: 반복(RECURRING) 기능은 고마워톡 실제 기능에 없으므로 모든 활성 모드는 특정 날짜 지정(ONCE) 슬롯으로 통일
+  ST.dateReservation.mode = 'ONCE';
+  ensureQ5Slots();
   renderSmartControlsForQ(5);
 }
 
@@ -4023,6 +4443,8 @@ function renderSmartControlsForQ(qNum) {
   }
 
   if (compLabel) { compLabel.hidden = true; compLabel.textContent = ''; }
+  const composerCard = $('#answer-composer-card');
+  if (composerCard) composerCard.hidden = (qNum === 5);
   if (!wrap) return;
 
   if (qNum === 2) {
@@ -4042,6 +4464,7 @@ function renderSmartControlsForQ(qNum) {
       };
     }
     if (ta) ta.placeholder = '예) 현재 고민 분야를 선택해 주세요 (보기 3~4개) 또는 위 버튼으로 건너뛰기';
+    updateMsgTypeBadgeForQ(2);
     return;
   }
 
@@ -4061,110 +4484,99 @@ function renderSmartControlsForQ(qNum) {
     });
     if (compLabel) { compLabel.hidden = false; compLabel.textContent = '💬 선택한 간격에 맞춰 보낼 안부·정보 내용'; }
     if (ta) ta.placeholder = '위 간격 버튼을 누르거나, 며칠 뒤에 보낼 카톡 내용을 적어주세요';
+    updateMsgTypeBadgeForQ(4);
     return;
   }
 
   if (qNum === 5) {
     wrap.hidden = false;
-    const dr = ST.dateReservation;
-    const mode = dr.mode || '';
-    let pickerHtml = '';
-    if (mode === 'ONCE') {
-      const splitT = Consult.splitTime24(dr.time24 || '09:30');
-      const curDate = dr.date || getDefaultFutureDateStr();
-      dr.date = curDate;
-      pickerHtml =
-        '<div class="q5-picker-panel" id="q5-picker-panel">' +
-          '<div>' +
-            '<label class="picker-field-label" for="q5-once-date">📅 보낼 날짜 선택</label>' +
-            '<input type="date" class="picker-date-in" id="q5-once-date" value="' + esc(curDate) + '">' +
-          '</div>' +
-          '<div>' +
-            '<span class="picker-field-label">⏰ 보낼 시각 선택</span>' +
-            buildTimeOptionsHtml(splitT.ampm, splitT.hour12, splitT.minute, 'q5-once') +
-          '</div>' +
-          '<div class="picker-summary-pill" id="q5-picker-summary">📌 ' + esc((formatDateYmdKorean(curDate) || curDate) + ' · ' + splitT.timeKo + ' 정각 동시 발송') + '</div>' +
-        '</div>';
-    } else if (mode === 'RECURRING') {
-      const freq = dr.recurringFreq === 'WEEKLY' ? 'WEEKLY' : 'MONTHLY';
-      const splitT = Consult.splitTime24(dr.time24 || '10:00');
-      const monthDays = ['1일', '5일', '10일', '15일', '20일', '25일', '말일'];
-      const weekDays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
-      const dayChoices = (freq === 'WEEKLY' ? weekDays : monthDays).slice();
-      const curDay = dr.recurringDay || dayChoices[0];
-      if (dayChoices.indexOf(curDay) === -1) dayChoices.unshift(curDay);
-      dr.recurringDay = curDay;
-      dr.recurringFreq = freq;
-      const freqKo = freq === 'WEEKLY' ? '매주' : '매월';
-      dr.recurringLabel = freqKo + ' ' + curDay + ' ' + splitT.timeKo;
-      pickerHtml =
-        '<div class="q5-picker-panel" id="q5-picker-panel">' +
-          '<div>' +
-            '<span class="picker-field-label">🔁 반복 주기</span>' +
-            '<div class="rec-freq-row">' +
-              '<button type="button" class="rec-freq-btn' + (freq === 'MONTHLY' ? ' active' : '') + '" data-rec-freq="MONTHLY">매월</button>' +
-              '<button type="button" class="rec-freq-btn' + (freq === 'WEEKLY' ? ' active' : '') + '" data-rec-freq="WEEKLY">매주</button>' +
-            '</div>' +
-          '</div>' +
-          '<div>' +
-            '<label class="picker-field-label" for="q5-rec-day">' + (freq === 'WEEKLY' ? '📆 요일 선택' : '📆 날짜 선택') + '</label>' +
-            '<select class="picker-select" id="q5-rec-day">' +
-              dayChoices.map(d => '<option value="' + esc(d) + '"' + (d === curDay ? ' selected' : '') + '>' + esc(d) + '</option>').join('') +
-            '</select>' +
-          '</div>' +
-          '<div>' +
-            '<span class="picker-field-label">⏰ 보낼 시각 선택</span>' +
-            buildTimeOptionsHtml(splitT.ampm, splitT.hour12, splitT.minute, 'q5-rec') +
-          '</div>' +
-          '<div class="picker-summary-pill" id="q5-picker-summary">📌 ' + esc(freqKo + ' ' + curDay + ' · ' + splitT.timeKo + ' 정기 동시 발송') + '</div>' +
-        '</div>';
+    if (ST.dateReservation.mode === 'SKIP') {
+      ST.dateReservation.mode = 'ONCE';
     }
+    const slots = ensureQ5Slots();
+
+    const cardsHtml = slots.map((sl, idx) => {
+      const cls = Consult.classifyKakaoMessageType(5, sl.message_hint || '');
+      const nightCheck = Consult.checkNightPolicyForMessage(5, sl.message_hint || '', [sl.time24]);
+      const warnHtml = nightCheck.blocked
+        ? ('<div>⚠️ ' + esc(nightCheck.message) + '</div>' +
+           '<div class="q5-night-fix-row">' +
+             '<button type="button" class="btn-q5-fix-time" data-fix-slot="' + idx + '" data-fix-time="19:30">오후 7:30으로 맞추기</button>' +
+             '<button type="button" class="btn-q5-fix-time" data-fix-slot="' + idx + '" data-fix-time="08:00">오전 8:00으로 맞추기</button>' +
+           '</div>')
+        : '';
+      return '<div class="q5-slot-card" data-q5-slot="' + idx + '">' +
+        '<div class="q5-slot-head">' +
+          '<span class="q5-slot-title">📅 ' + (idx + 1) + '차 발송 날짜 · 시각 선택</span>' +
+          (slots.length > 1 ? '<button type="button" class="btn-q5-slot-del" data-del-q5-slot="' + idx + '">✕ 삭제</button>' : '') +
+        '</div>' +
+        '<div class="msg-type-badge ' + (cls.type === 'INFO_ALIMTALK' ? 'info' : 'promo') + '" id="q5-slot-badge-' + idx + '">' + esc(cls.badgeText) + '</div>' +
+        '<div>' +
+          '<label class="picker-field-label" for="q5-slot-date-' + idx + '">📅 보낼 날짜 선택</label>' +
+          '<input type="date" class="picker-date-in" id="q5-slot-date-' + idx + '" value="' + esc(sl.date) + '">' +
+        '</div>' +
+        '<div>' +
+          '<span class="picker-field-label">⏰ 보낼 시각 선택</span>' +
+          buildTimeOptionsHtml(sl.ampm, sl.hour12, sl.minute, 'q5-slot-' + idx) +
+        '</div>' +
+        '<div>' +
+          '<label class="picker-field-label" for="q5-slot-msg-' + idx + '">💬 이 날짜에 보낼 한 줄 내용</label>' +
+          '<input type="text" class="q5-slot-msg-in" id="q5-slot-msg-' + idx + '" value="' + esc(sl.message_hint) + '" placeholder="예) 행사 오시는 길·입장 안내 또는 마감 혜택 안내를 적어주세요" autocomplete="off">' +
+        '</div>' +
+        '<div class="picker-summary-pill" id="q5-slot-summary-' + idx + '">📌 ' + esc((formatDateYmdKorean(sl.date) || sl.date) + ' · ' + sl.timeKo + ' 동시 발송') + '</div>' +
+        '<div class="q5-slot-night-warn" id="q5-slot-warn-' + idx + '"' + (nightCheck.blocked ? '' : ' hidden') + '>' + warnHtml + '</div>' +
+      '</div>';
+    }).join('');
+
+    const addBtnHtml = slots.length < MAX_Q5_SLOTS
+      ? '<button type="button" class="btn-q5-add-slot" id="btn-q5-add-slot">+ 발송 날짜 하나 더 추가하기 (' + slots.length + '/' + MAX_Q5_SLOTS + ')</button>'
+      : '<div class="q5-max-pill" id="q5-max-pill">✅ 초기 대표 일정 3개 모두 추가됨 · 세팅 완료 후 무제한 추가 가능</div>';
 
     wrap.innerHTML =
-      '<div class="preset-chips-stack">' +
-        '<button type="button" class="q5-mode-card' + (mode === 'ONCE' ? ' selected' : '') + '" data-q5-mode="ONCE">' +
-          '<div><span>📅 특정 날짜·시각 1회 예약</span><span class="q5-mode-sub">예) 12월 24일 오전 9:30 행사·공지 동시 발송</span></div>' +
-          '<span>' + (mode === 'ONCE' ? '✅' : '선택') + '</span>' +
-        '</button>' +
-        '<button type="button" class="q5-mode-card' + (mode === 'RECURRING' ? ' selected' : '') + '" data-q5-mode="RECURRING">' +
-          '<div><span>🔁 매월·매주 정해진 날 발송</span><span class="q5-mode-sub">예) 매월 1일 오전 10:00 · 매주 금요일 오전 9:00</span></div>' +
-          '<span>' + (mode === 'RECURRING' ? '✅' : '선택') + '</span>' +
-        '</button>' +
-        '<button type="button" class="q5-mode-card skip-card' + (mode === 'SKIP' ? ' selected' : '') + '" data-q5-mode="SKIP">' +
-          '<span>⏭️ 정해진 날짜 카톡은 없어요 (건너뛰기)</span>' +
-          '<span>→</span>' +
-        '</button>' +
+      '<div class="q5-unlimited-notice" id="q5-unlimited-notice">' +
+        '💡 여기서는 처음 시작할 대표 일정(최대 3개)만 편하게 잡아주세요. 실제 세팅 완료 후에는 개수 제한 없이 원하는 날짜·시간 카톡을 얼마든지 무제한 추가하실 수 있습니다!' +
       '</div>' +
-      pickerHtml;
+      '<div class="q5-slots-stack" id="q5-slots-stack">' + cardsHtml + '</div>' +
+      addBtnHtml +
+      '<button type="button" class="q5-mode-card skip-card" id="btn-q5-skip">' +
+        '<span>⏭️ 날짜 지정 카톡은 안 보냄 (건너뛰기)</span>' +
+        '<span>→</span>' +
+      '</button>';
 
-    $$('[data-q5-mode]', wrap).forEach(btn => {
-      btn.onclick = () => selectQ5Mode(btn.dataset.q5Mode, true);
+    const addBtn = $('#btn-q5-add-slot', wrap);
+    if (addBtn) addBtn.onclick = () => addQ5DateSlot();
+    const skipBtn = $('#btn-q5-skip', wrap);
+    if (skipBtn) skipBtn.onclick = () => skipQ5DateReserve();
+
+    $$('[data-del-q5-slot]', wrap).forEach(btn => {
+      btn.onclick = () => removeQ5DateSlot(Number(btn.dataset.delQ5Slot));
     });
-    $$('[data-rec-freq]', wrap).forEach(btn => {
-      btn.onclick = () => {
-        ST.userEditedQ[5] = true;
-        ST.dateReservation.recurringFreq = btn.dataset.recFreq === 'WEEKLY' ? 'WEEKLY' : 'MONTHLY';
-        ST.dateReservation.recurringDay = ST.dateReservation.recurringFreq === 'WEEKLY' ? '월요일' : '1일';
-        renderSmartControlsForQ(5);
-      };
+    $$('[data-fix-slot]', wrap).forEach(btn => {
+      btn.onclick = () => applyQ5SlotTimeFix(Number(btn.dataset.fixSlot), btn.dataset.fixTime);
     });
-    ['#q5-once-date', '#q5-once-ampm', '#q5-once-hour', '#q5-once-min', '#q5-rec-day', '#q5-rec-ampm', '#q5-rec-hour', '#q5-rec-min'].forEach(sel => {
-      const el = $(sel, wrap);
-      if (el) {
-        el.addEventListener('change', () => {
+
+    for (let i = 0; i < slots.length; i++) {
+      ['#q5-slot-date-' + i, '#q5-slot-' + i + '-ampm', '#q5-slot-' + i + '-hour', '#q5-slot-' + i + '-min'].forEach(sel => {
+        const el = $(sel, wrap);
+        if (el) {
+          el.addEventListener('change', () => {
+            ST.userEditedQ[5] = true;
+            ST.dateReservation.autoTossed = false;
+            syncQ5SlotsFromDom();
+          });
+        }
+      });
+      const msgEl = $('#q5-slot-msg-' + i, wrap);
+      if (msgEl) {
+        msgEl.addEventListener('input', () => {
           ST.userEditedQ[5] = true;
           ST.dateReservation.autoTossed = false;
-          syncQ5ReservationFromPickers();
+          syncQ5SlotsFromDom();
         });
       }
-    });
-
-    if (mode === 'ONCE' || mode === 'RECURRING') {
-      if (compLabel) { compLabel.hidden = false; compLabel.textContent = '💬 지정하신 날짜·시각에 보낼 한 줄 내용'; }
-      if (ta) ta.placeholder = '예) 성탄 특별 집회 오시는 길과 입장 안내를 보내주세요';
-    } else {
-      if (ta) ta.placeholder = '위 3가지 카드 중 하나를 누르거나, 아래 예시를 눌러 채워보세요';
     }
+
+    updateMsgTypeBadgeForQ(5);
     return;
   }
 
@@ -4176,21 +4588,26 @@ function renderSmartControlsForQ(qNum) {
       ? '예) 누구를 초대해서 어떤 안내·혜택을 드릴지 편하게 적어주세요'
       : '예) 신청 직후 첫 카톡에 담을 환영 인사·자료·안내를 적어주세요';
   }
+  updateMsgTypeBadgeForQ(qNum);
 }
 
 function renderGuardrailBox(guard) {
   const box = $('#guardrail-box');
   if (!guard) { box.hidden = true; return; }
   box.hidden = false;
-  $('#guardrail-reason').innerHTML =
-    '대표님, 고마워톡에서는 <strong>' + esc(guard.reason) + '</strong> 기능은 지원하지 않아요.';
+  if (guard.exactMessage) {
+    $('#guardrail-reason').innerHTML = '<strong>' + esc(guard.exactMessage) + '</strong>';
+  } else {
+    $('#guardrail-reason').innerHTML =
+      '대표님, 고마워톡에서는 <strong>' + esc(guard.reason) + '</strong> 기능은 지원하지 않아요.';
+  }
   const altsWrap = $('#guardrail-alts');
   const alts = (guard.alternatives || []).slice(0, 2);
   altsWrap.innerHTML = alts.map((a, i) =>
     '<div class="alt-card">' +
       '<div class="alt-title">대안 ' + (i + 1) + '. ' + esc(a.label) + '</div>' +
       '<div class="alt-detail">' + esc(a.detail) + '</div>' +
-      '<button type="button" class="btn-use-alt" data-alt-idx="' + i + '">✏️ 이 대안으로 아래 칸 채우기</button>' +
+      '<button type="button" class="btn-use-alt" data-alt-idx="' + i + '">✏️ 이 대안 바로 적용하기</button>' +
     '</div>'
   ).join('');
 
@@ -4198,7 +4615,18 @@ function renderGuardrailBox(guard) {
     btn.onclick = () => {
       const alt = alts[Number(btn.dataset.altIdx)];
       if (!alt) return;
+      if (ST.qNum === 5 && alt.suggestedTime24) {
+        const slots = ensureQ5Slots();
+        let targetIdx = 0;
+        for (let s = 0; s < slots.length; s++) {
+          const chk = Consult.checkNightPolicyForMessage(5, slots[s].message_hint || '', [slots[s].time24]);
+          if (chk.blocked) { targetIdx = s; break; }
+        }
+        applyQ5SlotTimeFix(targetIdx, alt.suggestedTime24);
+        return;
+      }
       fillTextareaWithDraft(alt.draftText || alt.detail, '✅ 고마워톡 맞춤 대안 초안이 채워졌어요! 내 내용으로 다듬은 뒤 제출해 주세요.');
+      updateMsgTypeBadgeForQ(ST.qNum);
     };
   });
   box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -4271,14 +4699,32 @@ function renderCurrentQuestionPack(pack) {
           ST.intervalConfig = Object.assign({}, h4.interval, { autoTossed: false });
           renderSmartControlsForQ(4);
         }
+        fillTextareaWithDraft(txt, '✏️ 예시가 입력칸에 채워졌어요! 필요하면 고쳐서 눌러주세요.');
+        updateMsgTypeBadgeForQ(4);
       } else if (pack.qNum === 5) {
         const h5 = Consult.autoTossScheduleHints(txt);
-        if (h5.dateReservation) {
-          ST.dateReservation = Object.assign({}, h5.dateReservation, { autoTossed: false });
-          renderSmartControlsForQ(5);
+        ST.dateReservation.mode = 'ONCE';
+        const slots = ensureQ5Slots();
+        let targetIdx = slots.findIndex(sl => !sl.message_hint);
+        if (targetIdx === -1) targetIdx = slots.length - 1;
+        if (h5 && h5.dateReservation && h5.dateReservation.slots && h5.dateReservation.slots.length) {
+          slots[targetIdx] = createDefaultQ5Slot(targetIdx, {
+            date: h5.dateReservation.slots[0].date || slots[targetIdx].date,
+            time24: h5.dateReservation.slots[0].time24 || slots[targetIdx].time24,
+            message_hint: txt
+          });
+        } else {
+          slots[targetIdx].message_hint = txt;
         }
+        syncQ5LegacyFlatFields();
+        renderSmartControlsForQ(5);
+        const msgInp = $('#q5-slot-msg-' + targetIdx);
+        if (msgInp) msgInp.focus();
+        showBotToast('✏️ ' + (targetIdx + 1) + '차 발송 카드에 예시가 채워졌어요!');
+      } else {
+        fillTextareaWithDraft(txt, '✏️ 예시가 입력칸에 채워졌어요! 필요하면 고쳐서 눌러주세요.');
+        updateMsgTypeBadgeForQ(pack.qNum);
       }
-      fillTextareaWithDraft(txt, '✏️ 예시가 입력칸에 채워졌어요! 필요하면 고쳐서 눌러주세요.');
     };
   });
 
@@ -4286,6 +4732,7 @@ function renderCurrentQuestionPack(pack) {
   ta.value = ST.answers[pack.qNum] || '';
   $('#tap-edit-toast').textContent = '';
   autoResizeTextarea(ta);
+  updateMsgTypeBadgeForQ(pack.qNum);
 
   $('#btn-prev-q').hidden = pack.qNum <= 1;
   $('#btn-submit-q').textContent = Q_PREVIEW_CTAS[pack.qNum] || '다음 질문 →';
@@ -4301,7 +4748,7 @@ async function startStage3Interview() {
 
   // 반쯤 로딩된 빈 입력창 노출 원천 차단: 전면 블러 로딩 오버레이에서 질문+예시 3종 모두 준비 후 전환!
   $('#btn-submit-q').disabled = true;
-  showLoadingOverlay(subLabel + ' 맞춤 질문을 준비 중이에요', { icon: '✨' });
+  showLoadingOverlay('맞춤 카톡 질문을 설계하고 있어요', { subject: subLabel, icon: '✏️' });
 
   try {
     const key = buildExamplesPrefetchKey(ST.sectorId, ST.subIndustry, ST.flowId);
@@ -4361,29 +4808,48 @@ async function submitCurrentInterviewAnswer() {
   if (ST.isBusy) return;
   const ta = $('#interview-textarea');
   let txt = (ta.value || '').trim();
+  let q5TimeList = [];
 
-  // Q5에서 날짜/정기 픽커가 세팅돼 있으면 픽커 값 동기화
+  // Q3 첫 카톡 알림톡: 카카오 심사 규정상 본문 내 채널 추가 유도 문구 자동 정제
+  if (ST.qNum === 3 && txt && typeof Consult.stripAlimtalkChannelAddSolicitation === 'function') {
+    txt = Consult.stripAlimtalkChannelAddSolicitation(txt);
+    if (ta) ta.value = txt;
+  }
+
+  // Q5: 특정 날짜·시각 슬롯(최대 3개) 동기화 및 슬롯별 야간 규정(20:00~08:00, 홍보·소식만 제한) 검사
   if (ST.qNum === 5) {
     if (ST.dateReservation.mode === 'SKIP') {
-      ST.answers[5] = '정해진 날짜 카톡은 없어요 (건너뛰기)';
+      ST.answers[5] = '날짜 지정 카톡은 안 보냄 (건너뛰기)';
       renderStage4BrandAssets();
       goStage(4);
       return;
     }
-    if (ST.dateReservation.mode === 'ONCE' || ST.dateReservation.mode === 'RECURRING') {
-      syncQ5ReservationFromPickers();
-      ST.dateReservation.message_hint = txt || ST.dateReservation.message_hint || ((ST.subIndustry || '맞춤') + ' 예약 안내');
-      if (!txt) {
-        txt = ST.dateReservation.mode === 'ONCE'
-          ? (ST.dateReservation.date + ' ' + ST.dateReservation.timeKo + ' — ' + ST.dateReservation.message_hint)
-          : (ST.dateReservation.recurringLabel + ' — ' + ST.dateReservation.message_hint);
+    syncQ5SlotsFromDom();
+    const slots = ensureQ5Slots();
+    for (let i = 0; i < slots.length; i++) {
+      if (!slots[i].message_hint) {
+        slots[i].message_hint = (ST.subIndustry || '맞춤') + ' 예약 안내';
       }
-    } else if (txt.length >= 2) {
-      const h5 = Consult.autoTossScheduleHints(txt);
-      if (h5.dateReservation) {
-        ST.dateReservation = Object.assign({}, h5.dateReservation, { autoTossed: false });
+      const nightCheck = Consult.checkNightPolicyForMessage(5, slots[i].message_hint, [slots[i].time24]);
+      if (nightCheck.blocked) {
+        const guard = {
+          ruleId: 'night_friendtalk',
+          reason: nightCheck.message,
+          exactMessage: nightCheck.message,
+          alternatives: [
+            { label: '오후 7:30 이전으로 맞추기', detail: '카카오 정책 허용 시각인 오후 7:30에 맞춰 발송합니다.', suggestedTime24: '19:30' },
+            { label: '다음 날 오전 8:00 이후로 맞추기', detail: '오전 8:00에 맞춰 홍보·소식 카톡을 발송합니다.', suggestedTime24: '08:00' }
+          ]
+        };
+        ST.guardrail = guard;
+        renderGuardrailBox(guard);
+        return;
       }
+      q5TimeList.push(slots[i].time24);
     }
+    syncQ5LegacyFlatFields();
+    txt = buildQ5SummaryString();
+    if (ta) ta.value = txt;
   } else if (ST.qNum === 4) {
     if (ST.intervalConfig.preset === 'SKIP') {
       ST.answers[4] = '며칠 뒤 자동 카톡은 안 보냄 (건너뛰기)';
@@ -4415,8 +4881,8 @@ async function submitCurrentInterviewAnswer() {
   const origLabel = btn.textContent;
   btn.disabled = true;
   showLoadingOverlay(
-    ST.qNum >= Consult.TOTAL_Q ? '브랜드 스타일 화면을 준비 중이에요' : '다음 맞춤 질문을 준비 중이에요',
-    { icon: '✨' }
+    ST.qNum >= Consult.TOTAL_Q ? '브랜드 스타일 화면을 준비하고 있어요' : '다음 맞춤 질문을 준비하고 있어요',
+    { subject: ST.subIndustry || '', icon: '✏️' }
   );
 
   try {
@@ -4435,7 +4901,8 @@ async function submitCurrentInterviewAnswer() {
       customQ1Text: ST.customQ1Text,
       qNum: ST.qNum,
       answers: ST.answers,
-      userText: txt
+      userText: txt,
+      time24List: q5TimeList
     });
 
     // ★ 실시간 고마워톡 매뉴얼 검문소 차단: 절대 다음 단계로 통과시키지 않음!
@@ -4964,7 +5431,7 @@ async function enterStage5Summary(revisionText) {
   const errEl = $('#step5-submit-err');
   if (errEl) { errEl.hidden = true; errEl.textContent = ''; }
 
-  showLoadingOverlay('작성하신 내용을 정리하고 있어요', { icon: '✨' });
+  showLoadingOverlay('맞춤 카톡 흐름을 최종 정리하고 있어요', { subject: ST.brandName || ST.subIndustry || '', icon: '📋' });
 
   const sumTask = Consult.summarize({
     mode: getAiMode(),
@@ -5213,6 +5680,7 @@ async function generateAndSubmitCampaign() {
   if (errEl) { errEl.hidden = true; errEl.textContent = ''; }
 
   showLoadingOverlay('요청하신 내용을 정리하고 있어요...', {
+    subject: ST.brandName || ST.subIndustry || '',
     icon: '📋',
     startPct: 18,
     sub: '잠시만 기다려 주시면 접수 완료 화면이 열립니다'
@@ -5478,7 +5946,10 @@ $('#btn-prev-q').onclick = () => { if (ST.qNum > 1) jumpToInterviewQuestion(ST.q
 $('#btn-submit-q').onclick = submitCurrentInterviewAnswer;
 $('#interview-textarea').addEventListener('input', e => {
   autoResizeTextarea(e.target);
-  if (ST.stage === 3) ST.userEditedQ[ST.qNum] = true;
+  if (ST.stage === 3) {
+    ST.userEditedQ[ST.qNum] = true;
+    updateMsgTypeBadgeForQ(ST.qNum);
+  }
 });
 $('#btn-toggle-prev').onclick = () => {
   const b = $('#prev-answers-body');
@@ -5676,6 +6147,11 @@ window.BOT = {
   applyAutoTossFromText,
   selectQ4Preset,
   selectQ5Mode,
+  addQ5DateSlot,
+  removeQ5DateSlot,
+  skipQ5DateReserve,
+  ensureQ5Slots,
+  updateMsgTypeBadgeForQ,
   submitCurrentInterviewAnswer,
   askFeatureQA,
   showLoadingOverlay,

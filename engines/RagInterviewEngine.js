@@ -125,10 +125,34 @@
   }
 
   // ─────────────────────────────────────────────────────────────
-  // 2. 금지어 정화 & JSON 안전 추출기
+  // 2. 금지어 정화 & 알림톡 채널추가 유도 문구 차단 & JSON 안전 추출기
   // ─────────────────────────────────────────────────────────────
   function sanitizeText(str) {
     return String(str == null ? '' : str).replace(BANNED_RE, '정기 칼럼·소식');
+  }
+
+  // 카카오 알림톡 심사 규정 준수: 알림톡 본문 내 '채널 추가 유도 문구' 100% 제거
+  function stripAlimtalkChannelAddSolicitation(str) {
+    var s = sanitizeText(str);
+    if (!s) return '';
+    // 괄호 안의 채널 추가 유도 문구 통째 제거
+    s = s.replace(/\s*\([^)]*(?:채널\s*추가|채널을\s*추가|\[?\s*Ch\+?\s*채널\s*추가\s*\]?)[^)]*\)/gi, '');
+    // 문장 단위 채널 추가 유도 표현 제거
+    var lines = s.split(/\r?\n/);
+    var filtered = [];
+    for (var i = 0; i < lines.length; i++) {
+      var ln = lines[i];
+      if (/(?:채널\s*추가를\s*(?:꼭\s*)?(?:눌러|부탁|해주|해\s*주|클릭|완료)|채널\s*추가\s*(?:부탁|후|유도|하시면|를\s*눌러)|채널을\s*추가하시면|상단\s*(?:노란색\s*)?\[?\s*채널\s*추가\s*\]?)/i.test(ln)) {
+        // 해당 문장만 문장 경계에서 도려내고 앞부분 정상 안내가 있으면 유지
+        var cleanedLine = ln
+          .replace(/(?:^|[.!?\n]\s*)[^.!?\n]*(?:채널\s*추가를\s*(?:꼭\s*)?(?:눌러|부탁|해주|해\s*주|클릭|완료)|채널\s*추가\s*(?:부탁|후|유도|하시면|를\s*눌러)|채널을\s*추가하시면|상단\s*(?:노란색\s*)?\[?\s*채널\s*추가\s*\]?)[^.!?\n]*[.!?]?/gi, '')
+          .trim();
+        if (cleanedLine) filtered.push(cleanedLine);
+      } else {
+        filtered.push(ln);
+      }
+    }
+    return filtered.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   }
 
   function sanitizeObject(obj) {
@@ -1171,7 +1195,7 @@
         { question_text: '파트너가 고른 질문1', options: [{ answer_text: '보기1', tag: '태그1', sheet_field: '고객진단.항목1', sheet_value: '값1' }, { answer_text: '보기2', tag: '태그2', sheet_field: '고객진단.항목1', sheet_value: '값2' }, { answer_text: '보기3', tag: '태그3', sheet_field: '고객진단.항목1', sheet_value: '값3' }] }
       ] },
       tab4_sequence: [
-        { step: 1, timing: 'IMMEDIATE', template_type: 'ALIMTALK', condition_desc: '모두 (전체 신청자)', content_title: '신청 확인용 제목(광고어 금지)', content_intro: '접수 확인·첫 자료 안내(광고어 금지, 노란색 [채널 추가] 안내 포함)', btn_name: '첫 자료 확인하기' },
+        { step: 1, timing: 'IMMEDIATE', template_type: 'ALIMTALK', condition_desc: '모두 (전체 신청자)', content_title: '신청 확인용 제목(광고어 금지)', content_intro: '순수 접수 확인·첫 자료 안내만 작성(광고어·채널 추가 유도 문구 절대 금지)', btn_name: '첫 자료 확인하기' },
         { step: 2, timing: 'AFTER_1_DAY_0900', template_type: 'FREE_FRIENDTALK', condition_desc: '모두 (전체 신청자)', badge: '배지', headline: '배너 헤드라인', subtext: '배너 서브', body_text: '#{이름}님! 본문(시트 변수는 #{@시트명.필드명} 형식)', btn_name: '이어서 보기' },
         { step: 3, timing: 'AFTER_3_DAYS_0900', template_type: 'BRAND_CAROUSEL', condition_desc: '모두 (전체 신청자)', cards: [{ header_20chars: '카드1 제목', body_180chars: '본문', button_8chars: '자세히보기' }, { header_20chars: '카드2 제목', body_180chars: '본문', button_8chars: '신청하기' }] }
       ],
@@ -1186,7 +1210,7 @@
     var sys = [
       '당신은 고마워톡 수석 카피라이터입니다. 대표님의 8가지 답변만을 재료로 캠페인 전체 문구를 100% 새로 작문하세요.',
       '규칙: 1) 어떤 업종 샘플 문구도 복사하지 말고 오직 이번 답변에서 출발하세요. 2) 금지어(' + TOSS_BANNED_LIT + ')는 쓰지 마세요.',
-      '3) 알림톡(ALIMTALK)에는 할인/특가/이벤트/무료증정/쿠폰 같은 광고성 단어를 쓰지 마세요. 4) 시트 변수는 #{@시트명.필드명} 형식.',
+      '3) 알림톡(ALIMTALK)에는 할인/특가/이벤트/무료증정/쿠폰 같은 광고성 단어 및 "채널 추가를 눌러주세요", "채널 추가 부탁드려요", "채널 추가 후" 같은 채널 추가 유도 문구를 본문에 절대 쓰지 마세요(카카오 심사 반려 사유). 4) 시트 변수는 #{@시트명.필드명} 형식.',
       '5) 말투(Step 3)와 언어(예: 한국어+영어 병기)를 모든 문구에 일관되게 반영하세요. 6) 신청 질문(Step 7)은 고른 질문마다 보기 3~4개(각 30자 이내)를 만들고 tag/sheet_field/sheet_value를 채우세요(최대 2문항).',
       '7) 이후 카톡 소식(Step 8) 흐름에 맞춰 tab4_sequence를 3회차로 구성하고, 연재·챌린지·콘텐츠형이면 use_webzine=true, 쿠폰·행사 안내 위주면 false.',
       '8) imagePrompt는 반드시 영어, "no text, no letters" 포함, 해당 구간 장면을 구체적으로.',
@@ -1229,7 +1253,7 @@
         ] };
       }) },
       tab4_sequence: [
-        { step: 1, timing: 'IMMEDIATE', template_type: 'ALIMTALK', condition_desc: '모두 (전체 신청자)', content_title: tFirst(topic, 20) + ' 신청 접수 확인', content_intro: '신청해 주셔서 감사합니다. 첫 자료 안내가 준비되었어요. (다음 소식 수신을 위해 상단 노란색 [채널 추가]를 꼭 눌러 주세요!)', btn_name: '첫 자료 확인하기' },
+        { step: 1, timing: 'IMMEDIATE', template_type: 'ALIMTALK', condition_desc: '모두 (전체 신청자)', content_title: tFirst(topic, 20) + ' 신청 접수 확인', content_intro: '신청이 정상 접수되었습니다. 준비된 첫 안내 자료를 아래 버튼에서 바로 확인해 보세요.', btn_name: '첫 자료 확인하기' },
         { step: 2, timing: 'AFTER_1_DAY_0900', template_type: 'FREE_FRIENDTALK', condition_desc: '모두 (전체 신청자)', badge: tFirst(target || '채널 친구 전용', 14), headline: tFirst(topic, 30), subtext: tFirst(gift, 30), body_text: '#{이름}님! 어제 받아보신 내용에 이어 두 번째 소식을 보내드려요. ' + tFirst(flow, 60), btn_name: '이어서 보기' },
         { step: 3, timing: 'AFTER_3_DAYS_0900', template_type: 'BRAND_CAROUSEL', condition_desc: '모두 (전체 신청자)', cards: [{ header_20chars: tFirst(topic, 20), body_180chars: tFirst(gift, 120), button_8chars: '자세히보기' }, { header_20chars: '궁금한 점 안내', body_180chars: '궁금한 점은 언제든 채널로 문의해 주세요.', button_8chars: '신청하기' }] }
       ],
@@ -1478,14 +1502,18 @@
         }];
         if (cadence.type === 'MONTHLY' && (!s.body_text || /어제 받아보신/.test(s.body_text))) {
           bodyText = idx === 1
-            ? ('#{이름}님, 이번 달 정기 인터뷰 영상이 도착했습니다. #{@' + firstSheet + '}에 맞춰 꼭 필요한 핵심 이야기만 담았어요.')
-            : ('#{이름}님, 두 번째 월간 인터뷰 영상이 공개되었습니다. 아래 버튼을 눌러 유튜브에서 바로 시청해 보세요.');
+            ? ('#{이름}님, 이번 달 정기 인터뷰 영상이 공개되었습니다.\n▶ 맞춤 안내 : #{@' + firstSheet + '} 주제로 선정한 실전 사례 인터뷰와 핵심 체크포인트')
+            : ('#{이름}님, 두 번째 월간 인터뷰 영상이 도착했습니다.\n▶ 맞춤 안내 : #{@' + firstSheet + '} 심화 Q&A와 현장 노하우를 유튜브에서 바로 확인해 보세요.');
         }
       } else if (cadence.type === 'MONTHLY' && idx >= 1 && (!s.body_text || /어제 받아보신/.test(s.body_text))) {
         bodyText = idx === 1
-          ? ('#{이름}님, 이번 달 첫 번째 정기 소식이 도착했습니다. #{@' + firstSheet + '} 맞춤 핵심 내용을 확인해 보세요.')
-          : ('#{이름}님, 두 번째 달 정기 소식이 도착했습니다. 매월 꾸준히 유익한 소식으로 찾아뵙겠습니다.');
+          ? ('#{이름}님, 이번 달 정기 브리핑이 도착했습니다.\n▶ 맞춤 안내 : #{@' + firstSheet + '} 고객을 위한 실전 체크리스트와 이달의 핵심 요약')
+          : ('#{이름}님, 두 번째 달 정기 브리핑을 보내드립니다.\n▶ 맞춤 안내 : #{@' + firstSheet + '} 후속 실천 가이드와 주요 일정을 확인해 보세요.');
       }
+
+      var rawIntro = s.content_intro || '신청이 정상 접수되었습니다. 준비된 첫 안내 자료를 아래 버튼에서 바로 확인해 보세요.';
+      var safeIntro = (tt === 'ALIMTALK') ? stripAlimtalkChannelAddSolicitation(rawIntro) : rawIntro;
+      var safeBody = (tt === 'ALIMTALK') ? stripAlimtalkChannelAddSolicitation(bodyText) : bodyText;
 
       return {
         step: idx + 1,
@@ -1499,11 +1527,11 @@
         template_type: tt, template_id: TOSS_TEMPLATE_ID,
         branches: [{
           priority: 1, condition_desc: s.condition_desc || '모두 (전체 신청자)', template_id: TOSS_TEMPLATE_ID,
-          variables: { '콘텐츠 제목': tFirst(s.content_title || (th.headline + ' 신청 접수 확인'), 40), '콘텐츠 소개': s.content_intro || '신청하신 첫 자료 안내가 준비되었어요. (다음 소식 수신을 위해 상단 노란색 [채널 추가]를 꼭 눌러 주세요!)' },
+          variables: { '콘텐츠 제목': tFirst(s.content_title || (th.headline + ' 신청 접수 확인'), 40), '콘텐츠 소개': safeIntro || '신청이 정상 접수되었습니다. 준비된 첫 안내 자료를 아래 버튼에서 확인해 보세요.' },
           sheet_fallback_strings: fbSheet, image_ratio: '800x400',
           image_copy: { badge: s.badge || th.badge, headline: s.headline || th.headline, subtext: s.subtext || th.subtext },
           media_preview: mediaPreview,
-          body_text_400chars: bodyText,
+          body_text_400chars: safeBody,
           buttons: stepButtons,
           cards_800x600: cards
         }]
@@ -1742,7 +1770,126 @@
     return s || String(raw || '').trim();
   }
 
-  // Q1~Q3 자유 답변에서 미래 발송 날짜·시각(Q5) 또는 간격 주기(Q4)를 감지해 자동 토스 데이터 생성
+  // ── V2.8 카카오 메시지 성격 자동 분류(정보성 알림톡 vs 홍보·소식 카톡) & 야간 규정(20:00~08:00) 검증 ──
+  CONSULT.stripAlimtalkChannelAddSolicitation = stripAlimtalkChannelAddSolicitation;
+  TOSS.stripAlimtalkChannelAddSolicitation = stripAlimtalkChannelAddSolicitation;
+
+  var PROMO_MESSAGE_RE = /할인|특가|쿠폰|이벤트|무료\s*증정|프로모션|광고|홍보|모집|결제|구매|오픈런|공구|세일|타임세일|칼럼|연재|영상|유튜브|youtube|쇼츠|후기|레시피|소식|브리핑|매거진|혜택|체험권|우대|정규반|얼리버드|신메뉴|신상|인터뷰|주보|묵상|카드뉴스/i;
+  var INFO_ALIMTALK_RE = /예약\s*(확인|안내|확정|알림)|신청\s*(확인|완료|접수)|참석\s*(확인|안내|리마인드)|일정\s*(안내|리마인드|알림)|오시는\s*길|주차\s*안내|입장\s*안내|준비물|주의사항|금식|복약|서류\s*준비|접속\s*링크|리마인드|휴진|당일\s*안내|개강\s*안내|반\s*배정|출석\s*확인|등록\s*확인|알림톡/i;
+
+  CONSULT.classifyKakaoMessageType = function (qNum, text) {
+    var n = Number(qNum) || 0;
+    var s = String(text || '').trim();
+    if (n === 3) {
+      var b3 = '🔵 정보성 알림톡 · 24시간 즉시 발송';
+      return {
+        type: 'INFO_ALIMTALK',
+        badge: b3,
+        badgeText: b3,
+        shortLabel: '정보성 알림톡',
+        allowNight: true,
+        isPromo: false
+      };
+    }
+    if (n === 4 || n === 5) {
+      var hasPromo = PROMO_MESSAGE_RE.test(s);
+      var hasInfo = INFO_ALIMTALK_RE.test(s);
+      if (hasPromo) {
+        var bp = '🟡 홍보·소식 카톡 (오후 8시~오전 8시 발송 제한)';
+        return {
+          type: 'PROMO_FRIENDTALK',
+          badge: bp,
+          badgeText: bp,
+          shortLabel: '홍보·소식 카톡',
+          allowNight: false,
+          isPromo: true
+        };
+      }
+      if (hasInfo || n === 5) {
+        var bi = '🔵 정보성 알림톡 (야간 20시 이후에도 발송 가능)';
+        return {
+          type: 'INFO_ALIMTALK',
+          badge: bi,
+          badgeText: bi,
+          shortLabel: '정보성 알림톡',
+          allowNight: true,
+          isPromo: false
+        };
+      }
+      var bp2 = '🟡 홍보·소식 카톡 (오후 8시~오전 8시 발송 제한)';
+      return {
+        type: 'PROMO_FRIENDTALK',
+        badge: bp2,
+        badgeText: bp2,
+        shortLabel: '홍보·소식 카톡',
+        allowNight: false,
+        isPromo: true
+      };
+    }
+    return null;
+  };
+
+  CONSULT.isNightRestrictedTime = function (time24) {
+    var m = String(time24 || '').trim().match(/^(\d{1,2}):(\d{2})$/);
+    if (!m) return false;
+    var h = parseInt(m[1], 10);
+    if (!isFinite(h) || h < 0 || h > 23) return false;
+    // 카카오 공식 규정: 오후 8시(20:00) ~ 다음 날 오전 8시(07:59)
+    return (h >= 20 || h < 8);
+  };
+
+  CONSULT.checkNightPolicyForMessage = function (qNum, text, time24List) {
+    var msgType = CONSULT.classifyKakaoMessageType(qNum, text);
+    if (!msgType || msgType.allowNight) {
+      return { blocked: false, msgType: msgType };
+    }
+    var times = Array.isArray(time24List) ? time24List.filter(Boolean) : [];
+    var parsedT = parseKoreanTimeFromText(text, '');
+    if (parsedT && parsedT.matched && parsedT.time24) {
+      times.push(parsedT.time24);
+    }
+    var hasNightTime = times.some(function (t) { return CONSULT.isNightRestrictedTime(t); });
+    var hasNightWord = /(야간|새벽|심야|자정|밤\s*\d{1,2}시|20시|20:00|21시|22시|23시|오후\s*8시|저녁\s*8시|오후\s*9시|오후\s*10시|오후\s*11시|오전\s*[1-7]시)/i.test(String(text || ''));
+    if (!hasNightTime && !hasNightWord) {
+      return { blocked: false, msgType: msgType };
+    }
+    var exactMsg = '이 내용은 홍보·소식성이라 카카오 정책상 오후 8시~오전 8시에는 발송되지 않아요. 오후 7:30 이전이나 오전 8:00 이후로 맞춰보세요!';
+    var safeText = String(text || '').trim();
+    var eveningDraft = safeText
+      .replace(/(오후\s*8시|저녁\s*8시|20시|20:00|오후\s*9시|오후\s*10시|오후\s*11시|21시|22시|23시|밤\s*\d{1,2}시|새벽\s*\d{1,2}시|오전\s*[1-7]시|야간|심야|새벽)/g, '오후 7시 30분');
+    if (eveningDraft === safeText) eveningDraft = '오후 7:30에 ' + safeText;
+    var morningDraft = safeText
+      .replace(/(오후\s*8시|저녁\s*8시|20시|20:00|오후\s*9시|오후\s*10시|오후\s*11시|21시|22시|23시|밤\s*\d{1,2}시|새벽\s*\d{1,2}시|오전\s*[1-7]시|야간|심야|새벽)/g, '오전 8시');
+    if (morningDraft === safeText) morningDraft = '오전 8:00에 ' + safeText;
+
+    return {
+      blocked: true,
+      message: exactMsg,
+      msgType: msgType,
+      guardrail: {
+        ruleId: 'night_friendtalk',
+        title: '홍보·소식 카톡 야간 발송 제한 (오후 8시~오전 8시)',
+        reason: exactMsg,
+        exactMessage: exactMsg,
+        alternatives: [
+          {
+            label: '오후 7:30(19:30)으로 발송 시각 맞추기',
+            detail: '카카오 홍보 카톡 마감(오후 8시) 직전인 오후 7:30에 안전하게 발송되도록 맞춰드려요.',
+            suggestedTime24: '19:30',
+            draftText: eveningDraft
+          },
+          {
+            label: '오전 8:00(08:00) 이후로 발송 시각 맞추기',
+            detail: '아침 열람률이 높은 오전 8:00 이후로 맞춰 카카오 규정 위반 없이 발송해 드려요.',
+            suggestedTime24: '08:00',
+            draftText: morningDraft
+          }
+        ]
+      }
+    };
+  };
+
+  // Q1~Q3 자유 답변에서 미래 특정 날짜·시각(Q5 최대 3슬롯) 또는 간격 주기(Q4)를 감지해 자동 토스 데이터 생성 (RECURRING 모드 완전 폐지)
   CONSULT.autoTossScheduleHints = function (text, opts) {
     opts = opts || {};
     var s = String(text || '').trim();
@@ -1756,94 +1903,63 @@
     var dateReservation = null;
     var interval = null;
 
-    // 1) 특정 날짜 (YYYY-MM-DD / YYYY.MM.DD / YYYY년 M월 D일 / M월 D일) -> Q5 ONCE
-    var isoM = s.match(/(\d{4})[-./년]\s*(\d{1,2})[-./월]\s*(\d{1,2})\s*일?/);
-    var mdM = !isoM ? s.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/) : null;
-    if (isoM || mdM) {
-      var yr = isoM ? parseInt(isoM[1], 10) : refYear;
-      var mo = parseInt(isoM ? isoM[2] : mdM[1], 10);
-      var dy = parseInt(isoM ? isoM[3] : mdM[2], 10);
-      if (mo >= 1 && mo <= 12 && dy >= 1 && dy <= 31) {
-        if (!isoM && (mo < refMonth || (mo === refMonth && dy < refDay))) {
-          // 과거 월이면 다음 해로 보정 (단, 12월 24일처럼 현재 기준 미래 날짜는 올해 유지)
-          yr = refYear + 1;
-        }
-        var dateStr = yr + '-' + String(mo).padStart(2, '0') + '-' + String(dy).padStart(2, '0');
-        var tInfo = parseKoreanTimeFromText(s, '09:00');
-        var msgHint = cleanScheduleMessageHint(s, [isoM ? isoM[0] : mdM[0], tInfo.matchedText]);
-        var disp = mo + '월 ' + dy + '일 ' + tInfo.timeKo;
-        dateReservation = {
-          mode: 'ONCE',
-          date: dateStr,
-          time24: tInfo.time24,
-          timeKo: tInfo.timeKo,
-          ampm: tInfo.ampm,
-          hour12: tInfo.hour12,
-          minute: tInfo.minute,
-          recurringFreq: '',
-          recurringDay: '',
-          recurringLabel: '',
-          displayLabel: disp,
-          message_hint: msgHint,
-          draftText: msgHint,
-          autoTossed: true
-        };
+    // 1) 특정 날짜 최대 3개 추출 (YYYY-MM-DD / YYYY.MM.DD / YYYY년 M월 D일 / M월 D일) -> Q5 SLOTS (ONCE)
+    var dateRe = /(?:(\d{4})[-./년]\s*)?(\d{1,2})\s*(?:[-./]\s*(\d{1,2})(?!\s*시)|월\s*(\d{1,2})\s*일?)/g;
+    var foundSlots = [];
+    var matchedDateTokens = [];
+    var m;
+    while ((m = dateRe.exec(s)) !== null && foundSlots.length < 3) {
+      var hasYear = !!m[1];
+      var yr = hasYear ? parseInt(m[1], 10) : refYear;
+      var mo = parseInt(m[2], 10);
+      var dy = parseInt(m[3] || m[4], 10);
+      if (!isFinite(mo) || !isFinite(dy) || mo < 1 || mo > 12 || dy < 1 || dy > 31) continue;
+      if (!hasYear && (mo < refMonth || (mo === refMonth && dy < refDay))) {
+        yr = refYear + 1;
       }
+      var dateStr = yr + '-' + String(mo).padStart(2, '0') + '-' + String(dy).padStart(2, '0');
+      var afterCtx = s.slice(m.index, Math.min(s.length, m.index + m[0].length + 22));
+      var tInfo = parseKoreanTimeFromText(afterCtx, '');
+      if (!tInfo.matched) tInfo = parseKoreanTimeFromText(s, '09:00');
+      matchedDateTokens.push(m[0]);
+      if (tInfo.matchedText) matchedDateTokens.push(tInfo.matchedText);
+      var slotMsg = cleanScheduleMessageHint(s, [m[0], tInfo.matchedText]);
+      foundSlots.push({
+        date: dateStr,
+        time24: tInfo.time24,
+        timeKo: tInfo.timeKo,
+        ampm: tInfo.ampm,
+        hour12: tInfo.hour12,
+        minute: tInfo.minute,
+        displayLabel: mo + '월 ' + dy + '일 ' + tInfo.timeKo,
+        message: slotMsg,
+        message_hint: slotMsg,
+        autoTossed: true
+      });
     }
 
-    // 2) 매월/매주 정해진 날 (매달 1일 / 매월 15일 / 매월 말일 / 매주 월요일) -> Q5 RECURRING
-    if (!dateReservation) {
-      var recMonthM = s.match(/(매달|매월)\s*(말일|마지막\s*날|(\d{1,2})\s*일)/);
-      var recWeekM = !recMonthM ? s.match(/(매주|주마다)\s*(월|화|수|목|금|토|일)(?:요일)?/) : null;
-      if (recMonthM) {
-        var rawDay = recMonthM[2].replace(/\s+/g, '');
-        var normDay = /말일|마지막날/.test(rawDay) ? '말일' : (parseInt(recMonthM[3], 10) + '일');
-        var tInfoM = parseKoreanTimeFromText(s, '10:00');
-        var recLabelM = '매월 ' + normDay + ' ' + tInfoM.timeKo;
-        var msgHintM = cleanScheduleMessageHint(s, [recMonthM[0], tInfoM.matchedText]);
-        dateReservation = {
-          mode: 'RECURRING',
-          date: '',
-          time24: tInfoM.time24,
-          timeKo: tInfoM.timeKo,
-          ampm: tInfoM.ampm,
-          hour12: tInfoM.hour12,
-          minute: tInfoM.minute,
-          recurringFreq: 'MONTHLY',
-          recurringDay: normDay,
-          recurringLabel: recLabelM,
-          displayLabel: recLabelM,
-          message_hint: msgHintM,
-          draftText: msgHintM,
-          autoTossed: true
-        };
-      } else if (recWeekM) {
-        var normDow = recWeekM[2] + '요일';
-        var tInfoW = parseKoreanTimeFromText(s, '09:00');
-        var recLabelW = '매주 ' + normDow + ' ' + tInfoW.timeKo;
-        var msgHintW = cleanScheduleMessageHint(s, [recWeekM[0], tInfoW.matchedText]);
-        dateReservation = {
-          mode: 'RECURRING',
-          date: '',
-          time24: tInfoW.time24,
-          timeKo: tInfoW.timeKo,
-          ampm: tInfoW.ampm,
-          hour12: tInfoW.hour12,
-          minute: tInfoW.minute,
-          recurringFreq: 'WEEKLY',
-          recurringDay: normDow,
-          recurringLabel: recLabelW,
-          displayLabel: recLabelW,
-          message_hint: msgHintW,
-          draftText: msgHintW,
-          autoTossed: true
-        };
-      }
+    if (foundSlots.length > 0) {
+      var first = foundSlots[0];
+      var cleanMsgAll = cleanScheduleMessageHint(s, matchedDateTokens);
+      dateReservation = {
+        mode: 'ONCE',
+        date: first.date,
+        time24: first.time24,
+        timeKo: first.timeKo,
+        ampm: first.ampm,
+        hour12: first.hour12,
+        minute: first.minute,
+        displayLabel: foundSlots.length === 1 ? first.displayLabel : (first.displayLabel + ' 외 ' + (foundSlots.length - 1) + '건'),
+        message_hint: cleanMsgAll || first.message_hint,
+        draftText: cleanMsgAll || first.message_hint,
+        slots: foundSlots,
+        autoTossed: true
+      };
     }
 
-    // 3) 신청일 기준 에버그린 간격 (N일 뒤/간격/마다, 일주일마다, 한 달 간격, 매월(일자 미지정)) -> Q4 INTERVAL
-    var monthIntM = s.match(/(한\s*달\s*(마다|간격|뒤|후)|30일\s*(마다|간격|뒤|후)|월\s*1\s*회|달마다|(?:매월|매달)(?!\s*(?:말일|마지막\s*날|\d{1,2}\s*일)))/);
-    var weekIntM = !monthIntM ? s.match(/(일주일\s*(마다|간격|뒤|후)|7일\s*(마다|간격|뒤|후)|주\s*1\s*회|매주(?!\s*[월화수목금토일]))/) : null;
+    // 2) 신청일 기준 에버그린 간격 (N일 뒤/간격/마다, 일주일마다, 한 달 간격, 매월/매주 정기 연재 -> 모두 Q4 간격발송으로 매핑)
+    var monthIntM = s.match(/(한\s*달\s*(마다|간격|뒤|후)|30일\s*(마다|간격|뒤|후)|월\s*1\s*회|달마다|(?:매월|매달)(?:\s*(?:말일|마지막\s*날|\d{1,2}\s*일))?)/);
+    var weekIntM = !monthIntM ? s.match(/(일주일\s*(마다|간격|뒤|후)|7일\s*(마다|간격|뒤|후)|주\s*1\s*회|(?:매주|주마다)(?:\s*[월화수목금토일](?:요일)?)?)/) : null;
     var dayIntM = (!monthIntM && !weekIntM) ? s.match(/(\d{1,2})\s*일\s*(뒤|후|간격|마다)|(?:이틀|사흘)\s*(뒤|후|간격|마다)|격일/) : null;
 
     if (monthIntM) {
@@ -2299,12 +2415,35 @@
   };
 
   // ── 1) 실시간 고마워톡 매뉴얼 검문소 (로컬 즉시 1차 방어막 — 오프라인/온라인 100% 작동)
-  CONSULT.checkFeasibilityLocal = function (userText) {
+  CONSULT.checkFeasibilityLocal = function (userText, opts) {
+    opts = opts || {};
     var txt = String(userText || '').trim();
     if (!txt) return { feasible: true };
+
+    // V2.8: Q4/Q5 야간 발송 정책 정밀 검증 (정보성 알림톡은 24시간 허용, 홍보·소식 카톡만 20:00~08:00 차단)
+    var qNum = Number(opts.qNum) || 0;
+    if (qNum === 4 || qNum === 5) {
+      var nightCheck = CONSULT.checkNightPolicyForMessage(qNum, txt, opts.time24List);
+      if (nightCheck.blocked && nightCheck.guardrail) {
+        return {
+          feasible: false,
+          ruleId: nightCheck.guardrail.ruleId,
+          title: nightCheck.guardrail.title,
+          reason: nightCheck.guardrail.reason,
+          exactMessage: nightCheck.guardrail.exactMessage,
+          alternatives: nightCheck.guardrail.alternatives
+        };
+      }
+    }
+
     var rules = CONSULT.getFeasibilityRules();
     for (var i = 0; i < rules.length; i++) {
       var rule = rules[i];
+      // 정보성 알림톡은 24시간 발송 가능하므로 night_friendtalk 규칙 적용 제외
+      if (rule.id === 'night_friendtalk') {
+        var cls = CONSULT.classifyKakaoMessageType(qNum || 4, txt);
+        if (cls && cls.allowNight) continue;
+      }
       var pats = rule.patterns || [];
       for (var j = 0; j < pats.length; j++) {
         if (pats[j].test(txt)) {
@@ -2510,10 +2649,10 @@
         : '   - q1 (① 신청화면): 누구를 초대해 어떤 핵심 안내·혜택을 드릴지',
       '   - q2 (② 신청질문): 신청할 때 클릭해서 고르게 할 객관식 질문 1개와 보기 3~4개',
       isPolitics
-        ? '   - q3 (③ 첫카톡): 등록 직후 1초 만에 도착할 환영·접수확인 카톡(핵심 공약 요약·행사 안내·의정 자료)'
-        : '   - q3 (③ 첫카톡): 신청 직후 1초 만에 도착할 환영·접수확인 카톡 내용',
+        ? '   - q3 (③ 첫카톡): 등록 직후 1초 만에 도착할 환영·접수확인 카톡(핵심 공약 요약·행사 안내·의정 자료, 본문에 채널 추가 유도 문구 절대 금지)'
+        : '   - q3 (③ 첫카톡): 신청 직후 1초 만에 도착할 환영·접수확인 카톡 내용 (알림톡 본문에 "채널 추가를 눌러주세요/부탁드려요" 같은 채널 추가 유도 문구 절대 금지)',
       '   - q4 (④ 며칠뒤 자동): 신청한 날 기준으로 며칠 간격(1일·3일 / 일주일 / 한 달) 자동 안부·정보 카톡 내용',
-      '   - q5 (⑤ 날짜지정): 달력의 특정 날짜·시각(예: 12월 24일 오전 9:30) 또는 매월·매주 정해진 날 전원 동시 예약 발송 내용',
+      '   - q5 (⑤ 날짜지정): 달력의 특정 날짜·시각(예: 12월 24일 오전 9:30)에 신청자 전원에게 동시 예약 발송할 내용 (매월·매주 자동 반복 표현 절대 금지)',
       '5) q1QuestionText는 1문장, 친근하고 직관적인 존댓말.',
       '6) 출력은 아래 JSON 객체만 출력하세요:',
       '{"q1QuestionText":"...","q1":["예시1","예시2","예시3"],"q2":["예시1","예시2","예시3"],"q3":["예시1","예시2","예시3"],"q4":["예시1","예시2","예시3"],"q5":["예시1","예시2","예시3"]}'
@@ -2594,8 +2733,8 @@
     var cleanFn = isPolitics ? CONSULT.cleanPoliticsText : CONSULT.cleanPartnerText;
     var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub);
 
-    // ① 1차 하드 가드레일 (로컬 매뉴얼 정규식 즉시 검문 — 온라인/오프라인 무관 100% 차단)
-    var localCheck = CONSULT.checkFeasibilityLocal(userText);
+    // ① 1차 하드 가드레일 (로컬 매뉴얼 정규식 + 카카오 야간 20:00~08:00 정밀 검문 — 온라인/오프라인 무관 100% 차단)
+    var localCheck = CONSULT.checkFeasibilityLocal(userText, { qNum: qNum, time24List: ctx.time24List });
     if (!localCheck.feasible) {
       return Promise.resolve({
         feasible: false,
@@ -2603,6 +2742,7 @@
           ruleId: localCheck.ruleId,
           title: localCheck.title,
           reason: localCheck.reason,
+          exactMessage: localCheck.exactMessage || '',
           alternatives: localCheck.alternatives
         }
       });
@@ -2635,7 +2775,8 @@
       '',
       '[절대 매뉴얼 검문 기준 — 아래 중 하나라도 파트너 답변에 요구되면 반드시 feasible=false로 차단하세요!]',
       CONSULT.buildGuardrailManualSummary(),
-      '※ 위 목록 외라도 "실시간 맞춤 영상/음성/이미지 즉석 자동 제작 발송", "카톡방 내 실시간 AI 1:1 자유 채팅 상담", "채널 미추가 고객 광고성 친구톡 강제 발송", "알림톡 본문에 할인·특가·쿠폰 발송", "고마워톡 자체 카드결제창/장바구니 내장", "신청폼 내 사진·서류 파일 업로드", "야간(20:30~08:00) 친구톡 발송", "한 회차 6개 이상 다중 분기"가 포함되면 절대 통과시키지 마세요!',
+      '※ 위 목록 외라도 "실시간 맞춤 영상/음성/이미지 즉석 자동 제작 발송", "카톡방 내 실시간 AI 1:1 자유 채팅 상담", "채널 미추가 고객 광고성 친구톡 강제 발송", "알림톡 본문에 할인·특가·쿠폰 또는 채널 추가 유도 문구 기재", "고마워톡 자체 카드결제창/장바구니 내장", "신청폼 내 사진·서류 파일 업로드", "야간(20:00~08:00) 홍보·소식 카톡(친구톡·브랜드메시지) 발송", "한 회차 6개 이상 다중 분기"가 포함되면 절대 통과시키지 마세요!',
+      '※ 단, 예약·신청 확인·일정 리마인드 같은 정보성 알림톡은 야간 20시 이후 포함 24시간 언제든 발송 가능하므로 야간 시간이라도 절대 차단하지 마세요!',
       '※ 단, 파트너가 정상적인 목표·고민·자료·안내·상담·예약·기존 링크 연결·객관식 분류 등을 적었다면 반드시 feasible=true로 통과시키세요.',
       '※ exampleChips 3개는 반드시 사용자가 입력한 [세부 업종](' + sub + ')과 직전 답변 맥락에만 100% 맞춰 작성하고, 다른 업종 예시를 단 한 글자도 절대 섞지 마세요.',
       politicsLine,
@@ -2780,11 +2921,19 @@
     var dateRes = ctx.dateReservation || null;
     var q2Txt = String(A[2] || '추가 질문 없이 이름·연락처만 간단히 받기');
     var q4Txt = String(A[4] || (intCfg && intCfg.enabled === false ? '며칠 뒤 자동 카톡은 안 보냄 (건너뛰기)' : (intCfg && intCfg.label ? intCfg.label : '1일 · 3일 뒤 자동 후속 안부 카톡')));
-    var q5Txt = String(A[5] || (dateRes && dateRes.mode === 'ONCE' && dateRes.date
-      ? (dateRes.date + ' ' + (dateRes.timeKo || dateRes.time24 || '') + (dateRes.message_hint ? (' — ' + dateRes.message_hint) : ''))
-      : (dateRes && dateRes.mode === 'RECURRING' && dateRes.recurringLabel
-        ? (dateRes.recurringLabel + (dateRes.message_hint ? (' — ' + dateRes.message_hint) : ''))
-        : '정해진 날짜 카톡은 없어요 (건너뛰기)')));
+    var dateSlots = (dateRes && Array.isArray(dateRes.slots)) ? dateRes.slots.filter(function (sl) { return sl && sl.date; }).slice(0, 3) : [];
+    var q5Fallback = '날짜 지정 카톡은 안 보냄 (건너뛰기)';
+    if (dateRes && dateRes.mode !== 'SKIP') {
+      if (dateSlots.length > 0) {
+        q5Fallback = dateSlots.map(function (sl, idx) {
+          var tKo = sl.timeKo || CONSULT.formatTime24ToKo(sl.time24 || '09:00');
+          return (idx + 1) + '차: ' + sl.date + ' ' + tKo + (sl.message || sl.message_hint ? (' — ' + (sl.message || sl.message_hint)) : '');
+        }).join(' / ');
+      } else if (dateRes.date) {
+        q5Fallback = dateRes.date + ' ' + (dateRes.timeKo || dateRes.time24 || '') + (dateRes.message_hint ? (' — ' + dateRes.message_hint) : '');
+      }
+    }
+    var q5Txt = String(A[5] || q5Fallback);
     var flowTxt = [q4Txt, q5Txt].filter(Boolean).join(' / ');
     return {
       sectorLine: (sec ? (sec.icon + ' ' + sec.title) : '') + (ctx.subIndustry ? (' · ' + ctx.subIndustry) : ''),
@@ -2896,18 +3045,54 @@
     if (!dateReservation) {
       var parsed5 = CONSULT.autoTossScheduleHints(String(A[5] || ''));
       if (q5SkipText) {
-        dateReservation = { mode: 'SKIP', date: '', time24: '', timeKo: '', recurringFreq: '', recurringDay: '', recurringLabel: '', message_hint: '' };
+        dateReservation = { mode: 'SKIP', date: '', time24: '', timeKo: '', message_hint: '', slots: [] };
       } else if (parsed5.dateReservation) {
         dateReservation = Object.assign({}, parsed5.dateReservation);
       } else {
-        dateReservation = { mode: 'SKIP', date: '', time24: '', timeKo: '', recurringFreq: '', recurringDay: '', recurringLabel: '', message_hint: '' };
+        dateReservation = { mode: 'SKIP', date: '', time24: '', timeKo: '', message_hint: '', slots: [] };
       }
     }
-    if (dateReservation.mode === 'ONCE' && dateReservation.time24 && !dateReservation.timeKo) {
-      dateReservation.timeKo = CONSULT.formatTime24ToKo(dateReservation.time24);
+    var normalizedSlots = [];
+    if (dateReservation.mode !== 'SKIP') {
+      if (Array.isArray(dateReservation.slots) && dateReservation.slots.length > 0) {
+        normalizedSlots = dateReservation.slots.filter(function (sl) { return sl && sl.date; }).slice(0, 3).map(function (sl) {
+          var t24 = sl.time24 || '09:00';
+          var tKo = sl.timeKo || CONSULT.formatTime24ToKo(t24);
+          var msg = String(sl.message || sl.message_hint || dateReservation.message_hint || '').trim();
+          return {
+            date: String(sl.date),
+            time24: t24,
+            timeKo: tKo,
+            message: msg,
+            message_hint: msg
+          };
+        });
+      } else if (dateReservation.date) {
+        var singleT24 = dateReservation.time24 || '09:00';
+        var singleTKo = dateReservation.timeKo || CONSULT.formatTime24ToKo(singleT24);
+        var singleMsg = String(dateReservation.message_hint || '').trim();
+        normalizedSlots = [{
+          date: String(dateReservation.date),
+          time24: singleT24,
+          timeKo: singleTKo,
+          message: singleMsg,
+          message_hint: singleMsg
+        }];
+      }
     }
-    if (dateReservation.mode === 'RECURRING' && dateReservation.time24 && !dateReservation.timeKo) {
-      dateReservation.timeKo = CONSULT.formatTime24ToKo(dateReservation.time24);
+    if (normalizedSlots.length > 0) {
+      dateReservation.mode = 'ONCE';
+      dateReservation.date = normalizedSlots[0].date;
+      dateReservation.time24 = normalizedSlots[0].time24;
+      dateReservation.timeKo = normalizedSlots[0].timeKo;
+      dateReservation.message_hint = normalizedSlots[0].message_hint || dateReservation.message_hint || '';
+      dateReservation.slots = normalizedSlots;
+    } else {
+      dateReservation.mode = 'SKIP';
+      dateReservation.date = '';
+      dateReservation.time24 = '';
+      dateReservation.timeKo = '';
+      dateReservation.slots = [];
     }
 
     // 기존 TOSS.assembleCampaign의 탄탄한 구조 조립기를 재활용하되 5대 탭 답변으로 매핑
@@ -2962,10 +3147,8 @@
         date: String(dateReservation.date || ''),
         time24: String(dateReservation.time24 || ''),
         timeKo: String(dateReservation.timeKo || ''),
-        recurringFreq: String(dateReservation.recurringFreq || ''),
-        recurringDay: String(dateReservation.recurringDay || ''),
-        recurringLabel: String(dateReservation.recurringLabel || ''),
-        message_hint: String(dateReservation.message_hint || '')
+        message_hint: String(dateReservation.message_hint || ''),
+        slots: Array.isArray(dateReservation.slots) ? dateReservation.slots.slice(0, 3) : []
       }
     };
 
@@ -2986,64 +3169,43 @@
     }
 
     var dr = master.meta.schedule_config.date_reservation;
-    if (dr.mode === 'ONCE' && dr.date) {
-      var onceTime24 = dr.time24 || '09:00';
-      var onceTimeKo = dr.timeKo || CONSULT.formatTime24ToKo(onceTime24);
-      var onceHint = dr.message_hint || (finalBrand + ' 지정 일정 안내');
+    if (dr.mode === 'ONCE' && Array.isArray(dr.slots) && dr.slots.length > 0) {
       var seqLastBranch = (master.tab4_interval_messages && master.tab4_interval_messages.sequence && master.tab4_interval_messages.sequence.length)
         ? master.tab4_interval_messages.sequence[master.tab4_interval_messages.sequence.length - 1].branches[0]
         : {};
-      var onceBranch = Object.assign({}, seqLastBranch, {
-        condition_desc: '전체 신청자 동시 발송',
-        body_text_400chars: '#{이름}님, 안내드린 일정이 다가왔습니다! ' + onceHint,
-        image_copy: {
-          badge: dr.date + ' ' + onceTimeKo + ' 정각 예약',
-          headline: tFirst(onceHint, 30),
-          subtext: finalBrand + ' 공식 안내'
-        }
+      master.tab5_date_messages = dr.slots.slice(0, 3).map(function (sl, sIdx) {
+        var slTime24 = sl.time24 || '09:00';
+        var slTimeKo = sl.timeKo || CONSULT.formatTime24ToKo(slTime24);
+        var slHint = sl.message || sl.message_hint || (finalBrand + ' 지정 일정 안내');
+        var slClass = CONSULT.classifyKakaoMessageType(5, slHint);
+        var slTemplateType = (slClass && slClass.type === 'ALIMTALK_INFO') ? 'ALIMTALK' : 'FREE_FRIENDTALK';
+        var slBody = slTemplateType === 'ALIMTALK'
+          ? stripAlimtalkChannelAddSolicitation('#{이름}님, 안내드린 일정이 다가왔습니다.\n' + slHint)
+          : ('#{이름}님, 안내드린 일정이 다가왔습니다! ' + slHint);
+        var slBranch = Object.assign({}, seqLastBranch, {
+          condition_desc: '전체 신청자 동시 발송',
+          body_text_400chars: slBody,
+          image_copy: {
+            badge: sl.date + ' ' + slTimeKo + ' 정각 예약',
+            headline: tFirst(slHint, 30),
+            subtext: finalBrand + ' 공식 안내'
+          }
+        });
+        return {
+          quick_single_mode: false,
+          slot_index: sIdx + 1,
+          mode: 'ONCE',
+          send_date: sl.date,
+          send_time: slTime24,
+          send_time_ko: slTimeKo,
+          send_datetime: sl.date + ' ' + slTime24,
+          title: tFirst(slHint, 28),
+          message_hint: slHint,
+          template_type: slTemplateType,
+          message_category: slClass ? slClass.type : 'ALIMTALK_INFO',
+          branches: [slBranch]
+        };
       });
-      master.tab5_date_messages = [{
-        quick_single_mode: false,
-        mode: 'ONCE',
-        send_date: dr.date,
-        send_time: onceTime24,
-        send_time_ko: onceTimeKo,
-        send_datetime: dr.date + ' ' + onceTime24,
-        title: tFirst(onceHint, 28),
-        message_hint: onceHint,
-        template_type: 'FREE_FRIENDTALK',
-        branches: [onceBranch]
-      }];
-    } else if (dr.mode === 'RECURRING' && dr.recurringLabel) {
-      var recTime24 = dr.time24 || '10:00';
-      var recTimeKo = dr.timeKo || CONSULT.formatTime24ToKo(recTime24);
-      var recHint = dr.message_hint || (finalBrand + ' 정기 소식 안내');
-      var seqLastBranchR = (master.tab4_interval_messages && master.tab4_interval_messages.sequence && master.tab4_interval_messages.sequence.length)
-        ? master.tab4_interval_messages.sequence[master.tab4_interval_messages.sequence.length - 1].branches[0]
-        : {};
-      var recBranch = Object.assign({}, seqLastBranchR, {
-        condition_desc: '전체 신청자 정기 동시 발송',
-        body_text_400chars: '#{이름}님, ' + dr.recurringLabel + ' 정기 소식이 도착했습니다! ' + recHint,
-        image_copy: {
-          badge: dr.recurringLabel + ' 정기 예약',
-          headline: tFirst(recHint, 30),
-          subtext: finalBrand + ' 정기 안내'
-        }
-      });
-      master.tab5_date_messages = [{
-        quick_single_mode: false,
-        mode: 'RECURRING',
-        recurring_freq: dr.recurringFreq,
-        recurring_day: dr.recurringDay,
-        recurring_label: dr.recurringLabel,
-        send_time: recTime24,
-        send_time_ko: recTimeKo,
-        send_datetime: dr.recurringLabel,
-        title: tFirst(recHint, 28),
-        message_hint: recHint,
-        template_type: 'FREE_FRIENDTALK',
-        branches: [recBranch]
-      }];
     } else if (rawDate && rawDate.mode === 'SKIP') {
       master.tab5_date_messages = [];
     }

@@ -35,7 +35,7 @@ window.GOMAWARTALK_ALIMTALK_TEMPLATES = [
     "public_scope": "전체채널",
     "allowed_channel_ids": "",
     "header_type": "IMAGE",
-    "body_text": "안녕하세요 #{이름}님!\n신청하신 [#{콘텐츠 제목}] 접수가 완료되었습니다.\n\n■ 상세 안내\n#{콘텐츠 소개}\n\n아래 버튼을 눌러 상세 내용을 확인해 주세요.\n\n※ 상단 노란색 [채널 추가]를 눌러두시면\n  다음 편 자료도 카카오로 받아보실 수 있습니다.",
+    "body_text": "안녕하세요 #{이름}님!\n신청하신 [#{콘텐츠 제목}] 접수가 완료되었습니다.\n\n■ 상세 안내\n#{콘텐츠 소개}\n\n아래 버튼을 눌러 상세 내용을 확인해 주세요.",
     "variables": ["콘텐츠 제목", "콘텐츠 소개"],
     "sample_image_url": "",
     "buttons": [
@@ -148,7 +148,7 @@ window.GOMAWARTALK_ALIMTALK_TEMPLATES = [
     "public_scope": "전체채널",
     "allowed_channel_ids": "",
     "header_type": "IMAGE",
-    "body_text": "안녕하세요 #{이름}님!\n[#{모임·멤버십 명}] 등록을 환영합니다! 🎉\n\n#{환영 메시지}\n\n■ 혜택 안내: #{혜택 요약}\n\n채널을 추가하시면 정기 소식과 혜택을 카카오로 받아보실 수 있습니다.",
+    "body_text": "안녕하세요 #{이름}님!\n[#{모임·멤버십 명}] 등록을 환영합니다! 🎉\n\n#{환영 메시지}\n\n■ 혜택 안내: #{혜택 요약}\n\n아래 버튼에서 상세 안내를 확인해 주세요.",
     "variables": ["모임·멤버십 명", "환영 메시지", "혜택 요약"],
     "sample_image_url": "",
     "buttons": [
@@ -188,7 +188,7 @@ window.GOMAWARTALK_ALIMTALK_TEMPLATES = [
     "public_scope": "일부채널",
     "allowed_channel_ids": "15",
     "header_type": "IMAGE",
-    "body_text": "안녕하세요 #{이름} 학부모님!\n장희지 수학학원 원장 직강 자료집 신청이 완료되었습니다. 📚\n\n■ 자료: #{콘텐츠 제목}\n■ 대상: #{@고객진단.학년} 학부모님 맞춤 자료\n\n아래 버튼을 눌러 1편 핵심 로드맵을 먼저 확인해 보세요!\n\n※ 상단 노란색 [채널 추가]를 눌러두시면\n  내일 오전 9시에 2편 심화 칼럼도 받아보실 수 있습니다.",
+    "body_text": "안녕하세요 #{이름} 학부모님!\n장희지 수학학원 원장 직강 자료집 신청이 완료되었습니다. 📚\n\n■ 자료: #{콘텐츠 제목}\n■ 대상: #{@고객진단.학년} 학부모님 맞춤 자료\n\n아래 버튼을 눌러 1편 핵심 로드맵을 먼저 확인해 보세요!",
     "variables": ["콘텐츠 제목"],
     "sample_image_url": "",
     "buttons": [

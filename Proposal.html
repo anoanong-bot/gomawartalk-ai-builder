@@ -133,7 +133,7 @@ button { cursor: pointer; border: none; background: none; }
   padding-bottom: calc(116px + env(safe-area-inset-bottom, 0px));
 }
 
-/* ═════════ 상단 고정 바 (실제 고마워톡 랜딩페이지 규격: 56px 화이트 · 좌 [로고] 브랜드명 · 우 34px 원형 카톡 아이콘) ═════════ */
+/* ═════════ 상단 고정 바 (실제 고마워톡 랜딩페이지 규격: 56px 화이트 · 좌 [로고] 브랜드명 · 우 34px 원형 프로필 아이콘) ═════════ */
 .top-bar {
   position: sticky;
   top: 0;
@@ -177,20 +177,20 @@ button { cursor: pointer; border: none; background: none; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.btn-top-kakao-icon {
+.btn-top-profile-icon {
   flex-shrink: 0;
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #FEE500;
-  color: #191919;
+  background: #F1F5F9;
+  color: #94A3B8;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(25, 25, 25, 0.08);
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
-  transition: transform 0.14s ease;
+  border: 1px solid #E2E8F0;
+  transition: transform 0.14s ease, background 0.14s ease;
 }
-.btn-top-kakao-icon:active { transform: scale(0.93); }
+.btn-top-profile-icon:hover { background: #E2E8F0; color: #64748B; }
+.btn-top-profile-icon:active { transform: scale(0.93); }
 .btn-done-share {
   width: 100%;
   min-height: 56px;
@@ -275,34 +275,11 @@ button { cursor: pointer; border: none; background: none; }
 .reveal.delay-2 { transition-delay: 0.16s; }
 .reveal.delay-3 { transition-delay: 0.24s; }
 
-/* ═════════ [상단 타이틀 & 한 줄 요약 — 50+ 빅폰트 · 타이포 강약 정돈] ═════════ */
+/* ═════════ [상단 타이틀 & 한 줄 요약 — 50+ 빅폰트 · 불필요 배지 제거 · 56px 헤더 하단 여유 확보] ═════════ */
 .cover-section {
-  padding: 24px 22px 22px;
+  padding: 26px 22px 20px;
   background: #FFFFFF;
-}
-.cover-meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.cover-ind-chip {
-  padding: 6px 13px;
-  border-radius: 99px;
-  background: var(--g100);
-  color: #334155;
-  font-size: 16px;
-  font-weight: 700;
-}
-.cover-ratio-chip {
-  padding: 6px 13px;
-  border-radius: 99px;
-  background: #EFF6FF;
-  color: #1D4ED8;
-  font-size: 16px;
-  font-weight: 700;
+  scroll-margin-top: 68px;
 }
 .cover-title {
   font-size: 25px;
@@ -320,17 +297,18 @@ button { cursor: pointer; border: none; background: none; }
   line-height: 1.58;
 }
 
-/* ═════════ [핵심] 올인원 5단계 모바일 연속 시나리오 시뮬레이터 (332px 실버 목업 · 순정 카톡 100% · 외부 50+ 빅폰트) ═════════ */
+/* ═════════ [핵심] 올인원 6단계 모바일 연속 시나리오 시뮬레이터 (332px 실버 목업 · 순정 카톡 100% · 외부 50+ 빅폰트) ═════════ */
 .sim-section {
-  padding: 18px 16px 38px;
+  padding: 24px 16px 38px;
+  scroll-margin-top: 68px;
   background: linear-gradient(180deg, #F3F6FA 0%, #E7ECF3 100%);
   border-bottom: 8px solid #E2E8F0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
-/* 5단계 점프 스텝 칩 바 (최소 16px · 가로 스크롤 쾌적 배치 + ⚡맞춤 인라인 배지 + ↻ 버튼) */
+/* 6단계 점프 스텝 칩 바 (최소 16px · 상단 56px 헤더 비간섭 패딩 + 캐로셀/⚡맞춤 배지 + ↻ 버튼) */
 .sim-steps-row {
   display: flex;
   align-items: stretch;
@@ -338,7 +316,7 @@ button { cursor: pointer; border: none; background: none; }
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 2px 2px 4px;
+  padding: 6px 2px 6px;
 }
 .sim-steps-row::-webkit-scrollbar { display: none; }
 .sim-steps-row.four-steps {
@@ -411,8 +389,10 @@ button { cursor: pointer; border: none; background: none; }
 }
 .sp-type-pill.alim { background: #EFF6FF; color: #1D4ED8; }
 .sp-type-pill.ad { background: #FEF3C7; color: #92400E; }
+.sp-type-pill.carousel { background: #EDE9FE; color: #5B21B6; }
 .sim-step-pill.active .sp-type-pill.alim { background: rgba(96, 165, 250, 0.25); color: #DBEAFE; }
 .sim-step-pill.active .sp-type-pill.ad { background: rgba(254, 229, 0, 0.26); color: #FEF08A; }
+.sim-step-pill.active .sp-type-pill.carousel { background: rgba(196, 181, 253, 0.28); color: #EDE9FE; }
 .sim-step-pill.done {
   border-color: var(--purple-bd);
   background: #FAF5FF;
@@ -442,89 +422,84 @@ button { cursor: pointer; border: none; background: none; }
 .btn-sim-restart-icon:hover { background: var(--g100); color: var(--g900); }
 .btn-sim-restart-icon:active { transform: rotate(-35deg) scale(0.94); }
 
-/* 시뮬레이터 외부 스테이지 (리모컨 + 플래그십 폰 + 외부 내비 + 손가락 코치마크 기준 좌표) */
+/* 시뮬레이터 외부 스테이지 (초슬림 세그먼트 + 플래그십 폰 + 외부 내비) */
 .sim-stage-outer {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   width: 100%;
 }
 
-/* 폰 프레임 위: 원포인트 맞춤 분기 스포트라이트 카드 (분기 단계 1곳에서만 오픈, 공통 단계에서는 display:none) */
+/* ★ V3.1 스크롤 0mm · 토스식 1줄 세그먼트 스위치 (분기 단계 1곳에서만 폰 바로 위 10px 간격으로 초슬림 배치) */
 .sim-remote-panel {
   width: 100%;
-  max-width: 420px;
-  padding: 18px 16px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #FAF5FF 0%, #FFFFFF 55%, #EFF6FF 100%);
-  border: 1.5px solid #C4B5FD;
-  box-shadow: 0 10px 26px rgba(124, 58, 237, 0.12);
+  max-width: 380px;
+  padding: 0;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
 }
 .sim-remote-panel[hidden] { display: none !important; }
 .sim-remote-panel.spotlight-open {
-  animation: spotlightReveal 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: spotlightReveal 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 @keyframes spotlightReveal {
-  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .remote-caption {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: #4C1D95;
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  line-height: 1.45;
+  text-align: center;
+  line-height: 1.32;
   letter-spacing: -0.02em;
 }
 .remote-pill-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 9px;
-}
-.remote-visit-btn, .remote-branch-btn {
-  min-height: 58px;
-  padding: 12px 10px;
+  gap: 4px;
+  padding: 4px;
+  min-height: 48px;
   border-radius: 14px;
-  background: #FFFFFF;
-  color: var(--g900);
-  border: 1.5px solid #DDD6FE;
-  font-size: 16.5px;
-  font-weight: 800;
-  line-height: 1.38;
-  transition: all 0.18s ease;
+  background: #E2E8F0;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+.remote-branch-btn {
+  min-height: 42px;
+  padding: 6px 10px;
+  border-radius: 11px;
+  background: transparent;
+  color: #334155;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.28;
+  transition: all 0.16s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   text-align: center;
   word-break: keep-all;
 }
-.remote-visit-btn.on, .remote-branch-btn.on {
-  background: linear-gradient(135deg, #111827 0%, #4C1D95 100%);
-  color: #FFFFFF;
-  border-color: #4C1D95;
-  box-shadow: 0 6px 16px rgba(76, 29, 149, 0.24);
-  transform: translateY(-1px);
+.remote-branch-btn.on {
+  background: #FFFFFF;
+  color: #0F172A;
+  font-weight: 800;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
 }
-.remote-visit-btn:active, .remote-branch-btn:active { transform: scale(0.97); }
-.remote-step2-note {
-  font-size: 16.5px;
-  font-weight: 700;
-  color: var(--g700);
-  line-height: 1.5;
+.remote-branch-btn .seg-dot {
+  font-size: 16px;
+  line-height: 1;
+  color: #94A3B8;
+  flex-shrink: 0;
 }
-.remote-branch-summary {
-  padding: 12px 14px;
-  border-radius: 13px;
-  background: rgba(255, 255, 255, 0.94);
-  color: #334155;
-  font-size: 16.5px;
-  font-weight: 400;
-  line-height: 1.52;
-}
+.remote-branch-btn.on .seg-dot { color: #7C3AED; }
+.remote-branch-btn:active { transform: scale(0.98); }
 
 /* 밝은 실버·플래티넘 메탈릭 슬림 스마트폰 프레임 (332px 슬림 비율 유지) */
 .sim-phone-shell {
@@ -643,6 +618,7 @@ button { cursor: pointer; border: none; background: none; }
 .btn-ext-prev:disabled { opacity: 0.42; cursor: not-allowed; }
 .btn-ext-prev:not(:disabled):active { transform: scale(0.97); }
 .btn-ext-next {
+  position: relative;
   min-height: 58px;
   padding: 12px 14px;
   border-radius: 15px;
@@ -681,32 +657,41 @@ button { cursor: pointer; border: none; background: none; }
   box-shadow: 0 6px 16px rgba(217, 119, 6, 0.18);
 }
 
-/* 깜빡이며 통통 튀는 손가락 코치마크 (👆 + 동심원 파동) */
+/* ★ V3.1 클릭 유도 포인터 — 대상 버튼 내부 position: absolute 마운트 (스크롤 침범 0% · z-index 25 < 고정바 45 · 48px 화이트 글러브 커서) */
 .sim-coachmark {
   position: absolute;
-  z-index: 60;
-  width: 42px;
-  height: 42px;
+  z-index: 25;
+  right: 12px;
+  bottom: -18px;
+  width: 48px;
+  height: 48px;
   pointer-events: none;
   opacity: 0;
-  transform: translate(-50%, -35%) scale(0.92);
-  transition: left 0.42s cubic-bezier(0.22, 1, 0.36, 1), top 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease, transform 0.16s ease;
+  transform: scale(0.92);
+  transition: opacity 0.2s ease, transform 0.16s ease;
   display: grid;
   place-items: center;
 }
+.sim-coachmark.pos-left-safe {
+  right: auto;
+  left: 26%;
+  bottom: -20px;
+}
 .sim-coachmark.show {
   opacity: 1;
-  transform: translate(-50%, -35%) scale(1);
+  transform: scale(1);
 }
 .sim-coachmark.pressing {
-  transform: translate(-50%, -35%) scale(0.86);
+  transform: scale(0.84);
 }
 .coach-hand {
   position: relative;
   z-index: 2;
-  font-size: 25px;
-  line-height: 1;
-  filter: drop-shadow(0 5px 10px rgba(15, 23, 42, 0.38));
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 5px 10px rgba(15, 23, 42, 0.36));
   animation: coachBounce 1.15s ease-in-out infinite;
 }
 .sim-coachmark.pressing .coach-hand {
@@ -714,41 +699,41 @@ button { cursor: pointer; border: none; background: none; }
   transform: translateY(2px) scale(0.92);
 }
 @keyframes coachBounce {
-  0%, 100% { transform: translateY(0) scale(1); opacity: 1; }
-  50% { transform: translateY(-6px) scale(1.06); opacity: 0.85; }
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.06); }
 }
 .coach-ring {
   position: absolute;
-  inset: 1px;
+  inset: 2px;
   border-radius: 50%;
   border: 2.5px solid #FEE500;
-  background: rgba(153, 69, 255, 0.22);
-  animation: coachPulseRing 1.5s ease-out infinite;
+  background: rgba(124, 58, 237, 0.2);
+  animation: coachPulseRing 1.45s ease-out infinite;
 }
 .coach-ring.r2 {
-  border-color: #9945FF;
-  background: rgba(254, 229, 0, 0.18);
-  animation-delay: 0.55s;
+  border-color: #7C3AED;
+  background: rgba(254, 229, 0, 0.16);
+  animation-delay: 0.5s;
 }
 @keyframes coachPulseRing {
-  0% { transform: scale(0.55); opacity: 0.92; }
-  100% { transform: scale(1.95); opacity: 0; }
+  0% { transform: scale(0.5); opacity: 0.92; }
+  100% { transform: scale(1.85); opacity: 0; }
 }
 .ripple {
   position: absolute;
   inset: -4px;
   border-radius: 50%;
   border: 3px solid #FEE500;
-  background: rgba(254, 229, 0, 0.38);
+  background: rgba(254, 229, 0, 0.36);
   opacity: 0;
   pointer-events: none;
 }
 .sim-coachmark.pressing .ripple {
-  animation: simRipple 0.52s ease-out forwards;
+  animation: simRipple 0.5s ease-out forwards;
 }
 @keyframes simRipple {
   0% { transform: scale(0.55); opacity: 0.95; }
-  100% { transform: scale(2.25); opacity: 0; }
+  100% { transform: scale(2.15); opacity: 0; }
 }
 
 /* 타임워프 연출 오버레이 (D+1 / D+3) */
@@ -844,16 +829,16 @@ button { cursor: pointer; border: none; background: none; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.s1-top-kakao {
+.s1-top-profile {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #FEE500;
-  color: #191919;
+  background: #F1F5F9;
+  color: #94A3B8;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  border: 1px solid rgba(25, 25, 25, 0.08);
+  border: 1px solid #E2E8F0;
 }
 .s1-teaser-stage {
   position: relative;
@@ -864,125 +849,256 @@ button { cursor: pointer; border: none; background: none; }
   overflow: hidden;
   background: #F8FAFC;
 }
+/* 무대 뒤편 레이어: 브랜드 컬러 모바일 포스터·랜딩 그래픽 + filter: blur(7px) */
 .s1-bg-preview {
-  flex: 1;
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 12px 14px;
-  transition: filter 0.25s ease;
-}
-.s1-teaser-stage:not(.revealed) .s1-bg-preview {
-  filter: blur(5px);
-  opacity: 0.72;
+  padding: 12px 12px 14px;
+  filter: blur(7px);
+  transform: scale(1.04);
   user-select: none;
   pointer-events: none;
+  background:
+    radial-gradient(circle at 82% 14%, rgba(254, 229, 0, 0.22), transparent 44%),
+    linear-gradient(180deg, var(--brand-soft) 0%, #FFFFFF 48%, #F1F5F9 100%);
 }
-.s1-curtain-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.52) 0%, rgba(248, 250, 252, 0.76) 50%, rgba(255, 255, 255, 0.86) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+.s1-poster-badge-row {
+  display: flex;
+  gap: 6px;
+}
+.s1-poster-pill {
+  height: 20px;
+  border-radius: 99px;
+  background: var(--brand);
+  opacity: 0.82;
+  padding: 0 10px;
+  color: #FFFFFF;
+  font-size: 9.5px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+}
+.s1-poster-pill.soft {
+  background: #EDE9FE;
+  color: #5B21B6;
+  opacity: 0.95;
+}
+.s1-poster-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.s1-poster-mini-box {
+  height: 64px;
+  border-radius: 12px;
+  padding: 9px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #EFF6FF 100%);
+  border: 1px solid #DBEAFE;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+}
+.s1-poster-mini-box.warm {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border-color: #FDE68A;
+}
+
+/* 무대 뒤편 중앙 화이트 글래스 카드 (커튼 열렸을 때 또렷하게 노출) */
+.s1-teaser-revealed {
+  position: relative;
+  z-index: 3;
+  flex: 1;
+  padding: 16px 14px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 20px 18px;
-  gap: 11px;
 }
-.s1-curtain-overlay[hidden] { display: none !important; }
-.s1-curtain-badge {
-  padding: 4px 10px;
-  border-radius: 99px;
-  background: rgba(15, 23, 42, 0.08);
-  color: #334155;
-  font-size: 10.5px;
-  font-weight: 700;
-}
-.s1-curtain-title {
-  font-size: 15px;
-  font-weight: 800;
-  color: #0F172A;
-  line-height: 1.4;
-}
-.s1-curtain-sub {
-  font-size: 11.5px;
-  font-weight: 400;
-  color: #475569;
-  line-height: 1.5;
-}
-.btn-s1-open-curtain {
-  margin-top: 4px;
-  padding: 10px 15px;
-  border-radius: 99px;
-  background: #0F172A;
-  color: #FFFFFF;
-  font-size: 12px;
-  font-weight: 800;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22);
-  transition: transform 0.14s ease;
-}
-.btn-s1-open-curtain:active { transform: scale(0.96); }
-.s1-teaser-revealed {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  background: #FFFFFF;
-  padding: 13px 14px 10px;
+.s1-expert-glass-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.96);
+  border-radius: 18px;
+  padding: 16px 15px 15px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16);
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  overflow-y: auto;
-  animation: fadeSlideIn 0.22s ease;
+  gap: 10px;
+  text-align: left;
+  animation: fadeSlideIn 0.3s ease;
 }
-.s1-teaser-revealed[hidden] { display: none !important; }
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.s1-guide-card {
-  background: #F5F3FF;
-  border: 1px solid #DDD6FE;
-  border-radius: 12px;
-  padding: 10px 11px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.s1-guide-card-head {
+.s1-glass-top-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 6px;
 }
-.s1-guide-card-title {
-  font-size: 12px;
+.s1-glass-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 99px;
+  background: #F5F3FF;
+  border: 1px solid #DDD6FE;
+  color: #5B21B6;
+  font-size: 10.5px;
   font-weight: 800;
-  color: #4C1D95;
 }
 .btn-s1-close-curtain {
   font-size: 10.5px;
   font-weight: 700;
   color: #64748B;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 99px;
-  background: #FFFFFF;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  flex-shrink: 0;
 }
-.s1-guide-card-desc {
-  font-size: 11px;
+.btn-s1-close-curtain:hover { color: #0F172A; background: #E2E8F0; }
+.s1-glass-title {
+  font-size: 14.5px;
+  font-weight: 900;
+  color: #0F172A;
+  line-height: 1.42;
+  letter-spacing: -0.02em;
+}
+.s1-glass-sub {
+  font-size: 11.5px;
   font-weight: 400;
-  color: #334155;
-  line-height: 1.5;
+  color: #475569;
+  line-height: 1.54;
 }
-.s1-plan-summary-label {
+.btn-s1-go-step2 {
+  margin-top: 4px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #0F172A 0%, #334155 100%);
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.22);
+}
+.btn-s1-go-step2:active { transform: scale(0.97); }
+
+/* ★ V3.1 무대 앞면 레이어: 좌·우 빨간 벨벳 무대 커튼 (Red Stage Curtain + 상단 스포트라이트 + 0.65s 오픈) */
+.s1-curtain-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.s1-teaser-stage.revealed .s1-curtain-overlay {
+  pointer-events: none;
+}
+.s1-curtain-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 51%;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(254, 240, 138, 0.28) 0%, transparent 56%),
+    repeating-linear-gradient(
+      90deg,
+      #520815 0px,
+      #8E1025 9px,
+      #C41B38 16px,
+      #780C1F 24px,
+      #420610 31px
+    );
+  box-shadow: inset 0 20px 36px rgba(0, 0, 0, 0.36);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.s1-curtain-panel.left {
+  left: 0;
+  border-right: 1px solid rgba(254, 240, 138, 0.32);
+  transform: translateX(0);
+}
+.s1-curtain-panel.right {
+  right: 0;
+  border-left: 1px solid rgba(254, 240, 138, 0.32);
+  transform: translateX(0);
+}
+.s1-teaser-stage.revealed .s1-curtain-panel.left {
+  transform: translateX(-102%);
+}
+.s1-teaser-stage.revealed .s1-curtain-panel.right {
+  transform: translateX(102%);
+}
+.s1-curtain-valance {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  z-index: 2;
+  background: linear-gradient(180deg, #3B040D 0%, #7F1024 72%, rgba(254, 240, 138, 0.65) 100%);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.35);
+  transition: opacity 0.45s ease;
+}
+.s1-teaser-stage.revealed .s1-curtain-valance { opacity: 0; }
+.s1-curtain-spotlight {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: 220px;
+  z-index: 2;
+  background: radial-gradient(ellipse at 50% 10%, rgba(254, 249, 195, 0.38) 0%, rgba(254, 240, 138, 0.12) 45%, transparent 72%);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.s1-teaser-stage.revealed .s1-curtain-spotlight { opacity: 0; }
+.s1-curtain-cta-wrap {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px;
+  text-align: center;
+  transition: opacity 0.32s ease, transform 0.38s ease;
+}
+.s1-teaser-stage.revealed .s1-curtain-cta-wrap {
+  opacity: 0;
+  transform: scale(0.9);
+  pointer-events: none;
+}
+.s1-curtain-kicker {
   font-size: 11px;
   font-weight: 800;
-  color: #475569;
-  margin-top: 2px;
+  color: #FEF08A;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
 }
+.btn-s1-open-curtain {
+  position: relative;
+  padding: 12px 17px;
+  border-radius: 99px;
+  background: linear-gradient(135deg, #FEF9C3 0%, #FFFFFF 52%, #FDE047 100%);
+  color: #450A0A;
+  border: 1.5px solid #FDE68A;
+  font-size: 12.5px;
+  font-weight: 900;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42), 0 0 0 3px rgba(254, 240, 138, 0.24);
+  transition: transform 0.14s ease;
+}
+.btn-s1-open-curtain:active { transform: scale(0.95); }
 .s1-bottom-fixed {
   position: relative;
   padding: 10px 11px 10px;
@@ -1159,6 +1275,7 @@ button { cursor: pointer; border: none; background: none; }
 }
 .s1-check-icon { color: #7C3AED; font-weight: 800; flex-shrink: 0; }
 .btn-sim-apply {
+  position: relative;
   width: 100%;
   height: 40px;
   padding: 0 12px;
@@ -1254,6 +1371,7 @@ button { cursor: pointer; border: none; background: none; }
   gap: 4px;
 }
 .s2-opt-btn {
+  position: relative;
   width: 100%;
   padding: 10px 6px;
   border-radius: 10px;
@@ -1355,6 +1473,7 @@ button { cursor: pointer; border: none; background: none; }
   text-align: center;
 }
 .btn-s2-submit {
+  position: relative;
   padding: 12px 10px;
   border-radius: 10px;
   background: #9945FF;
@@ -1760,31 +1879,57 @@ button { cursor: pointer; border: none; background: none; }
 .kk-ad-badge { font-size: 9.5px; font-weight: 700; color: var(--g500); padding: 7px 11px 0; }
 .kk-carousel-track {
   display: flex;
-  gap: 7px;
+  gap: 8px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 2px 2px 4px;
+  padding: 2px 22px 6px 2px;
+  scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
+.kk-carousel-track::-webkit-scrollbar { display: none; }
 .kk-carousel-card {
-  flex: 0 0 194px;
+  flex: 0 0 182px;
   scroll-snap-align: start;
   border-radius: 13px;
   overflow: hidden;
   background: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.11);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.12);
   display: flex;
   flex-direction: column;
 }
 .kk-carousel-thumb {
-  height: 76px;
+  height: 82px;
   padding: 9px 10px;
-  background: linear-gradient(135deg, #1E293B 0%, var(--brand) 100%);
+  background:
+    radial-gradient(circle at 82% 20%, rgba(254, 229, 0, 0.24), transparent 52%),
+    linear-gradient(135deg, #1E293B 0%, var(--brand) 100%);
   color: #FFFFFF;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 2px;
+}
+.kk-carousel-card-idx {
+  align-self: flex-end;
+  padding: 1px 6px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.34);
+  font-size: 9px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+.kk-carousel-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  background: rgba(15, 23, 42, 0.24);
+  color: #FFFFFF;
+  font-size: 9.5px;
+  font-weight: 700;
+  align-self: flex-start;
+  margin-top: 2px;
 }
 .kk-carousel-body {
   padding: 9px 10px;
@@ -2017,7 +2162,7 @@ button { cursor: pointer; border: none; background: none; }
 }
 .sec-desc { font-size: 17.5px; font-weight: 400; color: #475569; line-height: 1.58; }
 
-/* V3.0 화살표 연결형 독립 플로우 카드 (줄임표 ... 없음 · 전문 2줄 노출 · 타이포 강약) */
+/* ★ V3.1 심플 타이틀 아코디언 플로우 카드 (기본 1줄 압축 ➔ 클릭 시 70자 이내 요약 + 화면 보기) */
 .compact-tl-card {
   background: transparent;
   padding: 0;
@@ -2027,28 +2172,32 @@ button { cursor: pointer; border: none; background: none; }
   flex-direction: column;
   gap: 0;
 }
-.flow-step-card {
+.flow-acc-item {
   width: 100%;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
-  border-radius: 20px;
-  padding: 17px 16px;
+  border-radius: 18px;
   box-shadow: var(--shadow-soft);
-  text-align: left;
-  display: flex;
-  align-items: flex-start;
-  gap: 13px;
-  transition: transform 0.14s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  overflow: hidden;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
 }
-.flow-step-card:hover {
+.flow-acc-item.open {
   border-color: #C4B5FD;
   box-shadow: var(--shadow-card);
 }
-.flow-step-card:active { transform: scale(0.985); }
+.flow-acc-head {
+  width: 100%;
+  padding: 14px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  background: #FFFFFF;
+}
 .flow-step-num {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
   background: var(--purple-lt);
   color: var(--purple);
   font-size: 17px;
@@ -2056,26 +2205,20 @@ button { cursor: pointer; border: none; background: none; }
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  margin-top: 2px;
 }
-.flow-step-body {
+.flow-step-head-main {
   flex: 1;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.flow-step-head {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
 }
 .flow-step-title {
-  font-size: 18px;
+  font-size: 17.5px;
   font-weight: 800;
   color: #0F172A;
-  line-height: 1.38;
+  line-height: 1.35;
 }
 .flow-type-badge {
   display: inline-flex;
@@ -2088,7 +2231,27 @@ button { cursor: pointer; border: none; background: none; }
 }
 .flow-type-badge.alim { background: #EFF6FF; color: #1D4ED8; }
 .flow-type-badge.ad { background: #FEF3C7; color: #92400E; }
+.flow-type-badge.carousel { background: #EDE9FE; color: #5B21B6; }
 .flow-type-badge.spot { background: #F5F3FF; color: #6D28D9; }
+.flow-acc-chev {
+  font-size: 17px;
+  font-weight: 800;
+  color: #64748B;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.flow-acc-item.open .flow-acc-chev {
+  transform: rotate(180deg);
+  color: var(--purple-md);
+}
+.flow-acc-body {
+  padding: 0 15px 15px 59px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeSlideIn 0.2s ease;
+}
+.flow-acc-body[hidden] { display: none; }
 .flow-step-desc {
   font-size: 16.5px;
   font-weight: 400;
@@ -2096,60 +2259,108 @@ button { cursor: pointer; border: none; background: none; }
   line-height: 1.52;
   word-break: keep-all;
 }
-.flow-step-go {
+.flow-acc-go-btn {
+  align-self: flex-start;
+  padding: 9px 14px;
+  border-radius: 12px;
+  background: #F5F3FF;
+  border: 1px solid #DDD6FE;
+  color: #5B21B6;
   font-size: 16px;
-  font-weight: 700;
-  color: var(--purple-md);
-  background: var(--purple-lt);
-  padding: 6px 12px;
-  border-radius: 99px;
-  flex-shrink: 0;
-  align-self: center;
+  font-weight: 800;
 }
+.flow-acc-go-btn:active { transform: scale(0.97); }
 .flow-step-connector {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 0;
+  padding: 5px 0;
 }
-.flow-connector-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 13px;
-  border-radius: 99px;
-  background: #F1F5F9;
-  color: #475569;
+.flow-connector-arrow {
   font-size: 16px;
-  font-weight: 700;
-  line-height: 1.3;
+  font-weight: 800;
+  color: #94A3B8;
+  line-height: 1;
 }
 
-/* ═════════ [④ 문자·수동 카톡과의 3가지 핵심 차이] ═════════ */
-.diff-cards { display: flex; flex-direction: column; gap: 14px; }
-.diff-card {
+/* ═════════ [문자·수동 카톡과 무엇이 다른가요? — 우측 스냅 가로 스와이프 카드 Carousel] ═════════ */
+.diff-cards {
   display: flex;
-  align-items: flex-start;
-  gap: 15px;
-  padding: 20px 18px;
-  border-radius: 20px;
-  background: #FFFFFF;
-  box-shadow: var(--shadow-soft);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 14px;
+  padding: 4px 2px 10px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
 }
+.diff-cards::-webkit-scrollbar { display: none; }
+.diff-card {
+  flex: 0 0 84%;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px;
+  background: #FFFFFF;
+  box-shadow: var(--shadow-card);
+  border: 1px solid #E2E8F0;
+  overflow: hidden;
+}
+.diff-card-head {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.diff-card-head.c1 { background: linear-gradient(135deg, #FEF9C3 0%, #FEF3C7 100%); }
+.diff-card-head.c2 { background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%); }
+.diff-card-head.c3 { background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); }
 .diff-icon-badge {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #FFFFFF;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  font-size: 24px;
+  font-size: 22px;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.08);
 }
-.diff-icon-badge.c1 { background: #FEF9C3; }
-.diff-icon-badge.c2 { background: #F5F3FF; }
-.diff-icon-badge.c3 { background: #ECFDF5; }
-.diff-copy h4 { font-size: 19px; font-weight: 800; color: #0F172A; line-height: 1.38; }
-.diff-copy p { margin-top: 6px; font-size: 17.5px; font-weight: 400; color: #475569; line-height: 1.58; }
+.diff-card-head h4 {
+  font-size: 18.5px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.35;
+}
+.diff-copy {
+  padding: 16px 18px 20px;
+  flex: 1;
+}
+.diff-copy p {
+  font-size: 17px;
+  font-weight: 400;
+  color: #475569;
+  line-height: 1.58;
+}
+.diff-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+.diff-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 99px;
+  background: #CBD5E1;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+.diff-dot.active {
+  width: 24px;
+  background: #7C3AED;
+}
 
 /* ═════════ [기존 무인 세팅 확정 폼 — 14개 DOM ID 100% 보존 + 50+ 빅폰트] ═════════ */
 .confirm-section {
@@ -2387,7 +2598,7 @@ button { cursor: pointer; border: none; background: none; }
 .flt-fab:active { transform: scale(0.92); }
 .flt-fab-svg { width: 52px; height: 52px; display: block; border-radius: 50%; }
 
-/* V2.9 3-Tab 도움말·맞춤구축(300만 원+)·오류제보 바텀시트 팝업 */
+/* ★ V3.1 토스식 초슬림 AI 도우미 채팅 바텀시트 (54px 1줄 헤더 · 매뉴얼 문답 80% 공간 확보 · 1줄 가로 미니 칩) */
 .flt-sheet-backdrop {
   position: fixed;
   inset: 0;
@@ -2397,68 +2608,92 @@ button { cursor: pointer; border: none; background: none; }
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: 10px 10px calc(10px + env(safe-area-inset-bottom, 0px));
 }
 .flt-sheet-backdrop[hidden] { display: none; }
 .flt-sheet {
   width: 100%;
   max-width: 472px;
-  max-height: 88vh;
+  height: 82vh;
+  max-height: 86vh;
   background: #FFFFFF;
   border-radius: 24px;
-  padding: 20px 18px 18px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 0;
   overflow: hidden;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.32);
 }
 .flt-sheet-header {
+  height: 54px;
+  min-height: 54px;
+  padding: 0 14px 0 16px;
+  border-bottom: 1px solid #EEF2F6;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 10px;
-}
-.flt-sheet-head-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
+  gap: 8px;
+  flex-shrink: 0;
+  background: #FFFFFF;
 }
 .flt-sheet-title {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 800;
-  line-height: 1.32;
-  letter-spacing: -0.025em;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--g900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.flt-sheet-sub {
+.flt-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.flt-mode-chip {
+  height: 36px;
+  padding: 0 11px;
+  border-radius: 99px;
+  background: #F1F5F9;
+  color: #334155;
+  border: 1px solid #E2E8F0;
   font-size: 16px;
-  font-weight: 400;
-  line-height: 1.48;
-  color: #475569;
-  word-break: keep-all;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.flt-mode-chip:hover { background: #E2E8F0; color: #0F172A; }
+.flt-back-qa-btn {
+  font-size: 16.5px;
+  font-weight: 800;
+  color: #5B21B6;
+  padding: 4px 2px;
+  white-space: nowrap;
 }
 .flt-close-btn {
-  width: 44px; height: 44px; border-radius: 12px;
-  background: #F1F5F9; color: #0F172A; font-size: 18px; font-weight: 800;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: #F1F5F9; color: #0F172A; font-size: 17px; font-weight: 800;
   display: grid; place-items: center; flex-shrink: 0;
 }
-.flt-tabs {
+.flt-service-subtabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
   background: #F1F5F9;
   padding: 5px;
-  border-radius: 15px;
+  margin: 12px 16px 0;
+  border-radius: 14px;
+  flex-shrink: 0;
 }
 .flt-tab-btn {
-  min-height: 50px;
-  padding: 8px 4px;
-  border-radius: 11px;
-  font-size: 16.5px;
+  min-height: 44px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  font-size: 16px;
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.2;
   color: #475569;
   text-align: center;
   display: flex;
@@ -2470,7 +2705,8 @@ button { cursor: pointer; border: none; background: none; }
   color: #0F172A;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.09);
 }
-.flt-panel { display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow-y: auto; padding-bottom: 4px; }
+.flt-panel { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow-y: auto; padding: 14px 16px 16px; gap: 12px; }
+.flt-panel.flt-panel-chat { padding: 0; gap: 0; overflow: hidden; }
 .flt-panel[hidden] { display: none; }
 .flt-panel-guide {
   font-size: 16.5px;
@@ -2478,28 +2714,54 @@ button { cursor: pointer; border: none; background: none; }
   line-height: 1.5;
   word-break: keep-all;
 }
-.flt-faq-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.flt-faq-chip {
-  padding: 10px 14px; border-radius: 14px;
-  background: #F5F3FF; color: #5B21B6; border: 1px solid #DDD6FE;
-  font-size: 16px; font-weight: 800; text-align: left; line-height: 1.38;
-}
-.flt-faq-chip.vip-chip-highlight {
-  width: 100%;
-  background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
-  border: 1.5px solid #C4B5FD;
-  color: #4C1D95;
-}
 .flt-qa-stream {
-  flex: 1; min-height: 150px; max-height: 290px; overflow-y: auto;
-  display: flex; flex-direction: column; gap: 11px;
-  background: #F6F8FA; border-radius: 16px; padding: 14px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  background: #F8FAFC;
+  padding: 16px 14px;
 }
 .flt-qa-msg {
-  padding: 14px 15px; border-radius: 15px; font-size: 17.5px; font-weight: 400; line-height: 1.58; word-break: keep-all;
+  padding: 13px 15px; border-radius: 16px; font-size: 17px; font-weight: 400; line-height: 1.58; word-break: keep-all;
 }
 .flt-qa-msg.bot { background: #FFFFFF; color: #334155; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05); }
 .flt-qa-msg.user { background: #7C3AED; color: #FFFFFF; align-self: flex-end; max-width: 88%; font-weight: 700; }
+.flt-chat-composer-dock {
+  background: #FFFFFF;
+  border-top: 1px solid #EEF2F6;
+  padding: 8px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.flt-faq-chips {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 7px;
+  padding: 2px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+.flt-faq-chips::-webkit-scrollbar { display: none; }
+.flt-faq-chips.minimized { display: none; }
+.flt-faq-chip {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 7px 12px;
+  border-radius: 99px;
+  background: #F5F3FF;
+  color: #5B21B6;
+  border: 1px solid #DDD6FE;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+}
 .qa-action-stack {
   margin-top: 12px;
   display: flex;
@@ -2528,15 +2790,15 @@ button { cursor: pointer; border: none; background: none; }
 .qa-memo-btn.added {
   background: #ECFDF5; border-color: #6EE7B7; color: #065F46;
 }
-.flt-qa-form { display: flex; gap: 8px; }
+.flt-qa-form { display: flex; gap: 8px; align-items: center; }
 .flt-qa-form input {
-  flex: 1; min-width: 0; min-height: 52px; padding: 12px 14px; border-radius: 13px;
-  border: 1.5px solid #E2E8F0; font-size: 18px; outline: none;
+  flex: 1; min-width: 0; height: 48px; padding: 0 14px; border-radius: 13px;
+  border: 1.5px solid #CBD5E1; background: #F8FAFC; font-size: 17px; outline: none;
 }
-.flt-qa-form input:focus { border-color: #7C3AED; }
+.flt-qa-form input:focus { border-color: #7C3AED; background: #FFFFFF; }
 .flt-qa-form button {
-  padding: 0 18px; border-radius: 13px; background: #7C3AED; color: #FFFFFF;
-  font-size: 17px; font-weight: 800; flex-shrink: 0;
+  height: 48px; padding: 0 16px; border-radius: 13px; background: #7C3AED; color: #FFFFFF;
+  font-size: 16.5px; font-weight: 800; flex-shrink: 0; white-space: nowrap;
 }
 .flt-reason-list { display: flex; flex-direction: column; gap: 9px; }
 .flt-reason-btn {
@@ -2681,21 +2943,22 @@ button { cursor: pointer; border: none; background: none; }
   <a class="pc-rail-link active" href="#sec-cover" data-rail="sec-cover"><span class="pc-rail-dot"></span>설계안 요약</a>
   <a class="pc-rail-link" href="#sec-sim" data-rail="sec-sim"><span class="pc-rail-dot"></span>6단계 모바일 시뮬레이터</a>
   <a class="pc-rail-link" href="#sec-summary" data-rail="sec-summary"><span class="pc-rail-dot"></span>시나리오 타임라인</a>
-  <a class="pc-rail-link" href="#sec-4" data-rail="sec-4"><span class="pc-rail-dot"></span>④ 고마워톡 핵심 차이</a>
+  <a class="pc-rail-link" href="#sec-4" data-rail="sec-4"><span class="pc-rail-dot"></span>고마워톡 핵심 차이</a>
   <a class="pc-rail-link" href="#sec-confirm" data-rail="sec-confirm"><span class="pc-rail-dot"></span>세팅 확정 신청</a>
 </nav>
 
 <main class="proposal-shell">
 
-  <!-- 상단 고정 바 (실제 고마워톡 랜딩페이지 규격: 56px 화이트 · 좌 [로고] 브랜드명 · 우 34px 원형 카톡 아이콘) -->
+  <!-- 상단 고정 바 (실제 고마워톡 랜딩페이지 규격: 56px 화이트 · 좌 [로고] 브랜드명 · 우 34px 연회색 원형 프로필 실루엣 아이콘) -->
   <header class="top-bar">
     <div class="top-brand-group">
       <span class="top-brand-dot" id="top-brand-dot">G</span>
       <span class="top-brand-text" id="top-brand-badge">고마워톡</span>
     </div>
-    <button type="button" class="btn-top-kakao-icon" id="btn-share-link" aria-label="설계안 링크 복사" title="설계안 링크 복사">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 3.6C6.75 3.6 2.5 6.96 2.5 11.1c0 2.66 1.76 4.99 4.41 6.32-.14.51-.91 3.31-.94 3.53 0 0-.02.16.08.22.1.06.22.01.22.01.29-.04 3.37-2.21 3.9-2.58.59.09 1.2.13 1.83.13 5.25 0 9.5-3.36 9.5-7.63S17.25 3.6 12 3.6z"/>
+    <button type="button" class="btn-top-profile-icon" id="btn-share-link" aria-label="설계안 링크 복사" title="설계안 링크 복사">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <circle cx="12" cy="8.2" r="4"/>
+        <path d="M4.8 19.6c.7-3.4 3.6-5.4 7.2-5.4s6.5 2 7.2 5.4c.1.5-.3.9-.8.9H5.6c-.5 0-.9-.4-.8-.9z"/>
       </svg>
     </button>
   </header>
@@ -2714,12 +2977,8 @@ button { cursor: pointer; border: none; background: none; }
   <!-- 메인 제안서 컨텐츠 -->
   <div id="proposal-content" hidden>
 
-    <!-- ═════════ 1. 상단 타이틀 & 한 줄 요약 (중복 브랜드 캡슐 제거) ═════════ -->
+    <!-- ═════════ 1. 상단 타이틀 & 한 줄 요약 (불필요 배지 완전 제거 · 깔끔한 헤더) ═════════ -->
     <section class="cover-section" id="sec-cover">
-      <div class="cover-meta-row">
-        <span class="cover-ind-chip" id="cover-industry-chip">업종 맞춤</span>
-        <span class="cover-ratio-chip" id="cover-ratio-chip">알림톡 1 : 광고 3</span>
-      </div>
       <h1 class="cover-title">
         <span class="hl" id="cover-channel-name">파트너님 채널</span> 맞춤<br>카톡 자동화 시뮬레이터
       </h1>
@@ -2728,10 +2987,10 @@ button { cursor: pointer; border: none; background: none; }
       </p>
     </section>
 
-    <!-- ═════════ 2. 올인원 6단계 모바일 연속 시나리오 시뮬레이터 (알림톡 1 : 광고 3 황금 비율 · 순정 카톡 100%) ═════════ -->
+    <!-- ═════════ 2. 올인원 6단계 모바일 연속 시나리오 시뮬레이터 (순정 카톡 100% · 캐로셀 멀티카드) ═════════ -->
     <section class="sim-section" id="sec-sim">
 
-      <!-- 6단계 점프 스텝 바 + 우측 아이콘형 처음으로(↻) 버튼 (알림톡 1 : 광고 3) -->
+      <!-- 6단계 점프 스텝 바 + 우측 아이콘형 처음으로(↻) 버튼 -->
       <div class="sim-steps-row" id="sim-steps-bar" role="tablist" aria-label="시뮬레이터 6단계">
         <button type="button" class="sim-step-pill active" data-sim-step="1">
           <span class="sp-head-inline"><span class="sp-num">①</span></span>
@@ -2746,37 +3005,41 @@ button { cursor: pointer; border: none; background: none; }
           <span class="sp-lbl" id="sp-lbl-3">신청 즉시</span>
         </button>
         <button type="button" class="sim-step-pill" data-sim-step="4">
-          <span class="sp-head-inline"><span class="sp-num">④</span><span class="sp-type-pill ad">광고</span><span class="sp-spotlight-badge" id="sp-spot-4" hidden>⚡맞춤</span></span>
+          <span class="sp-head-inline"><span class="sp-num">④</span><span class="sp-type-pill ad" id="sp-type-4">광고</span><span class="sp-spotlight-badge" id="sp-spot-4" hidden>⚡맞춤</span></span>
           <span class="sp-lbl" id="sp-lbl-4">+1일 뒤</span>
         </button>
         <button type="button" class="sim-step-pill" data-sim-step="5">
-          <span class="sp-head-inline"><span class="sp-num">⑤</span><span class="sp-type-pill ad">광고</span><span class="sp-spotlight-badge" id="sp-spot-5" hidden>⚡맞춤</span></span>
+          <span class="sp-head-inline"><span class="sp-num">⑤</span><span class="sp-type-pill carousel" id="sp-type-5">캐로셀</span><span class="sp-spotlight-badge" id="sp-spot-5" hidden>⚡맞춤</span></span>
           <span class="sp-lbl" id="sp-lbl-5">+3일 뒤</span>
         </button>
         <button type="button" class="sim-step-pill" data-sim-step="6">
-          <span class="sp-head-inline"><span class="sp-num">⑥</span><span class="sp-type-pill ad">광고</span><span class="sp-spotlight-badge" id="sp-spot-6" hidden>⚡맞춤</span></span>
+          <span class="sp-head-inline"><span class="sp-num">⑥</span><span class="sp-type-pill ad" id="sp-type-6">광고</span><span class="sp-spotlight-badge" id="sp-spot-6" hidden>⚡맞춤</span></span>
           <span class="sp-lbl" id="sp-lbl-6">+7일 뒤</span>
         </button>
         <button type="button" class="btn-sim-restart-icon" id="btn-sim-restart" title="처음부터 다시 보기" aria-label="처음부터 다시 보기">↻</button>
       </div>
 
-      <!-- 시뮬레이터 외부 스테이지 (외부 리모컨 + 플래그십 슬림 스마트폰 + 외부 내비 + 손가락 코치마크) -->
+      <!-- 시뮬레이터 외부 스테이지 (초슬림 1줄 세그먼트 + 플래그십 슬림 스마트폰 + 외부 내비) -->
       <div class="sim-stage-outer" id="sim-stage-outer">
 
-        <!-- 깜빡이는 손가락 코치마크 (👆 + 동심원 파동 — 폰 내부 신청/설문 또는 폰 외부 [다음 장면]만 지목) -->
+        <!-- ★ V3.1 클릭 유도 포인터 (48px 화이트 글러브 커서 SVG — 대상 버튼 내부 position: absolute로 동적 마운트) -->
         <div class="sim-coachmark" id="sim-coachmark" aria-hidden="true">
           <span class="coach-ring"></span>
           <span class="coach-ring r2"></span>
           <span class="ripple"></span>
-          <span class="coach-hand">👆</span>
+          <span class="coach-hand">
+            <svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <path d="M21 7.5C19.34 7.5 18 8.84 18 10.5V23.2L14.45 20.1C13.15 18.96 11.15 19.12 10.05 20.45C9.02 21.7 9.15 23.56 10.35 24.66L19.1 33.4C20.9 35.2 23.34 36.2 25.88 36.2H30.5C35.2 36.2 39 32.4 39 27.7V19.6C39 17.94 37.66 16.6 36 16.6C35.22 16.6 34.5 16.9 33.97 17.39C33.62 15.96 32.33 14.9 30.8 14.9C29.97 14.9 29.21 15.22 28.64 15.74C28.25 14.37 27 13.36 25.5 13.36C24.96 13.36 24.45 13.5 24 13.74V10.5C24 8.84 22.66 7.5 21 7.5Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.6" stroke-linejoin="round"/>
+              <path d="M24 19V25.5M28.8 19.5V25.5M33.8 20.8V25.5" stroke="#0F172A" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+          </span>
         </div>
 
-        <!-- 폰 프레임 위: 원포인트 맞춤 분기 스포트라이트 카드 (분기 단계 1곳에서만 오픈, 나머지 단계 display:none) -->
+        <!-- ★ V3.1 스크롤 0mm · 토스식 1줄 세그먼트 스위치 (분기 단계 1곳에서만 폰 바로 위에 슬림 배치, 나머지 단계 display:none) -->
         <div class="sim-remote-panel" id="sim-remote-panel" hidden style="display:none">
           <div id="remote-branch-bar" hidden>
-            <div class="remote-caption" id="remote-spotlight-caption">⚡ 신청폼 선택에 따라 전혀 다른 맞춤 카톡이 발송됩니다</div>
+            <div class="remote-caption" id="remote-spotlight-caption">⚡ 신청폼 선택에 따라 카톡 내용이 달라집니다 (눌러서 비교)</div>
             <div class="remote-pill-row" id="ext-branch-pills"></div>
-            <div class="remote-branch-summary" id="remote-branch-summary"></div>
           </div>
         </div>
 
@@ -2803,53 +3066,63 @@ button { cursor: pointer; border: none; background: none; }
             <!-- 6단계 연속 스크린 호스트 (폰 내부 100% 고객 순정 화면) -->
             <div class="sim-stage-host">
 
-              <!-- ── STEP 1: 실제 고마워톡 랜딩 프레임 + 프로스티드 커튼 티저(Teaser) ── -->
+              <!-- ── STEP 1: 실제 고마워톡 랜딩 프레임 + 빨간 무대 커튼 오픈 ➔ 블러 랜딩 위 전문가 세팅 안내 ── -->
               <div class="sim-screen active" data-screen="1">
                 <div class="s1-topbar">
                   <div class="s1-top-brand">
                     <span class="s1-top-logo" id="s1-top-logo">G</span>
                     <span class="s1-title-txt" id="lp-topbar-title">맞춤 캠페인</span>
                   </div>
-                  <span class="s1-top-kakao" aria-hidden="true">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.6C6.75 3.6 2.5 6.96 2.5 11.1c0 2.66 1.76 4.99 4.41 6.32-.14.51-.91 3.31-.94 3.53 0 0-.02.16.08.22.1.06.22.01.22.01.29-.04 3.37-2.21 3.9-2.58.59.09 1.2.13 1.83.13 5.25 0 9.5-3.36 9.5-7.63S17.25 3.6 12 3.6z"/></svg>
+                  <span class="s1-top-profile" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <circle cx="12" cy="8.2" r="4"/>
+                      <path d="M4.8 19.6c.7-3.4 3.6-5.4 7.2-5.4s6.5 2 7.2 5.4c.1.5-.3.9-.8.9H5.6c-.5 0-.9-.4-.8-.9z"/>
+                    </svg>
                   </span>
                 </div>
 
                 <div class="s1-teaser-stage" id="s1-teaser-stage">
-                  <!-- 반투명 블러 뒤 실제 신청페이지 프리뷰 레이아웃 -->
-                  <div class="s1-bg-preview">
+                  <!-- 무대 뒤편 레이어 1: 브랜드 컬러 모바일 포스터·랜딩 그래픽 (filter: blur(7px)) -->
+                  <div class="s1-bg-preview" aria-hidden="true">
+                    <div class="s1-poster-badge-row">
+                      <span class="s1-poster-pill">맞춤 신청페이지</span>
+                      <span class="s1-poster-pill soft">카카오 1초 접수</span>
+                    </div>
                     <div class="blur-hero-slot" id="s1-hero-slot" style="border-radius:14px">
                       <div class="blur-visual-art"></div>
                       <div class="blur-hero-pill" id="blur-hero-badge">전문가 검수 초기 신청페이지</div>
                     </div>
-                    <div style="height:14px;width:82%;border-radius:7px;background:#E2E8F0"></div>
-                    <div style="height:10px;width:64%;border-radius:6px;background:#E2E8F0"></div>
-                    <div style="height:56px;border-radius:12px;background:#EFF6FF"></div>
-                    <div style="height:56px;border-radius:12px;background:#F1F5F9"></div>
-                  </div>
-
-                  <!-- 프로스티드 커튼 티저 오버레이 -->
-                  <div class="s1-curtain-overlay" id="s1-curtain-overlay">
-                    <span class="s1-curtain-badge">실제 고마워톡 신청페이지 미리보기</span>
-                    <div class="s1-curtain-title">전문가 검수 초기 세팅으로<br>깔끔하게 완성됩니다</div>
-                    <div class="s1-curtain-sub">오픈 후 관리자 페이지에서 파트너님이 직접 이미지와 문구를 수정할 수 있어요.</div>
-                    <button type="button" class="btn-s1-open-curtain" id="btn-s1-open-curtain">✨ 터치해서 신청페이지 세팅 안내 열기</button>
-                  </div>
-
-                  <!-- 커튼을 열었을 때 표시되는 <전문가 검수 초기 세팅 안내> + 핵심 기획 3줄 요약 -->
-                  <div class="s1-teaser-revealed" id="s1-teaser-revealed" hidden>
-                    <div class="s1-guide-card">
-                      <div class="s1-guide-card-head">
-                        <span class="s1-guide-card-title">〈전문가 검수 초기 세팅 안내〉</span>
-                        <button type="button" class="btn-s1-close-curtain" id="btn-s1-close-curtain">접기</button>
-                      </div>
-                      <p class="s1-guide-card-desc">
-                        세팅 확정 신청 시 전담 전문가가 검수 후 초기 신청페이지를 세팅해 드리며, 오픈 후 관리자 페이지에서 파트너님이 직접 이미지와 내용을 언제든 수정하실 수 있습니다.
-                      </p>
-                    </div>
-                    <div class="s1-plan-summary-label">핵심 기획 3줄 요약</div>
                     <h3 class="s1-headline" id="lp-hero-title">핵심 헤드카피</h3>
                     <div class="s1-checks" id="lp-points-list"></div>
+                    <div class="s1-poster-card-grid">
+                      <div class="s1-poster-mini-box"></div>
+                      <div class="s1-poster-mini-box warm"></div>
+                    </div>
+                  </div>
+
+                  <!-- 무대 뒤편 레이어 2: 블러 랜딩 중앙 반투명 화이트 글래스 카드 -->
+                  <div class="s1-teaser-revealed" id="s1-teaser-revealed">
+                    <div class="s1-expert-glass-card">
+                      <div class="s1-glass-top-row">
+                        <span class="s1-glass-badge">✨ 전담 전문가 초기 세팅 지원</span>
+                        <button type="button" class="btn-s1-close-curtain" id="btn-s1-close-curtain">커튼 닫기</button>
+                      </div>
+                      <div class="s1-glass-title">세팅 확정 시 전문가 검수 후 맞춤 이미지·문구가 세팅됩니다</div>
+                      <p class="s1-glass-sub">초기 세팅 완료 후에도 관리자 페이지에서 파트너님이 직접 이미지와 내용을 언제든 변경하실 수 있어요.</p>
+                      <button type="button" class="btn-s1-go-step2" id="btn-s1-go-step2">다음: ② 신청폼 화면 보기 →</button>
+                    </div>
+                  </div>
+
+                  <!-- 무대 앞면 레이어: 좌·우 빨간 벨벳 무대 커튼 + 스포트라이트 + 골드/화이트 오픈 버튼 -->
+                  <div class="s1-curtain-overlay" id="s1-curtain-overlay" data-open="false">
+                    <div class="s1-curtain-panel left" aria-hidden="true"></div>
+                    <div class="s1-curtain-panel right" aria-hidden="true"></div>
+                    <div class="s1-curtain-valance" aria-hidden="true"></div>
+                    <div class="s1-curtain-spotlight" aria-hidden="true"></div>
+                    <div class="s1-curtain-cta-wrap">
+                      <span class="s1-curtain-kicker">실제 고마워톡 신청페이지 미리보기</span>
+                      <button type="button" class="btn-s1-open-curtain" id="btn-s1-open-curtain">🎭 터치해서 신청페이지 커튼 열기</button>
+                    </div>
                   </div>
                 </div>
 
@@ -3014,12 +3287,11 @@ button { cursor: pointer; border: none; background: none; }
       </div>
     </section>
 
-    <!-- ═════════ 3. 한눈에 보는 시나리오 타임라인 요약 (화살표 연결형 독립 플로우 카드) ═════════ -->
+    <!-- ═════════ 3. 한눈에 보는 자동화 흐름 (심플 타이틀 1줄 아코디언) ═════════ -->
     <section class="stage-section" id="sec-summary">
       <div class="sec-head-center reveal">
-        <div class="sec-num-circle">✓</div>
         <h2 class="sec-title">한눈에 보는 자동화 흐름</h2>
-        <p class="sec-desc">알림톡 1회 후 광고 3회 흐름으로 채널 친구가 자연스럽게 쌓입니다. 원하는 단계를 누르면 위 화면에서 바로 볼 수 있어요.</p>
+        <p class="sec-desc">단계를 누르면 핵심 요약과 실제 화면을 볼 수 있어요.</p>
       </div>
 
       <div class="compact-tl-card reveal delay-1" id="compact-tl-card">
@@ -3027,38 +3299,49 @@ button { cursor: pointer; border: none; background: none; }
       </div>
     </section>
 
-    <!-- ═════════ 4. ④ 문자·수동 카톡과의 3가지 핵심 차이 ═════════ -->
+    <!-- ═════════ 4. 문자·수동 카톡과 무엇이 다른가요? (우측 가로 스와이프 카드 Carousel) ═════════ -->
     <section class="stage-section alt-bg" id="sec-4">
       <div class="sec-head-center reveal">
-        <div class="sec-num-circle">4</div>
         <h2 class="sec-title">문자·수동 카톡과<br>무엇이 다른가요?</h2>
-        <p class="sec-desc">한 번 세팅하면 365일 자동으로 돌아가는 3가지 핵심 차이입니다.</p>
+        <p class="sec-desc">오른쪽으로 넘기며 3가지 핵심 차이를 확인해 보세요.</p>
       </div>
 
-      <div class="diff-cards">
-        <div class="diff-card reveal delay-1">
-          <div class="diff-icon-badge c1">⚡</div>
+      <div class="diff-cards reveal delay-1" id="diff-cards">
+        <div class="diff-card">
+          <div class="diff-card-head c1">
+            <div class="diff-icon-badge">⚡</div>
+            <h4>카카오 1초 접수 &amp; 미수신 자동 재발송</h4>
+          </div>
           <div class="diff-copy">
-            <h4>카카오 1초 실명 수집 &amp; 채널 추가 전 고객 자동 재발송</h4>
-            <p>번거로운 입력 없이 1초 접수되고, 채널 추가 전 고객에게 광고 메시지가 도달하지 못하면 미수신 안내 알림톡과 익일 오전 9시 자동 재발송으로 채널 친구를 늘려줍니다.</p>
+            <p>번거로운 입력 없이 1초 접수됩니다.<br>채널 추가 전 고객에게 광고가 못 가면<br>알림톡 안내 후 익일 9시 자동 재발송해요.</p>
           </div>
         </div>
 
-        <div class="diff-card reveal delay-2">
-          <div class="diff-icon-badge c2">🎯</div>
+        <div class="diff-card">
+          <div class="diff-card-head c2">
+            <div class="diff-icon-badge">🎯</div>
+            <h4>설문 답변별 맞춤 카톡 자동 분기</h4>
+          </div>
           <div class="diff-copy">
-            <h4>설문 태그·시트 조건 분기 발송</h4>
-            <p>전체 단체 발송 대신 고객이 고른 객관식 답변에 따라 [태그]·@시트가 자동 기록되어 맞춤형 광고 메시지만 정확히 발송합니다.</p>
+            <p>똑같은 단체 문자 대신 고객이 고른<br>객관식 취향에 맞춰 태그가 자동 기록되고<br>딱 맞는 맞춤 카톡만 골라 발송해요.</p>
           </div>
         </div>
 
-        <div class="diff-card reveal delay-3">
-          <div class="diff-icon-badge c3">✨</div>
+        <div class="diff-card">
+          <div class="diff-card-head c3">
+            <div class="diff-icon-badge">✨</div>
+            <h4>전문가 초기 세팅 &amp; 직접 수정 가능</h4>
+          </div>
           <div class="diff-copy">
-            <h4>전문가 초기 세팅 &amp; 관리자 페이지 직접 수정</h4>
-            <p>세팅 확정 시 전담 전문가가 신청페이지부터 알림톡·광고 어드민 초기 세팅을 완료해 드리며, 오픈 후에도 관리자 페이지에서 파트너님이 직접 언제든 수정하실 수 있습니다.</p>
+            <p>세팅 확정 시 전담 전문가가 처음부터<br>신청페이지와 자동 카톡을 완성해 드려요.<br>오픈 후에도 관리자에서 직접 바꿀 수 있어요.</p>
           </div>
         </div>
+      </div>
+
+      <div class="diff-dots" id="diff-dots" role="tablist" aria-label="핵심 차이 카드 인디케이터">
+        <button type="button" class="diff-dot active" data-diff-idx="0" aria-label="1번 카드"></button>
+        <button type="button" class="diff-dot" data-diff-idx="1" aria-label="2번 카드"></button>
+        <button type="button" class="diff-dot" data-diff-idx="2" aria-label="3번 카드"></button>
       </div>
     </section>
 
@@ -3211,42 +3494,45 @@ button { cursor: pointer; border: none; background: none; }
   </button>
 </div>
 
-<!-- V3.0 3-Tab 도움말·맞춤구축 견적·오류제보 바텀시트 팝업 -->
+<!-- ★ V3.1 토스식 초슬림 AI 도우미 채팅 바텀시트 (54px 1줄 헤더 · 매뉴얼 답변 80% 공간 확보 · 1줄 가로 미니 칩) -->
 <div class="flt-sheet-backdrop" id="flt-sheet-backdrop" hidden>
-  <div class="flt-sheet" id="flt-sheet" role="dialog" aria-label="무엇을 도와드릴까요?">
+  <div class="flt-sheet" id="flt-sheet" role="dialog" aria-label="고마워톡 AI 도우미">
     <div class="flt-sheet-header">
-      <div class="flt-sheet-head-copy">
-        <div class="flt-sheet-title" id="flt-sheet-title">💬 무엇을 도와드릴까요?</div>
-        <div class="flt-sheet-sub" id="flt-sheet-sub">궁금한 점 확인 · 맞춤 구축 견적 · 화면 오류 제보</div>
+      <div class="flt-sheet-title" id="flt-sheet-title">💬 고마워톡 AI 도우미</div>
+      <button type="button" class="flt-back-qa-btn" id="btn-flt-back-qa" hidden>← 질문하기로 돌아가기</button>
+      <div class="flt-head-actions">
+        <button type="button" class="flt-mode-chip" id="btn-flt-open-service">견적·오류접수</button>
+        <button type="button" class="flt-close-btn" id="btn-close-flt" aria-label="닫기">✕</button>
       </div>
-      <button type="button" class="flt-close-btn" id="btn-close-flt" aria-label="닫기">✕</button>
     </div>
 
-    <div class="flt-tabs" role="tablist">
-      <button type="button" class="flt-tab-btn active" id="flt-tab-qa" data-flt-tab="qa" role="tab" aria-selected="true">자주 묻는 질문</button>
+    <!-- [견적·오류접수] 뷰 진입 시에만 노출되는 컴팩트 2단 전환 바 -->
+    <div class="flt-service-subtabs" id="flt-service-subtabs" role="tablist" hidden>
       <button type="button" class="flt-tab-btn" id="flt-tab-vip" data-flt-tab="vip" role="tab" aria-selected="false">맞춤구축 견적</button>
       <button type="button" class="flt-tab-btn" id="flt-tab-report" data-flt-tab="report" role="tab" aria-selected="false">화면 오류제보</button>
     </div>
 
-    <!-- 탭 1: 자주 묻는 질문 + [✏️ 1회 수정 메모에 담기] + 맞춤구축 견적 직행 -->
-    <div class="flt-panel" id="flt-panel-qa">
-      <div class="flt-faq-chips" id="flt-faq-chips">
-        <button type="button" class="flt-faq-chip vip-chip-highlight">💎 견적 프로그램 제작 · API 연동 · 풀파워 분기 의뢰</button>
-        <button type="button" class="flt-faq-chip vip-chip-highlight">설문 답변별로 모든 카톡을 다 다르게 보낼 수 있나요?</button>
-        <button type="button" class="flt-faq-chip">👑 공용 알림톡 vs Pro 내 로고 맞춤 알림톡 차이</button>
-        <button type="button" class="flt-faq-chip">문자·일반 카톡과 무엇이 다른가요?</button>
-        <button type="button" class="flt-faq-chip">알림톡 · 광고 차이</button>
-        <button type="button" class="flt-faq-chip">구글폼 연동 되나요?</button>
-        <button type="button" class="flt-faq-chip">마케팅 수신동의·M형</button>
-        <button type="button" class="flt-faq-chip">Starter vs Pro 차이</button>
-      </div>
+    <!-- 뷰 1 (기본 · 화면의 80%): 자유 질문 · 매뉴얼 답변 채팅 -->
+    <div class="flt-panel flt-panel-chat" id="flt-panel-qa">
       <div class="flt-qa-stream" id="flt-qa-stream">
-        <div class="flt-qa-msg bot">안녕하세요 파트너님! 설계안이나 고마워톡 기능·요금·맞춤 구축까지 무엇이든 물어보세요.</div>
+        <div class="flt-qa-msg bot">고마워톡 공식 매뉴얼을 바탕으로 무엇이든 바로 답변해 드려요.</div>
       </div>
-      <form class="flt-qa-form" id="flt-qa-form">
-        <input type="text" id="flt-qa-input" placeholder="궁금한 점이나 수정 내용을 적어주세요" autocomplete="off">
-        <button type="submit" id="flt-qa-send">질문</button>
-      </form>
+      <div class="flt-chat-composer-dock">
+        <div class="flt-faq-chips" id="flt-faq-chips">
+          <button type="button" class="flt-faq-chip">💎 견적 프로그램 제작 · API 연동 · 풀파워 분기 의뢰</button>
+          <button type="button" class="flt-faq-chip">설문 답변별로 모든 카톡을 다 다르게 보낼 수 있나요?</button>
+          <button type="button" class="flt-faq-chip">👑 공용 알림톡 vs Pro 내 로고 맞춤 알림톡 차이</button>
+          <button type="button" class="flt-faq-chip">문자·일반 카톡과 무엇이 다른가요?</button>
+          <button type="button" class="flt-faq-chip">알림톡 · 광고 차이</button>
+          <button type="button" class="flt-faq-chip">구글폼 연동 되나요?</button>
+          <button type="button" class="flt-faq-chip">마케팅 수신동의·M형</button>
+          <button type="button" class="flt-faq-chip">Starter vs Pro 차이</button>
+        </div>
+        <form class="flt-qa-form" id="flt-qa-form">
+          <input type="text" id="flt-qa-input" placeholder="궁금한 점을 편하게 물어보세요" autocomplete="off">
+          <button type="submit" id="flt-qa-send">질문</button>
+        </form>
+      </div>
     </div>
 
     <!-- 탭 2: 맞춤구축 견적(300만 원+) VIP 상담 신청 -->
@@ -3653,6 +3939,7 @@ const STATE = {
   spotlightUserTouched: false,
   simStep: 1, // 1..6 (①신청페이지 ②신청폼 ③알림톡 ④광고1 ⑤광고2 ⑥광고3)
   s1CurtainOpen: false,
+  coachDismissedSteps: {},
   simAutoPlay: true,
   simManualMode: false,
   simCompleted: false,
@@ -4384,10 +4671,11 @@ function setStep1CurtainOpen(isOpen) {
   STATE.s1CurtainOpen = !!isOpen;
   const stage = $('#s1-teaser-stage');
   const overlay = $('#s1-curtain-overlay');
-  const revealed = $('#s1-teaser-revealed');
   if (stage) stage.classList.toggle('revealed', STATE.s1CurtainOpen);
-  if (overlay) overlay.hidden = STATE.s1CurtainOpen;
-  if (revealed) revealed.hidden = !STATE.s1CurtainOpen;
+  if (overlay) {
+    overlay.dataset.open = STATE.s1CurtainOpen ? 'true' : 'false';
+    overlay.setAttribute('aria-hidden', STATE.s1CurtainOpen ? 'true' : 'false');
+  }
   return STATE.s1CurtainOpen;
 }
 
@@ -4470,7 +4758,24 @@ function buildFallbackSpotlightPairForProposal(optA, optB, camp) {
   const sched = STATE.schedule || resolveCampaignSchedule(camp);
   const hay = [channelName, (camp.partner_info && camp.partner_info.sub_industry) || '', optA.answerText, optB.answerText].join(' ');
   let pair;
-  if (/한국어|k-?pop|외국인|영어|일본어|중국어|회화|어학|korean/i.test(hay)) {
+  let directOrder = false;
+  if (/사과|과일|배|딸기|귤|감귤|복숭아|포도|농원|농장|과수원|산지|직송|농산물|중소과|대과/i.test(hay)) {
+    directOrder = true;
+    pair = {
+      adv: {
+        badge: shortText(channelName + ' · 맞춤 추천', 22),
+        headline: shortText(optA.answerText + ' 딱 맞게 골라 담았습니다', 32),
+        body: '#{이름}님! 고르신 "' + optA.answerText + '" 취향에 맞춰 껍질째 아삭하게 드시기 좋은 당도 선별 수확 물량만 골라 안내해 드려요.',
+        btn: sched.hasVideo ? '▶ 산지 수확 영상 보기' : '맞춤 구성 바로 보기'
+      },
+      beg: {
+        badge: shortText(channelName + ' · 프리미엄 추천', 22),
+        headline: shortText(optB.answerText + ' 최상급 선별 안내', 32),
+        body: '#{이름}님! 고르신 "' + optB.answerText + '" 취향에 맞춰 크기와 때깔, 당도까지 깐깐하게 고른 최상급 수확 구성만 따로 모았습니다.',
+        btn: sched.hasVideo ? '▶ 프리미엄 선별 영상 보기' : '프리미엄 구성 보기'
+      }
+    };
+  } else if (/한국어|k-?pop|외국인|영어|일본어|중국어|회화|어학|korean/i.test(hay)) {
     pair = {
       adv: {
         badge: '실전 고급 표현 마스터',
@@ -4516,22 +4821,23 @@ function buildFallbackSpotlightPairForProposal(optA, optB, camp) {
       }
     };
   } else {
+    directOrder = true;
     pair = {
       adv: {
-        badge: '실전 바로 적용 핵심 전략',
-        headline: '바로 성과로 연결되는 실전 핵심 3가지',
-        body: '#{이름}님! 이미 목표가 분명하신 만큼 기초 설명은 줄이고, 현장에서 오늘 바로 써먹을 수 있는 실전 전략 3가지와 체크리스트만 담았습니다.',
-        btn: sched.hasVideo ? '▶ 실전 전략 영상 보기' : '실전 전략 바로 보기'
+        badge: shortText(channelName + ' · 맞춤 안내 A', 22),
+        headline: shortText(optA.answerText + ' 맞춤 핵심 안내', 32),
+        body: '#{이름}님! "' + optA.answerText + '" 항목을 선택해 주셔서 꼭 필요한 핵심 안내와 맞춤 구성만 한눈에 정리해 보내드립니다.',
+        btn: sched.hasVideo ? '▶ 맞춤 안내 영상 보기' : '맞춤 안내 바로 보기'
       },
       beg: {
-        badge: '처음이어도 쉬운 첫걸음',
-        headline: '처음이어도 괜찮아요! 핵심부터 차근차근',
-        body: '#{이름}님, 어디서부터 시작해야 할지 막막하셨죠? 어려운 설명 대신 오늘 5분만 읽어봐도 전체 흐름이 잡히는 쉬운 입문 가이드부터 보내드려요.',
-        btn: sched.hasVideo ? '▶ 쉬운 입문 영상 보기' : '쉬운 입문 가이드 보기'
+        badge: shortText(channelName + ' · 맞춤 안내 B', 22),
+        headline: shortText(optB.answerText + ' 맞춤 핵심 안내', 32),
+        body: '#{이름}님! "' + optB.answerText + '" 항목에 맞춰 가장 많이 궁금해하시는 핵심 포인트와 실제 사례를 깔끔하게 정리해 보내드려요.',
+        btn: sched.hasVideo ? '▶ 핵심 안내 영상 보기' : '핵심 안내 자세히 보기'
       }
     };
   }
-  const aBeg = /초보|입문|기초|처음|고민|모르|예방|\(하\)|^하$|중등\s*기초/i.test(optA.answerText);
+  const aBeg = !directOrder && /초보|입문|기초|처음|고민|모르|예방|\(하\)|^하$|중등\s*기초/i.test(optA.answerText);
   const specA = aBeg ? pair.beg : pair.adv;
   const specB = aBeg ? pair.adv : pair.beg;
   return [
@@ -4565,8 +4871,8 @@ function buildFallbackSpotlightPairForProposal(optA, optB, camp) {
 function getSpotlightBranchPair(camp) {
   camp = camp || STATE.campaign || DEMO_CAMPAIGN;
   const opts = STATE.mappedOpts || [];
-  const optA = opts[0] || { answerText: '실전 전략 희망', tag: '실전전략', sheetVal: '실전 전략' };
-  const optB = (opts.length >= 3 ? opts[opts.length - 1] : opts[1]) || { answerText: '처음이라 기초부터', tag: '기초입문', sheetVal: '기초 입문' };
+  const optA = opts[0] || { answerText: '1:1 맞춤 안내·상담 희망', tag: '맞춤상담', sheetVal: '맞춤 상담' };
+  const optB = (opts.length >= 3 ? opts[opts.length - 1] : opts[1]) || { answerText: '핵심 정보부터 받아보기', tag: '정보수신', sheetVal: '정보 수신' };
   const spotStep = STATE.spotlightStep || resolveSpotlightStep(camp, STATE.schedule);
   const targetMsg = getSpotlightTargetMsg(camp, spotStep);
   const rawPair = (targetMsg && Array.isArray(targetMsg.branch_pair) && targetMsg.branch_pair.length >= 2)
@@ -4701,10 +5007,9 @@ function renderRemotePanel(animateReveal) {
   const step = STATE.simStep;
   const panel = $('#sim-remote-panel');
   const brBar = $('#remote-branch-bar');
-  const sumEl = $('#remote-branch-summary');
   const showSpotlight = isSpotlightStep(step) && !STATE.rescueSimMode;
 
-  // 공통 메시지 단계(1, 2 및 분기 없는 3/4/5)에서는 분기 패널을 display:none으로 100% 숨김!
+  // 공통 메시지 단계(1, 2 및 분기 없는 3/5/6)에서는 분기 패널을 display:none으로 100% 숨김!
   if (panel) {
     panel.hidden = !showSpotlight;
     panel.style.display = showSpotlight ? '' : 'none';
@@ -4722,17 +5027,15 @@ function renderRemotePanel(animateReveal) {
   const pillWrap = $('#ext-branch-pills');
   const pair = getSpotlightBranchPair(STATE.campaign);
   const activeIdx = STATE.spotlightSlotIdx === 1 ? 1 : 0;
-  const activeItem = pair[activeIdx] || pair[0];
 
+  // ★ V3.1 스크롤 0mm 토스식 1줄 세그먼트 스위치 (가상 인명·말줄임(...) 완전 제거, 실제 설문 보기 그대로 표기)
   if (pillWrap) {
     pillWrap.innerHTML = pair.map((item, idx) =>
       '<button type="button" class="remote-branch-btn' + (activeIdx === idx ? ' on' : '') + '" data-spot-slot="' + idx + '">' +
-        esc(item.personaIcon) + " '" + esc(shortText(item.optionLabel, 11)) + "' 고른<br>" + esc(item.personaName) + ' 님' +
+        '<span class="seg-dot" aria-hidden="true">' + (activeIdx === idx ? '●' : '○') + '</span>' +
+        '<span>' + esc(cleanText(item.optionLabel)) + '</span>' +
       '</button>'
     ).join('');
-    if (sumEl && activeItem) {
-      sumEl.textContent = activeItem.personaIcon + " '" + shortText(activeItem.optionLabel, 14) + "' 답변을 고른 " + activeItem.personaName + ' 님에게만 발송되는 전용 맞춤 카톡입니다';
-    }
     $$('[data-spot-slot]', pillWrap).forEach(btn => {
       btn.onclick = () => switchSpotlightSlot(Number(btn.dataset.spotSlot), false);
     });
@@ -5217,13 +5520,24 @@ function renderKakaoStep5(withMorph) {
         '<span class="kk-time">' + esc(st5.timeLabel) + '</span>' +
       '</div>';
   } else {
+    const safeCards = (Array.isArray(cards3) && cards3.length >= 2)
+      ? cards3.slice(0, 6)
+      : [
+          { header_20chars: shortText(channelName + ' 핵심 안내', 20), body_180chars: '#{이름}님! ' + channelName + '에서 준비한 핵심 구성과 혜택을 카드로 확인해 보세요.', button_8chars: '자세히보기' },
+          { header_20chars: '실제 고객 후기', body_180chars: '먼저 이용하신 고객님들의 생생한 후기와 추천 포인트를 정리했습니다.', button_8chars: '후기보기' },
+          { header_20chars: '채널 친구 전용 혜택', body_180chars: '궁금한 점이나 예약·주문은 아래 버튼에서 바로 이어가실 수 있어요.', button_8chars: '혜택받기' }
+        ];
+    const totalCards = safeCards.length;
     bubbleHtml =
-      '<div class="kk-carousel-track">' +
-        cards3.slice(0, 6).map((c, ci) =>
+      '<div class="kk-carousel-track" data-carousel-count="' + totalCards + '">' +
+        safeCards.map((c, ci) =>
           '<div class="kk-carousel-card' + focusCls + '">' +
             '<div class="kk-carousel-thumb">' +
-              '<span style="font-size:10px;font-weight:700;opacity:0.86">(광고) ' + esc(shortText(channelName, 12)) + '</span>' +
-              '<span style="font-size:12px;font-weight:800;line-height:1.25">' + esc(shortText(c.header_20chars || (channelName + ' 안내'), 18)) + '</span>' +
+              '<span class="kk-carousel-card-idx">' + (ci + 1) + ' / ' + totalCards + '</span>' +
+              '<div>' +
+                '<div style="font-size:10px;font-weight:700;opacity:0.86">(광고) ' + esc(shortText(channelName, 12)) + '</div>' +
+                '<div style="font-size:12px;font-weight:800;line-height:1.25">' + esc(shortText(c.header_20chars || (channelName + ' 안내'), 18)) + '</div>' +
+              '</div>' +
             '</div>' +
             '<div class="kk-carousel-body">' +
               '<h4>' + esc(cleanText(c.header_20chars || ('핵심 안내 ' + (ci + 1)))) + '</h4>' +
@@ -5232,7 +5546,8 @@ function renderKakaoStep5(withMorph) {
             '<div class="kk-card-btns"><div class="kk-btn-mock">' + esc(cleanText(c.button_8chars || '자세히보기')) + '</div></div>' +
           '</div>'
         ).join('') +
-      '</div>';
+      '</div>' +
+      '<div class="kk-carousel-hint">↔ 옆으로 밀어서 ' + totalCards + '장 카드 보기</div>';
   }
 
   bodyEl.innerHTML =
@@ -5317,24 +5632,30 @@ function renderKakaoStep6(withMorph) {
     '</div>';
 }
 
-/* ── 깜빡이는 손가락 코치마크 (👆 + 동심원 파동 — 폰 내부 신청/설문 또는 폰 외부 [다음 장면]만 지목) ── */
+/* ── ★ V3.1 클릭 유도 포인터 (48px 화이트 글러브 커서 · 대상 버튼 내부 position: absolute 직접 마운트 · 스크롤 침범 0%) ── */
 function hideCoachmark() {
   const cm = $('#sim-coachmark');
   if (!cm) return;
-  cm.classList.remove('show', 'pressing');
+  cm.classList.remove('show', 'pressing', 'pos-left-safe');
+}
+
+function dismissCoachmarkForStep(stepNum) {
+  STATE.coachDismissedSteps[Number(stepNum || STATE.simStep)] = true;
+  hideCoachmark();
 }
 
 function getCoachmarkTargetForCurrentStep() {
   const step = STATE.simStep;
+  if (STATE.coachDismissedSteps && STATE.coachDismissedSteps[step]) return null;
   if (step === 1) {
-    return $('#btn-s1-apply');
+    return STATE.s1CurtainOpen ? $('#btn-s1-apply') : $('#btn-s1-open-curtain');
   }
   if (step === 2) {
     if (!STATE.s2Picked) return $('[data-s2-opt="0"]', $('#s2-options'));
     return $('#btn-s2-next');
   }
   if (step === 3 || step === 4 || step === 5) {
-    // 순정 카카오톡 채팅방 내부를 가리지 않고 폰 프레임 아래 외부 [다음 발송 장면 보기 ▶] 버튼만 가리킴
+    // 순정 카카오톡 채팅방 내부를 가리지 않고 폰 프레임 아래 외부 [다음 장면 보기 ▶] 버튼 내부에 직접 마운트
     return $('#btn-sim-next');
   }
   return null;
@@ -5342,24 +5663,17 @@ function getCoachmarkTargetForCurrentStep() {
 
 function positionCoachmarkOn(targetEl) {
   const cm = $('#sim-coachmark');
-  const stage = $('#sim-stage-outer');
-  if (!cm || !stage || !targetEl) {
+  if (!cm || !targetEl) {
     hideCoachmark();
     return false;
   }
-  let x = 180, y = 520;
-  if (typeof targetEl.getBoundingClientRect === 'function' && typeof stage.getBoundingClientRect === 'function') {
-    const sRect = stage.getBoundingClientRect();
-    const tRect = targetEl.getBoundingClientRect();
-    if (sRect.width > 0 && tRect.width > 0) {
-      // [다음 장면 보기 ▶] 버튼 지목 시 우하단 플로팅 런처와 완전 분리되도록 좌측 중앙(0.32) 좌표 배치
-      const isNextNav = targetEl.id === 'btn-sim-next';
-      x = Math.round((tRect.left - sRect.left) + (tRect.width * (isNextNav ? 0.32 : 0.56)));
-      y = Math.round((tRect.top - sRect.top) + (tRect.height * (isNextNav ? 0.52 : 0.62)));
-    }
+  // ★ 뷰포트 fixed·외부 스테이지 절대 픽셀 좌표 전면 폐기: 대상 버튼 내부 position: absolute 자식으로 직접 마운트!
+  if (typeof targetEl.appendChild === 'function' && cm.parentNode !== targetEl) {
+    try { targetEl.appendChild(cm); } catch (e) {}
   }
-  cm.style.left = x + 'px';
-  cm.style.top = y + 'px';
+  cm.style.left = '';
+  cm.style.top = '';
+  cm.classList.toggle('pos-left-safe', targetEl.id === 'btn-sim-next');
   cm.classList.remove('pressing');
   cm.classList.add('show');
   return true;
@@ -5599,6 +5913,7 @@ function startAutoPlayFrom(startStep) {
   STATE.spotlightSlotIdx = 0;
   STATE.spotlightDemoPlayed = false;
   STATE.spotlightUserTouched = false;
+  STATE.coachDismissedSteps = {};
   syncRescueButtonUI();
   STATE.s2Picked = false;
   STATE.s2AgreeChecked = true;
@@ -5668,59 +5983,86 @@ function applyTierBranchUI() {
   return tier;
 }
 
+function sanitizeCustomerQuestionForProposal(rawQ, optsList) {
+  let s = cleanText(rawQ || '').replace(/\s+/g, ' ').trim();
+  if (!s) return '관심 있는 항목을 선택해 주세요.';
+  const isNarrative = /(?:할게요|할께요|합니다|해요|하고\s*싶어요|파악할|물어보고\s*싶|질문해\s|질문해서|취향을\s*파악)/i.test(s);
+  if (!isNarrative) {
+    return s.replace(/\s*\([^)]{3,95}\)\s*/g, ' ').replace(/\s+/g, ' ').trim() || s;
+  }
+  const beforeVerb = s.match(/^(.{2,34}?)(?:을|를)\s*(?:질문해|질문해서|질문하고|물어봐|물어보고|확인해|파악해)/);
+  let subj = beforeVerb && beforeVerb[1] ? beforeVerb[1].trim() : '';
+  if (subj) {
+    subj = subj
+      .replace(/^선호하는\s+/, '선호하시는 ')
+      .replace(/^원하는\s+/, '원하시는 ')
+      .replace(/^관심\s*있는\s+/, '관심 있으신 ')
+      .replace(/(?:을|를|이|가|은|는)$/, '')
+      .trim();
+    if (subj) {
+      const code = subj.charCodeAt(subj.length - 1);
+      const particle = (code >= 0xAC00 && code <= 0xD7A3 && (code - 0xAC00) % 28 !== 0) ? '을' : '를';
+      return subj + particle + ' 선택해 주세요.';
+    }
+  }
+  const joined = (Array.isArray(optsList) ? optsList.join(' ') : '');
+  if (/중소과|대과|크기/.test(joined)) return '선호하시는 크기를 선택해 주세요.';
+  return '가장 관심 있는 항목을 선택해 주세요.';
+}
+
+function summarizeFlowOneLine(rawText, fallback) {
+  const s = cleanText(rawText || fallback || '').replace(/\s+/g, ' ').trim();
+  const arr = Array.from(s);
+  return arr.length > 68 ? (arr.slice(0, 67).join('').trim() + '…') : s;
+}
+
 function renderCompactSummaryCard() {
   const { camp, channelName } = getChannelMeta();
   const sched = STATE.schedule || resolveCampaignSchedule(camp);
-  const t1 = camp.tab1_basic_settings || {};
   const t3 = camp.tab3_application_form || {};
   const q1 = (Array.isArray(t3.questions) && t3.questions[0]) || DEMO_CAMPAIGN.tab3_application_form.questions[0];
-  const ansPreview = STATE.mappedOpts.slice(0, 3).map(m => cleanText(m.answerText)).join(' · ');
+  const cleanQ1 = sanitizeCustomerQuestionForProposal(q1.question_text, STATE.mappedOpts.map(m => m.answerText));
+  const ansPreview = STATE.mappedOpts.slice(0, 2).map(m => cleanText(m.answerText)).join(' / ');
+  const isStep5Carousel = !sched.hasVideo;
 
   const rows = [
     {
       step: 1, num: '①', type: '',
       title: '맞춤 신청페이지',
-      sub: cleanText(t1.description || t1.title_30chars || (channelName + ' 핵심 안내와 신청 버튼이 담긴 초기 신청페이지입니다.')),
-      nextArrow: '▼ 신청하기 클릭'
+      sub: summarizeFlowOneLine(channelName + ' 핵심 안내와 카카오 1초 신청 버튼이 세팅됩니다.')
     },
     {
       step: 2, num: '②', type: '',
-      title: '카카오 1초 신청폼 & 자동 분류',
-      sub: cleanText((q1.question_text || '유형 분류 질문') + (ansPreview ? (' — ' + ansPreview) : '')),
-      nextArrow: '▼ 제출 즉시'
+      title: '신청폼 & 자동 분류',
+      sub: summarizeFlowOneLine(cleanQ1 + (ansPreview ? (' (' + ansPreview + ')') : ''))
     },
     {
       step: 3, num: '③', type: 'ALIMTALK',
       title: sched.steps[3].tlTitle,
-      sub: cleanText(sched.steps[3].tlSub),
-      nextArrow: sched.skipStep4 ? '▼ 지정 시각 정각' : '▼ 약속한 간격 뒤'
+      sub: summarizeFlowOneLine('신청 즉시 접수 확인과 안내 링크가 24시간 바로 도착합니다.')
     }
   ];
   if (!sched.skipStep4) {
     rows.push({
       step: 4, num: '④', type: 'AD',
       title: sched.steps[4].tlTitle,
-      sub: cleanText(sched.steps[4].tlSub),
-      nextArrow: '▼ 약속한 간격 뒤'
+      sub: summarizeFlowOneLine(isSpotlightStep(4) ? '신청폼에서 고른 취향에 따라 서로 다른 맞춤 광고가 자동 발송됩니다.' : sched.steps[4].tlSub)
     });
     rows.push({
-      step: 5, num: '⑤', type: 'AD',
-      title: sched.steps[5].tlTitle,
-      sub: cleanText(sched.steps[5].tlSub),
-      nextArrow: sched.steps[6].isDateReserved ? '▼ 지정 시각 정각' : '▼ 약속한 간격 뒤'
+      step: 5, num: '⑤', type: isStep5Carousel ? 'CAROUSEL' : 'AD',
+      title: isStep5Carousel ? (sched.steps[5].shortLabel + ' · 멀티카드 캐로셀') : sched.steps[5].tlTitle,
+      sub: summarizeFlowOneLine(isStep5Carousel ? '좌우로 넘겨보는 멀티카드 캐로셀로 핵심 구성과 후기를 전합니다.' : sched.steps[5].tlSub)
     });
     rows.push({
       step: 6, num: '⑥', type: 'AD',
       title: sched.steps[6].tlTitle,
-      sub: cleanText(sched.steps[6].tlSub),
-      nextArrow: ''
+      sub: summarizeFlowOneLine(sched.steps[6].isDateReserved ? '지정하신 날짜·시각 정각에 신청자 전원에게 동시 발송됩니다.' : '최종 혜택과 예약·주문 버튼으로 자연스럽게 전환을 이끌어냅니다.')
     });
   } else {
     rows.push({
       step: 6, num: '④', type: 'AD',
       title: sched.steps[6].tlTitle,
-      sub: cleanText(sched.steps[6].tlSub),
-      nextArrow: ''
+      sub: summarizeFlowOneLine(sched.steps[6].tlSub)
     });
   }
 
@@ -5729,23 +6071,39 @@ function renderCompactSummaryCard() {
   wrap.innerHTML = rows.map((r, idx) => {
     const typeBadge = r.type === 'ALIMTALK'
       ? '<span class="flow-type-badge alim">알림톡</span>'
-      : (r.type === 'AD' ? '<span class="flow-type-badge ad">광고</span>' : '');
+      : (r.type === 'CAROUSEL'
+        ? '<span class="flow-type-badge carousel">캐로셀</span>'
+        : (r.type === 'AD' ? '<span class="flow-type-badge ad">광고</span>' : ''));
     const spotBadge = isSpotlightStep(r.step) ? '<span class="flow-type-badge spot">⚡맞춤</span>' : '';
-    const arrowHtml = (idx < rows.length - 1 && r.nextArrow)
-      ? '<div class="flow-step-connector" aria-hidden="true"><span class="flow-connector-pill">' + esc(r.nextArrow) + '</span></div>'
+    const arrowHtml = (idx < rows.length - 1)
+      ? '<div class="flow-step-connector" aria-hidden="true"><span class="flow-connector-arrow">▼</span></div>'
       : '';
-    return '<button type="button" class="flow-step-card" data-jump-sim="' + r.step + '">' +
-      '<span class="flow-step-num">' + r.num + '</span>' +
-      '<div class="flow-step-body">' +
-        '<div class="flow-step-head">' +
+    return '<div class="flow-acc-item" data-acc-step="' + r.step + '">' +
+      '<button type="button" class="flow-acc-head" data-acc-toggle="' + r.step + '" aria-expanded="false">' +
+        '<span class="flow-step-num">' + r.num + '</span>' +
+        '<span class="flow-step-head-main">' +
           '<span class="flow-step-title">' + esc(r.title) + '</span>' +
           typeBadge + spotBadge +
-        '</div>' +
+        '</span>' +
+        '<span class="flow-acc-chev" aria-hidden="true">▾</span>' +
+      '</button>' +
+      '<div class="flow-acc-body" hidden>' +
         '<div class="flow-step-desc">' + esc(r.sub) + '</div>' +
+        '<button type="button" class="flow-acc-go-btn" data-jump-sim="' + r.step + '">위 핸드폰에서 화면 보기 ▶</button>' +
       '</div>' +
-      '<span class="flow-step-go">보기</span>' +
-    '</button>' + arrowHtml;
+    '</div>' + arrowHtml;
   }).join('');
+
+  $$('[data-acc-toggle]', wrap).forEach(btn => {
+    btn.onclick = () => {
+      const item = btn.closest ? btn.closest('.flow-acc-item') : btn.parentNode;
+      if (!item) return;
+      const body = item.querySelector ? item.querySelector('.flow-acc-body') : null;
+      const isOpen = item.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      if (body) body.hidden = !isOpen;
+    };
+  });
 
   $$('[data-jump-sim]', wrap).forEach(btn => {
     btn.onclick = () => {
@@ -5790,8 +6148,15 @@ function renderProposal() {
   if (lbl4) lbl4.textContent = STATE.schedule.steps[4].shortLabel;
   if (lbl5) lbl5.textContent = STATE.schedule.steps[5].shortLabel;
   if (lbl6) lbl6.textContent = STATE.schedule.steps[6].shortLabel;
+  const type5El = $('#sp-type-5');
+  if (type5El) {
+    const isCarousel5 = !STATE.schedule.hasVideo;
+    type5El.textContent = isCarousel5 ? '캐로셀' : '광고';
+    type5El.classList.toggle('carousel', isCarousel5);
+    type5El.classList.toggle('ad', !isCarousel5);
+  }
 
-  // 상단 고정 헤더 바 (실제 고마워톡 랜딩 규격: 좌 [로고] 브랜드명, '설계안' 수식어 제거)
+  // 상단 고정 헤더 바 (실제 고마워톡 랜딩 규격: 좌 [로고] 브랜드명, 우 34px 회색 프로필 실루엣 아이콘)
   $('#top-brand-badge').textContent = channelName;
   const dot = $('#top-brand-dot');
   if (ba.logo_base64) dot.innerHTML = '<img src="' + ba.logo_base64 + '" alt="로고">';
@@ -5808,11 +6173,6 @@ function renderProposal() {
     ribbon.hidden = true;
   }
 
-  $('#cover-industry-chip').textContent = shortText(industryLabel, 14);
-  const ratioChip = $('#cover-ratio-chip');
-  if (ratioChip) {
-    ratioChip.textContent = STATE.schedule.skipStep4 ? '알림톡 1 : 지정 날짜 광고' : '알림톡 1 : 광고 3';
-  }
   $('#cover-channel-name').textContent = channelName;
 
   // 채팅방 헤더 채널명 동기화
@@ -5839,17 +6199,37 @@ function renderProposal() {
     '<div class="s1-check-item"><span class="s1-check-icon">✓</span><span>' + esc(shortText(pt, 28)) + '</span></div>'
   ).join('');
 
-  // Step 2 순정 신청폼 데이터 준비
+  // Step 2 순정 신청폼 데이터 준비 (파트너 서술형 문장 자동 고객질문화 + 따옴표 명시 보기 구제)
   const qsList = Array.isArray(t3.questions) ? t3.questions : [];
   const mcQuestion = qsList.find(q => q && Array.isArray(q.options) && q.options.length) || DEMO_CAMPAIGN.tab3_application_form.questions[0];
   $('#s2-form-title').textContent = cleanText(t3.form_title || (channelName + ' 맞춤 신청'));
   $('#s2-form-guide').textContent = cleanText(t3.form_guide_text || '선택하신 항목에 맞춰 맞춤 안내를 보내드립니다.');
-  $('#s2-question').innerHTML = esc(cleanText(mcQuestion.question_text || '현재 가장 관심 있는 항목을 선택해 주세요.')) + '<span class="req-star">*</span>';
 
-  STATE.mappedOpts = (mcQuestion.options || []).slice(0, 4).map((op, i) => extractOptionMapping(op, i));
-  if (STATE.mappedOpts.length < 2) {
-    STATE.mappedOpts.push({ answerText: '심화 상담 희망', tag: '심화상담', sheetField: '고객진단.유형', sheetVal: '심화 상담', palette: getTagPalette(1) });
+  let rawMapped = (mcQuestion.options || []).slice(0, 4).map((op, i) => extractOptionMapping(op, i));
+  const rawQTextStr = String(mcQuestion.question_text || '');
+  const qMatches = [];
+  const qr = /(?:'([^'\n]{2,32})'|"([^"\n]{2,32})"|‘([^’\n]{2,32})’|“([^”\n]{2,32})”)/g;
+  let qm;
+  while ((qm = qr.exec(rawQTextStr)) !== null) {
+    const tok = (qm[1] || qm[2] || qm[3] || qm[4] || '').trim();
+    if (tok && qMatches.indexOf(tok) === -1) qMatches.push(tok);
   }
+  const hasQuotedNotInOptions = qMatches.length >= 2 && qMatches.some(tok => !rawMapped.some(m => m.answerText.indexOf(tok) !== -1));
+  if (hasQuotedNotInOptions) {
+    rawMapped = qMatches.slice(0, 4).map((tok, i) => ({
+      answerText: tok,
+      tag: tok.replace(/[^가-힣a-zA-Z0-9]/g, '').slice(0, 12) || ('유형' + (i + 1)),
+      sheetField: '고객진단.취향',
+      sheetVal: tok,
+      palette: getTagPalette(i)
+    }));
+  }
+  STATE.mappedOpts = rawMapped;
+  if (STATE.mappedOpts.length < 2) {
+    STATE.mappedOpts.push({ answerText: '핵심 정보부터 받아보기', tag: '정보수신', sheetField: '고객진단.유형', sheetVal: '정보 수신', palette: getTagPalette(1) });
+  }
+  const cleanCustomerQ = sanitizeCustomerQuestionForProposal(rawQTextStr, STATE.mappedOpts.map(m => m.answerText));
+  $('#s2-question').innerHTML = esc(cleanCustomerQ) + '<span class="req-star">*</span>';
   STATE.s2Picked = false;
   STATE.s2AgreeChecked = true;
   syncSelectedOptionState(0);
@@ -5919,12 +6299,23 @@ function bindSimulatorEvents() {
     startAutoPlayFrom(1);
   };
 
-  // Step 1 프로스티드 커튼 티저 열기/접기 & 신청하기 버튼
+  // Step 1 빨간 무대 커튼 열기/닫기 & 신청하기 버튼 & ② 신청폼 이동 버튼
+  const openRedCurtain = () => {
+    switchToManualMode();
+    setStep1CurtainOpen(true);
+    dismissCoachmarkForStep(1);
+  };
   const openCurtainBtn = $('#btn-s1-open-curtain');
   if (openCurtainBtn) {
-    openCurtainBtn.onclick = () => {
-      switchToManualMode();
-      setStep1CurtainOpen(true);
+    openCurtainBtn.onclick = e => {
+      if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+      openRedCurtain();
+    };
+  }
+  const curtainOverlayEl = $('#s1-curtain-overlay');
+  if (curtainOverlayEl) {
+    curtainOverlayEl.onclick = () => {
+      if (!STATE.s1CurtainOpen) openRedCurtain();
     };
   }
   const closeCurtainBtn = $('#btn-s1-close-curtain');
@@ -5934,10 +6325,40 @@ function bindSimulatorEvents() {
       setStep1CurtainOpen(false);
     };
   }
+  const goStep2Btn = $('#btn-s1-go-step2');
+  if (goStep2Btn) {
+    goStep2Btn.onclick = () => {
+      switchToManualMode();
+      dismissCoachmarkForStep(1);
+      goSimStep(2, false);
+    };
+  }
   $('#btn-s1-apply').onclick = () => {
     switchToManualMode();
+    dismissCoachmarkForStep(1);
     goSimStep(2, false);
   };
+
+  // 문자·수동 카톡과의 핵심 차이 가로 스와이프 카드 인디케이터 동기화
+  const diffWrap = $('#diff-cards');
+  const diffDots = $$('[data-diff-idx]');
+  if (diffWrap && typeof diffWrap.addEventListener === 'function') {
+    diffWrap.addEventListener('scroll', () => {
+      const w = diffWrap.clientWidth || 340;
+      const idx = Math.max(0, Math.min(2, Math.round(diffWrap.scrollLeft / (w * 0.8))));
+      diffDots.forEach(d => d.classList.toggle('active', Number(d.dataset.diffIdx) === idx));
+    }, { passive: true });
+  }
+  diffDots.forEach(dot => {
+    dot.onclick = () => {
+      const idx = Number(dot.dataset.diffIdx) || 0;
+      diffDots.forEach(d => d.classList.toggle('active', Number(d.dataset.diffIdx) === idx));
+      if (diffWrap && typeof diffWrap.scrollTo === 'function') {
+        const w = diffWrap.clientWidth || 340;
+        diffWrap.scrollTo({ left: Math.round(idx * w * 0.84), behavior: 'smooth' });
+      }
+    };
+  });
 
   // 채널 추가 안 한 고객 미수신 재발송 체험 토글 버튼 (광고 단계 전용)
   const rescueBtn = $('#btn-sim-rescue-toggle');
@@ -5963,6 +6384,7 @@ function bindSimulatorEvents() {
 
   $('#btn-s2-next').onclick = () => {
     switchToManualMode();
+    dismissCoachmarkForStep(2);
     if (!STATE.s2Picked) {
       STATE.s2Picked = true;
       syncSelectedOptionState(0);
@@ -5989,6 +6411,7 @@ function bindSimulatorEvents() {
   };
   $('#btn-sim-next').onclick = () => {
     switchToManualMode();
+    dismissCoachmarkForStep(STATE.simStep);
     const sched = STATE.schedule || resolveCampaignSchedule(STATE.campaign);
     if (STATE.simStep >= 6) {
       goSimStep(1, false);
@@ -6279,7 +6702,18 @@ function closeFloatingWidget() {
 
 function switchFloatingTab(tabName) {
   const next = (tabName === 'vip' || tabName === 'report') ? tabName : 'qa';
+  const isService = (next === 'vip' || next === 'report');
   FLT_STATE.activeTab = next;
+
+  const titleEl = $('#flt-sheet-title');
+  const backBtn = $('#btn-flt-back-qa');
+  const openSvcBtn = $('#btn-flt-open-service');
+  const subTabs = $('#flt-service-subtabs');
+  if (titleEl) titleEl.hidden = isService;
+  if (backBtn) backBtn.hidden = !isService;
+  if (openSvcBtn) openSvcBtn.hidden = isService;
+  if (subTabs) subTabs.hidden = !isService;
+
   ['qa', 'vip', 'report'].forEach(t => {
     const tabBtn = $('#flt-tab-' + t);
     const panel = $('#flt-panel-' + t);
@@ -6377,6 +6811,8 @@ function appendToProposalMemo(requestText) {
 async function askProposalQA(questionText) {
   const q = String(questionText || '').trim();
   if (!q) return '';
+  const chipsRow = $('#flt-faq-chips');
+  if (chipsRow) chipsRow.classList.add('minimized');
   const stream = $('#flt-qa-stream');
   if (!stream) return '';
   const uEl = document.createElement('div');
@@ -6638,6 +7074,10 @@ function bindFloatingWidgetEvents() {
       if (e.target === backdrop) closeFloatingWidget();
     });
   }
+  const openSvcBtn = $('#btn-flt-open-service');
+  const backQaBtn = $('#btn-flt-back-qa');
+  if (openSvcBtn) openSvcBtn.onclick = () => switchFloatingTab('vip');
+  if (backQaBtn) backQaBtn.onclick = () => switchFloatingTab('qa');
   $$('[data-flt-tab]').forEach(btn => {
     btn.onclick = () => switchFloatingTab(btn.dataset.fltTab);
   });

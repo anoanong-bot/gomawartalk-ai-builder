@@ -155,6 +155,77 @@
     return filtered.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   }
 
+  // ★ V3.1 카카오 알림톡 쿠폰·광고어 차단 (알림톡에는 쿠폰·할인권·특가·무료증정 절대 불가 ➔ 순수 정보성 접수 확인으로 정화)
+  var ALIMTALK_PROMO_RE = /(?:할인\s*쿠폰|웰컴\s*쿠폰|감사\s*쿠폰|재방문\s*쿠폰|카톡\s*쿠폰|쿠폰|할인권|무료\s*증정권|무료\s*증정|사은품\s*증정|특가\s*할인|\d+\s*(?:%|원|천원|만원)\s*할인|1\+1\s*쿠폰|사이즈업\s*쿠폰|타임세일|프로모션\s*혜택)/gi;
+
+  function stripAlimtalkPromoCopy(str, fallbackTopic) {
+    var s = stripAlimtalkChannelAddSolicitation(str);
+    if (!s) return '';
+    if (!ALIMTALK_PROMO_RE.test(s)) {
+      ALIMTALK_PROMO_RE.lastIndex = 0;
+      return s;
+    }
+    ALIMTALK_PROMO_RE.lastIndex = 0;
+    var topicLabel = String(fallbackTopic || '').replace(ALIMTALK_PROMO_RE, '').replace(/\s+/g, ' ').trim();
+    ALIMTALK_PROMO_RE.lastIndex = 0;
+    // 쿠폰·할인 문구가 포함된 문장만 제거하고 순수 정보성 접수 확인 문장으로 대체
+    var cleanLines = s.split(/\r?\n/).map(function (ln) {
+      if (!ALIMTALK_PROMO_RE.test(ln)) {
+        ALIMTALK_PROMO_RE.lastIndex = 0;
+        return ln;
+      }
+      ALIMTALK_PROMO_RE.lastIndex = 0;
+      return '';
+    }).filter(Boolean);
+    if (cleanLines.length) {
+      return cleanLines.join('\n').trim();
+    }
+    return (topicLabel ? (tFirst(topicLabel, 24) + ' ') : '') + '신청이 정상 접수되었습니다. 신청 내역과 상세 안내 사항은 아래 버튼에서 바로 확인하실 수 있습니다.';
+  }
+
+  function sanitizeQ3ExampleChip(str) {
+    var s = stripAlimtalkChannelAddSolicitation(str);
+    if (!s) return '';
+    s = s
+      .replace(/첫\s*방문\s*웰컴\s*쿠폰/g, '신청 내역 확인 안내')
+      .replace(/웰컴\s*혜택\s*안내/g, '신청 내역 확인 링크')
+      .replace(/(?:할인|웰컴|카톡|무료)?\s*(?:쿠폰|할인권|무료\s*증정권|무료\s*증정)/g, '신청 내역 확인 안내')
+      .replace(/\d+\s*(?:%|원|천원|만원)\s*할인/g, '신청 접수 안내')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+    return s;
+  }
+
+  // 파트너가 Q1~Q5(특히 Q1/Q3)에 입력한 쿠폰·할인·핵심 혜택을 추출해 ④ 첫 번째 광고 메시지에 100% 반영
+  function extractPromoOfferFromAnswers(answersObj) {
+    var A = answersObj || {};
+    var sources = [A[3], A[1], A[4], A[5], A[8]].filter(Boolean).map(function (v) { return String(v).trim(); });
+    var couponRe = /([가-힣a-zA-Z0-9,\s·+\-%]{0,24}(?:쿠폰|할인권|무료\s*증정권|무료\s*증정|사이즈업|1\+1|\d+\s*(?:%|원|천원|만원)\s*할인|특가|체험권|우대권|사은품)[가-힣a-zA-Z0-9,\s·+\-%]{0,12})/;
+    for (var i = 0; i < sources.length; i++) {
+      var m = sources[i].match(couponRe);
+      if (m && m[1]) {
+        var phrase = m[1]
+          .replace(/^(?:신청\s*즉시|가입\s*시|초대해서|드리는|보내드릴게요|발송할게요|을|를|은|는|이|가|과|와|및)\s+/g, '')
+          .replace(/\s*(?:을|를|은|는|이|가)?\s*(?:바로\s*)?(?:보내|발송|드리|제공|지급|안내)(?:드릴게요|할게요|하고|해\s*드려요|해\s*드릴게요|합니다|해요).*$/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        if (phrase.length >= 2) {
+          var hasCouponWord = /쿠폰|할인권|무료\s*증정|할인|1\+1|사이즈업|체험권|우대권/.test(phrase);
+          return {
+            hasPromo: true,
+            isCoupon: /쿠폰|할인권|할인/.test(phrase),
+            phrase: tFirst(phrase, 34),
+            rawSource: sources[i],
+            buttonLabel: /쿠폰|할인권/.test(phrase)
+              ? '할인 쿠폰 바로 받기'
+              : (hasCouponWord ? '전용 혜택 바로 받기' : '특별 혜택 확인하기')
+          };
+        }
+      }
+    }
+    return { hasPromo: false, isCoupon: false, phrase: '', rawSource: '', buttonLabel: '' };
+  }
+
   function sanitizeObject(obj) {
     if (obj == null) return obj;
     try {
@@ -923,7 +994,7 @@
         if (foreign || /외국인|영어/.test(String(answers[2] || ''))) return ['한국어와 영어 함께', '한국어로만', '영어 위주로', '일본어도 함께'];
         return ['친근하고 다정하게', '전문적이고 믿음직하게', '열정적이고 에너지 있게', '간결하고 담백하게'];
       case 4: return ['시간이 부족해요', '어디서 시작할지 몰라요', '혼자서는 꾸준히 못 해요', '비용이 부담돼요'];
-      case 5: return ['핵심 요약 PDF 자료', '무료 체험·상담 초대', '체크리스트·워크시트', '할인 쿠폰'];
+      case 5: return ['핵심 요약 PDF 자료', '일정·오시는 길 안내', '체크리스트·워크시트', '신청 내역·안내 링크'];
       case 6: return ['경력 5년 이상', '누적 수강생·고객 수', '실제 후기·성과 사례', '자격증·수상 경력'];
       case 7: return ['현재 수준은 어느 정도세요?', '가장 궁금한 점은 뭔가요?', '신청 목적이 무엇인가요?', '선호하는 시간대는요?'];
       case 8: return ['정기 연재 (매주 소식)', '3~7일 챌린지', '행사 전 일정 안내', '쿠폰·혜택 발송'];
@@ -1217,8 +1288,8 @@
     var sys = [
       '당신은 고마워톡 수석 카피라이터입니다. 파트너님의 8가지 답변만을 재료로 캠페인 전체 문구를 100% 새로 작문하세요.',
       '규칙: 1) 어떤 업종 샘플 문구도 복사하지 말고 오직 이번 답변에서 출발하세요. 2) 금지어(' + TOSS_BANNED_LIT + ')는 쓰지 마세요.',
-      '3) 알림톡(ALIMTALK)에는 할인/특가/이벤트/무료증정/쿠폰 같은 광고성 단어 및 "채널 추가를 눌러주세요", "채널 추가 부탁드려요", "채널 추가 후" 같은 채널 추가 유도 문구를 본문에 절대 쓰지 마세요(카카오 심사 반려 사유). 4) 시트 변수는 #{@시트명.필드명} 형식.',
-      '5) 말투(Step 3)와 언어(예: 한국어+영어 병기)를 모든 문구에 일관되게 반영하세요. 6) 신청 질문(Step 7)은 고른 질문마다 보기 3~4개(각 30자 이내)를 만들고 tag/sheet_field/sheet_value를 채우세요(최대 2문항).',
+      '3) 알림톡(ALIMTALK · 1회차)에는 쿠폰/할인권/할인/특가/이벤트/무료증정 같은 광고성 단어 및 "채널 추가를 눌러주세요", "채널 추가 부탁드려요" 같은 채널 추가 유도 문구를 본문에 절대 쓰지 마세요(카카오 심사 반려 사유). 만약 파트너가 쿠폰·할인 혜택을 언급했다면 알림톡은 순수 정보성 접수 확인으로 작성하고, 쿠폰·할인 내용은 반드시 2회차(④ 첫 번째 광고 메시지) 본문과 버튼에 100% 정확히 반영하세요. 4) 시트 변수는 #{@시트명.필드명} 형식.',
+      '5) 말투(Step 3)와 언어(예: 한국어+영어 병기)를 모든 문구에 일관되게 반영하세요. 6) 신청 질문(Step 7)의 question_text는 반드시 "~할게요/~파악합니다/~질문해" 같은 파트너 시점 서술문이 아닌 실제 고객에게 묻는 정중한 1줄 질문(예: "선호하시는 사과 크기를 선택해 주세요.")으로 변환하고, 파트너가 따옴표(\'...\')·괄호·슬래시·"A와 B" 등으로 언급한 구체 선택지를 최우선 추출해 options에 그대로 넣으세요(최대 2문항).',
       '7) [원포인트 맞춤 분기 절대 원칙 — 단 1개 핵심 회차 × 2종 대비 원고] 캠페인 전체에서 딱 1개 핵심 메시지 회차(기본: tab4_sequence 2회차)에만 has_spotlight_branch=true와 극명하게 대비되는 2종의 맞춤 원고 branch_pair(1순위 핵심 태그 선택지A vs 2순위 나머지 모두 선택지B)를 작성하고, 나머지 모든 회차(1회차·3회차 등)는 has_spotlight_branch=false 공통 단일 원고 1개로 작성하세요.',
       '8) [기계식 단어 대입 100% 금지] "[예] 신청자 전용 가이드", "[모름] 집중 완성 로드맵", "선택하신 「예」 기준에 맞춰..."처럼 설문 보기 글자만 끼워 넣는 치환 문구를 절대 쓰지 마세요! 한국어 익숙도 "상"("한국어를 완벽히 마스터해 봅시다! 실전 고급 표현 3가지...") vs "하"("처음이어도 괜찮아요! 오늘 바로 써먹는 쉬운 기초 인사말부터...")처럼 대상 눈높이에 맞춰 카드 헤드라인·첫 문장 공감 화법·핵심 제공 가치·버튼명까지 완전히 다른 고품질 원고 2개를 작성하세요.',
       '9) [알림톡 1 : 광고 3 황금 비율] 카톡 채널 친구 수가 늘어나는 원리에 맞춰 신청 즉시 알림톡(1회) + 후속 광고 메시지(이미지형/캐러셀 3회) 1:3 비율로 구성하고, 연재·챌린지·콘텐츠형이면 use_webzine=true, 쿠폰·행사 안내 위주면 false.',
@@ -1255,13 +1326,13 @@
         { step: 5, type: 'BOTTOM_CUE', sum_method: '카카오 원클릭 로그인 (10초 간편 접수)', sum_benefit: tFirst(gift, 40), sum_timing: '신청 완료 즉시 카카오톡 발송', sum_notice: '상단 노란색 [채널 추가] 클릭 시 후속 소식 수신', notice: '카카오 로그인 한 번으로 별도 입력 없이 즉시 접수됩니다', arrow_text: '아래 [신청하기] 버튼을 눌러 지금 바로 신청하세요' }
       ] },
       tab3_application_form: { form_title: '신청 전 10초 설문', form_guide_text: '정확한 맞춤 안내 발송을 위해 아래 항목을 선택해 주세요.', questions: qList.map(function (q, i) {
-        return { question_text: q, options: inferSmartSurveyOptions(q, topic + ' ' + target, i) };
+        return parseSurveyQuestionFromAnswer(q, topic + ' ' + target, i);
       }) },
       tab4_sequence: [
-        { step: 1, timing: 'IMMEDIATE', template_type: 'ALIMTALK', condition_desc: '모두 (전체 신청자)', content_title: tFirst(topic, 20) + ' 신청 접수 확인', content_intro: '신청이 정상 접수되었습니다. 준비된 첫 안내 자료를 아래 버튼에서 바로 확인해 보세요.', btn_name: '첫 자료 확인하기' },
-        { step: 2, timing: 'AFTER_1_DAY_0900', template_type: 'FREE_FRIENDTALK', condition_desc: '모두 (전체 신청자)', badge: tFirst(target || '채널 친구 전용', 14), headline: tFirst(topic, 30), subtext: tFirst(gift, 30), body_text: '#{이름}님! 어제 받아보신 내용에 이어 두 번째 소식을 보내드려요. ' + tFirst(flow, 60), btn_name: '이어서 보기' },
-        { step: 3, timing: 'AFTER_3_DAYS_0900', template_type: 'BRAND_CAROUSEL', condition_desc: '모두 (전체 신청자)', cards: [{ header_20chars: tFirst(topic, 20), body_180chars: tFirst(gift, 120), button_8chars: '자세히보기' }, { header_20chars: '궁금한 점 안내', body_180chars: '궁금한 점은 언제든 채널로 문의해 주세요.', button_8chars: '신청하기' }] },
-        { step: 4, timing: 'AFTER_7_DAYS_1000', template_type: 'FREE_FRIENDTALK', condition_desc: '모두 (전체 신청자)', badge: '마감 혜택 · 상담 안내', headline: tFirst(topic, 24) + ' 최종 안내', subtext: '채널 친구 전용 마지막 혜택', body_text: '#{이름}님! 보내드린 자료는 잘 살펴보셨나요? 놓치면 아쉬운 특별 혜택과 1:1 상담 예약을 지금 확인해 보세요.', btn_name: '혜택·상담 보기' }
+        { step: 1, timing: 'IMMEDIATE', template_type: 'ALIMTALK', condition_desc: '모두 (전체 신청자)', content_title: tFirst(topic, 20) + ' 신청 접수 확인', content_intro: stripAlimtalkPromoCopy(gift, topic) || '신청이 정상 접수되었습니다. 신청 내역과 상세 안내는 아래 버튼에서 바로 확인해 보세요.', btn_name: '신청 내역 확인하기' },
+        { step: 2, timing: 'AFTER_1_DAY_0900', template_type: 'FREE_FRIENDTALK', condition_desc: '모두 (전체 신청자)', badge: tFirst(target || '채널 친구 전용', 14), headline: tFirst(topic, 30), subtext: tFirst(gift, 30), body_text: '#{이름}님! ' + tFirst(topic, 26) + ' 관련 두 번째 소식을 보내드려요. ' + tFirst(flow || gift, 70), btn_name: '자세히 보기' },
+        { step: 3, timing: 'AFTER_3_DAYS_0900', template_type: 'BRAND_CAROUSEL', condition_desc: '모두 (전체 신청자)', cards: buildDomainCarouselCards(topic, gift, target) },
+        { step: 4, timing: 'AFTER_7_DAYS_1000', template_type: 'FREE_FRIENDTALK', condition_desc: '모두 (전체 신청자)', badge: '마감 혜택 · 상담 안내', headline: tFirst(topic, 24) + ' 최종 안내', subtext: '채널 친구 전용 마지막 혜택', body_text: '#{이름}님! 보내드린 안내는 잘 살펴보셨나요? 놓치면 아쉬운 특별 혜택과 일정을 지금 확인해 보세요.', btn_name: '혜택 자세히 보기' }
       ],
       use_webzine: /연재|챌린지|칼럼|소식|정기/.test(flow),
       webzine_studio: { webzine_title: tFirst(topic, 24) + ' 매거진', sections: [
@@ -1285,25 +1356,196 @@
     return MECHANICAL_BRANCH_RE.test(String(text == null ? '' : text));
   }
 
+  function pickKoreanParticle(word, consonantParticle, vowelParticle) {
+    var w = String(word || '').replace(/[\s"'‘’“”()\[\]?!.,]+$/g, '');
+    if (!w) return vowelParticle;
+    var code = w.charCodeAt(w.length - 1);
+    if (code >= 0xAC00 && code <= 0xD7A3) {
+      return ((code - 0xAC00) % 28 !== 0) ? consonantParticle : vowelParticle;
+    }
+    return vowelParticle;
+  }
+
+  function buildDomainCarouselCards(topic, gift, target) {
+    var cleanTopic = tFirst(String(topic || '맞춤 안내').replace(/^\[[^\]]+\]\s*/, ''), 18) || '핵심 안내';
+    var cleanGift = tFirst(String(gift || '준비된 핵심 안내와 혜택을 확인해 보세요.'), 110);
+    var hay = (cleanTopic + ' ' + cleanGift + ' ' + String(target || '')).toLowerCase();
+    if (/사과|과일|나주배|신고배|배\s*(?:농원|농장|과수원|선물|직송|즙)|딸기|귤|감귤|복숭아|포도|농원|농장|과수원|산지|직송|농산물|채소|상추|반찬|식품|한우|수산/i.test(hay)) {
+      return [
+        { header_20chars: tFirst(cleanTopic + ' 산지 소식', 20), body_180chars: '#{이름}님! 산지에서 갓 수확해 가장 신선한 시기에 보내드리는 ' + cleanTopic + ' 구성과 특징을 한눈에 확인해 보세요.', button_8chars: '구성살펴보기' },
+        { header_20chars: '실제 구매 고객 후기', body_180chars: '아삭한 식감과 진한 당도로 재주문율이 가장 높은 인기 구성을 생생한 후기와 함께 모았습니다.', button_8chars: '후기확인하기' },
+        { header_20chars: '채널 친구 전용 혜택', body_180chars: tFirst(cleanGift || '이번 시즌 한정으로 준비한 산지 직송 혜택과 주문 안내를 지금 바로 확인해 보세요.', 140), button_8chars: '혜택받기' }
+      ];
+    }
+    return [
+      { header_20chars: tFirst(cleanTopic + ' 핵심 안내', 20), body_180chars: tFirst('#{이름}님! ' + cleanGift, 140), button_8chars: '자세히보기' },
+      { header_20chars: '실제 이용 고객 후기', body_180chars: '먼저 경험하신 고객님들의 생생한 후기와 만족 포인트를 카드 한 장으로 정리했습니다.', button_8chars: '후기보기' },
+      { header_20chars: '전용 혜택·상담 안내', body_180chars: '궁금한 점이나 예약·주문 안내가 필요하시면 아래 버튼에서 바로 이어가실 수 있어요.', button_8chars: '혜택확인' }
+    ];
+  }
+
+  // ★ V3.1 Q2 신청질문 보기 최우선 추출기 (따옴표 '...' / "..." / 「...」 ➔ 괄호 (A/B) ➔ 'A와 B'·슬래시·쉼표)
+  function extractSurveyOptionsFromText(rawText) {
+    var q = String(rawText || '').trim();
+    if (!q) return [];
+    var out = [];
+    var pushOpt = function (raw) {
+      var s = String(raw || '')
+        .replace(/^[\s"'‘’“”「」『』\[\]·\-•]+|[\s"'‘’“”「」『』\[\]·\-•]+$/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      // 짝이 맞지 않는 외곽 괄호만 제거하고 '(상)'·'(하)' 같은 정상 괄호 표기는 보존
+      if (s.charAt(0) === '(' && s.indexOf(')') === -1) s = s.slice(1).trim();
+      if (s.charAt(s.length - 1) === ')' && s.indexOf('(') === -1) s = s.slice(0, -1).trim();
+      if (!s || s.length < 2 || s.length > 32) return;
+      if (/^(?:필수|선택|질문|보기|객관식|옵션|예시|참고)$/.test(s)) return;
+      if (out.indexOf(s) === -1) out.push(s);
+    };
+
+    // 1) 작은따옴표('...'), 큰따옴표("..."), 둥근따옴표(‘...’ / “...”), 낫표(「...」) 최우선 추출
+    var quoteRe = /(?:'([^'\n]{2,32})'|"([^"\n]{2,32})"|‘([^’\n]{2,32})’|“([^”\n]{2,32})”|「([^」\n]{2,32})」|『([^』\n]{2,32})』)/g;
+    var qm;
+    while ((qm = quoteRe.exec(q)) !== null) {
+      pushOpt(qm[1] || qm[2] || qm[3] || qm[4] || qm[5] || qm[6]);
+    }
+    if (out.length >= 2) return out.slice(0, 5);
+
+    // 2) 최외곽 괄호 안의 구분자 보기 (중첩 괄호 '(어느 정도 익숙해요 (상) / 기초 (하))' 완벽 지원)
+    var firstOpen = q.indexOf('(');
+    var lastClose = q.lastIndexOf(')');
+    if (firstOpen !== -1 && lastClose > firstOpen + 3 && (lastClose - firstOpen) <= 120) {
+      var parenInner = q.slice(firstOpen + 1, lastClose).trim();
+      if (/[\/·,|]/.test(parenInner)) {
+        parenInner.split(/\s*[\/·,|]\s*/).forEach(pushOpt);
+        if (out.length >= 2) return out.slice(0, 5);
+      }
+    }
+
+    // 3) 본문 내 슬래시(/) 또는 'A와 B로' / 'A 또는 B' 패턴 추출
+    if (q.indexOf('/') !== -1) {
+      var slashClause = q.replace(/^[^:：?？]*[:：?？]\s*/, '');
+      var sParts = slashClause.split(/\s*\/\s*/);
+      if (sParts.length >= 2 && sParts.length <= 5) {
+        sParts.forEach(function (p) {
+          var cleaned = p.replace(/\s*(?:중|사이|로|으로)\s*(?:선택|고르|파악|나눠|분류|구분).*$/, '').trim();
+          pushOpt(cleaned);
+        });
+        if (out.length >= 2) return out.slice(0, 5);
+      }
+    }
+
+    var abMatch = q.match(/([가-힣a-zA-Z0-9\s·]{2,22}?)(?:와|과|또는|혹은|vs)\s+([가-힣a-zA-Z0-9\s·]{2,22}?)(?:로|으로|중|사이|를|을|에|의|\s*(?:취향|유형|구분|나눠|분류|파악|선택|비교))/);
+    if (abMatch && abMatch[1] && abMatch[2]) {
+      var leftA = abMatch[1].replace(/^.*(?:질문해|물어봐|물어보고|선택해|골라|중에서)\s*/, '').trim();
+      var rightB = abMatch[2].trim();
+      pushOpt(leftA);
+      pushOpt(rightB);
+      if (out.length >= 2) return out.slice(0, 5);
+    }
+
+    return [];
+  }
+
+  // ★ V3.1 파트너 시점 서술형 문장(~할게요/~파악합니다/~물어보고 싶어요) → 고객에게 묻는 자연스러운 1줄 질문 변환
+  function isPartnerNarrativeQuestion(text) {
+    var s = String(text || '').trim();
+    if (!s) return false;
+    return /(?:할게요|할께요|합니다|해요|하고\s*싶어요|하고\s*싶습니다|파악할|파악하려|물어보고\s*싶|물어볼게요|여쭤볼게요|질문해\s|질문해서|나눌게요|분류할게요|구분할게요|받으려고|받겠습니다|취향을\s*파악)/i.test(s);
+  }
+
+  function convertPartnerNarrativeToCustomerQuestion(rawText, extractedOpts, topicSeed) {
+    var s = String(rawText || '').replace(/\s+/g, ' ').trim();
+    if (!s) return '관심 있는 항목을 선택해 주세요.';
+
+    // 이미 고객에게 묻는 깨끗한 질문이고 파트너 서술어가 없는 경우 최외곽 괄호 보기만 정리
+    if (!isPartnerNarrativeQuestion(s)) {
+      var cleanDirect = s;
+      var pOpen = cleanDirect.indexOf('(');
+      var pClose = cleanDirect.lastIndexOf(')');
+      if (pOpen > 1 && pClose > pOpen + 3 && /[\/·,|]/.test(cleanDirect.slice(pOpen + 1, pClose))) {
+        cleanDirect = (cleanDirect.slice(0, pOpen) + ' ' + cleanDirect.slice(pClose + 1)).replace(/\s+/g, ' ').trim();
+      } else {
+        cleanDirect = cleanDirect.replace(/\s*\([^)]{3,95}\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+      }
+      if (cleanDirect && cleanDirect.length >= 4 && !/['"‘’“”]/.test(cleanDirect)) {
+        if (!/[?.!요]$/.test(cleanDirect)) cleanDirect += pickKoreanParticle(cleanDirect, '을', '를') + ' 선택해 주세요.';
+        return cleanDirect;
+      }
+    }
+
+    // 1) "선호하는 사과 크기를 질문해 '...'와 '...'로 취향을 파악할게요." → 핵심 명사구 추출
+    var subj = '';
+    var beforeVerb = s.match(/^(.{2,34}?)(?:을|를)\s*(?:질문해|질문해서|질문하고|물어봐|물어보고|물어보며|여쭤봐|여쭤보고|확인해|파악해|조사해|선택받아|고르게)/);
+    if (beforeVerb && beforeVerb[1]) {
+      subj = beforeVerb[1].trim();
+    } else {
+      // 따옴표 및 뒤쪽 서술 절 제거 후 핵심 주어/목적어 추출
+      subj = s
+        .replace(/(?:'[^'\n]*'|"[^"\n]*"|‘[^’\n]*’|“[^”\n]*”|「[^」\n]*」)/g, ' ')
+        .replace(/\([^)]*\)/g, ' ')
+        .replace(/(?:을|를)?\s*(?:질문해|질문해서|질문하고|물어보고|물어볼|여쭤볼|확인해|파악할|파악합니다|취향을\s*파악|구분할|나눌|분류할|받으려).*$/g, '')
+        .replace(/\s*(?:와|과|로|으로)\s*$/g, '')
+        .replace(/^(?:고객에게|고객님께|신청할\s*때|신청\s*시|신청자에게)\s*/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    if (subj && subj.length >= 2) {
+      subj = subj
+        .replace(/^(?:고객에게|고객님께|신청할\s*때|신청\s*시|신청자에게|주로|평소)\s*/g, '')
+        .replace(/^선호하는\s+/, '선호하시는 ')
+        .replace(/^원하는\s+/, '원하시는 ')
+        .replace(/^희망하는\s+/, '희망하시는 ')
+        .replace(/^관심\s*있는\s+/, '관심 있으신 ')
+        .replace(/^기대하는\s+/, '기대하시는 ')
+        .replace(/^고민하는\s+/, '고민 중이신 ')
+        .replace(/^찾는\s+/, '찾으시는 ')
+        .replace(/(?:을|를|이|가|은|는)$/, '')
+        .trim();
+      if (subj && subj.length >= 2 && subj.length <= 28) {
+        var part = pickKoreanParticle(subj, '을', '를');
+        return subj + part + ' 선택해 주세요.';
+      }
+    }
+
+    // 2) 추출된 보기가 있으면 보기 성격에 맞춰 고객 질문 생성
+    var optsJoined = (Array.isArray(extractedOpts) ? extractedOpts.join(' ') : '') + ' ' + String(topicSeed || '');
+    if (/중소과|대과|크기|사이즈/i.test(optsJoined)) return '선호하시는 크기를 선택해 주세요.';
+    if (/선물|가정용|실속/i.test(optsJoined)) return '구매 용도를 선택해 주세요.';
+    if (/학년|초등|중등|고등|수능/i.test(optsJoined)) return '현재 자녀분의 학년을 선택해 주세요.';
+    if (/시간|오전|오후|저녁|주말/i.test(optsJoined)) return '선호하시는 시간대를 선택해 주세요.';
+    if (/수준|입문|기초|고급|회화/i.test(optsJoined)) return '현재 수준을 선택해 주세요.';
+    return '가장 관심 있는 항목을 선택해 주세요.';
+  }
+
   function inferSmartSurveyOptions(qText, topicSeed, qIdx) {
     var qi = Number(qIdx) || 0;
     var q = String(qText || '');
     var hay = (q + ' ' + String(topicSeed || '')).toLowerCase();
     var fieldName = '고객진단.유형' + (qi > 0 ? (qi + 1) : '');
 
-    // 1) 질문 텍스트 안에 괄호 보기 (A / B / C)가 직접 적혀 있으면 그대로 파싱
-    var parenM = q.match(/\(([^)]{3,80})\)/);
-    if (parenM && parenM[1] && /[\/·,]/.test(parenM[1])) {
-      var parts = parenM[1].split(/\s*[\/·,]\s*/).map(function (s) { return s.trim(); }).filter(function (s) { return s.length >= 1 && s.length <= 24; });
-      if (parts.length >= 2) {
-        return parts.slice(0, 4).map(function (p, oi) {
-          var cleanTag = p.replace(/[^가-힣a-zA-Z0-9]/g, '').slice(0, 12) || ('유형' + (oi + 1));
-          return { answer_text: p, tag: cleanTag, sheet_field: fieldName, sheet_value: p };
-        });
-      }
+    // 1) 질문/답변 텍스트 안에 명시된 구체 선택지(따옴표·괄호·슬래시·A와 B) 최우선 추출
+    var explicit = extractSurveyOptionsFromText(q);
+    if (explicit.length >= 2) {
+      return explicit.slice(0, 5).map(function (p, oi) {
+        var cleanTag = p.replace(/[^가-힣a-zA-Z0-9]/g, '').slice(0, 12) || ('유형' + (oi + 1));
+        return { answer_text: p, tag: cleanTag, sheet_field: fieldName, sheet_value: p };
+      });
     }
 
-    // 2) 업종·주제별 현실적인 대비 선택지 (기계식 예/아니오/모름 완전 배제)
+    // 2) 업종·상품 맥락별 현실적인 선택지 (타 업종 기계적 폴백 '실전 전략/기초 안내' 영구 폐기!)
+    if (/사과|과일|나주배|신고배|배\s*(?:농원|농장|과수원|선물|직송|즙)|딸기|귤|감귤|복숭아|포도|농원|농장|과수원|산지|직송|농산물|농수산/i.test(hay)) {
+      if (/크기|사이즈|중소과|대과/i.test(hay)) {
+        return [
+          { answer_text: '한 손에 쏙 들어오는 중소과', tag: '중소과선호', sheet_field: '고객취향.크기', sheet_value: '중소과' },
+          { answer_text: '묵직하고 큼직한 대과', tag: '대과선호', sheet_field: '고객취향.크기', sheet_value: '대과' }
+        ];
+      }
+      return [
+        { answer_text: '집에서 편하게 먹는 가정용 실속 구성', tag: '가정용실속', sheet_field: '고객취향.용도', sheet_value: '가정용 실속' },
+        { answer_text: '정성 담아 보내는 선물용 프리미엄 구성', tag: '선물용프리미엄', sheet_field: '고객취향.용도', sheet_value: '선물용 프리미엄' }
+      ];
+    }
     if (/한국어|k-?pop|외국인|영어|일본어|중국어|회화|어학|토익|korean/i.test(hay)) {
       return [
         { answer_text: '어느 정도 익숙해요 (상)', tag: '실전고급', sheet_field: '고객진단.수준', sheet_value: '실전 고급' },
@@ -1329,16 +1571,33 @@
         { answer_text: '먼저 예방·관리 정보부터 알고 싶어요', tag: '예방관리', sheet_field: '진료상담.유형', sheet_value: '예방 관리' }
       ];
     }
-    if (/카페|매장|식당|음료|빵|베이커리|쇼핑몰|패션|뷰티|식품|상추|농산물/i.test(hay)) {
+    if (/교회|기독교|집회|부흥회|수련회|협회|동호회|커뮤니티|독서|러닝|모임/i.test(hay)) {
       return [
-        { answer_text: '시그니처 인기 구성 바로 이용', tag: '인기구성', sheet_field: '고객취향.선택', sheet_value: '인기 구성' },
-        { answer_text: '처음이라 실패 없는 입문 추천', tag: '입문추천', sheet_field: '고객취향.선택', sheet_value: '입문 추천' }
+        { answer_text: '처음 참여해요 (신규 안내 희망)', tag: '신규참여', sheet_field: '참여유형.구분', sheet_value: '처음 참여' },
+        { answer_text: '기존 참여자예요 (일정·소식 수신)', tag: '기존참여', sheet_field: '참여유형.구분', sheet_value: '기존 참여' }
+      ];
+    }
+    if (/카페|매장|식당|음료|빵|베이커리|쇼핑몰|패션|뷰티|식품|상추|반찬|원두|한우|수산|커머스|마켓|스토어/i.test(hay)) {
+      return [
+        { answer_text: '대표 인기 구성 바로 이용', tag: '인기구성', sheet_field: '고객취향.선택', sheet_value: '인기 구성' },
+        { answer_text: '처음이신 분을 위한 추천 구성', tag: '추천구성', sheet_field: '고객취향.선택', sheet_value: '추천 구성' }
       ];
     }
     return [
-      { answer_text: '바로 적용할 실전 전략 희망', tag: '실전전략', sheet_field: fieldName, sheet_value: '실전 전략' },
-      { answer_text: '처음이라 쉬운 기초 안내부터', tag: '기초안내', sheet_field: fieldName, sheet_value: '기초 안내' }
+      { answer_text: '구체적인 1:1 맞춤 안내·상담 희망', tag: '맞춤상담', sheet_field: fieldName, sheet_value: '1:1 맞춤 상담' },
+      { answer_text: '핵심 정보·소식부터 가볍게 받아보기', tag: '정보수신', sheet_field: fieldName, sheet_value: '핵심 정보 수신' }
     ];
+  }
+
+  function parseSurveyQuestionFromAnswer(rawText, topicSeed, qIdx) {
+    var options = inferSmartSurveyOptions(rawText, topicSeed, qIdx);
+    var extractedLabels = extractSurveyOptionsFromText(rawText);
+    var questionText = convertPartnerNarrativeToCustomerQuestion(rawText, extractedLabels.length ? extractedLabels : options.map(function (o) { return o.answer_text; }), topicSeed);
+    return {
+      question_text: questionText,
+      options: options,
+      hasExplicitOptions: extractedLabels.length >= 2
+    };
   }
 
   function extractFormOptionPair(questions) {
@@ -1384,19 +1643,26 @@
 
   function buildSpotlightBranchPair(ctx) {
     ctx = ctx || {};
-    var optA = ctx.optA || { answer_text: '실전 전략 희망', tag: '실전전략', sheet_value: '실전 전략' };
-    var optB = ctx.optB || { answer_text: '기초부터 시작', tag: '기초시작', sheet_value: '기초 시작' };
+    var optA = ctx.optA || { answer_text: '맞춤 안내·상담 희망', tag: '맞춤상담', sheet_value: '맞춤 상담' };
+    var optB = ctx.optB || { answer_text: '핵심 정보부터 받아보기', tag: '정보수신', sheet_value: '정보 수신' };
     var topic = String(ctx.topic || ctx.channel || '맞춤 캠페인').trim();
     var channel = String(ctx.channel || '맞춤 브랜드').trim();
     var baseUrl = String(ctx.baseUrl || 'https://gomawartalk.com');
     var firstSheet = String(ctx.firstSheet || '고객진단.유형');
     var templateType = String(ctx.templateType || 'FREE_FRIENDTALK');
     var videoInfo = ctx.videoInfo || { isVideo: false, badge: '▶ YOUTUBE', defaultUrl: 'https://www.youtube.com/watch?v=gomawartalk' };
+    var promoOffer = ctx.promoOffer || { hasPromo: false, phrase: '', buttonLabel: '' };
     var aiPair = Array.isArray(ctx.aiPair) ? ctx.aiPair : null;
 
     var hay = [topic, channel, ctx.questionText || '', optA.answer_text, optB.answer_text].join(' ');
     var fbA = {}; fbA[firstSheet] = optA.sheet_value || optA.answer_text;
     var fbB = {}; fbB[firstSheet] = optB.sheet_value || optB.answer_text;
+    var promoSuffix = (promoOffer && promoOffer.hasPromo && promoOffer.phrase && templateType !== 'ALIMTALK')
+      ? ('\n🎁 채널 친구 전용 혜택: ' + promoOffer.phrase + '도 아래 버튼에서 바로 챙겨가세요!')
+      : '';
+    var promoBtnOverride = (promoOffer && promoOffer.hasPromo && promoOffer.buttonLabel && templateType !== 'ALIMTALK')
+      ? promoOffer.buttonLabel
+      : '';
 
     // 1) AI가 기계식 치환 없이 진짜로 대비되는 2종 원고를 줬으면 그대로 채택
     if (aiPair && aiPair.length >= 2) {
@@ -1412,8 +1678,10 @@
         !isMechanicalBranchCopy(h0 + ' ' + b0 + ' ' + btn0) &&
         !isMechanicalBranchCopy(h1 + ' ' + b1 + ' ' + btn1);
       if (validAi) {
-        var safeB0 = templateType === 'ALIMTALK' ? stripAlimtalkChannelAddSolicitation(b0) : b0;
-        var safeB1 = templateType === 'ALIMTALK' ? stripAlimtalkChannelAddSolicitation(b1) : b1;
+        if (promoSuffix && b0.indexOf(promoOffer.phrase) === -1) b0 = b0 + promoSuffix;
+        if (promoSuffix && b1.indexOf(promoOffer.phrase) === -1) b1 = b1 + promoSuffix;
+        var safeB0 = templateType === 'ALIMTALK' ? stripAlimtalkPromoCopy(b0, topic) : b0;
+        var safeB1 = templateType === 'ALIMTALK' ? stripAlimtalkPromoCopy(b1, topic) : b1;
         return [
           {
             priority: 1,
@@ -1430,7 +1698,7 @@
             image_copy: { badge: tFirst(a0.badge || (a0.image_copy && a0.image_copy.badge) || '1순위 핵심 맞춤', 20), headline: tFirst(h0, 34), subtext: tFirst(a0.subtext || (a0.image_copy && a0.image_copy.subtext) || (channel + ' 맞춤 안내'), 32) },
             media_preview: videoInfo.isVideo ? { type: 'YOUTUBE', badge: videoInfo.badge, duration: '04:15', title: tFirst(h0, 36), url: videoInfo.defaultUrl } : null,
             body_text_400chars: safeB0,
-            buttons: [{ name: tFirst(btn0 || '맞춤 안내 보기', 14), link_type: 'WL', webzine_anchor: '#sec-1', url: baseUrl + '#sec-1' }],
+            buttons: [{ name: tFirst(promoBtnOverride || btn0 || '맞춤 안내 보기', 14), link_type: 'WL', webzine_anchor: '#sec-1', url: baseUrl + '#sec-1' }],
             cards_800x600: Array.isArray(ctx.defaultCards) ? ctx.defaultCards : []
           },
           {
@@ -1445,33 +1713,54 @@
             variables: { '콘텐츠 제목': tFirst(h1, 40), '콘텐츠 소개': safeB1 },
             sheet_fallback_strings: fbB,
             image_ratio: '800x400',
-            image_copy: { badge: tFirst(a1.badge || (a1.image_copy && a1.image_copy.badge) || '2순위 입문·안심 맞춤', 20), headline: tFirst(h1, 34), subtext: tFirst(a1.subtext || (a1.image_copy && a1.image_copy.subtext) || (channel + ' 맞춤 안내'), 32) },
+            image_copy: { badge: tFirst(a1.badge || (a1.image_copy && a1.image_copy.badge) || '2순위 맞춤 안내', 20), headline: tFirst(h1, 34), subtext: tFirst(a1.subtext || (a1.image_copy && a1.image_copy.subtext) || (channel + ' 맞춤 안내'), 32) },
             media_preview: videoInfo.isVideo ? { type: 'YOUTUBE', badge: videoInfo.badge, duration: '05:20', title: tFirst(h1, 36), url: videoInfo.defaultUrl } : null,
             body_text_400chars: safeB1,
-            buttons: [{ name: tFirst(btn1 || '기초 안내 보기', 14), link_type: 'WL', webzine_anchor: '#sec-2', url: baseUrl + '#sec-2' }],
+            buttons: [{ name: tFirst(promoBtnOverride || btn1 || '맞춤 구성 보기', 14), link_type: 'WL', webzine_anchor: '#sec-2', url: baseUrl + '#sec-2' }],
             cards_800x600: Array.isArray(ctx.defaultCards) ? ctx.defaultCards : []
           }
         ];
       }
     }
 
-    // 2) 도메인·눈높이별 극명하게 대비되는 고품질 2종 맞춤 원고 생성 (기계식 치환 0%)
+    // 2) 도메인·상품·눈높이별 극명하게 대비되는 고품질 2종 맞춤 원고 생성 (기계식 치환 0%)
     var pair;
-    if (/한국어|k-?pop|외국인|영어|일본어|중국어|회화|어학|토익|korean/i.test(hay)) {
+    var directOptionOrder = false;
+    if (/사과|과일|나주배|신고배|배\s*(?:농원|농장|과수원|선물|직송|즙)|딸기|귤|감귤|복숭아|포도|농원|농장|과수원|산지|직송|농산물|농수산/i.test(hay)) {
+      directOptionOrder = true;
+      var lblA = optA.answer_text;
+      var lblB = optB.answer_text;
+      pair = {
+        adv: {
+          badge: tFirst(channel + ' · 맞춤 추천', 22),
+          headline: tFirst(lblA + ' 딱 맞게 골라 담았습니다', 32),
+          subtext: '산지 직송 당도 선별 구성',
+          body: '#{이름}님! 고르신 "' + lblA + '" 취향에 맞춰 껍질째 아삭하게 드시기 좋은 당도 선별 수확 물량만 골라 안내해 드려요. 집에서 매일 신선하게 즐기는 알뜰 구성과 보관 팁을 확인해 보세요.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 산지 수확 영상 보기' : '맞춤 구성 바로 보기')
+        },
+        beg: {
+          badge: tFirst(channel + ' · 프리미엄 추천', 22),
+          headline: tFirst(lblB + ' 최상급 선별 안내', 32),
+          subtext: '과즙 가득 큼직한 특품 구성',
+          body: '#{이름}님! 고르신 "' + lblB + '" 취향에 맞춰 크기와 때깔, 당도까지 깐깐하게 고른 최상급 수확 구성만 따로 모았습니다. 소중한 분께 선물하시거나 풍성하게 드시기 좋은 구성을 지금 만나보세요.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 프리미엄 선별 영상 보기' : '프리미엄 구성 보기')
+        }
+      };
+    } else if (/한국어|k-?pop|외국인|영어|일본어|중국어|회화|어학|토익|korean/i.test(hay)) {
       pair = {
         adv: {
           badge: '실전 고급 표현 마스터',
           headline: '한국어를 완벽히 마스터해 봅시다!',
           subtext: '현지인처럼 자연스러운 실전 고급 편',
-          body: '#{이름}님! 기본 표현은 이미 탄탄하시니, 오늘은 현지인이 실제 대화에서 매일 쓰는 실전 고급 표현 3가지와 미묘한 뉘앙스 비교 노트를 보내드려요.',
-          btn: videoInfo.isVideo ? '▶ 고급 표현 영상 보기' : '고급 표현 3가지 보기'
+          body: '#{이름}님! 기본 표현은 이미 탄탄하시니, 오늘은 현지인이 실제 대화에서 매일 쓰는 실전 고급 표현 3가지와 미묘한 뉘앙스 비교 노트를 보내드려요.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 고급 표현 영상 보기' : '고급 표현 3가지 보기')
         },
         beg: {
           badge: '처음이어도 쉬운 첫걸음',
           headline: '처음이어도 괜찮아요! 기초 인사말부터',
           subtext: '오늘 바로 써먹는 쉬운 입문 편',
-          body: '#{이름}님, 처음 시작할 땐 누구나 막막해요. 복잡한 문법 대신 오늘 바로 소리 내어 써먹을 수 있는 쉬운 기초 인사말 5문장과 발음 포인트부터 함께 익혀봐요!',
-          btn: videoInfo.isVideo ? '▶ 기초 5문장 영상 보기' : '기초 5문장 따라하기'
+          body: '#{이름}님, 처음 시작할 땐 누구나 막막해요. 복잡한 문법 대신 오늘 바로 소리 내어 써먹을 수 있는 쉬운 기초 인사말 5문장과 발음 포인트부터 함께 익혀봐요!' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 기초 5문장 영상 보기' : '기초 5문장 따라하기')
         }
       };
     } else if (/학원|수학|입시|내신|수능|성적|과외|공부|학생|초등|중등|고등/i.test(hay)) {
@@ -1480,15 +1769,15 @@
           badge: '1등급 킬러 돌파 전략',
           headline: '시험 시간 15분 줄이는 실전 오답 공식',
           subtext: '상위권·수능 고난도 집중 대비',
-          body: '#{이름}님! 상위권 도약은 아는 문제를 빨리 넘기고 4점·킬러 문항의 함정을 끊어내는 데서 갈립니다. 실전 기출 오답 패턴 정리본과 집중반 로드맵을 확인해 보세요.',
-          btn: videoInfo.isVideo ? '▶ 킬러 문항 해설 보기' : '킬러 오답 공식 보기'
+          body: '#{이름}님! 상위권 도약은 아는 문제를 빨리 넘기고 4점·킬러 문항의 함정을 끊어내는 데서 갈립니다. 실전 기출 오답 패턴 정리본과 집중반 로드맵을 확인해 보세요.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 킬러 문항 해설 보기' : '킬러 오답 공식 보기')
         },
         beg: {
           badge: '개념 탄탄 기초 루틴',
           headline: '아는 문제 실수부터 잡는 4주 개념 습관',
           subtext: '기초 개념·연산 안정화 처방',
-          body: '#{이름}님! 기초 개념이 조금만 흔들려도 시험장에서 실수가 반복돼요. 무리한 선행 대신 연산 실수를 80% 줄이는 핵심 단원 체크표와 4주 기초 습관표부터 시작해 보세요.',
-          btn: videoInfo.isVideo ? '▶ 기초 개념 특강 보기' : '기초 개념 체크표 받기'
+          body: '#{이름}님! 기초 개념이 조금만 흔들려도 시험장에서 실수가 반복돼요. 무리한 선행 대신 연산 실수를 80% 줄이는 핵심 단원 체크표와 4주 기초 습관표부터 시작해 보세요.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 기초 개념 특강 보기' : '기초 개념 체크표 받기')
         }
       };
     } else if (/정치|선거|후보|시장|의원|공약|유권자|개소식|캠프/i.test(hay)) {
@@ -1514,62 +1803,64 @@
           badge: '정밀 진단·안심 치료 안내',
           headline: '통증 부담 낮추는 단계별 정밀 진료 과정',
           subtext: '전문의 책임 진료·투명한 치료 순서',
-          body: '#{이름}님! 막연한 걱정 때문에 진료 시기를 미루면 회복 기간과 부담이 커져요. 실제 정밀 검사부터 통증 완화 시술 과정까지 알기 쉽게 정리한 안내서를 보내드립니다.',
-          btn: videoInfo.isVideo ? '▶ 진료 과정 영상 보기' : '진료 과정 자세히 보기'
+          body: '#{이름}님! 막연한 걱정 때문에 진료 시기를 미루면 회복 기간과 부담이 커져요. 실제 정밀 검사부터 통증 완화 시술 과정까지 알기 쉽게 정리한 안내서를 보내드립니다.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 진료 과정 영상 보기' : '진료 과정 자세히 보기')
         },
         beg: {
           badge: '방문 전 3분 자가 점검',
           headline: '당장 내원하지 않아도 먼저 확인해 보세요',
           subtext: '집에서 체크하는 사전 예방 관리법',
-          body: '#{이름}님, 아직 당장 치료를 결정하기 부담스러우시죠? 먼저 집에서 3분 만에 현재 상태를 가늠해 볼 수 있는 자가 점검표와 일상 관리 팁부터 편하게 받아보세요.',
-          btn: videoInfo.isVideo ? '▶ 예방 관리 영상 보기' : '3분 자가 점검표 보기'
+          body: '#{이름}님, 아직 당장 치료를 결정하기 부담스러우시죠? 먼저 집에서 3분 만에 현재 상태를 가늠해 볼 수 있는 자가 점검표와 일상 관리 팁부터 편하게 받아보세요.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 예방 관리 영상 보기' : '3분 자가 점검표 보기')
         }
       };
-    } else if (/카페|매장|식당|음료|빵|베이커리|쇼핑몰|패션|뷰티|식품|상추|농산물/i.test(hay)) {
+    } else if (/카페|매장|식당|음료|빵|베이커리|쇼핑몰|패션|뷰티|식품|상추|반찬|원두|커머스|마켓|스토어/i.test(hay)) {
+      directOptionOrder = true;
       pair = {
         adv: {
-          badge: '시그니처 인기 구성 안내',
-          headline: '단골이 가장 먼저 다시 찾는 핵심 구성',
-          subtext: '만족도 1위 베스트 셀렉션',
-          body: '#{이름}님! 이미 관심을 갖고 계신 만큼 재이용률이 가장 높은 시그니처 구성과 알뜰 활용 팁만 쏙 골라 모았습니다. 기다림 없이 바로 편하게 이용해 보세요.',
-          btn: videoInfo.isVideo ? '▶ 인기 구성 영상 보기' : '시그니처 구성 보기'
+          badge: tFirst(optA.answer_text + ' 맞춤 추천', 22),
+          headline: '단골이 가장 먼저 찾는 베스트 구성',
+          subtext: '만족도 1위 시그니처 셀렉션',
+          body: '#{이름}님! 선택하신 "' + optA.answer_text + '" 취향에 맞춰 재이용률이 가장 높은 시그니처 구성과 알뜰 이용 팁만 쏙 골라 모았습니다.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 인기 구성 영상 보기' : '인기 구성 바로 보기')
         },
         beg: {
-          badge: '첫 방문 안심 추천 BEST 3',
-          headline: '처음이셔도 실패 없는 입문 추천 3가지',
-          subtext: '부담 없이 고르는 첫 선택 가이드',
-          body: '#{이름}님, 종류가 다양해 무엇부터 고를지 망설여지시죠? 처음 이용하시는 분들이 가장 만족했던 부담 없는 입문 추천 3가지와 고르는 요령을 정리해 드려요.',
-          btn: videoInfo.isVideo ? '▶ 입문 추천 영상 보기' : '입문 추천 3가지 보기'
+          badge: tFirst(optB.answer_text + ' 맞춤 추천', 22),
+          headline: '실패 없이 만족하는 맞춤 추천 3가지',
+          subtext: '부담 없이 고르는 맞춤 셀렉션',
+          body: '#{이름}님! 선택하신 "' + optB.answer_text + '" 취향에 딱 맞는 추천 구성 3가지와 실패 없는 선택 요령을 깔끔하게 정리해 드려요.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 맞춤 추천 영상 보기' : '맞춤 추천 보기')
         }
       };
     } else {
+      directOptionOrder = true;
       pair = {
         adv: {
-          badge: '실전 바로 적용 핵심 전략',
-          headline: '바로 성과로 연결되는 실전 핵심 3가지',
-          subtext: '군더더기 뺀 현장 적용 체크포인트',
-          body: '#{이름}님! 이미 목표가 분명하신 만큼 기초 설명은 과감히 줄이고, 현장에서 오늘 바로 적용해 차이를 만들 수 있는 실전 전략 3가지와 체크리스트를 담았습니다.',
-          btn: videoInfo.isVideo ? '▶ 실전 전략 영상 보기' : '실전 전략 바로 보기'
+          badge: tFirst(channel + ' · 맞춤 안내 A', 22),
+          headline: tFirst(optA.answer_text + ' 맞춤 핵심 안내', 32),
+          subtext: '선택하신 조건에 꼭 맞춘 구성',
+          body: '#{이름}님! "' + optA.answer_text + '" 항목을 선택해 주셔서 꼭 필요한 핵심 안내와 맞춤 진행 방법만 한눈에 정리해 보내드립니다.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 맞춤 안내 영상 보기' : '맞춤 안내 바로 보기')
         },
         beg: {
-          badge: '처음이어도 쉬운 첫걸음',
-          headline: '처음이어도 괜찮아요! 핵심부터 차근차근',
-          subtext: '5분 만에 흐름 잡는 쉬운 입문 편',
-          body: '#{이름}님, 어디서부터 시작해야 할지 막막하셨죠? 어려운 전문 용어 대신 오늘 딱 5분만 읽어봐도 전체 그림이 그려지는 쉬운 입문 가이드와 실제 사례부터 보내드려요.',
-          btn: videoInfo.isVideo ? '▶ 쉬운 입문 영상 보기' : '쉬운 입문 가이드 보기'
+          badge: tFirst(channel + ' · 맞춤 안내 B', 22),
+          headline: tFirst(optB.answer_text + ' 맞춤 핵심 안내', 32),
+          subtext: '부담 없이 살펴보는 핵심 요약',
+          body: '#{이름}님! "' + optB.answer_text + '" 항목에 맞춰 가장 많이 궁금해하시는 핵심 포인트와 실제 사례를 읽기 쉽게 정리해 보내드려요.' + promoSuffix,
+          btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 핵심 안내 영상 보기' : '핵심 안내 자세히 보기')
         }
       };
     }
 
     // 선택지 A와 B의 눈높이 성향(기초/입문 vs 심화/실전)에 맞춰 정확히 배정
-    var aLooksBeginner = isBeginnerOptionLabel(optA.answer_text) && !isAdvancedOptionLabel(optA.answer_text);
-    var bLooksAdvanced = isAdvancedOptionLabel(optB.answer_text) && !isBeginnerOptionLabel(optB.answer_text);
+    var aLooksBeginner = !directOptionOrder && isBeginnerOptionLabel(optA.answer_text) && !isAdvancedOptionLabel(optA.answer_text);
+    var bLooksAdvanced = !directOptionOrder && isAdvancedOptionLabel(optB.answer_text) && !isBeginnerOptionLabel(optB.answer_text);
     var swapPolarity = aLooksBeginner || (bLooksAdvanced && !isAdvancedOptionLabel(optA.answer_text));
     var specA = swapPolarity ? pair.beg : pair.adv;
     var specB = swapPolarity ? pair.adv : pair.beg;
 
     var makeBranch = function (slot, priority, personaName, personaIcon, opt, condDesc, spec, fbObj, anchor, dur) {
-      var body = templateType === 'ALIMTALK' ? stripAlimtalkChannelAddSolicitation(spec.body) : spec.body;
+      var body = templateType === 'ALIMTALK' ? stripAlimtalkPromoCopy(spec.body, topic) : spec.body;
       var mp = videoInfo.isVideo
         ? { type: 'YOUTUBE', badge: videoInfo.badge, duration: dur, title: tFirst(spec.headline, 36), url: videoInfo.defaultUrl }
         : null;
@@ -1683,6 +1974,7 @@
       firstSheet: firstSheet,
       templateType: targetStep.template_type || 'FREE_FRIENDTALK',
       videoInfo: videoInfo,
+      promoOffer: opts.promoOffer || null,
       aiPair: aiPair,
       defaultCards: defaultCards
     });
@@ -1896,14 +2188,32 @@
     });
     th.imagePrompt = ensureImagePromptSuffix(th.imagePrompt || fT1.thumbnail_500x280.imagePrompt);
 
-    // 신청폼 질문 (최대 2문항, 보기 2개 이상인 것만 채택)
+    // 신청폼 질문 (최대 2문항, 보기 2개 이상인 것만 채택 · 파트너 서술문 자동 고객질문화 & 명시 선택지 최우선 보존)
     var gq = g.tab3_application_form && g.tab3_application_form.questions;
     var rawQs = (Array.isArray(gq) ? gq : []).filter(function (q) { return q && q.question_text && Array.isArray(q.options) && q.options.length >= 2; }).slice(0, 2);
     if (!rawQs.length) rawQs = fb.tab3_application_form.questions;
+    var rawQ2Source = String((A && A[7]) || '').trim();
+    var parsedQ2Source = rawQ2Source ? parseSurveyQuestionFromAnswer(rawQ2Source, [A && A[1], channel].filter(Boolean).join(' '), 0) : null;
+    if (parsedQ2Source && rawQs.length > 0) {
+      if (parsedQ2Source.hasExplicitOptions) {
+        // 파트너가 따옴표/괄호 등으로 직접 적은 선택지가 있으면 AI/폴백보다 최우선 반영!
+        rawQs[0] = Object.assign({}, rawQs[0], {
+          question_text: isPartnerNarrativeQuestion(rawQs[0].question_text) || rawQs[0].question_text === rawQ2Source
+            ? parsedQ2Source.question_text
+            : convertPartnerNarrativeToCustomerQuestion(rawQs[0].question_text, parsedQ2Source.options.map(function (o) { return o.answer_text; }), channel),
+          options: parsedQ2Source.options
+        });
+      } else if (isPartnerNarrativeQuestion(rawQs[0].question_text)) {
+        rawQs[0] = Object.assign({}, rawQs[0], {
+          question_text: convertPartnerNarrativeToCustomerQuestion(rawQs[0].question_text, rawQs[0].options.map(function (o) { return o.answer_text; }), channel)
+        });
+      }
+    }
     var firstSheet = '';
     var questions = rawQs.map(function (q, qi) {
+      var cleanQText = convertPartnerNarrativeToCustomerQuestion(String(q.question_text), (q.options || []).map(function (o) { return o && o.answer_text; }), channel);
       return {
-        order: qi + 1, type: 'MULTIPLE_CHOICE', required: true, question_text: String(q.question_text),
+        order: qi + 1, type: 'MULTIPLE_CHOICE', required: true, question_text: cleanQText,
         options: q.options.slice(0, 5).map(function (op, oi) {
           var sf = String(op.sheet_field || ('고객진단.항목' + (qi + 1)));
           if (sf.indexOf('.') === -1) sf = '고객진단.' + sf;
@@ -1920,6 +2230,7 @@
     });
     var fbSheet = {}; fbSheet[firstSheet] = '고객님';
 
+    var promoOffer = extra.promoOffer || extractPromoOfferFromAnswers(A);
     var baseUrl = 'https://gomawartalk.com/webzine/' + ymd + '.html';
     var gSeq = g.tab4_sequence;
     var rawSeq = (Array.isArray(gSeq) && gSeq.length >= 2) ? gSeq.slice(0, 5) : fb.tab4_sequence.slice();
@@ -1984,9 +2295,23 @@
           : ('#{이름}님, 두 번째 달 정기 브리핑을 보내드립니다.\n▶ 맞춤 안내 : #{@' + firstSheet + '} 후속 실천 가이드와 주요 일정을 확인해 보세요.');
       }
 
-      var rawIntro = s.content_intro || '신청이 정상 접수되었습니다. 준비된 첫 안내 자료를 아래 버튼에서 바로 확인해 보세요.';
-      var safeIntro = (tt === 'ALIMTALK') ? stripAlimtalkChannelAddSolicitation(rawIntro) : rawIntro;
-      var safeBody = (tt === 'ALIMTALK') ? stripAlimtalkChannelAddSolicitation(bodyText) : bodyText;
+      var rawIntro = s.content_intro || '신청이 정상 접수되었습니다. 신청 내역과 상세 안내는 아래 버튼에서 바로 확인해 보세요.';
+      var safeIntro = (tt === 'ALIMTALK') ? stripAlimtalkPromoCopy(rawIntro, channel || th.headline) : rawIntro;
+      var safeBody = (tt === 'ALIMTALK') ? stripAlimtalkPromoCopy(bodyText, channel || th.headline) : bodyText;
+      var safeTitle = (tt === 'ALIMTALK')
+        ? tFirst((s.content_title || (th.headline + ' 신청 접수 확인')).replace(ALIMTALK_PROMO_RE, '').replace(/\s{2,}/g, ' ').trim() || (channel + ' 신청 접수 확인'), 40)
+        : tFirst(s.content_title || (th.headline + ' 안내'), 40);
+      if (tt === 'ALIMTALK') { ALIMTALK_PROMO_RE.lastIndex = 0; }
+
+      // ★ V3.1 파트너가 Q1/Q3/Q4에 쿠폰·할인 혜택을 입력한 경우 ④ 첫 번째 광고 메시지(idx === 1) 본문과 버튼에 100% 반영!
+      if (idx === 1 && tt !== 'ALIMTALK' && promoOffer && promoOffer.hasPromo && promoOffer.phrase) {
+        if (safeBody.indexOf(promoOffer.phrase) === -1) {
+          safeBody = safeBody + '\n🎁 ' + promoOffer.phrase + ' 혜택을 아래 버튼에서 바로 받아가세요!';
+        }
+        if (promoOffer.buttonLabel) {
+          stepButtons = [{ name: tFirst(promoOffer.buttonLabel, 14), link_type: 'WL', webzine_anchor: anchor, url: baseUrl + anchor }];
+        }
+      }
 
       return {
         step: idx + 1,
@@ -2003,9 +2328,9 @@
         _rawAiPair: Array.isArray(s.branch_pair) && s.branch_pair.length >= 2 ? s.branch_pair : null,
         branches: [{
           priority: 1, condition_desc: '모두 (전체 신청자)', template_id: TOSS_TEMPLATE_ID,
-          variables: { '콘텐츠 제목': tFirst(s.content_title || (th.headline + ' 신청 접수 확인'), 40), '콘텐츠 소개': safeIntro || '신청이 정상 접수되었습니다. 준비된 첫 안내 자료를 아래 버튼에서 확인해 보세요.' },
+          variables: { '콘텐츠 제목': safeTitle, '콘텐츠 소개': safeIntro || '신청이 정상 접수되었습니다. 신청 내역과 상세 안내는 아래 버튼에서 바로 확인해 보세요.' },
           sheet_fallback_strings: fbSheet, image_ratio: '800x400',
-          image_copy: { badge: s.badge || th.badge, headline: s.headline || th.headline, subtext: s.subtext || th.subtext },
+          image_copy: { badge: (idx === 1 && promoOffer && promoOffer.hasPromo) ? tFirst(promoOffer.phrase, 20) : (s.badge || th.badge), headline: s.headline || th.headline, subtext: s.subtext || th.subtext },
           media_preview: mediaPreview,
           body_text_400chars: safeBody,
           buttons: stepButtons,
@@ -2055,7 +2380,8 @@
     applyOnePointSpotlightBranch(builtMaster, {
       topic: (A && A[1]) || th.headline,
       firstSheet: firstSheet,
-      videoInfo: videoInfo
+      videoInfo: videoInfo,
+      promoOffer: promoOffer
     });
     return sanitizeObject(builtMaster);
   };
@@ -2263,7 +2589,10 @@
     var n = Number(qNum) || 0;
     var s = String(text || '').trim();
     if (n === 3) {
-      var b3 = '🔵 알림톡 (정보성 · 24시간 즉시 발송)';
+      var hasCouponInQ3 = /쿠폰|할인권|할인|특가|무료\s*증정/.test(s);
+      var b3 = hasCouponInQ3
+        ? '🔵 알림톡 (정보성 · 쿠폰·할인 내용은 ④ 광고 메시지에 자동 배치돼요)'
+        : '🔵 알림톡 (정보성 · 24시간 즉시 발송)';
       return {
         type: 'INFO_ALIMTALK',
         badge: b3,
@@ -3065,7 +3394,10 @@
       analogyBadge: meta.analogyBadge || '',
       usageHint: hintText,
       questionText: cleanFn(qText),
-      exampleChips: rawChips.slice(0, 3).map(function (c) { return cleanFn(c); })
+      exampleChips: rawChips.slice(0, 3).map(function (c) {
+        var cleaned = cleanFn(c);
+        return qNum === 3 ? sanitizeQ3ExampleChip(cleaned) : cleaned;
+      })
     };
   };
 
@@ -3131,10 +3463,10 @@
         : '   - q1 (① 신청화면): 누구를 초대해 어떤 핵심 안내·혜택을 드릴지',
       '   - q2 (② 신청질문): 신청할 때 클릭해서 고르게 할 객관식 질문 1개와 보기 3~4개',
       isPolitics
-        ? '   - q3 (③ 첫카톡): 등록 직후 1초 만에 도착할 환영·접수확인 카톡(핵심 공약 요약·행사 안내·의정 자료, 본문에 채널 추가 유도 문구 절대 금지)'
-        : '   - q3 (③ 첫카톡): 신청 직후 1초 만에 도착할 환영·접수확인 카톡 내용 (알림톡 본문에 "채널 추가를 눌러주세요/부탁드려요" 같은 채널 추가 유도 문구 절대 금지)',
-      '   - q4 (④ 며칠뒤 자동): 신청한 날 기준으로 며칠 간격(1일·3일 / 일주일 / 한 달) 자동 안부·정보 카톡 내용',
-      '   - q5 (⑤ 날짜지정): 달력의 특정 날짜·시각(예: 12월 24일 오전 9:30)에 신청자 전원에게 동시 예약 발송할 내용 (매월·매주 자동 반복 표현 절대 금지)',
+        ? '   - q3 (③ 첫카톡): 등록 직후 1초 만에 도착할 환영·접수확인 알림톡(핵심 공약 요약·행사 안내·의정 자료, 광고성 단어 및 채널 추가 유도 문구 절대 금지)'
+        : '   - q3 (③ 첫카톡): 신청 직후 1초 만에 도착할 순수 정보성 접수확인 알림톡(신청 접수 확인, 일정·장소 안내, 신청 내역 확인 링크 등). 카카오 규정상 "쿠폰", "할인권", "무료 증정권", "할인", "특가", "이벤트" 등 광고성 단어 및 "채널 추가 유도 문구"를 100% 절대 금지! 쿠폰·할인 혜택 예시는 반드시 q4 또는 q5에만 작성하세요.',
+      '   - q4 (④ 며칠뒤 자동 · 광고): 신청한 날 기준으로 며칠 간격(1일·3일 / 일주일 / 한 달) 자동 안부·정보·쿠폰/혜택 광고 카톡 내용',
+      '   - q5 (⑤ 날짜지정 · 광고): 달력의 특정 날짜·시각(예: 12월 24일 오전 9:30)에 신청자 전원에게 동시 예약 발송할 일정 안내 또는 쿠폰·혜택 광고 내용 (매월·매주 자동 반복 표현 절대 금지)',
       '5) q1QuestionText는 1문장, 친근하고 직관적인 존댓말.',
       '6) 출력은 아래 JSON 객체만 출력하세요:',
       '{"q1QuestionText":"...","q1":["예시1","예시2","예시3"],"q2":["예시1","예시2","예시3"],"q3":["예시1","예시2","예시3"],"q4":["예시1","예시2","예시3"],"q5":["예시1","예시2","예시3"]}'
@@ -3161,7 +3493,10 @@
       for (var q = 1; q <= CONSULT.TOTAL_Q; q++) {
         var arr = obj['q' + q] || (obj.examples && (obj.examples[q] || obj.examples[String(q)]));
         if (Array.isArray(arr) && arr.length >= 3) {
-          var cleaned = arr.slice(0, 3).map(function (c) { return cleanFn(String(c || '').trim()); }).filter(Boolean);
+          var cleaned = arr.slice(0, 3).map(function (c) {
+            var s = cleanFn(String(c || '').trim());
+            return q === 3 ? sanitizeQ3ExampleChip(s) : s;
+          }).filter(Boolean);
           if (cleaned.length === 3) {
             mergedMap[q] = cleaned;
             aiFilledCount++;
@@ -3316,7 +3651,10 @@
         };
       }
       var chips = (Array.isArray(obj.exampleChips) && obj.exampleChips.length >= 3)
-        ? obj.exampleChips.slice(0, 3).map(function (c) { return cleanFn(c); })
+        ? obj.exampleChips.slice(0, 3).map(function (c) {
+            var s = cleanFn(c);
+            return nextQNum === 3 ? sanitizeQ3ExampleChip(s) : s;
+          })
         : localNext.exampleChips;
       return {
         feasible: true,
@@ -3615,9 +3953,11 @@
       flow ? flow.summary : '',
       A[1], A[2], A[3], A[4], A[5]
     ].filter(Boolean).join(' ');
+    var consultPromoOffer = extractPromoOfferFromAnswers(A);
     var master = TOSS.assembleCampaign(aiJson, mappedAnswers, partner, {
       brandName: resolvedBrandName || ctx.subIndustry || '',
-      cadenceSeed: cadenceSeed
+      cadenceSeed: cadenceSeed,
+      promoOffer: consultPromoOffer
     });
 
     // 입력된 상호명·브랜드명 최우선 바인딩 (meta.brand_name, partner_info.channel_name, tab1_basic_settings.channel_name)
@@ -3837,10 +4177,11 @@
       });
     }
 
-    // V2.8.2: 최종 Q2(설문 유무) · Q4(간격발송 활성) · Q5(날짜지정 슬롯) 기준으로 캠페인당 단 1개 핵심 회차에만 원포인트 맞춤 분기 적용
+    // V2.8.2/V3.1: 최종 Q2(설문 유무) · Q4(간격발송 활성) · Q5(날짜지정 슬롯) 기준으로 캠페인당 단 1개 핵심 회차에만 원포인트 맞춤 분기 적용 + 쿠폰/혜택 100% 반영
     applyOnePointSpotlightBranch(master, {
       topic: A[1] || ctx.subIndustry || finalBrand,
-      videoInfo: detectVideoMedia(cadenceSeed)
+      videoInfo: detectVideoMedia(cadenceSeed),
+      promoOffer: consultPromoOffer
     });
 
     return sanitizeObject(master);
@@ -3907,6 +4248,12 @@
   RagInterviewEngine.isMechanicalBranchCopy = isMechanicalBranchCopy;
   RagInterviewEngine.buildSpotlightBranchPair = buildSpotlightBranchPair;
   RagInterviewEngine.applyOnePointSpotlightBranch = applyOnePointSpotlightBranch;
+  RagInterviewEngine.parseSurveyQuestionFromAnswer = parseSurveyQuestionFromAnswer;
+  RagInterviewEngine.extractSurveyOptionsFromText = extractSurveyOptionsFromText;
+  RagInterviewEngine.convertPartnerNarrativeToCustomerQuestion = convertPartnerNarrativeToCustomerQuestion;
+  RagInterviewEngine.extractPromoOfferFromAnswers = extractPromoOfferFromAnswers;
+  RagInterviewEngine.stripAlimtalkPromoCopy = stripAlimtalkPromoCopy;
+  RagInterviewEngine.sanitizeQ3ExampleChip = sanitizeQ3ExampleChip;
   RagInterviewEngine.autoTossScheduleHints = CONSULT.autoTossScheduleHints;
   RagInterviewEngine.callGemini = callGemini;
   RagInterviewEngine.generateImage = generateImage;

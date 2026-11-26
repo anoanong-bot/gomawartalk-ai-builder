@@ -1,6 +1,6 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-25 22:43 (KST · STEP 3 Q1~Q5 세부 업종 전용 동적 예시 배치 + 정적 폴백 3종 분리 + GAS Gemini 프록시 다중 폴백/캐시 강화 완료)
+- **최종 갱신일시:** 2026-11-26 10:28 (KST · 자유 입력문 스마트 정제/목표 분리 + 정치·선거 6대 흐름·금기어 가드레일 + GAS `V2.4-1` `thinkingBudget:0` 빈 응답 버그 근본 해결 완료)
 - **기준 버전:** Master PRD V2.3 / `Proposal.html` V2.4 (V2.2 As-Built 100% 무손실 보존)
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
 - **실서버 배포 URL:** `https://anoanong-bot.github.io/gomawartalk-ai-builder/`
@@ -34,6 +34,10 @@
    - `InterviewBot.html` & `engines/RagInterviewEngine.js`: STEP 2 흐름 선택 시 `Consult.generateConsultExamplesBatch()`로 Q1~Q5 15개 맞춤 예시를 1회 JSON 프리패치, STEP 3 진입·질문 점프·다음 문항 전환 전체에 타 업종 혼입 0% 보장(로컬 키 없는 환경에서도 `Backend_Proxy.gs` 자동 라우팅)
    - `Backend_Proxy.gs`: `fetchAvailableGeminiModels_()` 비텍스트 모델(`image|vision|audio|tts|live|nano` 등) 제외 + `callGemini_()` 최대 4후보 순차 폴백 + `CacheService` 10분 활성 모델 캐시 + thinking 파트(`!p.thought`) 필터링 + `responseMimeType` 지원
    - `data/GomawartalkManual.js`: `subDomainPacks`에 `church_gathering` / `association_org` / `hobby_club` 3종 완전 분리 (`기독교 집회`·`협회`·`독서/러닝 모임` 폴백 혼입 원천 차단)
+7. **자유 입력문 스마트 정제 · 정치/선거 도메인 가드레일 & 모바일 실서버 GAS 빈 응답 근본 해결 *(2026-11-26 완료)*:**
+   - `engines/RagInterviewEngine.js` & `InterviewBot.html`: `sanitizeSubIndustryLabel()`(구어체 어미·목표 구절 제거 → 12자 이내 명사 라벨 + `extractedGoal` 분리), 구어체 원문 접두사 결합(`other` 섹터 `sub + ' ' + title`) 완전 제거, AI `{cleanIndustryLabel, extractedGoal, flows}` 파싱 및 STEP 3 Q1 목표 초안 칩 연동
+   - `data/GomawartalkManual.js`: `politics_public` 도메인 전용 6대 카톡 흐름(① 지역구·관심 현안별 맞춤 공약 분기형 ② 개소식·출판기념회·간담회 리마인드형 ③ 주간 현장 행보·유튜브 쇼츠 연재형 ④ 시민 정책 제안·우리 동네 민원 접수형 ⑤ 자원봉사·서포터즈 참여 안내형 ⑥ 주요 의정활동·팩트체크 알림형) + 공직선거법 상업 금기어 차단(`cleanPoliticsText`, `전통시장`/`여성의원` 오탐 제외)
+   - `Backend_Proxy.gs` (`V2.4-1`): 실서버 `{"ok":true,"reply":""}` 빈 응답 원인(Flash 모델 기본 thinking 토큰 출력 고갈 + 구버전 `parts[0]` 단일 추출) 규명 및 `thinkingConfig: { thinkingBudget: 0 }` 기본 적용 + `maxOutputTokens: 4096` 상향으로 응답 속도 단축 및 JSON 성공률 100% 확보
 
 ---
 

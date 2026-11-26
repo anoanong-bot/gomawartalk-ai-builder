@@ -992,11 +992,17 @@
     opts = opts || {};
     var u = String(url || '').trim();
     if (!u) return Promise.reject(new Error('서버 연결 주소(BACKEND_PROXY_URL)가 설정되지 않았어요.'));
-    return fetch(u, {
+    var timeoutMs = Number(opts.timeoutMs) || 24000;
+    var controller = (typeof AbortController === 'function') ? new AbortController() : null;
+    var timer = controller ? setTimeout(function () { try { controller.abort(); } catch (e) {} }, timeoutMs) : null;
+    var fetchOpts = {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Apps Script CORS 사전요청(preflight) 회피
       body: JSON.stringify(body)
-    }).then(function (res) {
+    };
+    if (controller) fetchOpts.signal = controller.signal;
+    return fetch(u, fetchOpts).then(function (res) {
+      if (timer) clearTimeout(timer);
       if (!res.ok) throw new Error('서버 응답 오류 (HTTP ' + res.status + ')');
       return res.json();
     }).then(function (data) {
@@ -1007,6 +1013,9 @@
         throw e;
       }
       return data;
+    }).catch(function (err) {
+      if (timer) clearTimeout(timer);
+      throw err;
     });
   };
 
@@ -1015,6 +1024,7 @@
     o = o || {};
     var cfg = getConfig();
     var proxyUrl = String(o.proxyUrl || cfg.proxyUrl || '').trim();
+    var maxTokens = Math.max(Number(o.maxOutputTokens) || 0, 2048);
     if (o.mode === 'admin' && cfg.hasDirectKey) {
       return callGemini({
         apiKey: cfg.apiKey,
@@ -1022,7 +1032,7 @@
         userText: o.user,
         responseMimeType: o.responseMimeType !== undefined ? o.responseMimeType : 'application/json',
         temperature: o.temperature !== undefined ? o.temperature : 0.4,
-        maxOutputTokens: o.maxOutputTokens || 2048,
+        maxOutputTokens: maxTokens,
         thinkingBudget: 0
       });
     }
@@ -1034,8 +1044,9 @@
         userText: o.user,
         responseMimeType: o.responseMimeType !== undefined ? o.responseMimeType : 'application/json',
         temperature: o.temperature !== undefined ? o.temperature : 0.4,
-        maxOutputTokens: o.maxOutputTokens || 2048
-      }).then(function (d) { return sanitizeText(d.reply || d.text || ''); });
+        maxOutputTokens: maxTokens,
+        thinkingBudget: 0
+      }, { timeoutMs: o.timeoutMs || 24000 }).then(function (d) { return sanitizeText(d.reply || d.text || ''); });
     }
     var ne = new Error('NO_LOCAL_KEY'); ne.code = 'NO_LOCAL_KEY';
     return Promise.reject(ne);
@@ -1456,9 +1467,120 @@
     var keys = Object.keys(packs);
     for (var i = 0; i < keys.length; i++) {
       var p = packs[keys[i]];
-      if (p && p.re && p.re.test(sub)) return { key: keys[i], pack: p };
+      if (!p || !p.re) continue;
+      if (p.excludeRe && p.excludeRe.test(sub)) continue;
+      if (p.re.test(sub)) return { key: keys[i], pack: p };
     }
     return null;
+  };
+
+  CONSULT.isPoliticsDomain = function (text) {
+    var s = String(text || '').trim();
+    if (!s) return false;
+    var matched = CONSULT.matchSubDomainPack('', s);
+    if (matched && matched.key === 'politics_public') return true;
+    var polRe = /(정치|선거|후보|구청장|군수|도지사|국회의원|시의원|도의원|구의원|지자체|선거\s*캠프|출마|당선|정당|공약|유권자|의정|개소식|출판기념회|선거사무소)|((?:^|[\s·,])(?:[가-힣]{2,4}\s*)?시장(?=\s|$|님|후보|선거|출마|당선|캠프))|((?:^|[\s·,])의원(?=\s|$|실|후보|활동))/i;
+    var exRe = /전통시장|재래시장|주식시장|부동산\s*시장|시장\s*조사|마케팅\s*시장|한의원|치과의원|산부인과의원|여성의원|피부과의원|내과의원|정형외과의원|안과의원|소아과의원/i;
+    return !exRe.test(s) && polRe.test(s);
+  };
+
+  // 정치·선거·공공 도메인 금기 상업어 정화 (공직선거법 오해 방지)
+  var POLITICS_COMMERCIAL_FIX = [
+    [/첫\s*혜택\s*즉시\s*발급/g, '핵심 공약 요약 안내'],
+    [/혜택\s*즉시\s*발급/g, '핵심 정책 자료 안내'],
+    [/무료\s*사은품|사은품|무료\s*증정/g, '정책 요약 안내서'],
+    [/할인\s*쿠폰|쿠폰/g, '정책 안내 카드'],
+    [/구매\s*유도|결제\s*유도/g, '유권자 소통·참여'],
+    [/매출\s*전환|매출\s*극대화|매출/g, '유권자 공감·지지'],
+    [/브랜드\s*팬덤/g, '지역 지지자 소통'],
+    [/첫\s*이용\s*고객\s*전용\s*우대\s*혜택|특별\s*혜택|첫\s*혜택|무료\s*혜택/g, '핵심 공약·의정 자료'],
+    [/할인|특가|프로모션/g, '정책 소식']
+  ];
+
+  CONSULT.cleanPoliticsText = function (text) {
+    var t = CONSULT.cleanPartnerText(text);
+    POLITICS_COMMERCIAL_FIX.forEach(function (r) { t = t.replace(r[0], r[1]); });
+    return t;
+  };
+
+  // 사용자 자유 입력문 스마트 정제 & [핵심 업종 명사(최대 12자) / 캠페인 목표] 분리 엔진
+  CONSULT.sanitizeSubIndustryLabel = function (rawInput, sectorId) {
+    var raw = String(rawInput == null ? '' : rawInput).replace(/\s+/g, ' ').trim();
+    var sec = CONSULT.getSector(sectorId);
+    var fallbackShort = (sec && sec.shortTitle && sec.id !== 'other') ? sec.shortTitle : '맞춤 캠페인';
+    if (!raw) {
+      return { cleanLabel: fallbackShort, extractedGoal: '', isConversational: false, isPolitics: false };
+    }
+
+    var isPolitics = CONSULT.isPoliticsDomain(raw);
+    var convRe = /(목표(야|예요|이에요|입니다)?|하고\s*싶(어|어요|습니다|다)?|모으고\s*싶|늘리고\s*싶|알리고\s*싶|운영\s*(중|하고|해요|합니다)|하는데|하고\s*있|준비\s*(중|하고)|당선|출마|입니다$|이에요$|예요$|거야$|이야$|어요$|아요$|해요$|야$|해$)/;
+    var isConv = convRe.test(raw) || raw.length > 14;
+
+    var extractedGoal = '';
+    if (isConv) {
+      extractedGoal = raw
+        .replace(/^(정치인|사업가|자영업자|대표|원장)\s+/g, '')
+        .replace(/\s*목표야$/g, '을 목표로 캠페인을 진행하고 싶어요.')
+        .replace(/\s*목표예요$/g, '을 목표로 캠페인을 진행하고 싶어요.')
+        .replace(/\s*목표입니다$/g, '을 목표로 캠페인을 진행하고 싶어요.')
+        .replace(/하고\s*싶어$/g, '하고 싶어요.')
+        .replace(/모으고\s*싶어$/g, '모으고 싶어요.')
+        .replace(/야$/g, '를 알리고 소통하고 싶어요.')
+        .trim();
+      if (extractedGoal && !/[.?!요다]$/.test(extractedGoal)) {
+        extractedGoal = extractedGoal + ' 목표로 캠페인을 진행하고 싶어요.';
+      }
+    }
+
+    var label = raw;
+    // 1) 목표·서술 구절 뒤쪽 잘라내기
+    label = label
+      .replace(/\s*(당선|출마|홍보|모집|확보|유치|증대|달성|구축)?\s*목표(야|예요|이에요|입니다|로|임)?.*$/g, '')
+      .replace(/\s*(단골|고객|회원|수강생|유권자|지지자|참석자|문의|예약)?\s*(을|를)?\s*(모으고|늘리고|알리고|홍보하고|만들고|하고)\s*싶.*$/g, '')
+      .replace(/\s*(운영\s*(중|하고|해요|합니다)|하는데|하고\s*있(어|어요|습니다)|준비\s*중).*$/g, '')
+      .replace(/(입니다|이에요|예요|거야|이야|어요|아요|해요|할래요|할래|야|해)\s*[.!?]*$/g, '')
+      .trim();
+
+    // 2) 불필요한 수식어·조사 정리 ("남양주에서 작은 카페" -> "남양주 카페")
+    label = label
+      .replace(/([가-힣]{2,6})에서\s+/g, '$1 ')
+      .replace(/(?:^|\s)(작은|조그만|우리|저희|이번에|새로|현재|지금|혼자|직접|열심히)\s+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // 3) 정치/선거 도메인 명사 정제 ("정치인 남양주 시장" -> "남양주 시장 후보")
+    if (isPolitics) {
+      label = label.replace(/^정치인\s+/g, '').trim();
+      if (/(시장|구청장|군수|도지사|국회의원|시의원|도의원|구의원|의원)$/.test(label) && !/(후보|캠프|의원실)$/.test(label)) {
+        label = label + ' 후보';
+      }
+      if (!label || label === '정치' || label === '선거') {
+        label = '선거·의정 캠프';
+      }
+    }
+
+    // 4) 끝 조사 제거 & 최대 12자 깔끔 절단
+    label = label.replace(/\s*(을|를|이|가|은|는|의|에|로|으로|와|과|도)$/g, '').trim();
+    if (!label) label = fallbackShort;
+    var chars = Array.from(label);
+    if (chars.length > 12) {
+      var words = label.split(/\s+/);
+      var built = '';
+      for (var w = 0; w < words.length; w++) {
+        var next = built ? (built + ' ' + words[w]) : words[w];
+        if (Array.from(next).length <= 12) built = next;
+        else break;
+      }
+      label = built || chars.slice(0, 12).join('');
+    }
+    label = label.replace(/\s*(을|를|이|가|은|는|의|에|로|와|과)$/g, '').trim() || fallbackShort;
+
+    return {
+      cleanLabel: label,
+      extractedGoal: extractedGoal,
+      isConversational: isConv,
+      isPolitics: isPolitics
+    };
   };
 
   function interpolateSub(str, subLabel) {
@@ -1490,16 +1612,17 @@
     }
     var pipe = (flow && Array.isArray(flow.pipeline)) ? flow.pipeline : [];
     return [0, 1, 2].map(function (i) {
-      var raw = (pipe[i] && pipe[i].text) || (['간편 신청 체크', '즉시 첫 혜택 카톡', '후속 자동 카톡'][i]);
+      var raw = (pipe[i] && pipe[i].text) || (['간편 신청 체크', '즉시 첫 안내 카톡', '후속 자동 카톡'][i]);
       return { icon: icons[i], text: CONSULT.cleanPartnerText(shortenPill(raw, 13)) };
     });
   };
 
   CONSULT.getBestFlowId = function (sectorId, subIndustry) {
     var sub = String(subIndustry || '').toLowerCase();
+    if (CONSULT.isPoliticsDomain(sub)) return 'FLOW_4';
     if (/산부인과|병원|의원|치과|한의원|검진|설명회|세미나|웨비나|특강/.test(sub)) return 'FLOW_1';
     if (/세무|법무|변호사|노무|학원|수학|영어|패션|쇼핑몰|피부|필라테스/.test(sub)) return 'FLOW_4';
-    if (/교회|협회|모임|커뮤니티|후원|비영리/.test(sub)) return 'FLOW_3';
+    if (/교회|기독교|집회|부흥회|수련회|협회|모임|커뮤니티|후원|비영리/.test(sub)) return 'FLOW_3';
     if (/카페|식당|매장|네일|헤어|베이커리|유치원|호텔|스튜디오|인테리어/.test(sub)) return 'FLOW_2';
     var map = {
       online_edu: 'FLOW_2',
@@ -1513,11 +1636,12 @@
     return map[sectorId] || 'FLOW_2';
   };
 
-  // 타 업종 용어 오염 0% 보장 — 세부 업종 전용 6대 플로우 로컬 생성기
+  // 타 업종 용어 오염 0% 보장 — 세부 업종 전용 6대 플로우 로컬 생성기 (구어체 원문 접두사 결합 완전 금지!)
   CONSULT.getFlowsForContext = function (sectorId, subIndustry) {
-    var sub = String(subIndustry || '').trim();
+    var rawSub = String(subIndustry || '').trim();
     var sec = CONSULT.getSector(sectorId);
-    var matched = CONSULT.matchSubDomainPack(sectorId, sub);
+    var parsed = CONSULT.sanitizeSubIndustryLabel(rawSub, sectorId);
+    var matched = CONSULT.matchSubDomainPack(sectorId, rawSub) || CONSULT.matchSubDomainPack(sectorId, parsed.cleanLabel);
     var srcFlows = null;
     if (matched && matched.pack && Array.isArray(matched.pack.flows)) {
       srcFlows = matched.pack.flows;
@@ -1526,28 +1650,27 @@
     } else {
       return [];
     }
-    var subLabel = sub || (sec ? sec.shortTitle : '우리 브랜드');
+    var subLabel = parsed.cleanLabel || (sec ? sec.shortTitle : '우리 브랜드');
+    var cleanFn = parsed.isPolitics ? CONSULT.cleanPoliticsText : CONSULT.cleanPartnerText;
+
     return srcFlows.map(function (f) {
       var title = interpolateSub(f.title, subLabel);
-      if (sectorId === 'other' && sub && title.indexOf(sub) === -1) {
-        title = sub + ' ' + title;
-      }
       var built = {
         id: f.id,
         trackId: f.trackId,
         icon: f.icon,
-        badge: f.badge || '',
-        title: CONSULT.cleanPartnerText(title),
-        summary: CONSULT.cleanPartnerText(interpolateSub(f.summary, subLabel)),
+        badge: cleanFn(f.badge || ''),
+        title: cleanFn(title),
+        summary: cleanFn(interpolateSub(f.summary, subLabel)),
         useWebzine: !!f.useWebzine,
         pipeline: (f.pipeline || []).map(function (p) {
           return {
             step: p.step,
-            text: CONSULT.cleanPartnerText(interpolateSub(p.text, subLabel))
+            text: cleanFn(interpolateSub(p.text, subLabel))
           };
         })
       };
-      built.pills = CONSULT.buildFlowPills(built).map(function (x) { return x.text; });
+      built.pills = CONSULT.buildFlowPills(built).map(function (x) { return cleanFn(x.text); });
       return built;
     });
   };
@@ -1562,45 +1685,70 @@
     return pUrl.length >= 8;
   };
 
-  // Step 2: 세부 업종 100% 맞춤형 6대 카톡 운영 플로우 실시간 AI 번역 생성 (오프라인 시 키워드 분리 폴백)
+  // Step 2: 사용자 자유 입력문 스마트 정제({cleanIndustryLabel, extractedGoal}) + 세부 업종 100% 맞춤형 6대 플로우 실시간 AI 생성
   CONSULT.generateSubIndustryFlows = function (ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
-    var localFlows = CONSULT.getFlowsForContext(ctx.sectorId, sub);
+    var rawSub = String(ctx.rawSubIndustry || ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
+    var parsed = CONSULT.sanitizeSubIndustryLabel(rawSub, ctx.sectorId);
+    var isPolitics = parsed.isPolitics;
+    var cleanFn = isPolitics ? CONSULT.cleanPoliticsText : CONSULT.cleanPartnerText;
+    var localFlows = CONSULT.getFlowsForContext(ctx.sectorId, rawSub);
 
-    // 세부 업종이 없거나 AI 미연결이면 즉시 오염 없는 로컬 6대 플로우 반환
-    if (!sub || !CONSULT.hasAiAvailable(ctx)) {
-      return Promise.resolve({ flows: localFlows, source: 'local_clean' });
+    // 세부 업종이 없거나 AI 미연결이면 즉시 정제 라벨 + 오염 없는 로컬 6대 플로우 반환
+    if (!rawSub || !CONSULT.hasAiAvailable(ctx)) {
+      return Promise.resolve({
+        cleanIndustryLabel: parsed.cleanLabel,
+        extractedGoal: parsed.extractedGoal,
+        flows: localFlows,
+        source: 'local_clean'
+      });
     }
 
     var baseRef = localFlows.map(function (f, i) {
       return (i + 1) + '. [' + f.id + '] ' + f.title;
     }).join('\n');
 
+    var politicsRule = isPolitics
+      ? [
+          '★ [정치·선거·공공 도메인 특별 가드레일 — 공직선거법 준수 필수]',
+          '- 상업 용어("첫 혜택 즉시 발급", "할인 쿠폰", "무료 사은품", "구매 유도", "매출 전환", "브랜드 팬덤", "결제 유도", "특가")를 단 한 글자도 절대 쓰지 마세요!',
+          '- 고마워톡 실제 기능(신청페이지 1초 연동, 신청폼 객관식 지역/현안 태그 분기, 간격발송 쇼츠·카드뉴스 연재, 날짜발송 행사 리마인드)에 맞춘 선거·의정 맞춤 6대 흐름으로 구성하세요:',
+          '  FLOW_4(지역구·관심 현안별 맞춤 공약 분기형), FLOW_1(개소식·출판기념회·간담회 참석 리마인드형), FLOW_3(주간 현장 행보·유튜브 쇼츠 소식 연재형), FLOW_2(시민 정책 제안·우리 동네 민원 접수형), FLOW_5(자원봉사·서포터즈 참여 안내형), FLOW_6(주요 의정활동·팩트체크 알림형)'
+        ].join('\n')
+      : '3) 6개 흐름은 FLOW_1(일정·예약 리마인드), FLOW_2(가이드·핵심 자료 발급), FLOW_3(정기 칼럼·소식 연재), FLOW_4(유형 진단 & 맞춤 분기), FLOW_5(열독·참여 포인트 격려), FLOW_6(현장 QR 체크인·통합 안내) 구조를 유지하되 이름과 내용을 100% 해당 업종 현장 용어로 자연스럽게 작성하세요.';
+
     var sys = [
-      '당신은 고마워톡 수석 마케팅 컨설턴트입니다.',
-      '파트너가 직접 입력한 [세부 업종]의 실전 언어와 고객 상황에만 100% 맞춘 6가지 카톡 운영 플로우를 JSON 배열로 작성하세요.',
+      '당신은 고마워톡 수석 마케팅·소통 컨설턴트입니다.',
+      '사용자가 자유롭게 적은 [원본 입력문]에서 1) 깔끔한 명사형 업종/캠페인 라벨(cleanIndustryLabel, 공백 포함 12자 이내, 서술어·구어체 어미 절대 금지 예: "남양주 시장 후보 캠프", "남양주 카페"), 2) 입력문에 담긴 목표(extractedGoal, 없으면 빈 문자열), 3) 해당 도메인 100% 전용 6가지 카톡 운영 흐름(flows)을 JSON으로 작성하세요.',
       '절대 규칙:',
-      '1) 타 업종 용어 오염 100% 금지! 예를 들어 세부 업종이 "산부인과"·"치과"·"한의원" 등 병의원이면 세무·절세·부가세·법인·기장 같은 타 업종 단어를 단 한 글자도 절대 넣지 마세요.',
-      '2) 내부 시스템 용어(뜰채, 시트 정수 더하기, 1회차 알림톡, 트랙 번호, ' + TOSS_BANNED_LIT + ') 절대 금지.',
-      '3) 6개 흐름은 반드시 FLOW_1(일정·예약 리마인드), FLOW_2(가이드·혜택 즉시 발급), FLOW_3(정기 칼럼·소식 연재), FLOW_4(자가진단 & 유형별 맞춤 분기), FLOW_5(열독·방문 포인트 적립 VIP), FLOW_6(현장 QR 체크인·통합 안내) 구조를 유지하되 이름과 내용을 100% 세부 업종 현장 용어로 번역하세요.',
-      '4) 출력 JSON만: {"flows":[{"id":"FLOW_1","title":"...","badge":"짧은뱃지","pills":["10자내외키워드1","10자내외키워드2","10자내외키워드3"],"summary":"1줄 요약","pipeline":[{"step":"신청페이지","text":"..."},{"step":"즉시 첫 카톡","text":"..."},{"step":"후속 자동 카톡","text":"..."}]}]} (정확히 6개)'
+      '1) 사용자의 구어체 문장("~야", "~목표야", "~하고 싶어")을 카드 제목이나 배지에 기계적으로 이어붙이지 마세요!',
+      '2) 타 업종 용어 오염 및 내부 시스템 용어(뜰채, 시트 정수 더하기, 1회차 알림톡, 트랙 번호, ' + TOSS_BANNED_LIT + ') 절대 금지.',
+      politicsRule,
+      '4) 출력 JSON만: {"cleanIndustryLabel":"12자이내명사","extractedGoal":"목표한문장또는빈문자","flows":[{"id":"FLOW_1","title":"자연스러운한국어제목","badge":"짧은뱃지","pills":["10자내외1","10자내외2","10자내외3"],"summary":"1줄 요약","pipeline":[{"step":"신청페이지","text":"..."},{"step":"즉시 첫 카톡","text":"..."},{"step":"후속 자동 카톡","text":"..."}]}]} (정확히 6개)'
     ].join('\n');
 
     var user = '[선택 분야] ' + (sec ? sec.title : '기타 업종') +
-      '\n[세부 업종 — 모든 문구는 오직 이 업종에만 맞춰 작성] ' + sub +
+      '\n[사용자 원본 입력문] ' + rawSub +
+      '\n[1차 정제 명사 라벨 참고] ' + parsed.cleanLabel +
       '\n[6개 슬롯 참고]\n' + baseRef +
       '\n\nJSON만 출력하세요.';
 
     return TOSS.callAI({
       mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
-      system: sys, user: user, temperature: 0.35, maxOutputTokens: 2048
+      system: sys, user: user, responseMimeType: 'application/json',
+      temperature: 0.35, maxOutputTokens: 4096
     }).then(function (raw) {
       var obj = extractJson(raw);
       var arr = obj && Array.isArray(obj.flows) ? obj.flows : null;
+      var aiLabelRaw = (obj && obj.cleanIndustryLabel) ? String(obj.cleanIndustryLabel).trim() : '';
+      var cleanLabel = aiLabelRaw ? CONSULT.sanitizeSubIndustryLabel(aiLabelRaw, ctx.sectorId).cleanLabel : parsed.cleanLabel;
+      var extractedGoal = (obj && obj.extractedGoal && String(obj.extractedGoal).trim())
+        ? cleanFn(String(obj.extractedGoal).trim())
+        : parsed.extractedGoal;
+
       if (!arr || arr.length < 6) {
-        return { flows: localFlows, source: 'local_clean' };
+        return { cleanIndustryLabel: cleanLabel, extractedGoal: extractedGoal, flows: localFlows, source: 'local_clean' };
       }
       var merged = localFlows.map(function (lf, idx) {
         var af = arr.find(function (x) { return x && x.id === lf.id; }) || arr[idx] || {};
@@ -1608,7 +1756,7 @@
           ? af.pipeline.map(function (p, pi) {
               return {
                 step: (lf.pipeline[pi] && lf.pipeline[pi].step) || p.step || '',
-                text: CONSULT.cleanPartnerText(p.text || (lf.pipeline[pi] && lf.pipeline[pi].text) || '')
+                text: cleanFn(p.text || (lf.pipeline[pi] && lf.pipeline[pi].text) || '')
               };
             })
           : lf.pipeline;
@@ -1616,21 +1764,31 @@
           id: lf.id,
           trackId: lf.trackId,
           icon: lf.icon,
-          badge: CONSULT.cleanPartnerText(af.badge || lf.badge || ''),
-          title: CONSULT.cleanPartnerText(af.title || lf.title),
-          summary: CONSULT.cleanPartnerText(af.summary || lf.summary),
+          badge: cleanFn(af.badge || lf.badge || ''),
+          title: cleanFn(af.title || lf.title),
+          summary: cleanFn(af.summary || lf.summary),
           useWebzine: lf.useWebzine,
           pipeline: pipe,
           pills: (Array.isArray(af.pills) && af.pills.length === 3)
-            ? af.pills.map(function (x) { return CONSULT.cleanPartnerText(tFirst(x, 14)); })
+            ? af.pills.map(function (x) { return cleanFn(tFirst(x, 14)); })
             : null
         };
-        built.pills = CONSULT.buildFlowPills(built).map(function (x) { return x.text; });
+        built.pills = CONSULT.buildFlowPills(built).map(function (x) { return cleanFn(x.text); });
         return built;
       });
-      return { flows: merged, source: 'ai_realtime' };
+      return {
+        cleanIndustryLabel: cleanLabel,
+        extractedGoal: extractedGoal,
+        flows: merged,
+        source: 'ai_realtime'
+      };
     }).catch(function () {
-      return { flows: localFlows, source: 'local_clean' };
+      return {
+        cleanIndustryLabel: parsed.cleanLabel,
+        extractedGoal: parsed.extractedGoal,
+        flows: localFlows,
+        source: 'local_clean'
+      };
     });
   };
 
@@ -1758,13 +1916,18 @@
   CONSULT.buildLocalQuestionPack = function (qNum, ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '비즈니스')).trim();
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, sub);
+    var rawSub = String(ctx.rawSubIndustry || ctx.subIndustry || (sec ? sec.shortTitle : '비즈니스')).trim();
+    var parsed = CONSULT.sanitizeSubIndustryLabel(rawSub, ctx.sectorId);
+    var sub = String(ctx.subIndustry ? CONSULT.sanitizeSubIndustryLabel(ctx.subIndustry, ctx.sectorId).cleanLabel : parsed.cleanLabel).trim();
+    var isPolitics = parsed.isPolitics || CONSULT.isPoliticsDomain(sub);
+    var cleanFn = isPolitics ? CONSULT.cleanPoliticsText : CONSULT.cleanPartnerText;
+
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub);
     var flowTitle = flow ? flow.title : '카카오 자동 운영 흐름';
     var A = ctx.answers || {};
     var owner = String(ctx.ownerName || '대표님').trim();
     var meta = CONSULT.Q_META[qNum - 1] || CONSULT.Q_META[0];
-    var subPack = CONSULT.matchSubDomainPack(ctx.sectorId, sub);
+    var subPack = CONSULT.matchSubDomainPack(ctx.sectorId, rawSub) || CONSULT.matchSubDomainPack(ctx.sectorId, sub);
     var batchMap = ctx.customExamplesMap || null;
     var batchChips = (batchMap && Array.isArray(batchMap[qNum]) && batchMap[qNum].length >= 2) ? batchMap[qNum] : null;
     var rawChips = batchChips
@@ -1775,29 +1938,41 @@
 
     var qText = '';
     var topicSnippet = tFirst(A[1] || sub, 28);
-    var giftSnippet = tFirst(A[3] || '첫 무료 혜택', 24);
+    var giftSnippet = tFirst(A[3] || (isPolitics ? '핵심 정책 요약집' : '첫 안내 자료'), 24);
+    var labelText = (isPolitics && qNum === 3) ? '신청 직후 첫 카톡 안내 자료' : meta.label;
+    var hintText = (isPolitics && qNum === 3)
+      ? '유권자가 1초 등록 직후 첫 카톡으로 바로 받아볼 핵심 공약 요약집·행사 안내·의정 자료에 반영돼요.'
+      : meta.usageHint;
 
     if (qNum === 1) {
       qText = (ctx.customQ1Text && String(ctx.customQ1Text).trim())
         ? String(ctx.customQ1Text).trim()
-        : ('**' + sub + '** 분야에 딱 맞는 **' + flowTitle + '**을 골라주셨네요!\n' +
-          owner + ' 대표님, 이번 캠페인으로 **꼭 이루고 싶은 진짜 목표와 핵심 주제**를 편하게 들려주세요.');
+        : ('**' + sub + '**에 딱 맞는 **' + flowTitle + '**을 골라주셨네요!\n' +
+          owner + '님, 이번 캠페인으로 **꼭 이루고 싶은 핵심 목표와 주요 메시지**를 편하게 들려주세요.');
     } else if (qNum === 2) {
-      qText = '목표가 아주 선명해요! **"' + topicSnippet + '"**에 반응할 **가장 모으고 싶은 핵심 고객**은 어떤 분이고, 그분들이 평소 겪는 **단골 현실 고민**은 무엇인가요?';
+      qText = isPolitics
+        ? ('방향이 아주 선명해요! **"' + topicSnippet + '"**에 가장 공감할 **핵심 지역 유권자·주민**은 어떤 분들이고, 그분들이 가장 관심을 두는 **생활 현안**은 무엇인가요?')
+        : ('목표가 아주 선명해요! **"' + topicSnippet + '"**에 반응할 **가장 모으고 싶은 핵심 고객**은 어떤 분이고, 그분들이 평소 겪는 **단골 현실 고민**은 무엇인가요?');
     } else if (qNum === 3) {
-      qText = '공감이 확 되는 고민이네요! **' + sub + '** 고객이 카카오로 1초 신청하자마자 **첫 카톡으로 바로 선물받을 무료 혜택·자료·안내**는 무엇으로 준비하면 좋을까요?';
+      qText = isPolitics
+        ? ('공감이 확 되는 현안이네요! **' + sub + '** 소통 채널에 1초 등록하자마자 **첫 카톡으로 바로 보내드릴 핵심 공약 요약·의정 보고·행사 안내 자료**는 무엇으로 준비할까요?')
+        : ('공감이 확 되는 고민이네요! **' + sub + '** 고객이 카카오로 1초 신청하자마자 **첫 카톡으로 바로 선물받을 무료 혜택·자료·안내**는 무엇으로 준비하면 좋을까요?');
     } else if (qNum === 4) {
-      qText = '**"' + giftSnippet + '"** 구성이 매력적이에요! 이제 고객이 "여기 진짜 믿을 만하네!" 하고 바로 신청할 수 있게 **대표님만의 실제 경력·강점·성과 숫자**를 자랑해 주세요.';
+      qText = isPolitics
+        ? ('**"' + giftSnippet + '"** 구성이 탄탄해요! 이제 유권자가 "믿고 맡길 수 있는 일꾼이네!" 하고 신뢰할 수 있게 **실제 경력·지역 활동 성과·강점**을 들려주세요.')
+        : ('**"' + giftSnippet + '"** 구성이 매력적이에요! 이제 고객이 "여기 진짜 믿을 만하네!" 하고 바로 신청할 수 있게 **대표님만의 실제 경력·강점·성과 숫자**를 자랑해 주세요.');
     } else {
-      qText = '마지막 질문이에요! **' + sub + '** 신청폼에서 고객을 분류할 **객관식 질문(예: 유형·고민)**과, 이후 카톡을 보낼 **주기·원하시는 말투(또는 언어)**를 알려주세요.';
+      qText = isPolitics
+        ? ('마지막 질문이에요! **' + sub + '** 신청폼에서 유권자 관심사를 분류할 **객관식 질문(예: 거주 권역·관심 현안)**과, 이후 카톡을 보낼 **주기·원하시는 말투**를 알려주세요.')
+        : ('마지막 질문이에요! **' + sub + '** 신청폼에서 고객을 분류할 **객관식 질문(예: 유형·고민)**과, 이후 카톡을 보낼 **주기·원하시는 말투(또는 언어)**를 알려주세요.');
     }
 
     return {
       qNum: qNum,
-      label: meta.label,
-      usageHint: meta.usageHint,
-      questionText: CONSULT.cleanPartnerText(qText),
-      exampleChips: rawChips.slice(0, 3).map(function (c) { return CONSULT.cleanPartnerText(c); })
+      label: labelText,
+      usageHint: hintText,
+      questionText: cleanFn(qText),
+      exampleChips: rawChips.slice(0, 3).map(function (c) { return cleanFn(c); })
     };
   };
 
@@ -1819,8 +1994,13 @@
   CONSULT.generateConsultExamplesBatch = function (ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, sub);
+    var rawSub = String(ctx.rawSubIndustry || ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
+    var parsed = CONSULT.sanitizeSubIndustryLabel(rawSub, ctx.sectorId);
+    var sub = String(ctx.subIndustry ? CONSULT.sanitizeSubIndustryLabel(ctx.subIndustry, ctx.sectorId).cleanLabel : parsed.cleanLabel).trim();
+    var isPolitics = parsed.isPolitics || CONSULT.isPoliticsDomain(sub);
+    var cleanFn = isPolitics ? CONSULT.cleanPoliticsText : CONSULT.cleanPartnerText;
+    var extractedGoal = String(ctx.extractedGoal || parsed.extractedGoal || '').trim();
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub);
     var localMap = {};
     for (var n = 1; n <= CONSULT.TOTAL_Q; n++) {
       localMap[n] = CONSULT.buildLocalQuestionPack(n, ctx).exampleChips;
@@ -1835,36 +2015,45 @@
       });
     }
 
+    var politicsRule = isPolitics
+      ? [
+          '★ [정치·선거·공공 도메인 금기어 규칙 — 공직선거법 준수]',
+          '- 상업적 용어("첫 혜택 즉시 발급", "할인 쿠폰", "무료 사은품", "구매 유도", "매출 전환", "브랜드 팬덤", "특가", "할인")는 단 한 글자도 절대 쓰지 마세요.',
+          '- q3는 반드시 "핵심 공약 요약집, 개소식·간담회 안내, 의정 보고서, 현안 팩트체크 카드, 비전 쇼츠 영상 링크" 등 합법적 정책·소통 자료로만 작성하세요.'
+        ].join('\n')
+      : '';
+
     var sys = [
-      '당신은 고마워톡 수석 마케팅 컨설턴트입니다.',
+      '당신은 고마워톡 수석 마케팅·소통 컨설턴트입니다.',
       '사용자가 입력한 [세부 업종]과 [선택 운영 흐름]에 100% 전용으로 맞춘 Q1~Q5 심층 인터뷰 예시 문장 세트(각 질문당 정확히 3개, 총 15개)와 Q1 맞춤 질문 문장을 JSON 하나로 작성하세요.',
       '',
       '[절대 규칙]',
       '1) 타 업종 혼입 100% 절대 금지! 오직 사용자가 입력한 [세부 업종] 현장 용어와 실제 상황만 사용하세요.',
-      '   예) 세부 업종이 "기독교 집회"라면 15개 예시 전부 집회·부흥회·수련회·찬양집회·성도·기도제목·순서지 등 관련 내용만 작성하고, 협회·소상공인·독서·러닝 동호회·병원·학원·쇼핑몰 등 다른 업종 단어를 단 한 글자도 절대 섞지 마세요.',
       '2) 내부 시스템 용어(뜰채, 시트 정수 더하기, 1회차 알림톡, 트랙 번호, ' + TOSS_BANNED_LIT + ') 절대 금지.',
-      '3) 각 예시 문장은 실제 대표자/운영자가 그대로 터치해 약간만 고쳐 쓸 수 있는 현실적인 1인칭 존댓말 문장(35~80자)으로, 3개가 서로 다른 구체적 각도를 제시하도록 쓰세요.',
+      politicsRule,
+      '3) 각 예시 문장은 실제 운영자/담당자가 그대로 터치해 약간만 고쳐 쓸 수 있는 현실적인 1인칭 존댓말 문장(35~80자)으로, 3개가 서로 다른 구체적 각도를 제시하도록 쓰세요.',
       '4) 질문별 내용:',
       '   - q1: 캠페인 목표 & 핵심 주제',
-      '   - q2: 핵심 타겟 & 현실 고민',
-      '   - q3: 신청 직후 첫 카톡으로 바로 선물할 무료 혜택·자료·안내',
-      '   - q4: 운영자/단체/브랜드만의 경력·강점·성과 숫자',
+      '   - q2: 핵심 타겟(유권자/고객) & 현실 고민·현안',
+      isPolitics ? '   - q3: 등록 직후 첫 카톡으로 바로 보내드릴 핵심 공약 요약·의정 보고·행사 안내 자료' : '   - q3: 신청 직후 첫 카톡으로 바로 선물할 무료 혜택·자료·안내',
+      '   - q4: 운영자/후보/단체/브랜드만의 경력·강점·성과',
       '   - q5: 신청폼 객관식 분류 질문 + 후속 카톡 주기·말투/언어',
       '5) q1QuestionText는 2문장 이내, 친근하고 전문적인 존댓말, 핵심 강조만 **굵게** 1~2곳.',
       '6) 출력은 아래 JSON 객체만 출력하세요:',
       '{"q1QuestionText":"...","q1":["예시1","예시2","예시3"],"q2":["예시1","예시2","예시3"],"q3":["예시1","예시2","예시3"],"q4":["예시1","예시2","예시3"],"q5":["예시1","예시2","예시3"]}'
-    ].join('\n');
+    ].filter(Boolean).join('\n');
 
     var user = '[대표자/담당자] ' + (ctx.ownerName || '대표님') +
       '\n[대분류 분야] ' + (sec ? sec.title : '기타 업종') +
-      '\n[세부 업종 — 15개 예시 전부 오직 이 업종에만 맞춰 작성] ' + sub +
+      '\n[정제된 세부 업종 — 15개 예시 전부 오직 이 도메인에만 맞춰 작성] ' + sub +
+      (extractedGoal ? ('\n[사용자가 STEP 1에서 밝힌 목표] ' + extractedGoal) : '') +
       '\n[선택 운영 흐름] ' + (flow ? (flow.title + ' — ' + flow.summary) : '') +
       '\n\nJSON만 출력하세요.';
 
     return TOSS.callAI({
       mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
       system: sys, user: user, responseMimeType: 'application/json',
-      temperature: 0.4, maxOutputTokens: 2400
+      temperature: 0.4, maxOutputTokens: 4096
     }).then(function (raw) {
       var obj = extractJson(raw);
       if (!obj || typeof obj !== 'object') {
@@ -1875,7 +2064,7 @@
       for (var q = 1; q <= CONSULT.TOTAL_Q; q++) {
         var arr = obj['q' + q] || (obj.examples && (obj.examples[q] || obj.examples[String(q)]));
         if (Array.isArray(arr) && arr.length >= 3) {
-          var cleaned = arr.slice(0, 3).map(function (c) { return CONSULT.cleanPartnerText(String(c || '').trim()); }).filter(Boolean);
+          var cleaned = arr.slice(0, 3).map(function (c) { return cleanFn(String(c || '').trim()); }).filter(Boolean);
           if (cleaned.length === 3) {
             mergedMap[q] = cleaned;
             aiFilledCount++;
@@ -1885,7 +2074,7 @@
         mergedMap[q] = localMap[q];
       }
       return {
-        q1QuestionText: obj.q1QuestionText ? CONSULT.cleanPartnerText(obj.q1QuestionText) : localQ1Text,
+        q1QuestionText: obj.q1QuestionText ? cleanFn(obj.q1QuestionText) : localQ1Text,
         examplesMap: mergedMap,
         source: aiFilledCount >= 3 ? 'ai_batch' : 'local_clean'
       };
@@ -1922,8 +2111,12 @@
     var qNum = Number(ctx.qNum) || 1;
     var userText = String(ctx.userText || '').trim();
     var sec = CONSULT.getSector(ctx.sectorId);
-    var sub = String(ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, sub);
+    var rawSub = String(ctx.rawSubIndustry || ctx.subIndustry || (sec ? sec.shortTitle : '')).trim();
+    var parsed = CONSULT.sanitizeSubIndustryLabel(rawSub, ctx.sectorId);
+    var sub = String(ctx.subIndustry ? CONSULT.sanitizeSubIndustryLabel(ctx.subIndustry, ctx.sectorId).cleanLabel : parsed.cleanLabel).trim();
+    var isPolitics = parsed.isPolitics || CONSULT.isPoliticsDomain(sub);
+    var cleanFn = isPolitics ? CONSULT.cleanPoliticsText : CONSULT.cleanPartnerText;
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub);
 
     // ① 1차 하드 가드레일 (로컬 매뉴얼 정규식 즉시 검문 — 온라인/오프라인 무관 100% 차단)
     var localCheck = CONSULT.checkFeasibilityLocal(userText);
@@ -1957,6 +2150,9 @@
 
     // ② 2차 AI 심층 매뉴얼 검문소 + 다음 맥락 질문 & 예시 칩 3개 동적 생성
     var nextMeta = CONSULT.Q_META[nextQNum - 1];
+    var politicsLine = isPolitics
+      ? '※ [정치·선거 도메인] 상업 용어("첫 혜택 즉시 발급", "할인 쿠폰", "무료 사은품", "구매 유도", "매출 전환", "브랜드 팬덤") 사용을 전면 금지합니다.'
+      : '';
     var sys = [
       '당신은 고마워톡(카카오톡 자동화 플랫폼) 수석 컨설턴트입니다.',
       '지금은 파트너의 Q' + qNum + ' 답변을 검토하고, 1) 고마워톡 시스템에서 물리적으로 불가능한 기능이 포함됐는지 먼저 검문한 뒤, 2) 가능할 때만 다음 질문과 예시 칩 3개를 만듭니다.',
@@ -1964,8 +2160,9 @@
       '[절대 매뉴얼 검문 기준 — 아래 중 하나라도 파트너 답변에 요구되면 반드시 feasible=false로 차단하세요!]',
       CONSULT.buildGuardrailManualSummary(),
       '※ 위 목록 외라도 "실시간 맞춤 영상/음성/이미지 즉석 자동 제작 발송", "카톡방 내 실시간 AI 1:1 자유 채팅 상담", "채널 미추가 고객 광고성 친구톡 강제 발송", "알림톡 본문에 할인·특가·쿠폰 발송", "고마워톡 자체 카드결제창/장바구니 내장", "신청폼 내 사진·서류 파일 업로드", "야간(20:30~08:00) 친구톡 발송", "한 회차 6개 이상 다중 분기"가 포함되면 절대 통과시키지 마세요!',
-      '※ 단, 파트너가 정상적인 목표·고민·무료 PDF/가이드/쿠폰(친구톡)/상담/예약/기존 링크 연결/객관식 분류 등을 적었다면 반드시 feasible=true로 통과시키세요.',
+      '※ 단, 파트너가 정상적인 목표·고민·자료·안내·상담·예약·기존 링크 연결·객관식 분류 등을 적었다면 반드시 feasible=true로 통과시키세요.',
       '※ exampleChips 3개는 반드시 사용자가 입력한 [세부 업종](' + sub + ')과 직전 답변 맥락에만 100% 맞춰 작성하고, 다른 업종 예시를 단 한 글자도 절대 섞지 마세요.',
+      politicsLine,
       '',
       '[응답 JSON 규격]',
       'A) 불가능한 기능 감지 시 (다음 질문으로 절대 넘어가지 않음):',
@@ -1975,7 +2172,7 @@
       isLastQ
         ? '{"feasible":true,"completedInterview":true,"ackText":"5가지 답변을 바탕으로 브랜드 스타일 단계로 넘어가는 따뜻한 한 문장"}'
         : ('{"feasible":true,"completedInterview":false,"questionText":"직전 답변을 짧게 공감하며 자연스럽게 이어가는 Q' + nextQNum + '(' + nextMeta.label + ') 맞춤 질문 (2문장 이내, 핵심만 **굵게**, 내부 전문용어 및 ' + TOSS_BANNED_LIT + ' 절대 금지)","exampleChips":["[' + sub + '] 전용 현실적 1인칭 예시1 (40~80자)","[' + sub + '] 전용 예시2","[' + sub + '] 전용 예시3"]}')
-    ].join('\n');
+    ].filter(Boolean).join('\n');
 
     var user = '[분야] ' + (sec ? sec.title : '') +
       '\n[세부 업종 — 타 업종 혼입 절대 금지] ' + sub +
@@ -1987,7 +2184,7 @@
     return TOSS.callAI({
       mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
       system: sys, user: user, responseMimeType: 'application/json',
-      temperature: 0.35, maxOutputTokens: 1200
+      temperature: 0.35, maxOutputTokens: 3072
     }).then(function (raw) {
       var obj = extractJson(raw);
       if (!obj || typeof obj !== 'object') {
@@ -1996,17 +2193,17 @@
       if (obj.feasible === false && obj.reason) {
         var alts = Array.isArray(obj.alternatives) ? obj.alternatives.slice(0, 2).map(function (a) {
           return {
-            label: CONSULT.cleanPartnerText(a.label || '고마워톡 맞춤 대안'),
-            detail: CONSULT.cleanPartnerText(a.detail || ''),
-            draftText: CONSULT.cleanPartnerText(a.draftText || a.detail || '')
+            label: cleanFn(a.label || '고마워톡 맞춤 대안'),
+            detail: cleanFn(a.detail || ''),
+            draftText: cleanFn(a.draftText || a.detail || '')
           };
         }) : [];
         return {
           feasible: false,
           guardrail: {
             ruleId: 'ai_guardrail',
-            title: CONSULT.cleanPartnerText(obj.title || '고마워톡 기능 지원 여부 확인'),
-            reason: CONSULT.cleanPartnerText(obj.reason),
+            title: cleanFn(obj.title || '고마워톡 기능 지원 여부 확인'),
+            reason: cleanFn(obj.reason),
             alternatives: alts
           }
         };
@@ -2015,12 +2212,12 @@
         return {
           feasible: true,
           completedInterview: true,
-          ackText: CONSULT.cleanPartnerText(obj.ackText || '모든 핵심 내용을 잘 들었어요! 이제 브랜드 스타일을 담아볼까요?'),
+          ackText: cleanFn(obj.ackText || '모든 핵심 내용을 잘 들었어요! 이제 브랜드 스타일을 담아볼까요?'),
           nextPack: null
         };
       }
       var chips = (Array.isArray(obj.exampleChips) && obj.exampleChips.length >= 3)
-        ? obj.exampleChips.slice(0, 3).map(function (c) { return CONSULT.cleanPartnerText(c); })
+        ? obj.exampleChips.slice(0, 3).map(function (c) { return cleanFn(c); })
         : localNext.exampleChips;
       return {
         feasible: true,
@@ -2029,7 +2226,7 @@
           qNum: nextQNum,
           label: localNext.label,
           usageHint: localNext.usageHint,
-          questionText: CONSULT.cleanPartnerText(obj.questionText || localNext.questionText),
+          questionText: cleanFn(obj.questionText || localNext.questionText),
           exampleChips: chips
         }
       };

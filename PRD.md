@@ -582,10 +582,11 @@ Google Apps Script 웹앱으로 배포하며 백틱(`` ` ``) 없이 안전한 �
    - REST API 호출 허용 IP(`220.88.183.131`, `210.95.241.214`) 등록 완료.
 3. **모바일 제안서(`Proposal.html`) V2.4 최종 고도화 완료:**
    - 순정 신청폼 모달 UI, 플라잉 꼬리표 스탬프 & 컬러 동기화 카톡 분기, 모드 버튼 없는 손가락 코치마크(`👆`) 하이브리드 유도, D+1/D+3 타임워프 및 미친추 2회 구제·Pro 로고 비교 체험 완결.
-4. **세부 업종 100% 전용 STEP 3(Q1~Q5) 예시 동적 생성 & GAS Gemini 프록시 안정화 완료:**
-   - `engines/RagInterviewEngine.js`에 `Consult.generateConsultExamplesBatch()` 신설 및 `InterviewBot.html` STEP 2 흐름 선택 시 Q1~Q5(3개×5문항=15개) 1회 JSON 프리패치 연동(타 업종 예시 혼입 0건).
-   - `Backend_Proxy.gs` `callGemini_` 다중 후보 모델 폴백(최대 4후보, 이미지·오디오·비전 모델 제외)·10분 활성 모델 캐시(`CacheService`)·thinking 파트 필터링(`!p.thought`)·`responseMimeType` 지원 강화.
-   - `data/GomawartalkManual.js` 정적 폴백 `subDomainPacks`에 `church_gathering`(교회·집회·부흥회·수련회·비영리), `association_org`(협회·조합·단체·포럼), `hobby_club`(동호회·독서·러닝·커뮤니티) 완전 분리 탑재.
+4. **세부 업종 100% 전용 STEP 2·3 동적 생성, 자유 입력 정제 & 정치/선거 도메인 가드레일 · GAS 프록시 최적화 완료 (2026-11-26):**
+   - `engines/RagInterviewEngine.js`: `Consult.sanitizeSubIndustryLabel()`(구어체 어미·목표 구절 제거 → 12자 이내 명사 라벨 + `extractedGoal` 분리), `Consult.isPoliticsDomain()`/`cleanPoliticsText()`(공직선거법 오해 상업어 전면 차단), `Consult.generateSubIndustryFlows()`(`{cleanIndustryLabel, extractedGoal, flows}` 반환, 구어체 원문 접두사 결합 제거), `Consult.generateConsultExamplesBatch()`(Q1~Q5 15개 맞춤 예시 1회 JSON 프리패치), `TOSS.postProxy` 24초 타임아웃 및 `maxOutputTokens: 4096` + `thinkingBudget: 0` 적용.
+   - `InterviewBot.html`: STEP 1 자유 입력문 정제·목표 분리, STEP 2 클린 명사 라벨 배지·Q1~Q5 프리패치, STEP 3 Q1 상단 `🎯 방금 적어주신 목표 초안` 원클릭 채우기 칩 연동.
+   - `data/GomawartalkManual.js`: `subDomainPacks`에 `politics_public`(선거·의정 맞춤 6대 흐름 + Q1~Q5 15예시, `전통시장`/`여성의원` 오탐 제외), `church_gathering`, `association_org`, `hobby_club` 4종 완전 분리 탑재.
+   - `Backend_Proxy.gs` (`V2.4-1`): `fetchAvailableGeminiModels_()` 비텍스트 모델 제외 + `callGemini_()` 최대 4후보 순차 폴백 + `CacheService` 10분 활성 모델 캐시 + Flash `thinkingConfig: { thinkingBudget: 0 }` 기본 적용(400 시 자동 재시도) + thinking 파트(`!p.thought`) 필터링으로 모바일 실서버 빈 응답(`reply:""`) 근본 해결.
 5. **후속 최우선 점검 백로그 (다음 세션 & 12월 7일 최종 완결 목표):**
    - ① 카카오 로그인 시 시트에 `phone_number`가 `01000000000` 폴백으로 기록되는 케이스 정밀 파싱 점검(`Backend_Proxy.gs`).
    - ② GAS 호출 서버 유동 IP 대응 방안 점검.

@@ -498,7 +498,7 @@ function doGet(e) {
       return jsonResponse_({
         ok: true,
         service: "Gomawartalk Backend_Proxy",
-        version: "V2.3-1",
+        version: "V2.4-1",
         defaultModel: DEFAULT_GEMINI_MODEL,
         currentMonth: getCurrentYearMonth_(),
         timestamp: new Date().toISOString()
@@ -1794,15 +1794,19 @@ function extractGeminiResponseText_(parsed) {
   return out || allText;
 }
 
-function invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, maxTokens, responseMimeType) {
+function invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, maxTokens, responseMimeType, thinkingBudget) {
   var cleanName = modelName.indexOf("models/") === 0 ? modelName : ("models/" + modelName);
   var endpoint = "https://generativelanguage.googleapis.com/v1beta/" + cleanName + ":generateContent?key=" + encodeURIComponent(apiKey);
   var genConfig = {
     temperature: temperature !== undefined ? temperature : 0.4,
-    maxOutputTokens: maxTokens || 2048
+    maxOutputTokens: maxTokens || 4096
   };
   if (responseMimeType) {
     genConfig.responseMimeType = String(responseMimeType);
+  }
+  // Flash 계열 사고(thinking) 토큰으로 인한 출력 고갈/지연 방지 (명시적 0 전달 또는 JSON 응답 시 기본 0 적용)
+  if (thinkingBudget !== undefined && thinkingBudget !== null && /flash/i.test(cleanName)) {
+    genConfig.thinkingConfig = { thinkingBudget: Number(thinkingBudget) };
   }
   var payload = {
     contents: [{ role: "user", parts: [{ text: promptText }] }],
@@ -1819,11 +1823,14 @@ function invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temp
   });
 }
 
-function callGemini_(promptText, systemPrompt, temperature, maxTokens, responseMimeType) {
+function callGemini_(promptText, systemPrompt, temperature, maxTokens, responseMimeType, thinkingBudget) {
   var apiKey = getProp_("GEMINI_API_KEY", "");
   if (!apiKey) {
     throw new Error("스크립트 속성에 GEMINI_API_KEY가 설정되지 않았습니다.");
   }
+
+  var resolvedMaxTokens = Math.max(Number(maxTokens) || 0, 2048);
+  var resolvedThinking = (thinkingBudget !== undefined && thinkingBudget !== null) ? thinkingBudget : 0;
 
   var cache = null;
   var cachedModel = "";
@@ -1843,12 +1850,16 @@ function callGemini_(promptText, systemPrompt, temperature, maxTokens, responseM
   function attemptModel_(modelName) {
     if (!modelName || tried[modelName]) return null;
     tried[modelName] = true;
-    var res = invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, maxTokens, responseMimeType);
+    var curMime = responseMimeType || "";
+    var curThinking = resolvedThinking;
+    var res = invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, resolvedMaxTokens, curMime, curThinking);
     var code = res.getResponseCode();
     var text = res.getContentText();
-    // 일부 모델에서 responseMimeType 거부(400) 시 MIME 옵션 제거 후 1회 재시도
-    if (code === 400 && responseMimeType && /responseMimeType|mime/i.test(text)) {
-      res = invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, maxTokens, "");
+    // 일부 모델에서 thinkingConfig 또는 responseMimeType 미지원(400) 시 옵션 제거 후 1회 재시도
+    if (code === 400 && (curMime || curThinking !== null)) {
+      if (/thinking|budget/i.test(text)) curThinking = null;
+      if (/responseMimeType|mime/i.test(text)) curMime = "";
+      res = invokeGeminiEndpoint_(apiKey, modelName, promptText, systemPrompt, temperature, resolvedMaxTokens, curMime, curThinking);
       code = res.getResponseCode();
       text = res.getContentText();
     }
@@ -1941,7 +1952,8 @@ function extractJsonSafe_(rawText) {
 function handleChatProxy_(body) {
   var userText = String(body.userText || "");
   var sys = String(body.systemPrompt || "당신은 고마워톡 전문 컨설턴트입니다. 카카오 알림톡 규정을 준수하여 친절하게 답변하세요.");
-  var reply = callGemini_(userText, sys, body.temperature, body.maxOutputTokens, body.responseMimeType || "");
+  var tb = (body.thinkingBudget !== undefined && body.thinkingBudget !== null) ? body.thinkingBudget : 0;
+  var reply = callGemini_(userText, sys, body.temperature, body.maxOutputTokens || 4096, body.responseMimeType || "", tb);
   return { ok: true, reply: reply };
 }
 

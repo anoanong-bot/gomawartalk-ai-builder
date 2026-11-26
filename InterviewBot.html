@@ -1867,7 +1867,9 @@ const ST = {
 
   stage: 1, // 1..5
   sectorId: '',
+  rawSubIndustry: '',
   subIndustry: '',
+  extractedGoal: '',
   flowId: '',
   customFlows: [],
   customExamplesMap: null,
@@ -1909,8 +1911,9 @@ const ST = {
 function syncHeaderBadge() {
   const badge = $('#partner-badge');
   if (!badge) return;
-  const sub = String(ST.subIndustry || ($('#sub-industry-input') && $('#sub-industry-input').value) || '').trim();
-  const label = sub || ST.partnerInfo.businessName || '파트너';
+  const rawInput = String(ST.subIndustry || ($('#sub-industry-input') && $('#sub-industry-input').value) || '').trim();
+  const cleanLabel = rawInput ? Consult.sanitizeSubIndustryLabel(rawInput, ST.sectorId).cleanLabel : '';
+  const label = cleanLabel || ST.partnerInfo.businessName || '파트너';
   badge.textContent = label;
   badge.title = label;
 }
@@ -2349,7 +2352,9 @@ function goStage(n) {
 
 function resetConsultFlow() {
   ST.sectorId = '';
+  ST.rawSubIndustry = '';
   ST.subIndustry = '';
+  ST.extractedGoal = '';
   ST.flowId = '';
   ST.customFlows = [];
   ST.customExamplesMap = null;
@@ -2464,7 +2469,10 @@ async function proceedToStage2() {
     $('#sub-industry-input').focus();
     return;
   }
-  ST.subIndustry = rawSub || (sec ? sec.shortTitle : '');
+  ST.rawSubIndustry = rawSub;
+  const parsed = Consult.sanitizeSubIndustryLabel(rawSub, ST.sectorId);
+  ST.subIndustry = parsed.cleanLabel || (sec ? sec.shortTitle : '맞춤 캠페인');
+  ST.extractedGoal = parsed.extractedGoal || '';
   ST.flowId = '';
   ST.customExamplesMap = null;
   ST.customQ1Text = '';
@@ -2473,17 +2481,17 @@ async function proceedToStage2() {
   syncHeaderBadge();
 
   // 세부 업종 기반 기본 추천 컬러 재반영 (아직 사용자가 Step 4에서 직접 고르지 않은 경우)
-  const defCol = Consult.getDefaultColorForSector(ST.sectorId, ST.subIndustry);
+  const defCol = Consult.getDefaultColorForSector(ST.sectorId, ST.rawSubIndustry || ST.subIndustry);
   if (defCol && !ST.brandAssets.isCustomColor) {
     applyBrandColorTheme(defCol.id, defCol.label, defCol.primary, defCol.secondary, false);
   }
 
-  // 1차로 타 업종 오염 없는 로컬 세부 업종 6대 플로우를 즉시 렌더링
-  ST.customFlows = Consult.getFlowsForContext(ST.sectorId, ST.subIndustry);
+  // 1차로 구어체 정제 + 도메인 격리된 깔끔한 로컬 6대 플로우를 즉시 렌더링 (절대 원문 접두사 결합 금지)
+  ST.customFlows = Consult.getFlowsForContext(ST.sectorId, ST.rawSubIndustry || ST.subIndustry);
   renderStage2Flows();
   goStage(2);
 
-  // AI가 연결돼 있으면 입력한 세부 업종 100% 전용 6대 플로우를 실시간 AI 번역으로 정교화
+  // AI가 연결돼 있으면 입력문 정제({cleanIndustryLabel, extractedGoal}) + 도메인 100% 전용 6대 플로우 실시간 생성
   const hasAi = Consult.hasAiAvailable({ mode: getAiMode(), proxyUrl: getProxyUrl() });
   if (hasAi && rawSub.length >= 2) {
     const loadBanner = $('#flow-loading-banner');
@@ -2494,10 +2502,20 @@ async function proceedToStage2() {
         proxyUrl: getProxyUrl(),
         token: ST.partnerToken,
         sectorId: ST.sectorId,
+        rawSubIndustry: ST.rawSubIndustry,
         subIndustry: ST.subIndustry
       });
-      if (ST.stage === 2 && res && Array.isArray(res.flows) && res.flows.length === 6) {
-        ST.customFlows = res.flows;
+      if (ST.stage === 2 && res) {
+        if (res.cleanIndustryLabel) {
+          ST.subIndustry = res.cleanIndustryLabel;
+          syncHeaderBadge();
+        }
+        if (res.extractedGoal) {
+          ST.extractedGoal = res.extractedGoal;
+        }
+        if (Array.isArray(res.flows) && res.flows.length === 6) {
+          ST.customFlows = res.flows;
+        }
         renderStage2Flows();
       }
     } finally {
@@ -2516,8 +2534,8 @@ function renderStage2Flows(recommendedId) {
 
   const flows = (ST.customFlows && ST.customFlows.length)
     ? ST.customFlows
-    : Consult.getFlowsForContext(ST.sectorId, ST.subIndustry);
-  const bestFlowId = Consult.getBestFlowId(ST.sectorId, ST.subIndustry);
+    : Consult.getFlowsForContext(ST.sectorId, ST.rawSubIndustry || ST.subIndustry);
+  const bestFlowId = Consult.getBestFlowId(ST.sectorId, ST.rawSubIndustry || ST.subIndustry);
 
   const list = $('#flow-list');
   list.innerHTML = flows.map((f, idx) => {
@@ -2605,7 +2623,9 @@ function prefetchConsultExamplesForFlow(flowId) {
     token: ST.partnerToken,
     ownerName: ST.partnerInfo.ownerName,
     sectorId: ST.sectorId,
+    rawSubIndustry: ST.rawSubIndustry,
     subIndustry: ST.subIndustry,
+    extractedGoal: ST.extractedGoal,
     flowId: flowId,
     customFlows: ST.customFlows
   }).then(batch => {
@@ -2759,14 +2779,29 @@ function renderCurrentQuestionPack(pack) {
   $('#q-question-text').innerHTML = Toss.toHtml(pack.questionText);
   $('#q-usage-hint').textContent = '💡 ' + pack.usageHint;
 
-  // Tap-to-Edit 예시 칩 3개 렌더링 (클릭 시 절대 즉시 전송 X, 아래 textarea에 초안으로 복사!)
+  // Tap-to-Edit 예시 칩 렌더링 (Q1이고 STEP 1 입력문에서 목표가 추출됐으면 상단 초안 힌트 칩 함께 제공!)
   const chipsWrap = $('#example-chips-list');
-  chipsWrap.innerHTML = (pack.exampleChips || []).slice(0, 3).map((chip, idx) =>
+  let goalHintHtml = '';
+  if (pack.qNum === 1 && ST.extractedGoal && !ST.answers[1]) {
+    goalHintHtml =
+      '<button type="button" class="example-chip" id="btn-fill-extracted-goal" style="border-color:#93C5FD;background:#EFF6FF">' +
+        '<span><strong style="color:var(--blue-dk)">🎯 방금 적어주신 목표 초안:</strong> ' + esc(ST.extractedGoal) + '</span>' +
+        '<span class="example-chip-tag">바로 채우기</span>' +
+      '</button>';
+  }
+  chipsWrap.innerHTML = goalHintHtml + (pack.exampleChips || []).slice(0, 3).map((chip, idx) =>
     '<button type="button" class="example-chip" data-ex-idx="' + idx + '">' +
       '<span>' + esc(chip) + '</span>' +
       '<span class="example-chip-tag">채우기</span>' +
     '</button>'
   ).join('');
+
+  const goalHintBtn = $('#btn-fill-extracted-goal');
+  if (goalHintBtn) {
+    goalHintBtn.onclick = () => {
+      fillTextareaWithDraft(ST.extractedGoal, '✅ STEP 1에서 적어주신 목표 초안이 채워졌어요! 구체적인 내용을 덧붙여 제출해 주세요.');
+    };
+  }
 
   $$('[data-ex-idx]', chipsWrap).forEach(btn => {
     btn.onclick = () => {
@@ -2813,7 +2848,9 @@ async function startStage3Interview() {
     token: ST.partnerToken,
     ownerName: ST.partnerInfo.ownerName,
     sectorId: ST.sectorId,
+    rawSubIndustry: ST.rawSubIndustry,
     subIndustry: ST.subIndustry,
+    extractedGoal: ST.extractedGoal,
     flowId: ST.flowId,
     customFlows: ST.customFlows,
     customExamplesMap: ST.customExamplesMap,
@@ -2834,7 +2871,9 @@ function jumpToInterviewQuestion(targetQ) {
   const pack = Consult.buildLocalQuestionPack(ST.qNum, {
     ownerName: ST.partnerInfo.ownerName,
     sectorId: ST.sectorId,
+    rawSubIndustry: ST.rawSubIndustry,
     subIndustry: ST.subIndustry,
+    extractedGoal: ST.extractedGoal,
     flowId: ST.flowId,
     customFlows: ST.customFlows,
     customExamplesMap: ST.customExamplesMap,
@@ -2867,7 +2906,9 @@ async function submitCurrentInterviewAnswer() {
       token: ST.partnerToken,
       ownerName: ST.partnerInfo.ownerName,
       sectorId: ST.sectorId,
+      rawSubIndustry: ST.rawSubIndustry,
       subIndustry: ST.subIndustry,
+      extractedGoal: ST.extractedGoal,
       flowId: ST.flowId,
       customFlows: ST.customFlows,
       customExamplesMap: ST.customExamplesMap,

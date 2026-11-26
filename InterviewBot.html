@@ -1402,6 +1402,207 @@ button { cursor: pointer; border: none; background: none; }
   padding: 0 14px; border-radius: 11px; background: var(--blue); color: #FFFFFF;
   font-size: 13.5px; font-weight: 800; flex-shrink: 0;
 }
+.qa-pin-btn {
+  margin-top: 8px;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 10px; border-radius: 9px;
+  background: #F1F5F9; border: 1px solid #CBD5E1;
+  color: #334155; font-size: 11.5px; font-weight: 800;
+  transition: all 0.15s ease;
+}
+.qa-pin-btn:hover { background: var(--blue-lt); border-color: #93C5FD; color: var(--blue-dk); }
+.qa-pin-btn.pinned {
+  background: var(--green-lt); border-color: #6EE7B7; color: #065F46;
+}
+
+/* STEP 5 추가 반영된 대화 요청 카드 */
+.sum-pinned-box {
+  background: #F0FDF4;
+  border: 1.5px solid #BBF7D0;
+  border-radius: 16px;
+  padding: 13px 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.sum-pinned-head {
+  font-size: 12px; font-weight: 800; color: #065F46;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sum-pinned-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.sum-pinned-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: 99px;
+  background: #FFFFFF; border: 1px solid #86EFAC;
+  font-size: 12px; font-weight: 700; color: #14532D; line-height: 1.35;
+}
+.sum-pinned-chip button {
+  font-size: 11px; font-weight: 900; color: #64748B;
+  padding: 0 2px; line-height: 1;
+}
+.sum-pinned-chip button:hover { color: #DC2626; }
+
+/* 우측 하단 채널톡형 플로팅 런처 (하단 Sticky CTA 겹침 원천 차단) */
+.flt-launcher {
+  position: fixed;
+  right: 16px;
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.flt-pill-label {
+  padding: 7px 12px;
+  border-radius: 99px;
+  background: #FFFFFF;
+  color: #1E293B;
+  border: 1px solid #E2E8F0;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.14);
+  white-space: nowrap;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.flt-pill-label.is-hidden { opacity: 0; pointer-events: none; transform: translateX(8px); }
+.flt-fab {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3182F6 0%, #4F46E5 100%);
+  color: #FFFFFF;
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 26px rgba(49, 130, 246, 0.36);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.flt-fab:active { transform: scale(0.94); }
+
+/* 2-Tab 바텀시트 팝업 */
+.flt-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 980;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+}
+.flt-sheet-backdrop[hidden] { display: none; }
+.flt-sheet {
+  width: 100%;
+  max-width: 460px;
+  max-height: 82vh;
+  background: #FFFFFF;
+  border-radius: 22px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.32);
+  animation: fadeSlide 0.18s ease;
+}
+.flt-sheet-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.flt-tabs {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: var(--g100);
+  padding: 4px;
+  border-radius: 12px;
+}
+.flt-tab-btn {
+  padding: 8px 6px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--g600);
+  text-align: center;
+  transition: all 0.15s ease;
+}
+.flt-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--g900);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+.flt-panel { display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; }
+.flt-panel[hidden] { display: none; }
+.flt-reason-list { display: flex; flex-direction: column; gap: 7px; }
+.flt-reason-btn {
+  width: 100%;
+  text-align: left;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: var(--g50);
+  border: 1.5px solid var(--g200);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--g800);
+  transition: all 0.15s ease;
+}
+.flt-reason-btn.selected {
+  background: var(--blue-lt);
+  border-color: var(--blue);
+  color: var(--blue-dk);
+}
+.flt-memo-in {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 11px;
+  border: 1.5px solid var(--g200);
+  font-size: 15px;
+  outline: none;
+}
+.flt-memo-in:focus { border-color: var(--blue); }
+.flt-submit-btn {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.25);
+}
+.flt-submit-btn:disabled { opacity: 0.6; }
+.flt-report-status {
+  padding: 10px 12px;
+  border-radius: 11px;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.45;
+  background: var(--green-lt);
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+.flt-report-status.err {
+  background: #FEF2F2; color: #991B1B; border-color: #FECACA;
+}
+.bot-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(154px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 995;
+  padding: 10px 16px;
+  border-radius: 99px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.28);
+  white-space: nowrap;
+  max-width: calc(100vw - 32px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bot-toast[hidden] { display: none; }
 </style>
 </head>
 <body>
@@ -1565,7 +1766,7 @@ button { cursor: pointer; border: none; background: none; }
       <section class="stage-pane" id="stage-3" hidden>
         <div class="interview-top-bar">
           <button type="button" class="btn-back" id="btn-back-to-s2">← 흐름 변경</button>
-          <button type="button" class="btn-qa-toggle" id="btn-open-qa">💬 고마워톡 기능 가능 여부 물어보기</button>
+          <span class="context-tag">STEP 3 · 5단계 심층 컨설팅</span>
         </div>
 
         <div class="q-dots" id="q-dots"></div>
@@ -1707,6 +1908,9 @@ button { cursor: pointer; border: none; background: none; }
           <!-- ③ 세련된 브랜드 디자인 재료 요약 바 -->
           <div class="sum-brand-bar" id="summary-brand-bar"></div>
 
+          <!-- ④ Q&A에서 [📌 이번 설계에 반영]으로 고정한 추가 요청 -->
+          <div class="sum-pinned-box" id="summary-pinned-notes" hidden></div>
+
           <div class="card" style="padding:13px 14px;gap:8px">
             <div class="jump-edit-row">
               <button type="button" class="jump-edit-btn" data-jump="1">✏️ 분야·흐름 변경</button>
@@ -1760,30 +1964,60 @@ button { cursor: pointer; border: none; background: none; }
 
 </div>
 
-<!-- ═════════ 분리된 [💬 고마워톡 기능 가능 여부 물어보기] Q&A 모달 ═════════ -->
-<div class="modal-backdrop" id="qa-modal" hidden>
-  <div class="modal-card">
-    <div class="modal-head">
-      <h3>💬 고마워톡 기능 가능 여부 물어보기</h3>
-      <button type="button" class="hbtn" id="btn-close-qa">닫기 ✕</button>
+<!-- ═════════ 플로팅 토스트 ═════════ -->
+<div class="bot-toast" id="bot-toast" role="status" aria-live="polite" hidden></div>
+
+<!-- ═════════ 우측 하단 채널톡형 플로팅 런처 (💬 물어보기 + 📌 설계 핀 / 🚨 1초 제보) ═════════ -->
+<div class="flt-launcher" id="flt-launcher">
+  <button type="button" class="flt-pill-label" id="flt-pill-label">질문·오류제보</button>
+  <button type="button" class="flt-fab" id="flt-fab" aria-label="질문 및 1초 제보 열기">💬</button>
+</div>
+
+<!-- ═════════ 2-Tab 플로팅 바텀시트 팝업 ═════════ -->
+<div class="flt-sheet-backdrop" id="flt-sheet-backdrop" hidden>
+  <div class="flt-sheet" id="flt-sheet" role="dialog" aria-label="고마워톡 도우미 및 1초 제보">
+    <div class="flt-sheet-top">
+      <div class="flt-tabs" role="tablist">
+        <button type="button" class="flt-tab-btn active" id="flt-tab-qa" data-flt-tab="qa" role="tab" aria-selected="true">💬 무엇이든 물어보기</button>
+        <button type="button" class="flt-tab-btn" id="flt-tab-report" data-flt-tab="report" role="tab" aria-selected="false">🚨 1초 화면·문구 제보</button>
+      </div>
+      <button type="button" class="hbtn" id="btn-close-flt" aria-label="닫기">✕</button>
     </div>
-    <div style="font-size:12.5px;color:var(--g700);line-height:1.45">
-      인터뷰 답변과 섞이지 않고 고마워톡 기능·요금·카카오 규정만 따로 물어보실 수 있어요.
+
+    <!-- 탭 1: 매뉴얼 기반 Q&A + 원클릭 [📌 설계 핀] -->
+    <div class="flt-panel" id="flt-panel-qa">
+      <div style="font-size:12px;color:var(--g600);line-height:1.45">
+        기능·요금·카카오 규정을 편하게 물어보세요. 마음에 드는 답변은 <strong>[📌 이번 설계에 반영]</strong>으로 바로 담을 수 있어요.
+      </div>
+      <div class="qa-faq-chips" id="qa-faq-chips">
+        <button type="button" class="qa-faq-chip">알림톡·친구톡 차이</button>
+        <button type="button" class="qa-faq-chip">구글폼 연동 되나요?</button>
+        <button type="button" class="qa-faq-chip">마케팅 수신동의·M형</button>
+        <button type="button" class="qa-faq-chip">Starter vs Pro 차이</button>
+      </div>
+      <div class="qa-stream" id="qa-stream">
+        <div class="qa-msg bot">안녕하세요 대표님! 고마워톡 기능·요금·카카오 규정이 궁금하시면 편하게 물어보세요.</div>
+      </div>
+      <form class="qa-input-row" id="qa-form">
+        <input type="text" id="qa-input" placeholder="궁금한 기능을 적어주세요" autocomplete="off">
+        <button type="submit" id="qa-send-btn">질문</button>
+      </form>
     </div>
-    <div class="qa-faq-chips" id="qa-faq-chips">
-      <button type="button" class="qa-faq-chip">알림톡과 친구톡 차이가 뭔가요?</button>
-      <button type="button" class="qa-faq-chip">Starter vs Pro 요금제 비교</button>
-      <button type="button" class="qa-faq-chip">신청폼에서 사진 파일 받을 수 있나요?</button>
-      <button type="button" class="qa-faq-chip">신청페이지에 카드결제창 넣을 수 있나요?</button>
-      <button type="button" class="qa-faq-chip">맞춤 분기는 몇 개 유형까지 되나요?</button>
+
+    <!-- 탭 2: 원클릭 1초 블랙박스 제보 -->
+    <div class="flt-panel" id="flt-panel-report" hidden>
+      <div style="font-size:12px;color:var(--g600);line-height:1.45">
+        불편하거나 이상한 화면을 1초 만에 알려주세요. <strong>현재 단계·업종·기기 정보가 자동으로 첨부</strong>되어 바로 개선해 드립니다.
+      </div>
+      <div class="flt-reason-list" id="flt-reason-list">
+        <button type="button" class="flt-reason-btn selected" data-report-reason="ai_mismatch">🤔 AI 문구가 내 업종과 안 맞아요</button>
+        <button type="button" class="flt-reason-btn" data-report-reason="ui_bug">📱 버튼·화면 작동이 이상해요</button>
+        <button type="button" class="flt-reason-btn" data-report-reason="feature_wish">💡 이런 기능도 원해요</button>
+      </div>
+      <input type="text" class="flt-memo-in" id="flt-report-memo" placeholder="한 줄 메모(선택) — 비워두셔도 현재 화면 정보가 자동 첨부됩니다" autocomplete="off">
+      <button type="button" class="flt-submit-btn" id="btn-flt-report-submit">🚀 1초 제보 보내기</button>
+      <div class="flt-report-status" id="flt-report-status" hidden></div>
     </div>
-    <div class="qa-stream" id="qa-stream">
-      <div class="qa-msg bot">안녕하세요 대표님! 고마워톡에서 어떤 기능이 되는지, 카카오 규정이나 요금제가 궁금하시면 편하게 물어보세요.</div>
-    </div>
-    <form class="qa-input-row" id="qa-form">
-      <input type="text" id="qa-input" placeholder="궁금한 기능을 적어주세요" autocomplete="off">
-      <button type="submit" id="qa-send-btn">질문</button>
-    </form>
   </div>
 </div>
 
@@ -1884,6 +2118,9 @@ const ST = {
   currentQPack: null,
   guardrail: null,
   notes: [],
+  pinnedConsultNotes: [],
+  fltActiveTab: 'qa',
+  reportReason: 'ai_mismatch',
 
   brandAssets: {
     logoBase64: null,
@@ -2363,6 +2600,7 @@ function resetConsultFlow() {
   ST.examplesPrefetchPromise = null;
   ST.submitted = false;
   ST.qNum = 1;
+  ST.pinnedConsultNotes = [];
   ST.answers = {};
   ST.currentQPack = null;
   ST.guardrail = null;
@@ -2968,8 +3206,202 @@ async function askFeatureQA(questionText) {
     proxyUrl: getProxyUrl(),
     token: ST.partnerToken
   });
-  waitEl.innerHTML = Toss.toHtml(ans);
+  const plainAns = String(ans || '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+  const pinSummary = shortLine(q + ' → ' + plainAns, 72);
+  const pinId = 'pin_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+  waitEl.innerHTML = '<div>' + Toss.toHtml(ans) + '</div>' +
+    '<button type="button" class="qa-pin-btn" data-pin-id="' + esc(pinId) + '">📌 이 내용을 이번 설계에 반영</button>';
+  const pinBtn = waitEl.querySelector('.qa-pin-btn');
+  if (pinBtn) {
+    pinBtn.onclick = () => togglePinnedConsultNote(pinId, pinSummary, pinBtn);
+  }
   stream.scrollTop = stream.scrollHeight;
+  return ans;
+}
+
+let botToastTimer = null;
+function showBotToast(msg) {
+  const el = $('#bot-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.hidden = false;
+  if (botToastTimer) clearTimeout(botToastTimer);
+  botToastTimer = setTimeout(() => { el.hidden = true; }, 2600);
+}
+
+function togglePinnedConsultNote(pinId, summaryText, btnEl) {
+  const text = String(summaryText || '').trim();
+  if (!text) return false;
+  const idx = ST.pinnedConsultNotes.findIndex(item => item.id === pinId || item.text === text);
+  let isNowPinned = false;
+  if (idx >= 0) {
+    ST.pinnedConsultNotes.splice(idx, 1);
+    isNowPinned = false;
+    showBotToast('설계 반영에서 제외했어요.');
+  } else {
+    ST.pinnedConsultNotes.push({ id: pinId || ('pin_' + Date.now()), text });
+    isNowPinned = true;
+    showBotToast('✅ 이번 캠페인 설계에 반영되었어요!');
+  }
+  if (btnEl) {
+    btnEl.classList.toggle('pinned', isNowPinned);
+    btnEl.textContent = isNowPinned ? '📌 설계에 반영됨 (다시 누르면 해제)' : '📌 이 내용을 이번 설계에 반영';
+  }
+  if (ST.stage === 5) renderStage5PinnedNotes();
+  return isNowPinned;
+}
+
+function renderStage5PinnedNotes() {
+  const box = $('#summary-pinned-notes');
+  if (!box) return;
+  if (!ST.pinnedConsultNotes || ST.pinnedConsultNotes.length === 0) {
+    box.hidden = true;
+    box.innerHTML = '';
+    return;
+  }
+  box.hidden = false;
+  box.innerHTML =
+    '<div class="sum-pinned-head"><span>📌 추가 반영된 대화 요청 (' + ST.pinnedConsultNotes.length + '건)</span><span>최종 설계안에 자동 반영</span></div>' +
+    '<div class="sum-pinned-chips">' +
+      ST.pinnedConsultNotes.map((item, idx) =>
+        '<span class="sum-pinned-chip"><span>' + esc(item.text) + '</span>' +
+        '<button type="button" data-unpin-idx="' + idx + '" aria-label="제외">✕</button></span>'
+      ).join('') +
+    '</div>';
+  $$('[data-unpin-idx]', box).forEach(btn => {
+    btn.onclick = () => {
+      const i = Number(btn.dataset.unpinIdx);
+      const removed = ST.pinnedConsultNotes.splice(i, 1)[0];
+      if (removed) {
+        const qaBtn = document.querySelector('.qa-pin-btn[data-pin-id="' + removed.id + '"]');
+        if (qaBtn) {
+          qaBtn.classList.remove('pinned');
+          qaBtn.textContent = '📌 이 내용을 이번 설계에 반영';
+        }
+      }
+      renderStage5PinnedNotes();
+      showBotToast('추가 요청을 제외했어요.');
+    };
+  });
+}
+
+function openFloatingWidget(tabName) {
+  const pill = $('#flt-pill-label');
+  if (pill) pill.classList.add('is-hidden');
+  $('#flt-sheet-backdrop').hidden = false;
+  switchFloatingTab(tabName || ST.fltActiveTab || 'qa');
+}
+
+function closeFloatingWidget() {
+  $('#flt-sheet-backdrop').hidden = true;
+}
+
+function switchFloatingTab(tabName) {
+  ST.fltActiveTab = (tabName === 'report') ? 'report' : 'qa';
+  const isQa = ST.fltActiveTab === 'qa';
+  $('#flt-tab-qa').classList.toggle('active', isQa);
+  $('#flt-tab-qa').setAttribute('aria-selected', isQa ? 'true' : 'false');
+  $('#flt-tab-report').classList.toggle('active', !isQa);
+  $('#flt-tab-report').setAttribute('aria-selected', !isQa ? 'true' : 'false');
+  $('#flt-panel-qa').hidden = !isQa;
+  $('#flt-panel-report').hidden = isQa;
+  if (isQa) {
+    const inp = $('#qa-input');
+    if (inp) inp.focus();
+  }
+}
+
+const REPORT_REASON_LABELS = {
+  ai_mismatch: '🤔 AI 문구가 내 업종과 안 맞아요',
+  ui_bug: '📱 버튼·화면 작동이 이상해요',
+  feature_wish: '💡 이런 기능도 원해요'
+};
+
+function buildBlackboxSnapshot() {
+  const ua = String((typeof navigator !== 'undefined' && navigator.userAgent) || '');
+  const curQ = (ST.currentQPack && ST.currentQPack.question)
+    ? String(ST.currentQPack.question).replace(/<[^>]+>/g, '').trim().slice(0, 140)
+    : '';
+  const curEx = (ST.currentQPack && Array.isArray(ST.currentQPack.examples))
+    ? ST.currentQPack.examples.slice(0, 3).map(s => String(s || '').slice(0, 70))
+    : [];
+  const sec = Consult.getSector(ST.sectorId);
+  const flow = Consult.getFlow(ST.sectorId, ST.flowId, ST.customFlows, ST.subIndustry);
+  return {
+    page: 'InterviewBot',
+    step: 'STEP ' + ST.stage + (ST.stage === 3 ? (' / Q' + ST.qNum) : ''),
+    stage: ST.stage,
+    qNum: ST.qNum,
+    partner: {
+      kakao_user_id: ST.partnerInfo.kakao_user_id || '',
+      name: ST.partnerInfo.ownerName || '',
+      businessName: ST.partnerInfo.businessName || '',
+      tier: (ST.quota && ST.quota.tier) || ST.partnerInfo.tier || '가망고객'
+    },
+    sector: sec ? (sec.id + ' (' + sec.shortTitle + ')') : (ST.sectorId || ''),
+    rawSubIndustry: ST.rawSubIndustry || '',
+    cleanLabel: ST.subIndustry || '',
+    extractedGoal: ST.extractedGoal || '',
+    selectedFlow: flow ? (flow.id + ' (' + flow.title + ')') : (ST.flowId || ''),
+    currentQuestion: curQ,
+    currentExamples: curEx,
+    pinnedNotesCount: ST.pinnedConsultNotes.length,
+    viewport: {
+      width: (typeof window !== 'undefined' && window.innerWidth) || 0,
+      height: (typeof window !== 'undefined' && window.innerHeight) || 0
+    },
+    isKakaoInApp: /KAKAOTALK/i.test(ua),
+    userAgent: ua.slice(0, 180),
+    timestamp: new Date().toISOString()
+  };
+}
+
+async function submitBlackboxReport() {
+  const btn = $('#btn-flt-report-submit');
+  const statusEl = $('#flt-report-status');
+  const memo = ($('#flt-report-memo') && $('#flt-report-memo').value || '').trim();
+  const reasonType = ST.reportReason || 'ai_mismatch';
+  const reasonLabel = REPORT_REASON_LABELS[reasonType] || reasonType;
+  const snapshot = buildBlackboxSnapshot();
+  const payload = {
+    action: 'report_issue',
+    reasonType,
+    reasonLabel,
+    memo,
+    blackbox_snapshot: snapshot
+  };
+
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ 1초 제보를 전송하고 있어요…'; }
+  if (statusEl) { statusEl.hidden = true; statusEl.classList.remove('err'); }
+
+  const proxyUrl = getProxyUrl();
+  let res = null;
+  try {
+    if (proxyUrl) {
+      res = await Toss.reportIssue(proxyUrl, payload);
+    } else {
+      res = { ok: true, simulated: true, sheetName: '파트너제보함' };
+    }
+    if (res && res.ok === false) {
+      throw new Error(res.error || '전송 실패');
+    }
+    if ($('#flt-report-memo')) $('#flt-report-memo').value = '';
+    if (statusEl) {
+      statusEl.hidden = false;
+      statusEl.textContent = '✅ 제보가 접수되었습니다! 현재 화면·업종 정보가 자동 전달되어 빠르게 개선할게요.';
+    }
+    showBotToast('✅ 1초 제보가 접수되었어요! 감사합니다.');
+    return { ok: true, payload, response: res };
+  } catch (err) {
+    if (statusEl) {
+      statusEl.hidden = false;
+      statusEl.classList.add('err');
+      statusEl.textContent = '⚠️ 전송 중 일시적 오류가 발생했어요: ' + (err.message || err);
+    }
+    return { ok: false, payload, error: err.message || String(err) };
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 1초 제보 보내기'; }
+  }
 }
 
 /* ═══════════════ STEP 4: 브랜드 디자인 재료 수집 (로고 · 컬러 · 실사 최대 3장) ═══════════════ */
@@ -3340,6 +3772,9 @@ function renderStage5SummaryCard() {
       '<div style="font-size:11.5px;font-weight:800;color:var(--g500)">🎨 브랜드 디자인 재료</div>' +
       '<div class="sum-brand-row">' + logoBadge + colorBadge + photoBadge + '</div>';
   }
+
+  // ④ Q&A [📌 이번 설계에 반영] 추가 요청 칩 렌더링
+  renderStage5PinnedNotes();
 }
 
 function resolveAbsoluteProposalUrl(rawUrl) {
@@ -3396,6 +3831,7 @@ async function generateAndSubmitCampaign() {
     customFlows: ST.customFlows,
     answers: ST.answers,
     notes: ST.notes,
+    pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
     summary: ST.summary,
     partner: Object.assign({}, ST.partnerInfo, {
       kakao_user_id: ST.user.kakao_user_id || ST.partnerInfo.kakao_user_id || '',
@@ -3645,9 +4081,23 @@ $('#btn-toggle-prev').onclick = () => {
   $('#prev-answers-arrow').textContent = b.hidden ? '▾' : '▴';
 };
 
-// 분리된 Q&A 모달
-$('#btn-open-qa').onclick = () => { $('#qa-modal').hidden = false; $('#qa-input').focus(); };
-$('#btn-close-qa').onclick = () => { $('#qa-modal').hidden = true; };
+// 우측 하단 채널톡형 플로팅 위젯 (💬 물어보기 + 📌 설계 핀 / 🚨 1초 제보)
+$('#flt-fab').onclick = () => openFloatingWidget();
+$('#flt-pill-label').onclick = () => openFloatingWidget();
+$('#btn-close-flt').onclick = closeFloatingWidget;
+$('#flt-sheet-backdrop').addEventListener('click', e => {
+  if (e.target === $('#flt-sheet-backdrop')) closeFloatingWidget();
+});
+$$('[data-flt-tab]').forEach(btn => {
+  btn.onclick = () => switchFloatingTab(btn.dataset.fltTab);
+});
+$$('[data-report-reason]').forEach(btn => {
+  btn.onclick = () => {
+    ST.reportReason = btn.dataset.reportReason || 'ai_mismatch';
+    $$('[data-report-reason]').forEach(b => b.classList.toggle('selected', b === btn));
+  };
+});
+$('#btn-flt-report-submit').onclick = submitBlackboxReport;
 $$('.qa-faq-chip').forEach(ch => {
   ch.onclick = () => askFeatureQA(ch.textContent);
 });
@@ -3795,12 +4245,19 @@ window.BOT = {
   startStage3Interview,
   submitCurrentInterviewAnswer,
   askFeatureQA,
+  openFloatingWidget,
+  closeFloatingWidget,
+  switchFloatingTab,
+  togglePinnedConsultNote,
+  buildBlackboxSnapshot,
+  submitBlackboxReport,
   enterStage5Summary,
   generateAndSubmitCampaign,
   buildCampaignMasterJson: () => ST.lastGeneratedCampaign || Consult.assembleCampaign(null, {
     skipImageGen: true,
     sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId,
-    answers: ST.answers, partner: ST.partnerInfo, brandAssets: {
+    answers: ST.answers, pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
+    partner: ST.partnerInfo, brandAssets: {
       logoBase64: ST.brandAssets.logoBase64, primaryColor: ST.brandAssets.primaryColor,
       secondaryColor: ST.brandAssets.secondaryColor, photos: ST.brandAssets.photos.filter(Boolean),
       photoMode: ST.brandAssets.photos.some(Boolean) ? 'uploaded' : 'ai_auto'

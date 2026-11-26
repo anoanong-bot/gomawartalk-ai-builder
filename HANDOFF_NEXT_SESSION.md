@@ -1,10 +1,11 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-26 10:28 (KST · 자유 입력문 스마트 정제/목표 분리 + 정치·선거 6대 흐름·금기어 가드레일 + GAS `V2.4-1` `thinkingBudget:0` 빈 응답 버그 근본 해결 완료)
-- **기준 버전:** Master PRD V2.3 / `Proposal.html` V2.4 (V2.2 As-Built 100% 무손실 보존)
+- **최종 갱신일시:** 2026-11-26 (KST · V2.5 우측 하단 채널톡형 플로팅 위젯[Q&A+설계핀/수정메모+1초 블랙박스 제보] + 모선 3대 외부 플랫폼 소켓 + 11/30 본체 완공·투트랙 전략 문서 동기화 완료)
+- **기준 버전:** Master PRD V2.5 / `Proposal.html` V2.5 / `Backend_Proxy.gs` V2.5-0 (V2.2~V2.4 As-Built 100% 무손실 보존)
+- **본체 프로젝트 완공 목표일:** **2026년 11월 30일(월)** *(개발 팀장님 본체 어드민 내 구글 폼·시트 연동 마감일 **12월 7일**과 별도 구분)*
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
 - **실서버 배포 URL:** `https://anoanong-bot.github.io/gomawartalk-ai-builder/`
-- **코드 검증 상태:** 전 파일(10/10) V8 구문 · 보안(비밀키 0건, 금지어 0건, 구형 모델 0건, GAS 백틱 0건, 가짜 기능 0건) · `test_proposal_sim.js` · `test_v23_3.js` · `test_v23_full_e2e.js` **전원 PASS**
+- **코드 검증 상태:** 전 파일(10/10) V8 구문 · 보안(비밀키 0건, 금지어 0건, 구형 모델 0건, GAS 백틱 0건, 가짜 기능 0건) · `test_v25_widget_sockets.js` · `test_subindustry_examples.js` · `test_proposal_sim.js` · `test_v23_3.js` · `test_v23_full_e2e.js` **전원 PASS**
 
 ---
 
@@ -38,17 +39,34 @@
    - `engines/RagInterviewEngine.js` & `InterviewBot.html`: `sanitizeSubIndustryLabel()`(구어체 어미·목표 구절 제거 → 12자 이내 명사 라벨 + `extractedGoal` 분리), 구어체 원문 접두사 결합(`other` 섹터 `sub + ' ' + title`) 완전 제거, AI `{cleanIndustryLabel, extractedGoal, flows}` 파싱 및 STEP 3 Q1 목표 초안 칩 연동
    - `data/GomawartalkManual.js`: `politics_public` 도메인 전용 6대 카톡 흐름(① 지역구·관심 현안별 맞춤 공약 분기형 ② 개소식·출판기념회·간담회 리마인드형 ③ 주간 현장 행보·유튜브 쇼츠 연재형 ④ 시민 정책 제안·우리 동네 민원 접수형 ⑤ 자원봉사·서포터즈 참여 안내형 ⑥ 주요 의정활동·팩트체크 알림형) + 공직선거법 상업 금기어 차단(`cleanPoliticsText`, `전통시장`/`여성의원` 오탐 제외)
    - `Backend_Proxy.gs` (`V2.4-1`): 실서버 `{"ok":true,"reply":""}` 빈 응답 원인(Flash 모델 기본 thinking 토큰 출력 고갈 + 구버전 `parts[0]` 단일 추출) 규명 및 `thinkingConfig: { thinkingBudget: 0 }` 기본 적용 + `maxOutputTokens: 4096` 상향으로 응답 속도 단축 및 JSON 성공률 100% 확보
+8. **V2.5 채널톡형 플로팅 위젯 & 모선(Mother-Hub) 3대 외부 플랫폼 소켓 완성 *(2026-11-26 완료)*:**
+   - **우측 하단 플로팅 위젯 (`InterviewBot.html` & `Proposal.html`):** 하단 고정 CTA와 비충돌 위치(`bottom: calc(88px + env(safe-area-inset-bottom, 0px)); z-index: 950;`), 2-Tab 바텀시트(`💬 무엇이든 물어보기` / `🚨 1초 화면·문구 제보`) 탑재. `InterviewBot.html` STEP 3 기존 인라인 `#btn-open-qa` 제거 + AI 답변 `[📌 이 내용을 이번 설계에 반영]` 토글 ➔ STEP 5 칩·프롬프트·`pinned_consult_notes` 직결. `Proposal.html` `[✏️ 1회 수정 메모에 담기]` ➔ 하단 14개 확정 폼 DOM ID 무손실 보존 상태로 `EDIT_ONCE` 전환 및 `#confirm-memo-input` 자동 입력.
+   - **블랙박스 1초 제보 배관 (`Backend_Proxy.gs` `V2.5-0`):** `action: "report_issue"` 추가. `파트너제보함` 시트 탭 9컬럼 자동 생성·기록 + 사유 1·2(AI 문구 불일치·버튼/화면 오류) 시 `[🚨파트너 현장 제보 도착]` 구글 챗 즉시 푸시(`try-catch`, 백틱 0건).
+   - **모선 3대 외부 플랫폼 소켓 (`RagInterviewEngine.js` / `Backend_Proxy.gs` / `LandingBuilder.html`):**
+     - Campaign JSON 최상위 슬롯 3종(`source_platform: "NATIVE"`, `credit_balance: null`, `external_mapping: null`) 기본 직렬화 및 레거시 JSON 자동 `"NATIVE"` 폴백.
+     - `파트너캠페인관제탑` 시트 A~O 15컬럼·수식·드롭다운 무손실 유지 + 우측 P~R 3컬럼(`연동플랫폼`, `잔여크레딧`, `외부매핑상태`) 자동 확장(`ensureControlExtraColumns_`).
+     - `LandingBuilder.html` 외부 플랫폼 어댑터 가드(`source_platform !== "NATIVE"` 시 상단 전용 배너 + 탭 4 자동 활성화, `"NATIVE"` 시 기존 5대 탭 100% 동일).
 
 ---
 
-## 2. 다음 세션 최우선 백로그 (Next Priority Checklist)
+## 2. 투트랙(Two-Track) 사업 포지셔닝 & 일정 기준
 
-1. **[P0 · 긴급 점검] 카카오 로그인 `phone_number` 폴백(`01000000000`) 정밀 파싱 점검:**
-   - [ ] `Backend_Proxy.gs`에서 카카오 사용자 정보 응답(`kakao_account.phone_number` 예: `+82 10-1234-5678` 국제번호/하이픈 포맷, 권한 미반환 케이스 등) 파싱 로직과 시트 기록 과정을 정밀 진단해 `01000000000` 폴백이 발생하는 근본 원인 수정
-2. **[P0 · 인프라 안정화] GAS 호출 서버 유동 IP 대응 점검:**
-   - [ ] Google Apps Script(`UrlFetchApp`)의 아웃바운드 유동 IP 특성상 카카오 디벨로퍼스 REST API 호출 허용 IP(`220.88.183.131`, `210.95.241.214`) 외 Google IP 대역 호출 시 차단되는 현상 점검 및 허용 IP 정책/대응 방안 확정
-3. **[P1 · 배포 반영] 최신 마감 커밋 원격 Push & GAS 웹 앱 재배포:**
-   - [ ] GitHub Desktop에서 최신 커밋을 `origin/master`로 Push (`InterviewBot.html`, `Proposal.html`, `engines/RagInterviewEngine.js`, `data/GomawartalkManual.js` 실서버 반영)
-   - [ ] Google Apps Script 편집기에 갱신된 `Backend_Proxy.gs` 반영 후 `[배포 > 배포 관리 > 새 버전]` 배포 (Gemini 다중 모델 폴백·캐시·thinking 파트 필터링 실서버 적용)
-4. **[P1 · 12월 7일 마일스톤] 구글 시트(`파트너캠페인관제탑`) 중심 전체 E2E 최종 완결 점검:**
-   - [ ] **12월 7일 목표:** 실전 스마트폰에서 `카카오싱크 로그인(실제 전화번호 정상 기록)` ➔ `인터뷰봇 무료 체험 제출` ➔ `구글 시트(파트너캠페인관제탑) 행·드라이브 JSON 생성` ➔ `Proposal.html V2.4 시뮬레이터 & 세팅 확정(수정메모) 제출` ➔ `Google Chat 알림 수신` ➔ `시트 등급 Pro 승격` ➔ `LandingBuilder.html 유료 조종석 포스트잇·AI 이미지 채우기`까지 전 구간 E2E 최종 완결 검증
+- **본체 완공 목표일:** **2026년 11월 30일(월)** *(개발 팀장님의 고마워톡 본체 어드민 내 구글 폼·시트 기본 연동 마감일 **12월 7일**과 명확히 구분)*
+- **Track A (고마워톡 본체 정식 구독):** 연 24만 원(Starter) / 연 40만 원(Pro) + 알림톡 6.5~8.5원 도매 단가, 어드민 내 구글 폼·시트 기본 연동 포함 전 기능 제공.
+- **Track B (독자 외부 스토어 공식 앱 — 선불 크레딧 종량제):** 가입비 0원 + 건당 50원 선불 크레딧, 비구독 체험·소량 수요층 전용. 11/30 본체 완공 직후 대표님 보유 소스로 **Wave 1 구글 폼·시트 공식 부가기능**부터 착수하며 본체 탭 4·5 시나리오 생성 모듈과 조종석 3대 소켓을 100% 재사용.
+
+---
+
+## 3. 11/27~11/30 본체 최종 완공 백로그 (Next Priority Checklist)
+
+1. **[P0 · 긴급 해결] 카카오 로그인 `phone_number` `01000000000` 폴백 케이스 정밀 파싱:**
+   - [ ] `Backend_Proxy.gs`에서 카카오 사용자 정보 응답(`kakao_account.phone_number` 국제번호/하이픈 포맷 및 권한 미반환 케이스) 파싱 로직과 시트 기록 과정을 정밀 진단해 `01000000000` 폴백 발생 원인 완전 해소
+2. **[P0 · 인프라 영구 해결] 모바일 접속 시 카카오 REST API 호출 서버 유동 IP(`-401`) 영구 해결:**
+   - [ ] Google Apps Script(`UrlFetchApp`) 아웃바운드 유동 IP 특성으로 인해 모바일 접속 시 카카오 REST API `-401` 차단이 발생하는 이슈의 영구 해결책 적용(허용 IP 정책 정리 또는 고정 프록시/인증 흐름 확정)
+3. **[P1 · 배포 반영] 로컬 커밋 원격 Push & GAS 웹 앱 V2.5-0 재배포:**
+   - [ ] GitHub Desktop에서 로컬 커밋을 `origin/master`로 Push (`InterviewBot.html`, `Proposal.html`, `LandingBuilder.html`, `engines/RagInterviewEngine.js`, `PRD.md`, `HANDOFF_NEXT_SESSION.md` 실서버 반영)
+   - [ ] Google Apps Script 편집기에 갱신된 `Backend_Proxy.gs` (`V2.5-0`) 반영 후 `[배포 > 배포 관리 > 새 버전]` 배포 (`report_issue` `파트너제보함` + `파트너캠페인관제탑` P~R 3컬럼 소켓 실서버 적용)
+4. **[P1 · 11/30 본체 완공 마감] 모바일 카톡 인앱 E2E 최종 검수:**
+   - [ ] **11월 30일(월) 완공 목표:** 실전 스마트폰 카톡 인앱 브라우저에서 `카카오싱크 로그인(실제 전화번호 정상 기록)` ➔ `인터뷰봇 무료 체험 + 플로팅 위젯 Q&A 설계 핀·1초 제보` ➔ `파트너캠페인관제탑(18컬럼)·파트너제보함(9컬럼) 기록` ➔ `Proposal.html V2.5 시뮬레이터 & 1회 수정메모 연동·확정 제출` ➔ `Google Chat 알림 수신` ➔ `LandingBuilder.html 유료 조종석 포스트잇·AI 이미지 채우기`까지 전 구간 E2E 최종 검수 완료
+5. **[Post 11/30 · Wave 1 착수] 독자 외부 스토어 공식 앱 (Track B):**
+   - [ ] 본체 완공 직후 대표님 보유 소스로 **Wave 1 구글 폼·시트 공식 부가기능(건당 50원 선불 크레딧)** 착수 — 본체 탭 4·5 시나리오 생성 모듈 및 모선 3대 소켓(`source_platform: "GOOGLE_FORMS"`) 그대로 연결

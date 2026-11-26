@@ -1255,7 +1255,9 @@
     var fb = TOSS.fallbackContent(A, partner);
     var now = new Date(), p2 = function (n) { return String(n).padStart(2, '0'); };
     var ymd = now.getFullYear() + p2(now.getMonth() + 1) + p2(now.getDate());
-    var channel = partner.businessName || partner.channel_name || '맞춤 브랜드 채널';
+    var rawBrand = String(extra.brandName || partner.brandName || partner.businessName || partner.channel_name || '').trim();
+    if (/대표님\s*$/.test(rawBrand)) rawBrand = '';
+    var channel = rawBrand || '맞춤 브랜드 채널';
 
     var gT1 = g.tab1_basic_settings || {}, fT1 = fb.tab1_basic_settings;
     var th = Object.assign({}, fT1.thumbnail_500x280, gT1.thumbnail_500x280 || {});
@@ -1335,10 +1337,11 @@
       source_platform: 'NATIVE',
       credit_balance: null,
       external_mapping: null,
-      meta: { schema_version: '2.0', campaign_id: ymd + '_' + String(channel).replace(/\s+/g, '') + '_01', created_at: now.toISOString(), mode: 'FULL_SET', use_webzine: !!useWebzine, webzine_base_url: baseUrl, source: 'partner_bot_toss8', auto_generate_visuals: true },
+      meta: { schema_version: '2.0', brand_name: channel, campaign_id: ymd + '_' + String(channel).replace(/\s+/g, '') + '_01', created_at: now.toISOString(), mode: 'FULL_SET', use_webzine: !!useWebzine, webzine_base_url: baseUrl, source: 'partner_bot_toss8', auto_generate_visuals: true },
       partner_info: { owner_name: partner.ownerName || '', phone: partner.phone || '', email: partner.email || '', channel_name: channel, channel_id_num: '', current_plan: 'STARTER', pro_upgrade_requested: false, industry_code: 'custom_ai', track_id: '' },
       brand_assets: { primary_color: gBa.primary_color || smartTheme.primary, secondary_color: gBa.secondary_color || smartTheme.secondary, font_theme: gBa.font_theme || 'modern', logo_base64: null, block_images_base64: { block_1: null, block_2: null, block_3: null, block_4: null, block_5: null } },
       tab1_basic_settings: {
+        channel_name: channel,
         thumbnail_500x280: th, title_30chars: tFirst(gT1.title_30chars || fT1.title_30chars, 30), description: gT1.description || fT1.description,
         apply_btn_text: gT1.apply_btn_text || fT1.apply_btn_text, cancel_btn_text: gT1.cancel_btn_text || fT1.cancel_btn_text,
         show_apply_btn: true, show_top_bar: true, form_only_mode: false, failure_notice_alimtalk: true, friendtalk_rescue_2times: true, marketing_consent_popup: true
@@ -2385,7 +2388,17 @@
       8: (flow ? flow.title + ' — ' : '') + (A[5] || '')
     };
 
-    var master = TOSS.assembleCampaign(aiJson, mappedAnswers, partner);
+    var resolvedBrandName = String(ctx.brandName || brand.brandName || partner.businessName || partner.channel_name || '').trim();
+    if (/대표님\s*$/.test(resolvedBrandName)) resolvedBrandName = '';
+    var master = TOSS.assembleCampaign(aiJson, mappedAnswers, partner, { brandName: resolvedBrandName || ctx.subIndustry || '' });
+
+    // 입력된 상호명·브랜드명 최우선 바인딩 (meta.brand_name, partner_info.channel_name, tab1_basic_settings.channel_name)
+    var finalBrand = resolvedBrandName || ctx.subIndustry || master.partner_info.channel_name || '맞춤 브랜드';
+    master.meta.brand_name = finalBrand;
+    master.partner_info.channel_name = finalBrand;
+    if (master.tab1_basic_settings) {
+      master.tab1_basic_settings.channel_name = finalBrand;
+    }
 
     // Part 2: 모선(Mother-Hub) 외부 플랫폼 확장 소켓 3종 (기본 본체 NATIVE)
     master.source_platform = (ctx.sourcePlatform && String(ctx.sourcePlatform).trim()) || 'NATIVE';

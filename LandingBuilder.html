@@ -1409,8 +1409,11 @@ function stateFromData(d, keep) {
   };
   s.pinned_consult_notes = Array.isArray(d.pinned_consult_notes) ? d.pinned_consult_notes.slice() : [];
   if (keep) { s.partner = clone(keep.partner); s.brand.primary = keep.brand.primary; s.brand.secondary = keep.brand.secondary; s.brand.logo = keep.brand.logo; s.brand.font_theme = keep.brand.font_theme || 'modern'; s.meta.use_webzine = keep.meta.use_webzine; s.meta.webzine_base_url = keep.meta.webzine_base_url; s.passthrough = clone(keep.passthrough); s.t2.bg_color = keep.t2.bg_color; }
-  if (d.partner_info) {
-    s.partner.owner_name = pi.owner_name || ''; s.partner.channel_name = pi.channel_name || ''; s.partner.channel_id_num = pi.channel_id_num || '';
+  const resolvedBrandName = String(m.brand_name || (d.tab1_basic_settings && d.tab1_basic_settings.channel_name) || pi.channel_name || '').trim();
+  const safeBrandName = (resolvedBrandName && !/대표님\s*$/.test(resolvedBrandName)) ? resolvedBrandName : '';
+  s.meta.brand_name = safeBrandName;
+  if (d.partner_info || safeBrandName) {
+    s.partner.owner_name = pi.owner_name || ''; s.partner.channel_name = safeBrandName || pi.channel_name || ''; s.partner.channel_id_num = pi.channel_id_num || '';
     s.partner.current_plan = pi.current_plan || 'STARTER'; s.partner.pro_upgrade_requested = !!pi.pro_upgrade_requested;
   }
   if (ba.primary_color) s.brand.primary = ba.primary_color; if (ba.secondary_color) s.brand.secondary = ba.secondary_color;
@@ -1564,12 +1567,13 @@ function toCampaignMaster() {
     source_platform: (S.platform && S.platform.source_platform) || 'NATIVE',
     credit_balance: (S.platform && S.platform.credit_balance !== undefined) ? S.platform.credit_balance : null,
     external_mapping: (S.platform && S.platform.external_mapping !== undefined) ? S.platform.external_mapping : null,
-    meta: { schema_version: '2.0', campaign_id: ymd + '_' + (S.partner.channel_name || 'draft').replace(/\s+/g, '') + '_01',
+    meta: { schema_version: '2.0', brand_name: S.partner.channel_name || S.meta.brand_name || '', campaign_id: ymd + '_' + (S.partner.channel_name || 'draft').replace(/\s+/g, '') + '_01',
             created_at: ts.toISOString(), mode: 'FULL_SET', use_webzine: !!S.meta.use_webzine, webzine_base_url: S.meta.webzine_base_url || '' },
     partner_info: { owner_name: S.partner.owner_name, phone: '', channel_name: S.partner.channel_name, channel_id_num: S.partner.channel_id_num,
                     current_plan: S.partner.current_plan, pro_upgrade_requested: S.partner.pro_upgrade_requested, industry_code: S.meta.industry_code || '', track_id: '' },
     brand_assets: { primary_color: S.brand.primary, secondary_color: S.brand.secondary, font_theme: S.brand.font_theme || 'modern', logo_base64: S.brand.logo, block_images_base64: images },
     tab1_basic_settings: {
+      channel_name: S.partner.channel_name || S.meta.brand_name || '',
       thumbnail_500x280: { badge: S.t1.badge, headline: S.t1.headline, subtext: S.t1.subtext, show_visual: S.t1.show_visual !== false, imagePrompt: S.t1.imagePrompt || '', stock_index: S.t1.stock_index || 0, visual_image: S.t1.visual_image || null },
       title_30chars: S.t1.title, description: S.t1.desc, apply_btn_text: S.t1.apply, cancel_btn_text: S.t1.cancel,
       show_apply_btn: true, show_top_bar: true, form_only_mode: S.t1.form_only_mode,

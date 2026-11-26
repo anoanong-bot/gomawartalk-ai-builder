@@ -2708,9 +2708,18 @@ function syncSelectedOptionState(idx) {
 /* ═══════════════ 2. 5단계 시뮬레이터 (순정 UI · 플라잉 꼬리표 · 손가락 코치마크) ═══════════════ */
 function getChannelMeta() {
   const camp = STATE.campaign || DEMO_CAMPAIGN;
+  const m = camp.meta || {};
+  const t1 = camp.tab1_basic_settings || {};
   const p = camp.partner_info || {};
   const ba = camp.brand_assets || {};
-  const channelName = cleanText(p.channel_name || (p.owner_name ? (p.owner_name + ' 채널') : '대표님 브랜드'));
+  const pickValidBrand = v => {
+    const s = cleanText(v || '').trim();
+    return (s && !/대표님\s*$/.test(s)) ? s : '';
+  };
+  const channelName = pickValidBrand(m.brand_name) ||
+    pickValidBrand(t1.channel_name) ||
+    pickValidBrand(p.channel_name) ||
+    cleanText(p.sub_industry || p.sector_label || '맞춤 브랜드');
   const industryLabel = cleanText(p.sub_industry || p.sector_label || '업종 맞춤');
   const avatarHtml = ba.logo_base64
     ? '<div class="kk-avatar"><img src="' + ba.logo_base64 + '" alt="채널"></div>'

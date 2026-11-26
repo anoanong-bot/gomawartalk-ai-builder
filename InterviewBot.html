@@ -450,7 +450,7 @@ button { cursor: pointer; border: none; background: none; }
 }
 .stage-pane {
   flex: 1 0 auto;
-  padding: 18px 16px 120px;
+  padding: 26px 16px 140px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -717,10 +717,11 @@ button { cursor: pointer; border: none; background: none; }
   background: #F4F9FF;
   box-shadow: 0 6px 18px rgba(49, 130, 246, 0.18);
 }
-.flow-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.flow-title-wrap { display: flex; align-items: flex-start; gap: 8px; min-width: 0; flex: 1; }
+.flow-head { display: flex; flex-direction: column; align-items: stretch; gap: 6px; width: 100%; }
+.flow-eyebrow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.flow-title-wrap { display: flex; align-items: flex-start; gap: 8px; width: 100%; min-width: 0; }
 .flow-icon { font-size: 21px; flex-shrink: 0; margin-top: 2px; }
-.flow-title { font-size: 19.5px; font-weight: 800; color: var(--g900); line-height: 1.36; word-break: keep-all; }
+.flow-title { flex: 1; min-width: 0; font-size: 19.5px; font-weight: 800; color: var(--g900); line-height: 1.38; word-break: keep-all; }
 .flow-card.selected .flow-title { color: var(--blue-dk); }
 .flow-badge {
   flex-shrink: 0; padding: 4px 10px; border-radius: 99px;
@@ -1200,6 +1201,13 @@ button { cursor: pointer; border: none; background: none; }
   font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 99px;
   background: var(--g100); color: var(--g500);
 }
+.opt-badge.req {
+  background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA;
+}
+.card.field-err {
+  border-color: #DC2626 !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.14) !important;
+}
 .upload-dropzone {
   width: 100%;
   padding: 18px 14px;
@@ -1482,11 +1490,11 @@ button { cursor: pointer; border: none; background: none; }
 }
 .sum-pinned-chip button:hover { color: #DC2626; }
 
-/* 우측 하단 채널톡형 플로팅 런처 (하단 Sticky CTA 겹침 원천 차단) */
+/* 우측 하단 채널톡형 플로팅 런처 (하단 Sticky CTA + 선택 안내 줄 겹침 원천 차단) */
 .flt-launcher {
   position: fixed;
   right: 16px;
-  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(124px + env(safe-area-inset-bottom, 0px));
   z-index: 950;
   display: flex;
   align-items: center;
@@ -1504,9 +1512,19 @@ button { cursor: pointer; border: none; background: none; }
   font-weight: 800;
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.14);
   white-space: nowrap;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  max-width: 140px;
+  overflow: hidden;
+  transition: opacity 0.25s ease, transform 0.25s ease, max-width 0.25s ease, padding 0.25s ease, border-width 0.25s ease;
 }
-.flt-pill-label.is-hidden { opacity: 0; pointer-events: none; transform: translateX(8px); }
+.flt-pill-label.is-hidden {
+  opacity: 0;
+  max-width: 0;
+  padding-left: 0;
+  padding-right: 0;
+  border-width: 0;
+  pointer-events: none;
+  transform: translateX(8px);
+}
 .flt-fab {
   width: 54px;
   height: 54px;
@@ -2081,13 +2099,23 @@ button { cursor: pointer; border: none; background: none; }
 
         <div>
           <h2 class="stage-heading">브랜드 스타일을<br>미리 담아주세요 🎨</h2>
-          <p class="stage-sub">로고나 사진이 없으셔도 자동으로 깔끔하게 만들어 드려요.</p>
+          <p class="stage-sub">상호명만 적어주시면 로고나 사진이 없어도 깔끔하게 만들어 드려요.</p>
         </div>
 
-        <!-- 4-1. 브랜드 로고 이미지 (선택) -->
+        <!-- 4-1. 표시할 상호명 · 브랜드명 (필수) -->
+        <div class="card" id="brand-name-card">
+          <div class="asset-section-title">
+            <span>1. 표시할 상호명 · 브랜드명</span>
+            <span class="opt-badge req">필수</span>
+          </div>
+          <input type="text" class="field-input" id="brand-name-input" placeholder="예) 한빛 세무회계, 장희지 수학학원" autocomplete="organization">
+          <div style="font-size:13.5px;color:var(--g700);line-height:1.45">신청 페이지 상단·텍스트 로고·카톡 채널 발신명으로 그대로 표시됩니다.</div>
+        </div>
+
+        <!-- 4-2. 브랜드 로고 이미지 (선택) -->
         <div class="card">
           <div class="asset-section-title">
-            <span>1. 브랜드 로고 이미지</span>
+            <span>2. 브랜드 로고 이미지</span>
             <span class="opt-badge">선택 · 썸네일 & Hero 상단 표시</span>
           </div>
           <label class="upload-dropzone" id="logo-dropzone">
@@ -2096,7 +2124,7 @@ button { cursor: pointer; border: none; background: none; }
             <input type="file" accept="image/*" id="logo-file-input" hidden>
           </label>
           <div class="logo-reassure-box" id="logo-reassure-box">
-            💡 별도 로고 이미지가 없으셔도 전혀 괜찮아요! 비워두시면 입력하신 상호명으로 깔끔한 텍스트 로고를 자동 적용해 드립니다.
+            💡 별도 로고 이미지가 없으셔도 전혀 괜찮아요! 위 1번에 입력하신 상호명으로 깔끔한 텍스트 로고를 자동 적용해 드립니다.
             <div id="text-logo-live-preview"></div>
           </div>
           <button type="button" class="ai-photo-mode-btn active" id="btn-no-logo-mode">
@@ -2113,10 +2141,10 @@ button { cursor: pointer; border: none; background: none; }
           </div>
         </div>
 
-        <!-- 4-2. 원하는 브랜드 컬러 톤 선택 -->
+        <!-- 4-3. 원하는 브랜드 컬러 톤 선택 -->
         <div class="card">
           <div class="asset-section-title">
-            <span>2. 원하는 브랜드 컬러 톤</span>
+            <span>3. 원하는 브랜드 컬러 톤</span>
             <span class="opt-badge" id="selected-color-badge">자동 추천</span>
           </div>
           <div class="color-grid" id="color-theme-grid"></div>
@@ -2130,10 +2158,10 @@ button { cursor: pointer; border: none; background: none; }
           </div>
         </div>
 
-        <!-- 4-3. 랜딩에 넣을 실제 사진 / 참고 이미지 (최대 3장, 선택) -->
+        <!-- 4-4. 랜딩에 넣을 실제 사진 / 참고 이미지 (최대 3장, 선택) -->
         <div class="card">
           <div class="asset-section-title">
-            <span>3. 랜딩에 넣을 실제 사진 / 참고 이미지</span>
+            <span>4. 랜딩에 넣을 실제 사진 / 참고 이미지</span>
             <span class="opt-badge">최대 3장 · 선택</span>
           </div>
           <p style="font-size:12.5px;color:var(--g700);line-height:1.48">
@@ -2388,6 +2416,7 @@ const ST = {
   sectorId: '',
   rawSubIndustry: '',
   subIndustry: '',
+  brandName: '',
   extractedGoal: '',
   flowId: '',
   customFlows: [],
@@ -2440,7 +2469,8 @@ function syncHeaderBadge() {
   if (!badge) return;
   const rawInput = String(ST.subIndustry || ($('#sub-industry-input') && $('#sub-industry-input').value) || '').trim();
   const cleanLabel = rawInput ? Consult.sanitizeSubIndustryLabel(rawInput, ST.sectorId).cleanLabel : '';
-  const label = cleanLabel || ST.partnerInfo.businessName || '파트너';
+  const safeBiz = String(ST.brandName || ST.partnerInfo.businessName || '').trim();
+  const label = cleanLabel || (safeBiz && !/대표님\s*$/.test(safeBiz) ? safeBiz : '') || '업종 선택';
   badge.textContent = label;
   badge.title = label;
 }
@@ -2515,6 +2545,25 @@ function renderQuotaBadge() {
 
 /* ═══════════════ Part 4 & Step 2: 전면 블러 로딩 오버레이 + 플로팅 위젯 노출 강제 동기화 ═══════════════ */
 const LOADING_CTRL = { timer: null, hideTimer: null, pct: 0, active: false };
+let fltPillTimer = null;
+let fltPillAutoHidden = false;
+
+function collapseFloatingPill() {
+  if (fltPillTimer) { clearTimeout(fltPillTimer); fltPillTimer = null; }
+  fltPillAutoHidden = true;
+  const pill = $('#flt-pill-label');
+  if (pill) pill.classList.add('is-hidden');
+}
+
+function scheduleFloatingPillAutoHide() {
+  if (fltPillAutoHidden) return;
+  const pill = $('#flt-pill-label');
+  if (!pill || pill.classList.contains('is-hidden')) return;
+  if (fltPillTimer) clearTimeout(fltPillTimer);
+  fltPillTimer = setTimeout(() => {
+    collapseFloatingPill();
+  }, 3500);
+}
 
 function syncFloatingWidgetVisibility() {
   const launcher = $('#flt-launcher');
@@ -2530,11 +2579,15 @@ function syncFloatingWidgetVisibility() {
     (!blockedGate || blockedGate.hidden)
   );
   const canShow = inConsultView && !LOADING_CTRL.active;
+  const wasHidden = launcher.hidden;
   launcher.hidden = !canShow;
   launcher.classList.toggle('is-gated', !canShow);
   if (backdrop) {
     backdrop.classList.toggle('is-gated', !canShow);
     if (!canShow) backdrop.hidden = true;
+  }
+  if (canShow && wasHidden && !fltPillAutoHidden) {
+    scheduleFloatingPillAutoHide();
   }
   return canShow;
 }
@@ -2729,9 +2782,10 @@ async function verifyUserAndQuotaWithBackend(authPayload) {
       return false;
     }
 
+    const rawBizName = String(userObj.businessName || '').trim();
     const partnerInfo = {
-      businessName: userObj.businessName || (ST.user.name ? (ST.user.name + ' 대표님') : '고마워톡 파트너'),
-      ownerName: ST.user.name || '대표님',
+      businessName: (rawBizName && !/대표님\s*$/.test(rawBizName)) ? rawBizName : '',
+      ownerName: ST.user.name || '',
       phone: ST.user.phone,
       email: ST.user.email,
       kakao_user_id: ST.user.kakao_user_id,
@@ -2887,9 +2941,10 @@ function unlockPartnerApp(partnerInfo, token, isAdminBypass, quotaInfo) {
   };
   ST.quota = Object.assign({}, ST.quota, q, { tier: normalizeTier(q.tier) });
 
+  const cleanBiz = String(partnerInfo.businessName || '').trim();
   ST.partnerInfo = {
-    businessName: partnerInfo.businessName || '고마워톡 파트너',
-    ownerName: partnerInfo.ownerName || '대표님',
+    businessName: (cleanBiz && !/대표님\s*$/.test(cleanBiz)) ? cleanBiz : '',
+    ownerName: partnerInfo.ownerName || '',
     phone: normalizeKakaoPhone(partnerInfo.phone || '01000000000'),
     email: partnerInfo.email || '',
     kakao_user_id: partnerInfo.kakao_user_id || ST.user.kakao_user_id || '',
@@ -2899,13 +2954,13 @@ function unlockPartnerApp(partnerInfo, token, isAdminBypass, quotaInfo) {
     ST.user.kakao_user_id = ST.partnerInfo.kakao_user_id;
   }
 
-  $('#partner-badge').textContent = ST.partnerInfo.businessName;
   renderQuotaBadge();
   $('#auth-gate').hidden = true;
   $('#quota-blocked-gate').hidden = true;
   $('#consult-app').hidden = false;
   if (IS_ADMIN_ENV) $('#btn-top-ai-cfg').hidden = false;
   resetConsultFlow();
+  syncHeaderBadge();
   syncFloatingWidgetVisibility();
 }
 
@@ -3054,6 +3109,15 @@ function goStage(n) {
   }
 
   $('#stage-viewport').scrollTop = 0;
+  if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
+    window.scrollTo(0, 0);
+  }
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => {
+      if ($('#stage-viewport')) $('#stage-viewport').scrollTop = 0;
+      if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') window.scrollTo(0, 0);
+    });
+  }
   updateStickyCtaBar();
 }
 
@@ -3061,6 +3125,9 @@ function resetConsultFlow() {
   ST.sectorId = '';
   ST.rawSubIndustry = '';
   ST.subIndustry = '';
+  ST.brandName = (IS_ADMIN_ENV && ST.partnerInfo.businessName && !/대표님\s*$/.test(ST.partnerInfo.businessName))
+    ? ST.partnerInfo.businessName
+    : '';
   ST.extractedGoal = '';
   ST.flowId = '';
   ST.customFlows = [];
@@ -3089,7 +3156,9 @@ function resetConsultFlow() {
   };
   ST.summaryOpenIdx = 0;
   ST.summaryEditIdx = 0;
-  $('#s1-heading').textContent = ST.partnerInfo.ownerName + ' 대표님, 어떤 분야의 비즈니스를 운영하고 계신가요?';
+  $('#s1-heading').textContent = ST.partnerInfo.ownerName
+    ? (ST.partnerInfo.ownerName + ' 님, 어떤 분야의 일을 하고 계신가요?')
+    : '어떤 분야의 일을 하고 계신가요?';
   $('#sub-industry-input').value = '';
   syncHeaderBadge();
   $('#sub-industry-box').hidden = true;
@@ -3262,10 +3331,11 @@ function renderStage2Flows(recommendedId) {
     if (isRec) {
       badgeHtml = '<span class="flow-badge rec">✨ AI 추천</span>';
     } else if (isBest) {
-      badgeHtml = '<span class="flow-badge best">🔥 ' + esc(shortSub) + ' 가장 많이 선택!</span>';
+      badgeHtml = '<span class="flow-badge best">🔥 인기 1순위 · 가장 많이 선택</span>';
     } else if (f.badge) {
       badgeHtml = '<span class="flow-badge">' + esc(f.badge) + '</span>';
     }
+    const eyebrowHtml = badgeHtml ? ('<div class="flow-eyebrow">' + badgeHtml + '</div>') : '';
 
     // 핵심 2개 태그로 단순화한 화살표 키워드 흐름도 (50대+ 한눈에 스캔)
     const pills = Consult.buildFlowPills(f).slice(0, 2);
@@ -3295,8 +3365,8 @@ function renderStage2Flows(recommendedId) {
 
     return '<button type="button" class="flow-card' + (isBest ? ' best-pick' : '') + (isSel ? ' selected' : '') + '" data-flow="' + esc(f.id) + '">' +
       '<div class="flow-head">' +
+        eyebrowHtml +
         '<div class="flow-title-wrap"><span class="flow-icon">' + f.icon + '</span><span class="flow-title">' + (idx + 1) + '. ' + esc(f.title) + '</span></div>' +
-        badgeHtml +
       '</div>' +
       pillsHtml +
       detailHtml +
@@ -3982,17 +4052,73 @@ const PHOTO_SLOT_LABELS = [
   { idx: 2, title: '3번 · 현장/신뢰', sub: '4단 신뢰증거' }
 ];
 
+function getBrandNamePlaceholder(sectorId, subIndustry) {
+  const s = String(subIndustry || '') + ' ' + String(ST.rawSubIndustry || '');
+  if (Consult.isPoliticsDomain && Consult.isPoliticsDomain(s)) {
+    return '예) 홍길동 남양주시장 예비후보 캠프';
+  }
+  if (/교회|집회|부흥|찬양|목사|선교|성당|사찰/.test(s)) {
+    return '예) 은혜와진리교회 청년부';
+  }
+  if (sectorId === 'academy' || /학원|수학|영어|입시|강의|클래스/.test(s)) {
+    return '예) 장희지 수학학원, 서울입시연구소';
+  }
+  if (sectorId === 'local' || /카페|미용|헤어|네일|필라테스|헬스|병원|치과|한의원/.test(s)) {
+    return '예) 온기 로스터리 카페, 바른정형외과';
+  }
+  if (sectorId === 'pro' || /세무|회계|법무|변호사|노무|보험|부동산/.test(s)) {
+    return '예) 한빛 병의원 세무회계';
+  }
+  return '예) 한빛 세무회계, 장희지 수학학원';
+}
+
+function updateTextLogoPreview() {
+  const livePrev = $('#text-logo-live-preview');
+  if (!livePrev) return;
+  const typed = String(ST.brandName || ($('#brand-name-input') && $('#brand-name-input').value) || '').trim();
+  const displayLabel = typed || ST.subIndustry || '상호명을 입력해 주세요';
+  livePrev.innerHTML = '<span class="text-logo-preview-pill" style="background:' + esc(ST.brandAssets.primaryColor) + '">✦ ' + esc(displayLabel) + '</span>';
+}
+
+function proceedToStage5WithBrandGuard() {
+  const inp = $('#brand-name-input');
+  const card = $('#brand-name-card');
+  const val = String((inp && inp.value) || ST.brandName || '').trim();
+  if (!val) {
+    if (card) {
+      card.classList.add('field-err');
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    if (inp) inp.focus();
+    showBotToast('⚠️ 표시할 상호명·브랜드명을 먼저 입력해 주세요!');
+    return false;
+  }
+  ST.brandName = val;
+  ST.partnerInfo.businessName = val;
+  if (card) card.classList.remove('field-err');
+  syncHeaderBadge();
+  enterStage5Summary();
+  return true;
+}
+
 function renderStage4BrandAssets() {
-  // 1) 로고 미리보기 & '로고 없어도 OK' 안심 텍스트 로고 프리뷰
+  // 1) 상호명 · 브랜드명 입력칸 동기화 (업종별 자연스러운 예시 placeholder)
+  const brandInp = $('#brand-name-input');
+  const brandCard = $('#brand-name-card');
+  if (brandInp) {
+    brandInp.placeholder = getBrandNamePlaceholder(ST.sectorId, ST.subIndustry);
+    if (brandInp.value !== ST.brandName) {
+      brandInp.value = ST.brandName || '';
+    }
+  }
+  if (brandCard) brandCard.classList.remove('field-err');
+
+  // 2) 로고 미리보기 & '로고 없어도 OK' 안심 텍스트 로고 프리뷰
   const hasLogo = !!ST.brandAssets.logoBase64;
   $('#logo-dropzone').hidden = hasLogo;
   $('#logo-reassure-box').hidden = hasLogo;
   $('#logo-preview-row').hidden = !hasLogo;
-  const bizTitle = ST.partnerInfo.businessName || ST.subIndustry || '우리 브랜드';
-  const livePrev = $('#text-logo-live-preview');
-  if (livePrev) {
-    livePrev.innerHTML = '<span class="text-logo-preview-pill" style="background:' + esc(ST.brandAssets.primaryColor) + '">✦ ' + esc(bizTitle) + '</span>';
-  }
+  updateTextLogoPreview();
   const noLogoBtn = $('#btn-no-logo-mode');
   if (noLogoBtn) {
     noLogoBtn.classList.toggle('active', !hasLogo);
@@ -4371,6 +4497,7 @@ async function generateAndSubmitCampaign() {
       skipImageGen: true,
       sectorId: ST.sectorId,
       subIndustry: ST.subIndustry,
+      brandName: ST.brandName,
       flowId: ST.flowId,
       customFlows: ST.customFlows,
       answers: ST.answers,
@@ -4378,6 +4505,8 @@ async function generateAndSubmitCampaign() {
       pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
       summary: ST.summary,
       partner: Object.assign({}, ST.partnerInfo, {
+        businessName: ST.brandName || ST.partnerInfo.businessName || '',
+        channel_name: ST.brandName || ST.partnerInfo.businessName || '',
         kakao_user_id: ST.user.kakao_user_id || ST.partnerInfo.kakao_user_id || '',
         tier: normalizeTier((ST.quota && ST.quota.tier) || ST.partnerInfo.tier)
       }),
@@ -4645,8 +4774,16 @@ $('#qa-form').addEventListener('submit', e => {
   askFeatureQA(v);
 });
 
-// Step 4: 로고 · 컬러 · 실사 최대 3장
+// Step 4: 상호명·브랜드명 · 로고 · 컬러 · 실사 최대 3장
 $('#btn-back-to-s3').onclick = () => jumpToInterviewQuestion(Consult.TOTAL_Q);
+$('#brand-name-input').addEventListener('input', e => {
+  const val = (e.target.value || '').trim();
+  ST.brandName = val;
+  ST.partnerInfo.businessName = val;
+  if (val && $('#brand-name-card')) $('#brand-name-card').classList.remove('field-err');
+  updateTextLogoPreview();
+  syncHeaderBadge();
+});
 $('#logo-file-input').addEventListener('change', async e => {
   const f = e.target.files && e.target.files[0];
   e.target.value = '';
@@ -4710,7 +4847,17 @@ $('#btn-ai-photo-mode').onclick = () => {
   ST.brandAssets.photoMode = 'ai_auto';
   renderStage4BrandAssets();
 };
-$('#btn-to-stage5').onclick = () => enterStage5Summary();
+$('#btn-to-stage5').onclick = () => proceedToStage5WithBrandGuard();
+
+// 본문 스크롤 시 플로팅 위젯 '질문·오류제보' 캡슐 자동 접기 (깔끔한 원형 아이콘만 유지)
+if ($('#stage-viewport')) {
+  $('#stage-viewport').addEventListener('scroll', () => {
+    if ($('#stage-viewport').scrollTop > 12) collapseFloatingPill();
+  }, { passive: true });
+}
+window.addEventListener('scroll', () => {
+  if ((window.scrollY || 0) > 12) collapseFloatingPill();
+}, { passive: true });
 
 // Step 5
 $('#btn-back-to-s4').onclick = () => { renderStage4BrandAssets(); goStage(4); };
@@ -4799,9 +4946,9 @@ window.BOT = {
   generateAndSubmitCampaign,
   buildCampaignMasterJson: () => ST.lastGeneratedCampaign || Consult.assembleCampaign(null, {
     skipImageGen: true,
-    sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId,
+    sectorId: ST.sectorId, subIndustry: ST.subIndustry, brandName: ST.brandName, flowId: ST.flowId,
     answers: ST.answers, pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
-    partner: ST.partnerInfo, brandAssets: {
+    partner: Object.assign({}, ST.partnerInfo, { businessName: ST.brandName, channel_name: ST.brandName }), brandAssets: {
       logoBase64: ST.brandAssets.logoBase64, primaryColor: ST.brandAssets.primaryColor,
       secondaryColor: ST.brandAssets.secondaryColor, photos: ST.brandAssets.photos.filter(Boolean),
       photoMode: ST.brandAssets.photos.some(Boolean) ? 'uploaded' : 'ai_auto'

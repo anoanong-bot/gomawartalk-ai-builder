@@ -1,6 +1,6 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-26 (KST · V2.5-1 Git 충돌 무손실 정렬 + `파트너캠페인관제탑` 1인1행 Strict Upsert·`캠페인접수이력`·중복행 자동병합 + 플로팅 위젯 로그인 연동 + 24시간 전문가 검토 땡큐 페이지 + STEP 5 제출 4중 방어선 완료)
+- **최종 갱신일시:** 2026-11-26 (KST · V2.5-2 모바일 실서버 UI 깨짐 보정 — 2단계 카드 Eyebrow 배지 분리 + 4단계 상호명 필수 입력·'OOO 대표님' 폴백 제거 + 단계 상단 잘림 & 플로팅 런처 124px·3.5초 자동접힘 완료)
 - **기준 버전:** Master PRD V2.5 / `Proposal.html` V2.5 / `Backend_Proxy.gs` V2.5-0 (V2.2~V2.4 As-Built 100% 무손실 보존)
 - **본체 프로젝트 완공 목표일:** **2026년 11월 30일(월)** *(개발 팀장님 본체 어드민 내 구글 폼·시트 연동 마감일 **12월 7일**과 별도 구분)*
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
@@ -56,6 +56,10 @@
    - **`InterviewBot.html` 플로팅 위젯 로그인 연동:** 로그인 전 첫 화면·한도 차단 화면·전면 블러 로딩 중에는 `#flt-launcher`/`#flt-sheet-backdrop`을 `display: none !important`로 완전 숨김, 로그인 완료 후 본 컨설팅(STEP 1~5·땡큐 페이지)에서만 노출(`syncFloatingWidgetVisibility()`).
    - **`InterviewBot.html` 24시간 전문가 검토 땡큐 페이지:** 고객 완료 화면에서 `[제안서 바로 보기]` 및 `Proposal.html` 링크 100% 제거(어드민 시트/드라이브/구글챗 배관은 유지), 첫 화면 3번 요약 `전문가 검토 후 24시간 내 카톡 발송` 교체, 3단계 로딩 연출 ➔ 3단계 시각 프로세스 바(2단계 펄스 강조) + `18.5px` 발송 안내 + `[처음 화면으로 돌아가기]` 버튼 완성.
    - **`InterviewBot.html` STEP 5 제출 4중 방어선:** 요약 완료 전 버튼 잠금(`ST.isSummaryLoading`), 중복 실행 차단 & `ST.summaryPromise` 직렬 대기(`ST.isSubmitting`/`ST.isSubmitted`), 시퀀스 번호(`ST.genSeq`) 기반 지연 콜백 덮어쓰기 차단, 통신 오류 시 로딩 해제 및 `'🔄 다시 제출하기'` 100% 복구.
+10. **V2.5-2 모바일 실서버 UI 깨짐 · 상호명 필수 입력 · 플로팅 런처 보정 *(2026-11-26 완료, `Backend_Proxy.gs` 변경 없음)*:**
+   - **2단계 흐름 카드 제목 세로 꺾임 해결 (`InterviewBot.html`):** 배지 문구를 `🔥 인기 1순위 · 가장 많이 선택`으로 간결화하고 `.flow-eyebrow` 상단 줄로 분리해 아래 카드 제목(`19.5px`)이 가로 폭 100% 사용.
+   - **4단계 상호명·브랜드명 직접 입력칸 신설 & `'OOO 대표님'` 폴백 제거 (`InterviewBot.html`, `RagInterviewEngine.js`, `Proposal.html`, `LandingBuilder.html`):** 4단계 최상단 1번 항목(`#brand-name-input`, `18px`, 필수 가드·텍스트 로고 실시간 미리보기, 기존 1~3번 ➔ 2~4번) 신설 및 `meta.brand_name`·`partner_info.channel_name`·`tab1_basic_settings.channel_name`·`Proposal.html` 채널명 최우선 바인딩.
+   - **단계 전환 상단 잘림 & 플로팅 런처 간섭 보정 (`InterviewBot.html`):** `goStage()` 즉시 `window.scrollTo(0, 0)` + `padding-top: 26px`, 플로팅 런처 `bottom: calc(124px + env(safe-area-inset-bottom, 0px))` 및 `질문·오류제보` 캡슐 3.5초 후·스크롤 시 자동 접힘.
 
 ---
 

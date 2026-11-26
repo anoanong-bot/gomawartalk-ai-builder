@@ -197,24 +197,76 @@
   }
 
   // 파트너가 Q1~Q5(특히 Q1/Q3)에 입력한 쿠폰·할인·핵심 혜택을 추출해 ④ 첫 번째 광고 메시지에 100% 반영
+  // ★ V3.2 단어 경계 기반 안전 추출: 글자 수 자르기({0,24})로 '단골' → '골'처럼 앞글자가 잘리는 버그 원천 차단!
   function extractPromoOfferFromAnswers(answersObj) {
     var A = answersObj || {};
     var sources = [A[3], A[1], A[4], A[5], A[8]].filter(Boolean).map(function (v) { return String(v).trim(); });
-    var couponRe = /([가-힣a-zA-Z0-9,\s·+\-%]{0,24}(?:쿠폰|할인권|무료\s*증정권|무료\s*증정|사이즈업|1\+1|\d+\s*(?:%|원|천원|만원)\s*할인|특가|체험권|우대권|사은품)[가-힣a-zA-Z0-9,\s·+\-%]{0,12})/;
+    var kwRe = /(?:\d{1,3}(?:,\d{3})*\s*(?:%|원|천원|만원)\s*)?(?:할인\s*쿠폰|웰컴\s*쿠폰|감사\s*쿠폰|재방문\s*쿠폰|카톡\s*쿠폰|무료\s*증정권|무료\s*증정|사이즈업\s*쿠폰|1\+1\s*쿠폰|쿠폰|할인권|사이즈업|1\+1|\d{1,3}(?:,\d{3})*\s*(?:%|원|천원|만원)\s*할인|특가\s*혜택|특가|체험권|우대권|사은품)/;
+    var leadingStopRe = /^(?:신청|즉시|가입|가입시|초대해서|드리는|보내드릴게요|발송할게요|위해|위한|및|또는|그리고|고객님께|분들께|을|를|은|는|이|가|과|와|의|로|으로)$/;
+    var trailingVerbRe = /^(?:바로|즉시|보내|발송|드리|제공|지급|안내|드립니다|드릴게요|할게요|하고|합니다|해요|해|증정합니다|받아가세요|챙겨가세요)/;
+
     for (var i = 0; i < sources.length; i++) {
-      var m = sources[i].match(couponRe);
-      if (m && m[1]) {
-        var phrase = m[1]
-          .replace(/^(?:신청\s*즉시|가입\s*시|초대해서|드리는|보내드릴게요|발송할게요|을|를|은|는|이|가|과|와|및)\s+/g, '')
-          .replace(/\s*(?:을|를|은|는|이|가)?\s*(?:바로\s*)?(?:보내|발송|드리|제공|지급|안내)(?:드릴게요|할게요|하고|해\s*드려요|해\s*드릴게요|합니다|해요).*$/g, '')
-          .replace(/\s+/g, ' ')
-          .trim();
+      var clauses = sources[i].split(/[\r\n.!?]+/).map(function (c) { return c.trim(); }).filter(Boolean);
+      for (var ci = 0; ci < clauses.length; ci++) {
+        var clause = clauses[ci];
+        var m = clause.match(kwRe);
+        if (!m) continue;
+        var kw = m[0].replace(/\s+/g, ' ').trim();
+        var before = clause.slice(0, m.index).trim();
+        var after = clause.slice(m.index + m[0].length).trim();
+
+        // 앞쪽 수식어는 반드시 공백(어절) 단위로만 취합 — 단어 중간 절단 0%
+        var beforeTokens = before ? before.split(/\s+/).filter(Boolean) : [];
+        // '위한'/'위해'가 있으면 그 뒤 수식어부터 취합하되, 없으면 최근 3어절 이내만 취합
+        var cutIdx = -1;
+        for (var bi = beforeTokens.length - 1; bi >= 0; bi--) {
+          if (/^(?:위한|위해|통해|맞춰)$/.test(beforeTokens[bi])) {
+            cutIdx = bi + 1;
+            break;
+          }
+        }
+        var prefixPool = cutIdx >= 0 ? beforeTokens.slice(cutIdx) : beforeTokens;
+        var pickedPre = [];
+        var preLen = 0;
+        for (var pi = prefixPool.length - 1; pi >= 0; pi--) {
+          var tok = prefixPool[pi].replace(/^[,/·(「'"“‘]+|[,/·)「'"”’]+$/g, '');
+          if (!tok || leadingStopRe.test(tok)) break;
+          // 직전 어절이 접속 조사('~과/~와/~및')로 끝나면 앞 절과 분리
+          if (pickedPre.length > 0 && /(?:과|와)$/.test(tok) && tok.length >= 3) break;
+          if (pickedPre.length >= 3 || (preLen + tok.length + 1) > 16) break;
+          pickedPre.unshift(tok);
+          preLen += tok.length + 1;
+        }
+        while (pickedPre.length && leadingStopRe.test(pickedPre[0])) {
+          pickedPre.shift();
+        }
+
+        // 뒤쪽 어절: 서술어/조사 시작 전 명사 1어절(예: 혜택/증정)까지만 안전 포함
+        var afterTokens = after ? after.split(/\s+/).filter(Boolean) : [];
+        var pickedPost = [];
+        if (afterTokens.length) {
+          var t0 = afterTokens[0].replace(/^(?:을|를|은|는|이|가|도|까지)$/, '').replace(/(?:을|를|은|는|이|가|도)$/, '').replace(/[,/·)「'"”’]+$/g, '');
+          if (t0 && /^(?:혜택|증정|이벤트|할인|제공|쿠폰)$/.test(t0) && kw.indexOf(t0) === -1 && !trailingVerbRe.test(afterTokens[0])) {
+            pickedPost.push(t0);
+          }
+        }
+
+        var phrase = pickedPre.concat([kw], pickedPost).join(' ').replace(/\s+/g, ' ').trim();
+        // 어절 단위 안전 길이 제한 (단어 중간 자르기 금지)
+        if (tLen(phrase) > 30) {
+          var words = phrase.split(' ');
+          while (words.length > 1 && tLen(words.join(' ')) > 30) {
+            words.shift();
+          }
+          phrase = words.join(' ');
+        }
+
         if (phrase.length >= 2) {
           var hasCouponWord = /쿠폰|할인권|무료\s*증정|할인|1\+1|사이즈업|체험권|우대권/.test(phrase);
           return {
             hasPromo: true,
             isCoupon: /쿠폰|할인권|할인/.test(phrase),
-            phrase: tFirst(phrase, 34),
+            phrase: phrase,
             rawSource: sources[i],
             buttonLabel: /쿠폰|할인권/.test(phrase)
               ? '할인 쿠폰 바로 받기'
@@ -1732,14 +1784,14 @@
       var lblB = optB.answer_text;
       pair = {
         adv: {
-          badge: tFirst(channel + ' · 맞춤 추천', 22),
+          badge: '산지 직송 · 맞춤 추천',
           headline: tFirst(lblA + ' 딱 맞게 골라 담았습니다', 32),
           subtext: '산지 직송 당도 선별 구성',
           body: '#{이름}님! 고르신 "' + lblA + '" 취향에 맞춰 껍질째 아삭하게 드시기 좋은 당도 선별 수확 물량만 골라 안내해 드려요. 집에서 매일 신선하게 즐기는 알뜰 구성과 보관 팁을 확인해 보세요.' + promoSuffix,
           btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 산지 수확 영상 보기' : '맞춤 구성 바로 보기')
         },
         beg: {
-          badge: tFirst(channel + ' · 프리미엄 추천', 22),
+          badge: '최상급 선별 · 프리미엄 추천',
           headline: tFirst(lblB + ' 최상급 선별 안내', 32),
           subtext: '과즙 가득 큼직한 특품 구성',
           body: '#{이름}님! 고르신 "' + lblB + '" 취향에 맞춰 크기와 때깔, 당도까지 깐깐하게 고른 최상급 수확 구성만 따로 모았습니다. 소중한 분께 선물하시거나 풍성하게 드시기 좋은 구성을 지금 만나보세요.' + promoSuffix,
@@ -1836,14 +1888,14 @@
       directOptionOrder = true;
       pair = {
         adv: {
-          badge: tFirst(channel + ' · 맞춤 안내 A', 22),
+          badge: '맞춤 추천 안내',
           headline: tFirst(optA.answer_text + ' 맞춤 핵심 안내', 32),
           subtext: '선택하신 조건에 꼭 맞춘 구성',
           body: '#{이름}님! "' + optA.answer_text + '" 항목을 선택해 주셔서 꼭 필요한 핵심 안내와 맞춤 진행 방법만 한눈에 정리해 보내드립니다.' + promoSuffix,
           btn: promoBtnOverride || (videoInfo.isVideo ? '▶ 맞춤 안내 영상 보기' : '맞춤 안내 바로 보기')
         },
         beg: {
-          badge: tFirst(channel + ' · 맞춤 안내 B', 22),
+          badge: '핵심 포인트 안내',
           headline: tFirst(optB.answer_text + ' 맞춤 핵심 안내', 32),
           subtext: '부담 없이 살펴보는 핵심 요약',
           body: '#{이름}님! "' + optB.answer_text + '" 항목에 맞춰 가장 많이 궁금해하시는 핵심 포인트와 실제 사례를 읽기 쉽게 정리해 보내드려요.' + promoSuffix,

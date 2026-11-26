@@ -849,32 +849,43 @@ button { cursor: pointer; border: none; background: none; }
   overflow: hidden;
   background: #F8FAFC;
 }
-/* 무대 뒤편 레이어: 브랜드 컬러 모바일 포스터·랜딩 그래픽 + filter: blur(7px) */
+/* ★ V3.2 무대 뒤편 레이어: 100% 풀스크린(Full-Bleed) 블러 모바일 랜딩 포스터 (흰 여백 0px · scale(1.08) 가장자리 번짐 방지) */
 .s1-bg-preview {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px 12px 14px;
-  filter: blur(7px);
-  transform: scale(1.04);
+  gap: 0;
+  padding: 0;
+  filter: blur(8px) saturate(1.15);
+  transform: scale(1.08);
+  transform-origin: center;
   user-select: none;
   pointer-events: none;
+  background: linear-gradient(180deg, var(--brand) 0%, var(--brand-soft) 56%, #E2E8F0 100%);
+}
+.s1-poster-hero {
+  position: relative;
+  padding: 18px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   background:
-    radial-gradient(circle at 82% 14%, rgba(254, 229, 0, 0.22), transparent 44%),
-    linear-gradient(180deg, var(--brand-soft) 0%, #FFFFFF 48%, #F1F5F9 100%);
+    radial-gradient(circle at 86% 16%, rgba(254, 229, 0, 0.45), transparent 46%),
+    radial-gradient(circle at 14% 78%, rgba(255, 255, 255, 0.24), transparent 48%),
+    linear-gradient(145deg, var(--brand) 0%, #1E293B 100%);
+  color: #FFFFFF;
 }
 .s1-poster-badge-row {
   display: flex;
   gap: 6px;
 }
 .s1-poster-pill {
-  height: 20px;
+  height: 22px;
   border-radius: 99px;
-  background: var(--brand);
-  opacity: 0.82;
-  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  padding: 0 11px;
   color: #FFFFFF;
   font-size: 9.5px;
   font-weight: 800;
@@ -882,36 +893,72 @@ button { cursor: pointer; border: none; background: none; }
   align-items: center;
 }
 .s1-poster-pill.soft {
-  background: #EDE9FE;
-  color: #5B21B6;
-  opacity: 0.95;
+  background: #FEE500;
+  border-color: #FDE047;
+  color: #191919;
+}
+.s1-poster-hero .s1-headline {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.24;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+.s1-poster-body {
+  flex: 1;
+  padding: 14px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(124, 58, 237, 0.14), transparent 50%),
+    linear-gradient(180deg, var(--brand-soft) 0%, #F1F5F9 100%);
 }
 .s1-poster-card-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 9px;
 }
 .s1-poster-mini-box {
-  height: 64px;
-  border-radius: 12px;
-  padding: 9px;
-  background: linear-gradient(135deg, #FFFFFF 0%, #EFF6FF 100%);
-  border: 1px solid #DBEAFE;
+  height: 78px;
+  border-radius: 14px;
+  padding: 10px;
+  background: linear-gradient(145deg, #FFFFFF 0%, #DBEAFE 100%);
+  border: 1px solid rgba(59, 130, 246, 0.22);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 .s1-poster-mini-box.warm {
-  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
-  border-color: #FDE68A;
+  background: linear-gradient(145deg, #FFFBEB 0%, #FDE68A 100%);
+  border-color: rgba(245, 158, 11, 0.28);
+}
+.s1-poster-bar {
+  height: 8px;
+  border-radius: 99px;
+  background: rgba(15, 23, 42, 0.18);
+  width: 78%;
+}
+.s1-poster-bar.short { width: 52%; background: var(--brand); opacity: 0.48; }
+.s1-poster-footer-strip {
+  flex: 1;
+  min-height: 54px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, var(--brand-soft) 100%);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 11px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
 }
 
-/* 무대 뒤편 중앙 화이트 글래스 카드 (커튼 열렸을 때 또렷하게 노출) */
+/* ★ V3.2 무대 뒤편 중앙 화이트 글래스 카드 (핵심 1문장 + ② 신청폼 보기 + 우상단 커튼 닫기만 집중) */
 .s1-teaser-revealed {
   position: relative;
   z-index: 3;
   flex: 1;
-  padding: 16px 14px;
+  padding: 18px 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -919,16 +966,16 @@ button { cursor: pointer; border: none; background: none; }
 .s1-expert-glass-card {
   width: 100%;
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.96);
-  border-radius: 18px;
-  padding: 16px 15px 15px;
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16);
+  border-radius: 20px;
+  padding: 14px 16px 16px;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.22);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  text-align: left;
+  gap: 12px;
+  text-align: center;
   animation: fadeSlideIn 0.3s ease;
 }
 @keyframes fadeSlideIn {
@@ -938,25 +985,14 @@ button { cursor: pointer; border: none; background: none; }
 .s1-glass-top-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 6px;
-}
-.s1-glass-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 9px;
-  border-radius: 99px;
-  background: #F5F3FF;
-  border: 1px solid #DDD6FE;
-  color: #5B21B6;
-  font-size: 10.5px;
-  font-weight: 800;
 }
 .btn-s1-close-curtain {
   font-size: 10.5px;
   font-weight: 700;
   color: #64748B;
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: 99px;
   background: #F1F5F9;
   border: 1px solid #E2E8F0;
@@ -964,26 +1000,20 @@ button { cursor: pointer; border: none; background: none; }
 }
 .btn-s1-close-curtain:hover { color: #0F172A; background: #E2E8F0; }
 .s1-glass-title {
-  font-size: 14.5px;
-  font-weight: 900;
+  font-size: 15px;
+  font-weight: 700;
   color: #0F172A;
-  line-height: 1.42;
+  line-height: 1.46;
   letter-spacing: -0.02em;
-}
-.s1-glass-sub {
-  font-size: 11.5px;
-  font-weight: 400;
-  color: #475569;
-  line-height: 1.54;
+  word-break: keep-all;
 }
 .btn-s1-go-step2 {
-  margin-top: 4px;
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 11px;
+  padding: 11px 12px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #0F172A 0%, #334155 100%);
   color: #FFFFFF;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 800;
   text-align: center;
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.22);
@@ -1594,9 +1624,42 @@ button { cursor: pointer; border: none; background: none; }
   display: flex;
   align-items: center;
   gap: 4px;
+  width: 100%;
+  max-width: 224px;
   font-size: 11px;
   font-weight: 700;
   color: #1F2937;
+}
+.kk-sender-row.ad-sender {
+  justify-content: flex-start;
+}
+.kk-sender-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kk-sender-ad-tag {
+  font-weight: 800;
+  color: #374151;
+}
+.kk-channel-home-badge {
+  margin-left: auto;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
 }
 .kk-bubble-wrap {
   display: flex;
@@ -1849,19 +1912,97 @@ button { cursor: pointer; border: none; background: none; }
   border-color: #FECACA;
   color: #B91C1C;
 }
+/* ★ V3.2 광고·캐로셀 밝은 브랜드 컬러 블러 썸네일 프레임 (1:1~4:3 비율 + 🖼️ 세팅 시 맞춤 이미지 적용 + 1줄 핵심 카피) */
 .kk-friend-banner {
   position: relative;
-  height: 92px;
-  padding: 10px 11px;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(254, 229, 0, 0.28), transparent 50%),
-    linear-gradient(135deg, var(--brand) 0%, #1E293B 100%);
-  color: #FFFFFF;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 114px;
+  padding: 11px 11px 12px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 2px;
+  justify-content: space-between;
   overflow: hidden;
+  background: var(--brand-soft);
+}
+.kk-visual-blur-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 82% 20%, rgba(254, 240, 138, 0.72) 0%, transparent 48%),
+    radial-gradient(circle at 18% 82%, rgba(255, 255, 255, 0.62) 0%, transparent 50%),
+    linear-gradient(135deg, var(--brand-soft) 0%, var(--brand) 100%);
+  filter: blur(6px) saturate(1.18);
+  transform: scale(1.08);
+  pointer-events: none;
+}
+.kk-visual-blur-bg::before,
+.kk-visual-blur-bg::after {
+  content: '';
+  position: absolute;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.34);
+  pointer-events: none;
+}
+.kk-visual-blur-bg::before {
+  width: 84px;
+  height: 54px;
+  top: 14px;
+  right: 12px;
+  transform: rotate(7deg);
+}
+.kk-visual-blur-bg::after {
+  width: 110px;
+  height: 36px;
+  bottom: 12px;
+  left: 10px;
+  transform: rotate(-4deg);
+}
+.kk-visual-fg {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+}
+.kk-visual-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.kk-img-apply-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.96);
+  color: #1E293B;
+  font-size: 9.5px;
+  font-weight: 800;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
+  white-space: nowrap;
+}
+.kk-img-headline {
+  padding: 6px 9px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #0F172A;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1.32;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 .kk-yt-thumb {
   position: relative;
@@ -1876,7 +2017,6 @@ button { cursor: pointer; border: none; background: none; }
   flex-direction: column;
   justify-content: space-between;
 }
-.kk-ad-badge { font-size: 9.5px; font-weight: 700; color: var(--g500); padding: 7px 11px 0; }
 .kk-carousel-track {
   display: flex;
   gap: 8px;
@@ -1898,16 +2038,16 @@ button { cursor: pointer; border: none; background: none; }
   flex-direction: column;
 }
 .kk-carousel-thumb {
-  height: 82px;
-  padding: 9px 10px;
-  background:
-    radial-gradient(circle at 82% 20%, rgba(254, 229, 0, 0.24), transparent 52%),
-    linear-gradient(135deg, #1E293B 0%, var(--brand) 100%);
-  color: #FFFFFF;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 100px;
+  padding: 9px 9px 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 2px;
+  overflow: hidden;
+  background: var(--brand-soft);
 }
 .kk-carousel-card-idx {
   align-self: flex-end;
@@ -2504,6 +2644,31 @@ button { cursor: pointer; border: none; background: none; }
   line-height: 1.58;
 }
 .done-meta-box b { color: var(--g900); }
+/* ★ V3.2 땡큐 페이지 주인공: 토스식 핵심 안심 카드 (Hero Assurance Card) */
+.done-assurance-card {
+  background: linear-gradient(155deg, #EFF6FF 0%, #F5F3FF 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: 20px;
+  padding: 20px 18px;
+  box-shadow: 0 8px 22px rgba(49, 130, 246, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  word-break: keep-all;
+}
+.done-assurance-title {
+  font-size: 19.5px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.38;
+  letter-spacing: -0.02em;
+}
+.done-assurance-body {
+  font-size: 17px;
+  font-weight: 400;
+  color: #334155;
+  line-height: 1.62;
+}
 
 /* ═════════ 하단 고정 Sticky CTA 바 (실제 고마워톡 랜딩 규격: 좌 48px 원형 맨위로 ⌃ + 우 1줄 세팅 확정 신청하기) ═════════ */
 .sticky-bottom-bar {
@@ -3082,34 +3247,48 @@ button { cursor: pointer; border: none; background: none; }
                 </div>
 
                 <div class="s1-teaser-stage" id="s1-teaser-stage">
-                  <!-- 무대 뒤편 레이어 1: 브랜드 컬러 모바일 포스터·랜딩 그래픽 (filter: blur(7px)) -->
+                  <!-- ★ V3.2 무대 뒤편 레이어 1: 100% 풀스크린 블러 모바일 랜딩 포스터 (흰 여백 0px · scale(1.08)) -->
                   <div class="s1-bg-preview" aria-hidden="true">
-                    <div class="s1-poster-badge-row">
-                      <span class="s1-poster-pill">맞춤 신청페이지</span>
-                      <span class="s1-poster-pill soft">카카오 1초 접수</span>
+                    <div class="s1-poster-hero">
+                      <div class="s1-poster-badge-row">
+                        <span class="s1-poster-pill">맞춤 신청페이지</span>
+                        <span class="s1-poster-pill soft">카카오 1초 접수</span>
+                      </div>
+                      <h3 class="s1-headline" id="lp-hero-title">핵심 헤드카피</h3>
+                      <div class="blur-hero-slot" id="s1-hero-slot" style="border-radius:14px">
+                        <div class="blur-visual-art"></div>
+                        <div class="blur-hero-pill" id="blur-hero-badge">맞춤 신청페이지 비주얼</div>
+                      </div>
                     </div>
-                    <div class="blur-hero-slot" id="s1-hero-slot" style="border-radius:14px">
-                      <div class="blur-visual-art"></div>
-                      <div class="blur-hero-pill" id="blur-hero-badge">전문가 검수 초기 신청페이지</div>
-                    </div>
-                    <h3 class="s1-headline" id="lp-hero-title">핵심 헤드카피</h3>
-                    <div class="s1-checks" id="lp-points-list"></div>
-                    <div class="s1-poster-card-grid">
-                      <div class="s1-poster-mini-box"></div>
-                      <div class="s1-poster-mini-box warm"></div>
+                    <div class="s1-poster-body">
+                      <div class="s1-checks" id="lp-points-list"></div>
+                      <div class="s1-poster-card-grid">
+                        <div class="s1-poster-mini-box">
+                          <span class="s1-poster-bar short"></span>
+                          <span class="s1-poster-bar"></span>
+                          <span class="s1-poster-bar short"></span>
+                        </div>
+                        <div class="s1-poster-mini-box warm">
+                          <span class="s1-poster-bar short"></span>
+                          <span class="s1-poster-bar"></span>
+                          <span class="s1-poster-bar short"></span>
+                        </div>
+                      </div>
+                      <div class="s1-poster-footer-strip">
+                        <span class="s1-poster-bar"></span>
+                        <span class="s1-poster-bar short"></span>
+                      </div>
                     </div>
                   </div>
 
-                  <!-- 무대 뒤편 레이어 2: 블러 랜딩 중앙 반투명 화이트 글래스 카드 -->
+                  <!-- ★ V3.2 무대 뒤편 레이어 2: 블러 포스터 중앙 화이트 글래스 카드 (핵심 1문장 집중 · 불필요 배지/보조문구 제거) -->
                   <div class="s1-teaser-revealed" id="s1-teaser-revealed">
                     <div class="s1-expert-glass-card">
                       <div class="s1-glass-top-row">
-                        <span class="s1-glass-badge">✨ 전담 전문가 초기 세팅 지원</span>
                         <button type="button" class="btn-s1-close-curtain" id="btn-s1-close-curtain">커튼 닫기</button>
                       </div>
-                      <div class="s1-glass-title">세팅 확정 시 전문가 검수 후 맞춤 이미지·문구가 세팅됩니다</div>
-                      <p class="s1-glass-sub">초기 세팅 완료 후에도 관리자 페이지에서 파트너님이 직접 이미지와 내용을 언제든 변경하실 수 있어요.</p>
-                      <button type="button" class="btn-s1-go-step2" id="btn-s1-go-step2">다음: ② 신청폼 화면 보기 →</button>
+                      <div class="s1-glass-title">세팅 확정 시 전문가가 검수 후<br>실제 세팅해 드려요</div>
+                      <button type="button" class="btn-s1-go-step2" id="btn-s1-go-step2">② 신청폼 보기 →</button>
                     </div>
                   </div>
 
@@ -3351,7 +3530,7 @@ button { cursor: pointer; border: none; background: none; }
         <div class="tier-status-badge starter" id="starter-tier-badge" hidden></div>
         <div class="tier-status-badge pro" id="pro-partner-badge" hidden></div>
         <h2 class="sec-title" id="confirm-sec-title">세팅 확정 신청</h2>
-        <p class="sec-desc" id="confirm-sec-desc">초기 세팅 완료 후에도 관리자 페이지에서 파트너님이 직접 언제든 내용을 수정하실 수 있어요.</p>
+        <p class="sec-desc" id="confirm-sec-desc">전문가가 검수 후 초기 세팅을 바로 도와드려요.</p>
       </div>
 
       <div class="already-confirmed-banner" id="already-confirmed-banner" hidden>
@@ -3440,8 +3619,12 @@ button { cursor: pointer; border: none; background: none; }
         <div class="done-check-icon">✓</div>
         <h3 style="font-size:23px;font-weight:800;color:#0F172A;line-height:1.38;letter-spacing:-0.025em" id="done-title">세팅 확정 신청이 접수되었습니다</h3>
         <p style="font-size:17.5px;font-weight:400;color:#475569;line-height:1.58" id="done-desc">
-          담당 전문가에게 즉시 알림이 전송되었습니다. 검수 후 초기 세팅을 완료해 드리며, 오픈 후 관리자 페이지에서 파트너님이 직접 언제든 수정하실 수 있습니다.
+          담당 전문가에게 즉시 알림이 전송되었습니다.
         </p>
+        <div class="done-assurance-card" id="done-assurance-card">
+          <div class="done-assurance-title">✨ 초기 세팅 후 파트너님만의 캠페인으로 완성하세요</div>
+          <div class="done-assurance-body">지금 보신 설계안은 빠른 시작을 돕는 초안입니다. 전문가가 검수해 초기 세팅을 마친 뒤, 고마워톡 파트너센터에서 문구와 이미지를 언제든 수정·보완해 파트너님만의 완전한 캠페인을 만드실 수 있습니다.</div>
+        </div>
         <div class="done-meta-box" id="done-meta-box"></div>
         <button type="button" class="btn-done-share" id="btn-done-copy-link">이 설계안 링크 복사해 두기</button>
       </div>
@@ -4763,13 +4946,13 @@ function buildFallbackSpotlightPairForProposal(optA, optB, camp) {
     directOrder = true;
     pair = {
       adv: {
-        badge: shortText(channelName + ' · 맞춤 추천', 22),
+        badge: '산지 직송 · 맞춤 추천',
         headline: shortText(optA.answerText + ' 딱 맞게 골라 담았습니다', 32),
         body: '#{이름}님! 고르신 "' + optA.answerText + '" 취향에 맞춰 껍질째 아삭하게 드시기 좋은 당도 선별 수확 물량만 골라 안내해 드려요.',
         btn: sched.hasVideo ? '▶ 산지 수확 영상 보기' : '맞춤 구성 바로 보기'
       },
       beg: {
-        badge: shortText(channelName + ' · 프리미엄 추천', 22),
+        badge: '최상급 선별 · 프리미엄 추천',
         headline: shortText(optB.answerText + ' 최상급 선별 안내', 32),
         body: '#{이름}님! 고르신 "' + optB.answerText + '" 취향에 맞춰 크기와 때깔, 당도까지 깐깐하게 고른 최상급 수확 구성만 따로 모았습니다.',
         btn: sched.hasVideo ? '▶ 프리미엄 선별 영상 보기' : '프리미엄 구성 보기'
@@ -4824,13 +5007,13 @@ function buildFallbackSpotlightPairForProposal(optA, optB, camp) {
     directOrder = true;
     pair = {
       adv: {
-        badge: shortText(channelName + ' · 맞춤 안내 A', 22),
+        badge: '맞춤 추천 안내',
         headline: shortText(optA.answerText + ' 맞춤 핵심 안내', 32),
         body: '#{이름}님! "' + optA.answerText + '" 항목을 선택해 주셔서 꼭 필요한 핵심 안내와 맞춤 구성만 한눈에 정리해 보내드립니다.',
         btn: sched.hasVideo ? '▶ 맞춤 안내 영상 보기' : '맞춤 안내 바로 보기'
       },
       beg: {
-        badge: shortText(channelName + ' · 맞춤 안내 B', 22),
+        badge: '핵심 포인트 안내',
         headline: shortText(optB.answerText + ' 맞춤 핵심 안내', 32),
         body: '#{이름}님! "' + optB.answerText + '" 항목에 맞춰 가장 많이 궁금해하시는 핵심 포인트와 실제 사례를 깔끔하게 정리해 보내드려요.',
         btn: sched.hasVideo ? '▶ 핵심 안내 영상 보기' : '핵심 안내 자세히 보기'
@@ -5120,6 +5303,52 @@ function buildFailureNoticeAlimtalkHtml(channelName) {
   '</div>';
 }
 
+/* ★ V3.2 실제 카카오톡 (광고) 발신자 헤더 + 원형 채널홈 배지(🏠) + 중복 상호 제거 + 밝은 블러 썸네일 헬퍼 */
+function buildAdSenderRowHtml(channelName) {
+  return '<div class="kk-sender-row ad-sender">' +
+    '<span class="kk-sender-name"><span class="kk-sender-ad-tag">(광고)</span> ' + esc(channelName) + '</span>' +
+    '<span class="kk-verified-mark">✓</span>' +
+    '<span class="kk-channel-home-badge" aria-hidden="true" title="채널 홈">🏠</span>' +
+  '</div>';
+}
+
+function stripDuplicateChannelCopy(rawText, channelName) {
+  let s = cleanText(rawText || '').trim();
+  const ch = String(channelName || '').trim();
+  if (!s || !ch) return s;
+  const escCh = ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // 1) 배지·헤드라인 앞 중복 상호 제거 (예: "금빛 사과 · 프리미엄 추천" -> "프리미엄 추천")
+  const strippedHead = s
+    .replace(new RegExp('^\\(광고\\)\\s*' + escCh + '\\s*[·:\\-]?\\s*', 'g'), '')
+    .replace(new RegExp('^' + escCh + '\\s*[·:\\-]\\s*', 'g'), '')
+    .replace(new RegExp('^' + escCh + '(?:의|에서)\\s+', 'g'), '')
+    .trim();
+  if (strippedHead.length >= 5) s = strippedHead;
+  // 2) 본문 첫머리("#{이름}님! 금빛 사과의 ...") 중복 상호 정리
+  s = s.replace(new RegExp('(#\\{이름\\}님[!,.]?\\s*)' + escCh + '(?:의|에서|에서\\s*준비한)?\\s+', 'g'), '$1');
+  return s;
+}
+
+function buildAdBlurredThumbHtml(headline, opts) {
+  opts = opts || {};
+  const isCarousel = !!opts.isCarousel;
+  const cls = isCarousel ? 'kk-carousel-thumb' : 'kk-friend-banner';
+  const cleanLine = shortText(stripDuplicateChannelCopy(headline, opts.channelName) || '맞춤 혜택 안내', isCarousel ? 18 : 24);
+  const idxHtml = (isCarousel && opts.cardIdx && opts.totalCards)
+    ? '<span class="kk-carousel-card-idx">' + opts.cardIdx + ' / ' + opts.totalCards + '</span>'
+    : '';
+  return '<div class="' + cls + '">' +
+    '<div class="kk-visual-blur-bg" aria-hidden="true"></div>' +
+    '<div class="kk-visual-fg">' +
+      '<div class="kk-visual-top-row">' +
+        '<span class="kk-img-apply-pill">🖼️ 세팅 시 맞춤 이미지 적용</span>' +
+        idxHtml +
+      '</div>' +
+      '<div class="kk-img-headline">' + esc(cleanLine) + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
 function renderRescueSimulationInBody(bodyEl, stepNum) {
   if (!bodyEl) return;
   const { camp, channelName, avatarHtml } = getChannelMeta();
@@ -5129,7 +5358,7 @@ function renderRescueSimulationInBody(bodyEl, stepNum) {
     : DEMO_CAMPAIGN.tab4_interval_messages.sequence;
   const t5 = Array.isArray(camp.tab5_date_messages) ? camp.tab5_date_messages : [];
 
-  // 해당 광고 단계(4, 5, 6)의 원래 (광고) 카드 콘텐츠 구성
+  // 해당 광고 단계(4, 5, 6)의 원래 (광고) 카드 콘텐츠 구성 (본문 내부 중복 (광고) 0건 · 밝은 블러 썸네일 적용)
   let adCardHtml = '';
   if (stepNum === 5) {
     const step3 = seq[2] || DEMO_CAMPAIGN.tab4_interval_messages.sequence[2];
@@ -5137,43 +5366,31 @@ function renderRescueSimulationInBody(bodyEl, stepNum) {
     const cards3 = (Array.isArray(b3.cards_800x600) && b3.cards_800x600.length)
       ? b3.cards_800x600
       : DEMO_CAMPAIGN.tab4_interval_messages.sequence[2].branches[0].cards_800x600;
-    const c0 = cards3[0] || { header_20chars: channelName + ' 핵심 안내', body_180chars: '준비된 소식과 혜택을 지금 확인해 보세요.', button_8chars: '자세히보기' };
+    const c0 = cards3[0] || { header_20chars: '핵심 안내', body_180chars: '준비된 소식과 혜택을 지금 확인해 보세요.', button_8chars: '자세히보기' };
     adCardHtml =
       '<div class="kk-friend-card bubble-focus-swap">' +
-        '<div class="kk-friend-banner">' +
-          '<div style="font-size:10px;font-weight:700;opacity:0.86">캐러셀 광고 메시지</div>' +
-          '<div style="font-size:12.5px;font-weight:800;line-height:1.3">' + esc(shortText(c0.header_20chars, 30)) + '</div>' +
-        '</div>' +
-        '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
-        '<div class="kk-card-body">' + renderKakaoTextWithVars(c0.body_180chars, b3.sheet_fallback_strings) + '</div>' +
+        buildAdBlurredThumbHtml(c0.header_20chars, { channelName: channelName }) +
+        '<div class="kk-card-body">' + renderKakaoTextWithVars(stripDuplicateChannelCopy(c0.body_180chars, channelName), b3.sheet_fallback_strings) + '</div>' +
         '<div class="kk-card-btns"><div class="kk-btn-mock">' + esc(cleanText(c0.button_8chars || '자세히보기')) + '</div></div>' +
       '</div>';
   } else if (stepNum === 6) {
     const s4 = seq[3] || null;
     const b4 = (s4 && s4.branches && s4.branches[0]) || (t5[0] && t5[0].branches && t5[0].branches[0]) || {};
     const ic4 = b4.image_copy || {};
-    const h4 = cleanText(ic4.headline || (t5[0] && t5[0].title) || (channelName + ' 마감 혜택 안내'));
-    const body4 = cleanText(b4.body_text_400chars || ('#{이름}님! 준비해 둔 특별 혜택과 예약 안내를 지금 확인해 보세요.'));
+    const h4 = cleanText(ic4.headline || (t5[0] && t5[0].title) || '마감 혜택 안내');
+    const body4 = stripDuplicateChannelCopy(b4.body_text_400chars || '#{이름}님! 준비해 둔 특별 혜택과 예약 안내를 지금 확인해 보세요.', channelName);
     const btn4 = (b4.buttons && b4.buttons[0] && b4.buttons[0].name) ? cleanText(b4.buttons[0].name) : '혜택 자세히 보기';
     adCardHtml =
       '<div class="kk-friend-card bubble-focus-swap">' +
-        '<div class="kk-friend-banner">' +
-          '<div style="font-size:10px;font-weight:700;opacity:0.86">' + esc(cleanText(ic4.badge || '광고 메시지')) + '</div>' +
-          '<div style="font-size:12.5px;font-weight:800;line-height:1.3">' + esc(shortText(h4, 30)) + '</div>' +
-        '</div>' +
-        '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
+        buildAdBlurredThumbHtml(h4, { channelName: channelName }) +
         '<div class="kk-card-body">' + renderKakaoTextWithVars(body4, b4.sheet_fallback_strings) + '</div>' +
         '<div class="kk-card-btns"><div class="kk-btn-mock">' + esc(btn4) + '</div></div>' +
       '</div>';
   } else {
     adCardHtml =
       '<div class="kk-friend-card bubble-focus-swap">' +
-        '<div class="kk-friend-banner">' +
-          '<div style="font-size:10px;font-weight:700;opacity:0.86">' + esc(br.step4Badge) + '</div>' +
-          '<div style="font-size:12.5px;font-weight:800;line-height:1.3">' + esc(shortText(br.step4Headline, 30)) + '</div>' +
-        '</div>' +
-        '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
-        '<div class="kk-card-body">' + renderKakaoTextWithVars(br.step4Body, br.fallbackStrings) + '</div>' +
+        buildAdBlurredThumbHtml(br.step4Headline, { channelName: channelName }) +
+        '<div class="kk-card-body">' + renderKakaoTextWithVars(stripDuplicateChannelCopy(br.step4Body, channelName), br.fallbackStrings) + '</div>' +
         '<div class="kk-card-btns">' +
           br.step4Buttons.slice(0, 2).map(bt => '<div class="kk-btn-mock">' + esc(cleanText(bt.name)) + '</div>').join('') +
         '</div>' +
@@ -5201,7 +5418,7 @@ function renderRescueSimulationInBody(bodyEl, stepNum) {
     '<div class="kk-msg-row">' +
       avatarHtml +
       '<div class="kk-msg-col">' +
-        '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
+        buildAdSenderRowHtml(channelName) +
         '<div class="kk-bubble-wrap">' +
           adCardHtml +
           '<span class="kk-time">오전 9:00</span>' +
@@ -5415,10 +5632,7 @@ function renderKakaoStep4(withMorph) {
         '<div class="yt-play-center">▶</div>' +
         '<div class="yt-caption">' + esc(shortText(headTxt, 28)) + '</div>' +
       '</div>'
-    : '<div class="kk-friend-banner">' +
-        '<div style="font-size:10px;font-weight:700;opacity:0.86">' + esc(badgeTxt) + '</div>' +
-        '<div style="font-size:13px;font-weight:800;line-height:1.3">' + esc(shortText(headTxt, 32)) + '</div>' +
-      '</div>';
+    : buildAdBlurredThumbHtml(headTxt, { channelName: channelName });
 
   if (withMorph) {
     bodyEl.classList.remove('morph-in');
@@ -5430,13 +5644,12 @@ function renderKakaoStep4(withMorph) {
     '<div class="kk-msg-row">' +
       avatarHtml +
       '<div class="kk-msg-col">' +
-        '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
+        buildAdSenderRowHtml(channelName) +
         '<div class="kk-bubble-wrap">' +
           '<div class="kk-friend-card' + focusCls + '">' +
             topVisualHtml +
-            '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
             '<div class="kk-card-body">' +
-              renderKakaoTextWithCustomer(bodyTxt, fbStrings, customerWho) +
+              renderKakaoTextWithCustomer(stripDuplicateChannelCopy(bodyTxt, channelName), fbStrings, customerWho) +
             '</div>' +
             '<div class="kk-card-btns">' +
               btns.map(bt => {
@@ -5488,12 +5701,8 @@ function renderKakaoStep5(withMorph) {
     bubbleHtml =
       '<div class="kk-bubble-wrap">' +
         '<div class="kk-friend-card' + focusCls + '">' +
-          '<div class="kk-friend-banner">' +
-            '<div style="font-size:10px;font-weight:700;opacity:0.86">' + esc(br.step4Badge + ' · ' + st5.timeLabel) + '</div>' +
-            '<div style="font-size:13px;font-weight:800;line-height:1.3">' + esc(shortText(br.step4Headline, 32)) + '</div>' +
-          '</div>' +
-          '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
-          '<div class="kk-card-body">' + renderKakaoTextWithCustomer(br.step4Body, br.fallbackStrings, customerWho) + '</div>' +
+          buildAdBlurredThumbHtml(br.step4Headline, { channelName: channelName }) +
+          '<div class="kk-card-body">' + renderKakaoTextWithCustomer(stripDuplicateChannelCopy(br.step4Body, channelName), br.fallbackStrings, customerWho) + '</div>' +
           '<div class="kk-card-btns">' +
             br.step4Buttons.slice(0, 2).map(bt => '<div class="kk-btn-mock">' + esc(cleanText(bt.name)) + '</div>').join('') +
           '</div>' +
@@ -5503,7 +5712,7 @@ function renderKakaoStep5(withMorph) {
   } else if (isYt3) {
     const ytTitle = (isSpot5 && br ? br.step4Headline : null) || (media3 && media3.title) || (sched.type === 'MONTHLY' ? ('[월간 2호 인터뷰] ' + channelName) : (channelName + ' 후속 인터뷰 영상'));
     const ytDur = (media3 && media3.duration) || '06:18';
-    const ytBody = cleanText((isSpot5 && br ? br.step4Body : null) || b3.body_text_400chars || ('#{이름}님, 새 후속 영상이 공개되었습니다. 아래 버튼을 눌러 유튜브에서 바로 시청해 보세요.'));
+    const ytBody = stripDuplicateChannelCopy((isSpot5 && br ? br.step4Body : null) || b3.body_text_400chars || '#{이름}님, 새 후속 영상이 공개되었습니다. 아래 버튼을 눌러 유튜브에서 바로 시청해 보세요.', channelName);
     const ytBtn = (isSpot5 && br && br.step4Buttons[0] ? br.step4Buttons[0].name : null) || (b3.buttons && b3.buttons[0] && b3.buttons[0].name ? cleanText(b3.buttons[0].name) : '▶ 유튜브에서 영상 바로 보기');
     bubbleHtml =
       '<div class="kk-bubble-wrap">' +
@@ -5513,7 +5722,6 @@ function renderKakaoStep5(withMorph) {
             '<div class="yt-play-center">▶</div>' +
             '<div class="yt-caption">' + esc(shortText(ytTitle, 28)) + '</div>' +
           '</div>' +
-          '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
           '<div class="kk-card-body">' + renderKakaoTextWithCustomer(ytBody, b3.sheet_fallback_strings, customerWho) + '</div>' +
           '<div class="kk-card-btns"><div class="kk-btn-mock yt-btn">' + esc(ytBtn) + '</div></div>' +
         '</div>' +
@@ -5523,29 +5731,25 @@ function renderKakaoStep5(withMorph) {
     const safeCards = (Array.isArray(cards3) && cards3.length >= 2)
       ? cards3.slice(0, 6)
       : [
-          { header_20chars: shortText(channelName + ' 핵심 안내', 20), body_180chars: '#{이름}님! ' + channelName + '에서 준비한 핵심 구성과 혜택을 카드로 확인해 보세요.', button_8chars: '자세히보기' },
+          { header_20chars: '핵심 구성 안내', body_180chars: '#{이름}님! 준비한 핵심 구성과 혜택을 카드로 확인해 보세요.', button_8chars: '자세히보기' },
           { header_20chars: '실제 고객 후기', body_180chars: '먼저 이용하신 고객님들의 생생한 후기와 추천 포인트를 정리했습니다.', button_8chars: '후기보기' },
           { header_20chars: '채널 친구 전용 혜택', body_180chars: '궁금한 점이나 예약·주문은 아래 버튼에서 바로 이어가실 수 있어요.', button_8chars: '혜택받기' }
         ];
     const totalCards = safeCards.length;
     bubbleHtml =
       '<div class="kk-carousel-track" data-carousel-count="' + totalCards + '">' +
-        safeCards.map((c, ci) =>
-          '<div class="kk-carousel-card' + focusCls + '">' +
-            '<div class="kk-carousel-thumb">' +
-              '<span class="kk-carousel-card-idx">' + (ci + 1) + ' / ' + totalCards + '</span>' +
-              '<div>' +
-                '<div style="font-size:10px;font-weight:700;opacity:0.86">(광고) ' + esc(shortText(channelName, 12)) + '</div>' +
-                '<div style="font-size:12px;font-weight:800;line-height:1.25">' + esc(shortText(c.header_20chars || (channelName + ' 안내'), 18)) + '</div>' +
-              '</div>' +
-            '</div>' +
+        safeCards.map((c, ci) => {
+          const cleanCardTitle = stripDuplicateChannelCopy(c.header_20chars || ('핵심 안내 ' + (ci + 1)), channelName);
+          const cleanCardBody = stripDuplicateChannelCopy(c.body_180chars || '', channelName);
+          return '<div class="kk-carousel-card' + focusCls + '">' +
+            buildAdBlurredThumbHtml(cleanCardTitle, { isCarousel: true, cardIdx: ci + 1, totalCards: totalCards, channelName: channelName }) +
             '<div class="kk-carousel-body">' +
-              '<h4>' + esc(cleanText(c.header_20chars || ('핵심 안내 ' + (ci + 1)))) + '</h4>' +
-              '<p>' + renderKakaoTextWithCustomer(c.body_180chars || '', b3.sheet_fallback_strings, customerWho) + '</p>' +
+              '<h4>' + esc(cleanCardTitle) + '</h4>' +
+              '<p>' + renderKakaoTextWithCustomer(cleanCardBody, b3.sheet_fallback_strings, customerWho) + '</p>' +
             '</div>' +
             '<div class="kk-card-btns"><div class="kk-btn-mock">' + esc(cleanText(c.button_8chars || '자세히보기')) + '</div></div>' +
-          '</div>'
-        ).join('') +
+          '</div>';
+        }).join('') +
       '</div>' +
       '<div class="kk-carousel-hint">↔ 옆으로 밀어서 ' + totalCards + '장 카드 보기</div>';
   }
@@ -5555,7 +5759,7 @@ function renderKakaoStep5(withMorph) {
     '<div class="kk-msg-row">' +
       avatarHtml +
       '<div class="kk-msg-col">' +
-        '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
+        buildAdSenderRowHtml(channelName) +
         bubbleHtml +
       '</div>' +
     '</div>';
@@ -5586,24 +5790,21 @@ function renderKakaoStep6(withMorph) {
   const t5Branch = (t5First && Array.isArray(t5First.branches) && t5First.branches[0]) || {};
   const focusCls = withMorph ? ' bubble-focus-swap' : '';
 
-  let badgeTxt, headTxt, bodyTxt, btns, fbStrings;
+  let headTxt, bodyTxt, btns, fbStrings;
   if (isSpot6 && br) {
-    badgeTxt = br.step4Badge + ' · ' + st6.timeLabel;
     headTxt = br.step4Headline;
     bodyTxt = br.step4Body;
     btns = br.step4Buttons;
     fbStrings = br.fallbackStrings;
   } else if (st6.isDateReserved) {
-    badgeTxt = '지정 날짜 정각 광고 · ' + st6.timeLabel;
-    headTxt = cleanText((t5First && t5First.title) || st6.messageHint || (channelName + ' 예약 안내'));
-    bodyTxt = cleanText(t5Branch.body_text_400chars || ('#{이름}님, 안내드린 일정이 다가왔습니다. 자세한 내용을 확인해 주세요.'));
+    headTxt = cleanText((t5First && t5First.title) || st6.messageHint || '예약 일정 안내');
+    bodyTxt = cleanText(t5Branch.body_text_400chars || '#{이름}님, 안내드린 일정이 다가왔습니다. 자세한 내용을 확인해 주세요.');
     btns = (Array.isArray(t5Branch.buttons) && t5Branch.buttons.length) ? t5Branch.buttons.slice(0, 2) : [{ name: '일정 자세히 보기' }];
     fbStrings = t5Branch.sheet_fallback_strings || {};
   } else {
     const ic4 = b4.image_copy || {};
-    badgeTxt = cleanText(ic4.badge || '광고 3회차 · 최종 혜택');
-    headTxt = cleanText(ic4.headline || (channelName + ' 특별 혜택 및 상담 안내'));
-    bodyTxt = cleanText(b4.body_text_400chars || ('#{이름}님! 앞서 보내드린 핵심 소식은 잘 보셨나요? 놓치면 아쉬운 특별 혜택과 1:1 상담 예약을 지금 확인해 보세요.'));
+    headTxt = cleanText(ic4.headline || '특별 혜택 및 상담 안내');
+    bodyTxt = cleanText(b4.body_text_400chars || '#{이름}님! 앞서 보내드린 핵심 소식은 잘 보셨나요? 놓치면 아쉬운 특별 혜택과 1:1 상담 예약을 지금 확인해 보세요.');
     btns = (Array.isArray(b4.buttons) && b4.buttons.length) ? b4.buttons.slice(0, 2) : [{ name: '혜택·상담 바로가기' }];
     fbStrings = b4.sheet_fallback_strings || {};
   }
@@ -5613,15 +5814,11 @@ function renderKakaoStep6(withMorph) {
     '<div class="kk-msg-row">' +
       avatarHtml +
       '<div class="kk-msg-col">' +
-        '<div class="kk-sender-row"><span>' + esc(channelName) + '</span><span class="kk-verified-mark">✓</span></div>' +
+        buildAdSenderRowHtml(channelName) +
         '<div class="kk-bubble-wrap">' +
           '<div class="kk-friend-card' + focusCls + '">' +
-            '<div class="kk-friend-banner">' +
-              '<div style="font-size:10px;font-weight:700;opacity:0.86">' + esc(badgeTxt) + '</div>' +
-              '<div style="font-size:13px;font-weight:800;line-height:1.3">' + esc(shortText(headTxt, 32)) + '</div>' +
-            '</div>' +
-            '<div class="kk-ad-badge">(광고) ' + esc(channelName) + '</div>' +
-            '<div class="kk-card-body">' + renderKakaoTextWithCustomer(bodyTxt, fbStrings, customerWho) + '</div>' +
+            buildAdBlurredThumbHtml(headTxt, { channelName: channelName }) +
+            '<div class="kk-card-body">' + renderKakaoTextWithCustomer(stripDuplicateChannelCopy(bodyTxt, channelName), fbStrings, customerWho) + '</div>' +
             '<div class="kk-card-btns">' +
               btns.map(bt => '<div class="kk-btn-mock">' + esc(cleanText(bt.name || '자세히 보기')) + '</div>').join('') +
             '</div>' +
@@ -5942,7 +6139,7 @@ function applyTierBranchUI() {
   if (starterBadge) starterBadge.hidden = true;
   if (proBadge) proBadge.hidden = true;
   if (secTitle) secTitle.textContent = '세팅 확정 신청';
-  if (secDesc) secDesc.textContent = '초기 세팅 완료 후에도 관리자 페이지에서 파트너님이 직접 언제든 내용을 수정하실 수 있어요.';
+  if (secDesc) secDesc.textContent = '전문가가 검수 후 초기 세팅을 바로 도와드려요.';
   if (submitBtn) submitBtn.textContent = '세팅 확정 신청하기';
   if (stickyBtn) stickyBtn.textContent = '세팅 확정 신청하기';
 

@@ -41,6 +41,7 @@
 
 var FOLDER_NAME_DEFAULT = "파트너접수함";
 var SHEET_NAME_CONTROL = "파트너캠페인관제탑";
+var SHEET_NAME_HISTORY = "캠페인접수이력";
 var SHEET_NAME_REPORTS = "파트너제보함";
 var SHEET_NAME_APPROVED_PARTNERS = "승인파트너명단";
 var SHEET_NAME_PARTNERS = "파트너목록";
@@ -92,6 +93,34 @@ var REPORT_HEADERS_V25 = [
   "블랙박스JSON",
   "처리상태"
 ];
+
+var HISTORY_HEADERS_V25 = [
+  "접수일시",
+  "kakao_user_id",
+  "실명",
+  "전화번호",
+  "등급",
+  "회차",
+  "업종",
+  "제안서고유URL",
+  "드라이브JSON링크",
+  "파일ID",
+  "세팅확정상태",
+  "고객수정메모"
+];
+
+var HCOL_CREATED_AT = 0;
+var HCOL_KAKAO_ID = 1;
+var HCOL_REAL_NAME = 2;
+var HCOL_PHONE = 3;
+var HCOL_TIER = 4;
+var HCOL_ROUND = 5;
+var HCOL_INDUSTRY = 6;
+var HCOL_PROPOSAL_URL = 7;
+var HCOL_DRIVE_LINK = 8;
+var HCOL_FILE_ID = 9;
+var HCOL_CONFIRM_STATUS = 10;
+var HCOL_REVISION_MEMO = 11;
 
 // 0-based 컬럼 인덱스 상수
 var COL_CREATED_AT = 0;       // A: 접수일시
@@ -606,7 +635,7 @@ function doPost(e) {
     var body = JSON.parse(rawBody);
     var action = String(body.action || "").trim();
 
-    if (action === "verifyUserAndQuota" || action === "verify_user_and_quota") {
+    if (action === "verifyUserAndQuota" || action === "verify_user_and_quota" || action === "kakao_auth") {
       return jsonResponse_(verifyUserAndQuota(body));
     }
 
@@ -626,7 +655,7 @@ function doPost(e) {
       return jsonResponse_(handlePinpointEdit_(body));
     }
 
-    if (action === "submit_campaign") {
+    if (action === "submit_campaign" || action === "save_intake") {
       return jsonResponse_(handleSubmitCampaign_(body));
     }
 
@@ -829,6 +858,243 @@ function evaluateQuota_(tier, totalUsed, storedMonthlyUsed, lastUsedMonth, curre
   };
 }
 
+function isValidPhoneForMatch_(normPhone) {
+  var p = normalizePhone_(normPhone || "");
+  if (!p || p.length < 9) return false;
+  if (p === "01000000000" || p === "00000000000" || /^0+$/.test(p)) return false;
+  return true;
+}
+
+function getOrCreateHistorySheet_() {
+  var ss = getControlSpreadsheet_();
+  if (!ss) return null;
+  var sheet = ss.getSheetByName(SHEET_NAME_HISTORY);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME_HISTORY);
+    var colCount = HISTORY_HEADERS_V25.length; // 12
+    if (sheet.getMaxColumns && sheet.getMaxColumns() < colCount) {
+      sheet.insertColumnsAfter(sheet.getMaxColumns(), colCount - sheet.getMaxColumns());
+    }
+    sheet.getRange(1, 1, 1, colCount)
+      .setValues([HISTORY_HEADERS_V25])
+      .setBackground("#182232")
+      .setFontColor("#FFFFFF")
+      .setFontWeight("bold")
+      .setHorizontalAlignment("center")
+      .setVerticalAlignment("middle");
+    if (sheet.setFrozenRows) sheet.setFrozenRows(1);
+    var widths = [155, 130, 95, 125, 95, 70, 140, 220, 220, 200, 125, 250];
+    for (var i = 0; i < widths.length; i++) {
+      if (sheet.setColumnWidth) sheet.setColumnWidth(i + 1, widths[i]);
+    }
+  }
+  return sheet;
+}
+
+function appendCampaignHistoryRow_(entry) {
+  try {
+    var hSheet = getOrCreateHistorySheet_();
+    if (!hSheet) return -1;
+    var rowNum = Math.max(2, hSheet.getLastRow() + 1);
+    var rowVals = [
+      String(entry.createdAt || getNowDisplay_()),
+      String(entry.kakaoUserId || ""),
+      String(entry.realName || ""),
+      String(entry.phone || ""),
+      normalizeTier_(entry.tier),
+      Number(entry.round) || 1,
+      String(entry.industry || ""),
+      String(entry.proposalUrl || ""),
+      String(entry.driveLink || ""),
+      String(entry.fileId || ""),
+      String(entry.confirmStatus || CONFIRM_UNCHECKED),
+      String(entry.revisionMemo || "")
+    ];
+    hSheet.getRange(rowNum, 1, 1, HISTORY_HEADERS_V25.length).setValues([rowVals]);
+    try {
+      hSheet.getRange(rowNum, HCOL_KAKAO_ID + 1).setNumberFormat("@");
+      hSheet.getRange(rowNum, HCOL_PHONE + 1).setNumberFormat("@");
+    } catch (fmtErr) {}
+    return rowNum;
+  } catch (err) {
+    Logger.log("[appendCampaignHistoryRow_ Warning] " + err);
+    return -1;
+  }
+}
+
+/* =========================================================================
+ * 기존 중복 행 자동 병합 정리 (1인 1행 Strict Upsert 보증)
+ *  - 동일 kakao_user_id (또는 유효 전화번호) 중복 행들을 스캔
+ *  - 최신 데이터 + 최고 등급(Pro>Starter>가망고객) + 실제 생성 횟수(단순 합산 금지) + 통합 로그로 1행 병합 후 중복 행 삭제
+ * ========================================================================= */
+function deduplicateControlTowerRows_(sheet, headerRow) {
+  var result = { mergedGroups: 0, deletedRows: 0 };
+  if (!sheet) return result;
+  try {
+    var hRow = headerRow || detectControlHeaderRow_(sheet);
+    var lastRow = sheet.getLastRow();
+    if (lastRow <= hRow + 1) return result;
+
+    var numRows = lastRow - hRow;
+    var colCount = CONTROL_HEADERS_V23.length;
+    var values = sheet.getRange(hRow + 1, 1, numRows, colCount).getValues();
+
+    var groups = [];
+    var uidToGroup = {};
+    var phoneToGroup = {};
+
+    for (var i = 0; i < values.length; i++) {
+      var row = values[i];
+      var rUid = String(row[COL_KAKAO_ID] || "").trim();
+      var rPhone = normalizePhone_(row[COL_PHONE] || "");
+      var hasValidPhone = isValidPhoneForMatch_(rPhone);
+      if (!rUid && !hasValidPhone) continue;
+
+      var gIdx = -1;
+      if (rUid && uidToGroup.hasOwnProperty(rUid)) {
+        gIdx = uidToGroup[rUid];
+      } else if (hasValidPhone && phoneToGroup.hasOwnProperty(rPhone)) {
+        gIdx = phoneToGroup[rPhone];
+      }
+
+      if (gIdx === -1) {
+        gIdx = groups.length;
+        groups.push({ items: [] });
+      }
+      groups[gIdx].items.push({ rowNum: hRow + 1 + i, row: row });
+      if (rUid) uidToGroup[rUid] = gIdx;
+      if (hasValidPhone) phoneToGroup[rPhone] = gIdx;
+    }
+
+    var rowsToDelete = [];
+
+    for (var g = 0; g < groups.length; g++) {
+      var items = groups[g].items;
+      if (items.length <= 1) continue;
+
+      result.mergedGroups++;
+      var keepItem = items[0];
+      var latestItem = items[items.length - 1];
+      var merged = latestItem.row.slice(0, colCount);
+      while (merged.length < colCount) merged.push("");
+
+      var bestTier = TIER_LEAD;
+      var maxTotal = 0;
+      var latestMonth = "";
+      var latestMonthly = 0;
+      var distinctFiles = {};
+      var distinctFileCount = 0;
+      var bestUid = "";
+      var bestName = "";
+      var bestPhone = "";
+      var bestIndustry = "";
+      var bestProposalUrl = "";
+      var bestDriveLink = "";
+      var bestFileId = "";
+      var bestPlatform = "NATIVE";
+      var bestCredit = "-";
+      var bestExtMap = "-";
+      var combinedLogs = [];
+
+      for (var k = 0; k < items.length; k++) {
+        var r = items[k].row;
+        var uid = String(r[COL_KAKAO_ID] || "").trim();
+        var nm = String(r[COL_REAL_NAME] || "").trim();
+        var ph = normalizePhone_(r[COL_PHONE] || "");
+        var ind = String(r[COL_INDUSTRY] || "").trim();
+        var tr = normalizeTier_(r[COL_TIER]);
+        var tot = parseInt(r[COL_TOTAL_USED], 10);
+        if (isNaN(tot) || tot < 0) tot = 0;
+        var mon = normalizeYearMonth_(r[COL_LAST_MONTH]);
+        var mUsed = parseInt(r[COL_MONTHLY_USED], 10);
+        if (isNaN(mUsed) || mUsed < 0) mUsed = 0;
+        var fid = String(r[COL_FILE_ID] || "").trim();
+        var purl = String(r[COL_PROPOSAL_URL] || "").trim();
+        var dlink = String(r[COL_DRIVE_LINK] || "").trim();
+        var slog = String(r[COL_STATUS_LOG] || "").trim();
+        var plat = String(r[COL_SOURCE_PLATFORM] || "").trim();
+        var cred = r[COL_CREDIT_BALANCE];
+        var extm = String(r[COL_EXTERNAL_MAPPING] || "").trim();
+
+        if (uid && (!bestUid || uid.indexOf("LEGACY_") !== 0)) bestUid = uid;
+        if (nm && nm !== "고객님" && nm !== "대표님") bestName = nm;
+        else if (nm && !bestName) bestName = nm;
+        if (isValidPhoneForMatch_(ph)) bestPhone = ph;
+        else if (ph && !bestPhone) bestPhone = ph;
+        if (ind) bestIndustry = ind;
+        if (tierRank_(tr) > tierRank_(bestTier)) bestTier = tr;
+        if (tot > maxTotal) maxTotal = tot;
+        if (fid && !distinctFiles[fid]) {
+          distinctFiles[fid] = true;
+          distinctFileCount++;
+        }
+        if (fid) {
+          bestFileId = fid;
+          if (purl) bestProposalUrl = purl;
+          if (dlink) bestDriveLink = dlink;
+        }
+        if (!latestMonth || mon > latestMonth) {
+          latestMonth = mon;
+          latestMonthly = mUsed;
+        } else if (mon === latestMonth && mUsed > latestMonthly) {
+          latestMonthly = mUsed;
+        }
+        if (plat && plat !== "NATIVE") bestPlatform = plat;
+        if (cred !== "" && cred !== null && cred !== undefined && cred !== "-") bestCredit = cred;
+        if (extm && extm !== "-") bestExtMap = extm;
+        if (slog) combinedLogs.push(slog);
+      }
+
+      // 실제 생성 횟수: 기존 최대값과 고유 파일ID 수 중 큰 값 사용 (단순 합산 뻥튀기 원천 차단)
+      var accurateTotal = Math.max(maxTotal, distinctFileCount);
+      var accurateMonthly = Math.min(accurateTotal, Math.max(latestMonthly, (latestMonth === getCurrentYearMonth_() && distinctFileCount > 0 && latestMonthly === 0) ? 1 : latestMonthly));
+
+      merged[COL_KAKAO_ID] = bestUid || merged[COL_KAKAO_ID];
+      merged[COL_REAL_NAME] = bestName || merged[COL_REAL_NAME];
+      merged[COL_PHONE] = bestPhone || merged[COL_PHONE];
+      merged[COL_INDUSTRY] = bestIndustry || merged[COL_INDUSTRY];
+      merged[COL_TIER] = bestTier;
+      merged[COL_TOTAL_USED] = accurateTotal;
+      merged[COL_MONTHLY_USED] = accurateMonthly;
+      merged[COL_LAST_MONTH] = latestMonth || getCurrentYearMonth_();
+      merged[COL_PROPOSAL_URL] = bestProposalUrl || merged[COL_PROPOSAL_URL];
+      merged[COL_DRIVE_LINK] = bestDriveLink || merged[COL_DRIVE_LINK];
+      merged[COL_FILE_ID] = bestFileId || merged[COL_FILE_ID];
+      merged[COL_SOURCE_PLATFORM] = bestPlatform || "NATIVE";
+      merged[COL_CREDIT_BALANCE] = bestCredit;
+      merged[COL_EXTERNAL_MAPPING] = bestExtMap;
+
+      var mergedLogText = combinedLogs.join("\n");
+      if (mergedLogText.length > 1700) {
+        mergedLogText = mergedLogText.slice(mergedLogText.length - 1700);
+      }
+      merged[COL_STATUS_LOG] = appendLogEntry_(
+        mergedLogText,
+        "자동정리: 동일인 중복 행 " + items.length + "건 1인1행 병합 완료 (등급:" + bestTier + " / 누적:" + accurateTotal + "회)"
+      );
+
+      sheet.getRange(keepItem.rowNum, 1, 1, colCount).setValues([merged]);
+      ensureRowDropdowns_(sheet, keepItem.rowNum);
+
+      for (var d = 1; d < items.length; d++) {
+        rowsToDelete.push(items[d].rowNum);
+      }
+    }
+
+    // 아래 행부터 역순 삭제하여 인덱스 밀림 방지
+    rowsToDelete.sort(function (a, b) { return b - a; });
+    for (var delIdx = 0; delIdx < rowsToDelete.length; delIdx++) {
+      if (typeof sheet.deleteRow === "function") {
+        sheet.deleteRow(rowsToDelete[delIdx]);
+        result.deletedRows++;
+      }
+    }
+  } catch (err) {
+    Logger.log("[deduplicateControlTowerRows_ Warning] " + err);
+  }
+  return result;
+}
+
 function findUserRowsInControlSheet_(sheet, headerRow, kakaoUserId, normPhone) {
   var result = {
     matchedIndices: [],
@@ -850,6 +1116,7 @@ function findUserRowsInControlSheet_(sheet, headerRow, kakaoUserId, normPhone) {
   var values = sheet.getRange(headerRow + 1, 1, numRows, CONTROL_HEADERS_V23.length).getValues();
   var targetUid = String(kakaoUserId || "").trim();
   var targetPhone = normalizePhone_(normPhone || "");
+  var targetPhoneValid = isValidPhoneForMatch_(targetPhone);
 
   for (var i = 0; i < values.length; i++) {
     var row = values[i];
@@ -857,7 +1124,7 @@ function findUserRowsInControlSheet_(sheet, headerRow, kakaoUserId, normPhone) {
     var rPhone = normalizePhone_(row[COL_PHONE] || "");
 
     var uidMatch = (targetUid !== "" && rUid !== "" && rUid === targetUid);
-    var phoneMatch = (targetPhone !== "" && rPhone !== "" && rPhone === targetPhone);
+    var phoneMatch = (targetPhoneValid && isValidPhoneForMatch_(rPhone) && rPhone === targetPhone);
     if (!uidMatch && !phoneMatch) continue;
 
     var sheetRowNum = headerRow + 1 + i;
@@ -989,6 +1256,7 @@ function verifyUserAndQuota(body) {
     }
 
     var headerRow = detectControlHeaderRow_(sheet);
+    deduplicateControlTowerRows_(sheet, headerRow);
     var lookup = findUserRowsInControlSheet_(sheet, headerRow, profile.kakao_user_id, profile.phone);
     var nowStr = getNowDisplay_();
     var tier = TIER_LEAD;
@@ -1197,6 +1465,7 @@ function listPaidCampaigns_() {
   }
 
   var headerRow = detectControlHeaderRow_(sheet);
+  deduplicateControlTowerRows_(sheet, headerRow);
   var lastRow = sheet.getLastRow();
   if (lastRow <= headerRow) {
     return {
@@ -1342,6 +1611,20 @@ function handleLoadProposal_(fileId) {
         }
       }
     }
+    // 메인 관제탑에 없는 이전 회차 fileId인 경우 [캠페인접수이력] 보조 탭에서 조회
+    var hSheetMeta = getControlSpreadsheet_() ? getControlSpreadsheet_().getSheetByName(SHEET_NAME_HISTORY) : null;
+    if (hSheetMeta && hSheetMeta.getLastRow() > 1) {
+      var hRows = hSheetMeta.getRange(2, 1, hSheetMeta.getLastRow() - 1, HISTORY_HEADERS_V25.length).getValues();
+      for (var hi = hRows.length - 1; hi >= 0; hi--) {
+        if (String(hRows[hi][HCOL_FILE_ID] || "").trim() === fileId) {
+          proposalMeta.tier = normalizeTier_(hRows[hi][HCOL_TIER]);
+          proposalMeta.confirmStatus = String(hRows[hi][HCOL_CONFIRM_STATUS] || CONFIRM_UNCHECKED).trim();
+          proposalMeta.hasRevisionMemo = (String(hRows[hi][HCOL_REVISION_MEMO] || "").trim() !== "");
+          proposalMeta.createdAt = formatCellTimestamp_(hRows[hi][HCOL_CREATED_AT]) || proposalMeta.createdAt;
+          break;
+        }
+      }
+    }
   } catch (metaErr) {
     Logger.log("[handleLoadProposal_ Meta Warning] " + metaErr);
   }
@@ -1404,6 +1687,9 @@ function handleSubmitCampaign_(body) {
   try {
     var sheet = getOrInitControlSheet_();
     var headerRow = sheet ? detectControlHeaderRow_(sheet) : 4;
+    if (sheet) {
+      deduplicateControlTowerRows_(sheet, headerRow);
+    }
     var lookup = (sheet && (kakaoUserId || normPhone))
       ? findUserRowsInControlSheet_(sheet, headerRow, kakaoUserId, normPhone)
       : null;
@@ -1471,11 +1757,15 @@ function handleSubmitCampaign_(body) {
           ? (typeof payload.external_mapping === "string" ? payload.external_mapping : JSON.stringify(payload.external_mapping))
           : "-";
 
+        var resolvedUid = kakaoUserId || ("LEGACY_" + (normPhone || tsFile));
+        var resolvedName = ownerName;
+        var resolvedPhone = normPhone || String(partner.phone || "");
+
         var rowData = [
           tsDisplay,
-          kakaoUserId || ("LEGACY_" + (normPhone || tsFile)),
-          ownerName,
-          normPhone || String(partner.phone || ""),
+          resolvedUid,
+          resolvedName,
+          resolvedPhone,
           industryDisplay,
           userTier,
           nextTotalUsed,
@@ -1492,15 +1782,43 @@ function handleSubmitCampaign_(body) {
           extMappingVal
         ];
 
+        // 1인 1행 Strict Upsert: 기존 동일인 행이 있으면 무조건 제자리 업데이트 (등급 보존 + 이전 이력 로그 누적)
         var writeRowNum = -1;
-        if (lookup && lookup.openEmptyFileRowNumber !== -1) {
-          // 최초 인증 후 아직 제출 이력이 없는 빈 행을 재사용 (1유입자 1행 유지)
-          writeRowNum = lookup.openEmptyFileRowNumber;
-          var existingLog = String(sheet.getRange(writeRowNum, COL_STATUS_LOG + 1).getValue() || "");
-          rowData[COL_STATUS_LOG] = appendLogEntry_(
-            existingLog,
-            "캠페인 JSON 저장 완료 (" + userTier + " / 누적 " + nextTotalUsed + "회 · 당월 " + nextMonthlyUsed + "회)"
-          );
+        if (lookup && lookup.matchedIndices.length > 0) {
+          writeRowNum = lookup.matchedIndices[0];
+          var prevRow = sheet.getRange(writeRowNum, 1, 1, CONTROL_HEADERS_V23.length).getValues()[0];
+          var existingUid = String(prevRow[COL_KAKAO_ID] || "").trim();
+          var existingName = String(prevRow[COL_REAL_NAME] || "").trim();
+          var existingPhone = normalizePhone_(prevRow[COL_PHONE] || "");
+          var existingTier = normalizeTier_(prevRow[COL_TIER]);
+          var existingFileId = String(prevRow[COL_FILE_ID] || "").trim();
+          var existingConfirm = String(prevRow[COL_CONFIRM_STATUS] || "").trim();
+          var existingMemo = String(prevRow[COL_REVISION_MEMO] || "").trim();
+          var existingLog = String(prevRow[COL_STATUS_LOG] || "");
+
+          if (existingUid && (!kakaoUserId || kakaoUserId.indexOf("LEGACY_") === 0)) {
+            rowData[COL_KAKAO_ID] = existingUid;
+            resolvedUid = existingUid;
+          }
+          if (existingName && existingName !== "고객님" && existingName !== "대표님" && (!resolvedName || resolvedName === "대표님" || resolvedName === "고객님")) {
+            rowData[COL_REAL_NAME] = existingName;
+            resolvedName = existingName;
+          }
+          if (isValidPhoneForMatch_(existingPhone) && !isValidPhoneForMatch_(resolvedPhone)) {
+            rowData[COL_PHONE] = existingPhone;
+            resolvedPhone = existingPhone;
+          }
+          // 관리자가 지정한 기존 유료 등급은 절대 가망고객으로 초기화하지 않고 보존
+          if (tierRank_(existingTier) > tierRank_(rowData[COL_TIER])) {
+            rowData[COL_TIER] = existingTier;
+            userTier = existingTier;
+          }
+
+          var logSummary = "캠페인 JSON 저장 완료 (" + userTier + " / 누적 " + nextTotalUsed + "회 · 당월 " + nextMonthlyUsed + "회 / fileId:" + fileId + ")";
+          if (existingFileId && existingFileId !== fileId) {
+            logSummary = "이전회차 아카이브(fileId:" + existingFileId + ", 상태:" + (existingConfirm || CONFIRM_UNCHECKED) + (existingMemo ? (", 메모:" + existingMemo.slice(0, 40)) : "") + ") -> " + logSummary;
+          }
+          rowData[COL_STATUS_LOG] = appendLogEntry_(existingLog, logSummary);
           sheet.getRange(writeRowNum, 1, 1, CONTROL_HEADERS_V23.length).setValues([rowData]);
         } else {
           writeRowNum = Math.max(headerRow + 1, sheet.getLastRow() + 1);
@@ -1508,16 +1826,21 @@ function handleSubmitCampaign_(body) {
         }
         ensureRowDropdowns_(sheet, writeRowNum);
 
-        // 동일 사용자의 이전 행이 있으면 사용횟수/최근사용월 동기화
-        if (lookup && lookup.matchedIndices.length > 0) {
-          for (var idx = 0; idx < lookup.matchedIndices.length; idx++) {
-            var prevRowNum = lookup.matchedIndices[idx];
-            if (prevRowNum === writeRowNum) continue;
-            sheet.getRange(prevRowNum, COL_TOTAL_USED + 1).setValue(nextTotalUsed);
-            sheet.getRange(prevRowNum, COL_MONTHLY_USED + 1).setValue(nextMonthlyUsed);
-            sheet.getRange(prevRowNum, COL_LAST_MONTH + 1).setNumberFormat("@").setValue(currentMonth);
-          }
-        }
+        // 회차별 제안서·JSON 링크 보존용 보조 탭 [캠페인접수이력]에 건별 1행 기록
+        appendCampaignHistoryRow_({
+          createdAt: tsDisplay,
+          kakaoUserId: resolvedUid,
+          realName: resolvedName,
+          phone: resolvedPhone,
+          tier: userTier,
+          round: nextTotalUsed,
+          industry: industryDisplay,
+          proposalUrl: proposalUrl,
+          driveLink: driveUrl,
+          fileId: fileId,
+          confirmStatus: CONFIRM_UNCHECKED,
+          revisionMemo: ""
+        });
       } catch (sheetErr) {
         Logger.log("[Sheet Log Warning] " + sheetErr);
       }
@@ -1617,10 +1940,50 @@ function handleConfirmProposal_(body) {
       }
     }
 
-    if (matchedRowNum === -1) {
+    var matchedHistoryRowNum = -1;
+    var historyOwnerUid = "";
+    var hSheet = getControlSpreadsheet_() ? getControlSpreadsheet_().getSheetByName(SHEET_NAME_HISTORY) : null;
+    if (hSheet && hSheet.getLastRow() > 1) {
+      var hVals = hSheet.getRange(2, 1, hSheet.getLastRow() - 1, HISTORY_HEADERS_V25.length).getValues();
+      for (var hi = hVals.length - 1; hi >= 0; hi--) {
+        if (String(hVals[hi][HCOL_FILE_ID] || "").trim() === fileId) {
+          matchedHistoryRowNum = 2 + hi;
+          historyOwnerUid = String(hVals[hi][HCOL_KAKAO_ID] || "").trim();
+          if (matchedRowNum === -1) {
+            customerName = String(hVals[hi][HCOL_REAL_NAME] || "").trim() || customerName || "고객님";
+            customerPhone = normalizePhone_(hVals[hi][HCOL_PHONE] || "") || customerPhone;
+            customerIndustry = String(hVals[hi][HCOL_INDUSTRY] || "").trim() || customerIndustry;
+            currentTier = normalizeTier_(hVals[hi][HCOL_TIER]);
+            proposalUrl = String(hVals[hi][HCOL_PROPOSAL_URL] || "").trim() || proposalUrl;
+            driveLink = String(hVals[hi][HCOL_DRIVE_LINK] || "").trim() || driveLink;
+          }
+          hSheet.getRange(matchedHistoryRowNum, HCOL_CONFIRM_STATUS + 1).setValue(CONFIRM_REQUESTED);
+          hSheet.getRange(matchedHistoryRowNum, HCOL_REVISION_MEMO + 1).setValue(storedMemo);
+          break;
+        }
+      }
+    }
+
+    // 이전 회차 fileId가 [캠페인접수이력]에서 확정된 경우, 메인 관제탑 동일인 행 로그에도 누적 반영
+    if (matchedRowNum === -1 && matchedHistoryRowNum !== -1 && historyOwnerUid) {
+      var ownerLookup = findUserRowsInControlSheet_(sheet, headerRow, historyOwnerUid, customerPhone);
+      if (ownerLookup && ownerLookup.matchedIndices.length > 0) {
+        matchedRowNum = ownerLookup.matchedIndices[0];
+        var ownerPrevLog = String(sheet.getRange(matchedRowNum, COL_STATUS_LOG + 1).getValue() || "");
+        var ownerNextLog = appendLogEntry_(
+          ownerPrevLog,
+          "이전회차 HUMAN_QA_READY 확정 (fileId:" + fileId + " / " + selectedPlan + " / " + modeLabel + ")"
+        );
+        sheet.getRange(matchedRowNum, COL_CONFIRM_STATUS + 1).setValue(CONFIRM_REQUESTED);
+        sheet.getRange(matchedRowNum, COL_REVISION_MEMO + 1).setValue(storedMemo);
+        sheet.getRange(matchedRowNum, COL_STATUS_LOG + 1).setValue(ownerNextLog);
+      }
+    }
+
+    if (matchedRowNum === -1 && matchedHistoryRowNum === -1) {
       return {
         ok: false,
-        error: "해당 fileId(" + fileId + ")에 일치하는 관제탑 접수 행을 찾을 수 없습니다."
+        error: "해당 fileId(" + fileId + ")에 일치하는 관제탑 또는 접수이력 행을 찾을 수 없습니다."
       };
     }
   } finally {

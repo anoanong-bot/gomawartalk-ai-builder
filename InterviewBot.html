@@ -1492,6 +1492,8 @@ button { cursor: pointer; border: none; background: none; }
   align-items: center;
   gap: 8px;
 }
+.flt-launcher[hidden], .flt-launcher.is-gated { display: none !important; }
+.flt-sheet-backdrop.is-gated { display: none !important; }
 .flt-pill-label {
   padding: 7px 12px;
   border-radius: 99px;
@@ -1739,12 +1741,126 @@ button { cursor: pointer; border: none; background: none; }
   word-break: keep-all;
 }
 
-/* STEP 5 간결한 잔여 횟수 요약 바 */
+/* STEP 5 간결한 잔여 횟수 요약 바 & 50대+ 접수 완료(Thank-You) 땡큐 페이지 */
 .stage5-quota-row {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.thankyou-card {
+  background: #FFFFFF;
+  border: 1.5px solid #BFDBFE;
+  border-radius: 22px;
+  padding: 26px 20px 22px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  word-break: keep-all;
+}
+.ty-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+.ty-check-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  font-size: 30px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 24px rgba(5, 150, 105, 0.28);
+}
+.ty-headline {
+  font-size: 25px;
+  font-weight: 900;
+  line-height: 1.35;
+  color: #0F172A;
+  word-break: keep-all;
+}
+.ty-process-card {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 16px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.ty-step-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 13px;
+  border-radius: 13px;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: #64748B;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+}
+.ty-step-row.done {
+  background: #ECFDF5;
+  border-color: #A7F3D0;
+  color: #065F46;
+}
+.ty-step-row.active {
+  background: #EFF6FF;
+  border: 2px solid #3182F6;
+  color: #1D4ED8;
+  box-shadow: 0 4px 14px rgba(49, 130, 246, 0.16);
+}
+.ty-pulse-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #3182F6;
+  margin-left: auto;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0 rgba(49, 130, 246, 0.55);
+  animation: tyPulse 1.5s infinite;
+}
+@keyframes tyPulse {
+  0% { box-shadow: 0 0 0 0 rgba(49, 130, 246, 0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(49, 130, 246, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(49, 130, 246, 0); }
+}
+.ty-delivery-box {
+  background: #FFFBEB;
+  border: 1.5px solid #FDE68A;
+  border-radius: 16px;
+  padding: 18px 16px;
+  font-size: 18.5px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #1E293B;
+  word-break: keep-all;
+}
+.ty-delivery-box strong {
+  color: #B45309;
+  font-weight: 900;
+}
+.btn-thankyou-home {
+  width: 100%;
+  height: 56px;
+  border-radius: 15px;
+  background: #1E293B;
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+}
+.btn-thankyou-home:active { transform: scale(0.985); }
 </style>
 </head>
 <body>
@@ -1761,7 +1877,7 @@ button { cursor: pointer; border: none; background: none; }
       <div class="auth-steps-card">
         <div class="auth-step-row"><span class="auth-step-num">1</span><span>내 업종 선택 &amp; 카톡 흐름 미리보기</span></div>
         <div class="auth-step-row"><span class="auth-step-num">2</span><span>예시 터치로 끝내는 5가지 질문</span></div>
-        <div class="auth-step-row"><span class="auth-step-num">3</span><span>모바일 시연 제안서 즉시 생성</span></div>
+        <div class="auth-step-row"><span class="auth-step-num">3</span><span>전문가 검토 후 24시간 내 카톡 발송</span></div>
       </div>
 
       <div class="auth-actions">
@@ -2072,8 +2188,11 @@ button { cursor: pointer; border: none; background: none; }
           </div>
         </div>
 
-        <!-- 제출 완료 카드 -->
-        <div class="summary-card" id="submit-done-card" style="border-color:var(--green)" hidden></div>
+        <!-- 통신 오류 시 복구 안내 배너 (방어 4) -->
+        <div id="step5-submit-err" class="auth-msg-box err" hidden></div>
+
+        <!-- 제출 완료 (Thank-You) 땡큐 페이지 카드 -->
+        <div class="thankyou-card" id="submit-done-card" hidden></div>
       </section>
 
       <!-- ═════════ 토스식 모바일 하단 고정 액션 바 (Step 1 ~ Step 5 공용 Sticky Bottom CTA) ═════════ -->
@@ -2103,7 +2222,7 @@ button { cursor: pointer; border: none; background: none; }
 
         <!-- Step 5 CTA -->
         <div class="sticky-cta-row" id="cta-row-5" hidden>
-          <button type="button" class="btn-primary" id="btn-submit-campaign">✅ 이대로 제안서 만들기</button>
+          <button type="button" class="btn-primary" id="btn-submit-campaign">✅ 이대로 접수 신청하기</button>
         </div>
       </div>
 
@@ -2133,14 +2252,14 @@ button { cursor: pointer; border: none; background: none; }
 <!-- ═════════ 플로팅 토스트 ═════════ -->
 <div class="bot-toast" id="bot-toast" role="status" aria-live="polite" hidden></div>
 
-<!-- ═════════ 우측 하단 채널톡형 플로팅 런처 (💬 물어보기 + 📌 설계 핀 / 🚨 1초 제보) ═════════ -->
-<div class="flt-launcher" id="flt-launcher">
+<!-- ═════════ 우측 하단 채널톡형 플로팅 런처 (로그인 완료 후 STEP 1~5·완료 화면에서만 노출) ═════════ -->
+<div class="flt-launcher is-gated" id="flt-launcher" hidden>
   <button type="button" class="flt-pill-label" id="flt-pill-label">질문·오류제보</button>
   <button type="button" class="flt-fab" id="flt-fab" aria-label="질문 및 1초 제보 열기">💬</button>
 </div>
 
 <!-- ═════════ 2-Tab 플로팅 바텀시트 팝업 ═════════ -->
-<div class="flt-sheet-backdrop" id="flt-sheet-backdrop" hidden>
+<div class="flt-sheet-backdrop is-gated" id="flt-sheet-backdrop" hidden>
   <div class="flt-sheet" id="flt-sheet" role="dialog" aria-label="고마워톡 도우미 및 1초 제보">
     <div class="flt-sheet-top">
       <div class="flt-tabs" role="tablist">
@@ -2277,6 +2396,11 @@ const ST = {
   examplesPrefetchKey: '',
   examplesPrefetchPromise: null,
   submitted: false,
+  isSubmitting: false,
+  isSubmitted: false,
+  isSummaryLoading: false,
+  summaryPromise: null,
+  genSeq: 0,
   lastSubmitResult: null,
 
   qNum: 1, // 1..5
@@ -2389,8 +2513,31 @@ function renderQuotaBadge() {
   }
 }
 
-/* ═══════════════ Part 4: 전면 블러 로딩 오버레이 + 실시간 진행 게이지 바 제어기 ═══════════════ */
+/* ═══════════════ Part 4 & Step 2: 전면 블러 로딩 오버레이 + 플로팅 위젯 노출 강제 동기화 ═══════════════ */
 const LOADING_CTRL = { timer: null, hideTimer: null, pct: 0, active: false };
+
+function syncFloatingWidgetVisibility() {
+  const launcher = $('#flt-launcher');
+  const backdrop = $('#flt-sheet-backdrop');
+  if (!launcher) return;
+  const authGate = $('#auth-gate');
+  const consultApp = $('#consult-app');
+  const blockedGate = $('#quota-blocked-gate');
+  const inConsultView = !!(
+    ST.verified &&
+    consultApp && !consultApp.hidden &&
+    (!authGate || authGate.hidden) &&
+    (!blockedGate || blockedGate.hidden)
+  );
+  const canShow = inConsultView && !LOADING_CTRL.active;
+  launcher.hidden = !canShow;
+  launcher.classList.toggle('is-gated', !canShow);
+  if (backdrop) {
+    backdrop.classList.toggle('is-gated', !canShow);
+    if (!canShow) backdrop.hidden = true;
+  }
+  return canShow;
+}
 
 function setLoadingProgress(pct) {
   const clamped = Math.max(0, Math.min(100, Math.round(pct)));
@@ -2399,6 +2546,17 @@ function setLoadingProgress(pct) {
   const pctEl = $('#loading-gauge-pct');
   if (fill) fill.style.width = clamped + '%';
   if (pctEl) pctEl.textContent = clamped + '%';
+}
+
+function updateLoadingOverlayText(title, opts) {
+  opts = opts || {};
+  const titleEl = $('#loading-title');
+  const subEl = $('#loading-sub');
+  const iconEl = $('#loading-icon');
+  if (titleEl && title) titleEl.textContent = String(title);
+  if (subEl && opts.sub) subEl.textContent = String(opts.sub);
+  if (iconEl && opts.icon) iconEl.textContent = String(opts.icon);
+  if (typeof opts.pct === 'number') setLoadingProgress(opts.pct);
 }
 
 function showLoadingOverlay(title, opts) {
@@ -2418,6 +2576,7 @@ function showLoadingOverlay(title, opts) {
   LOADING_CTRL.active = true;
   setLoadingProgress(Number(opts.startPct) || 12);
   overlay.hidden = false;
+  syncFloatingWidgetVisibility();
 
   // 0% -> 92%까지 부드럽게 차오르는 실시간 진행 게이지
   LOADING_CTRL.timer = setInterval(() => {
@@ -2434,11 +2593,15 @@ function hideLoadingOverlay(snapComplete) {
   if (LOADING_CTRL.timer) { clearInterval(LOADING_CTRL.timer); LOADING_CTRL.timer = null; }
   if (LOADING_CTRL.hideTimer) { clearTimeout(LOADING_CTRL.hideTimer); LOADING_CTRL.hideTimer = null; }
   LOADING_CTRL.active = false;
-  if (!overlay || overlay.hidden) return;
+  if (!overlay || overlay.hidden) {
+    syncFloatingWidgetVisibility();
+    return;
+  }
 
   if (snapComplete === false) {
     overlay.hidden = true;
     setLoadingProgress(0);
+    syncFloatingWidgetVisibility();
     return;
   }
   setLoadingProgress(100);
@@ -2446,8 +2609,26 @@ function hideLoadingOverlay(snapComplete) {
     if (!LOADING_CTRL.active) {
       overlay.hidden = true;
       setLoadingProgress(0);
+      syncFloatingWidgetVisibility();
     }
   }, 160);
+}
+
+function returnToAuthGate() {
+  ST.verified = false;
+  ST.isSubmitting = false;
+  ST.isSubmitted = false;
+  ST.submitted = false;
+  ST.isSummaryLoading = false;
+  ST.summaryPromise = null;
+  ST.genSeq++;
+  hideLoadingOverlay(false);
+  $('#consult-app').hidden = true;
+  $('#quota-blocked-gate').hidden = true;
+  $('#auth-gate').hidden = false;
+  const loginBtn = $('#btn-kakao-login');
+  if (loginBtn) loginBtn.disabled = false;
+  syncFloatingWidgetVisibility();
 }
 
 function showAuthMessage(text, isErr) {
@@ -2468,6 +2649,7 @@ function showQuotaBlockedGate(quota) {
   $('#auth-gate').hidden = true;
   $('#consult-app').hidden = true;
   $('#quota-blocked-gate').hidden = false;
+  syncFloatingWidgetVisibility();
 
   const iconEl = $('#blocked-icon');
   const pillEl = $('#blocked-quota-pill');
@@ -2724,6 +2906,7 @@ function unlockPartnerApp(partnerInfo, token, isAdminBypass, quotaInfo) {
   $('#consult-app').hidden = false;
   if (IS_ADMIN_ENV) $('#btn-top-ai-cfg').hidden = false;
   resetConsultFlow();
+  syncFloatingWidgetVisibility();
 }
 
 function buildMockQuotaForAdminTier(tierMode) {
@@ -2886,6 +3069,11 @@ function resetConsultFlow() {
   ST.examplesPrefetchKey = '';
   ST.examplesPrefetchPromise = null;
   ST.submitted = false;
+  ST.isSubmitting = false;
+  ST.isSubmitted = false;
+  ST.isSummaryLoading = false;
+  ST.summaryPromise = null;
+  ST.genSeq++;
   ST.qNum = 1;
   ST.pinnedConsultNotes = [];
   ST.answers = {};
@@ -3903,16 +4091,25 @@ function renderStage4BrandAssets() {
   $('#ai-photo-mode-check').textContent = isAiOnly ? '✅ 선택됨' : '선택하기';
 }
 
-/* ═══════════════ STEP 5: 최종 요약 컨펌 & 제출 ═══════════════ */
+/* ═══════════════ STEP 5: 최종 요약 컨펌 & 제출 (4중 데드락·경합 방어선) ═══════════════ */
 async function enterStage5Summary(revisionText) {
+  if (ST.isSubmitting || ST.isSubmitted) return;
+  const mySeq = ++ST.genSeq;
   ST.submitted = false;
-  goStage(5);
-  $('#submit-done-card').hidden = true;
-  $('#summary-confirm-card').hidden = false;
-  const wrap = $('#summary-items-wrap');
-  wrap.innerHTML = '<div class="summary-item">⏳ 대표님의 5단계 기획안을 깔끔하게 정리하고 있어요…</div>';
+  ST.isSubmitted = false;
+  ST.isSummaryLoading = true;
 
-  ST.summary = await Consult.summarize({
+  const submitBtn = $('#btn-submit-campaign');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '✅ 이대로 접수 신청하기';
+  }
+  const errEl = $('#step5-submit-err');
+  if (errEl) { errEl.hidden = true; errEl.textContent = ''; }
+
+  showLoadingOverlay('작성하신 내용을 정리하고 있어요', { icon: '✨' });
+
+  const sumTask = Consult.summarize({
     mode: getAiMode(),
     proxyUrl: getProxyUrl(),
     token: ST.partnerToken,
@@ -3921,10 +4118,39 @@ async function enterStage5Summary(revisionText) {
     flowId: ST.flowId,
     customFlows: ST.customFlows,
     answers: ST.answers,
-    notes: ST.notes
+    notes: ST.notes.concat(ST.pinnedConsultNotes.map(x => x.text))
   }, revisionText);
+  ST.summaryPromise = sumTask;
 
-  renderStage5SummaryCard();
+  try {
+    const nextSummary = await sumTask;
+    // 방어 3: 지연 콜백이 최신 상태·제출 중·땡큐 화면을 덮어쓰지 못하게 차단
+    if (mySeq !== ST.genSeq || ST.isSubmitting || ST.isSubmitted) return;
+    ST.summary = nextSummary;
+    goStage(5);
+    $('#submit-done-card').hidden = true;
+    $('#summary-confirm-card').hidden = false;
+    renderStage5SummaryCard();
+    if (submitBtn) submitBtn.disabled = false;
+  } catch (e) {
+    if (mySeq !== ST.genSeq || ST.isSubmitting || ST.isSubmitted) return;
+    ST.summary = Consult.localSummary({
+      sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId, customFlows: ST.customFlows, answers: ST.answers
+    });
+    goStage(5);
+    $('#submit-done-card').hidden = true;
+    $('#summary-confirm-card').hidden = false;
+    renderStage5SummaryCard();
+    if (submitBtn) submitBtn.disabled = false;
+  } finally {
+    if (mySeq === ST.genSeq) {
+      ST.isSummaryLoading = false;
+      ST.summaryPromise = null;
+    }
+    if (!ST.isSubmitting) {
+      hideLoadingOverlay(true);
+    }
+  }
 }
 
 const SUM_ROWS_META = [
@@ -3943,6 +4169,7 @@ function shortLine(text, max) {
 }
 
 function renderStage5SummaryCard() {
+  if (ST.isSubmitting || ST.isSubmitted) return;
   const sum = ST.summary || Consult.localSummary({
     sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId, customFlows: ST.customFlows, answers: ST.answers
   });
@@ -4113,212 +4340,222 @@ async function copyTextToClipboard(text) {
 }
 
 async function generateAndSubmitCampaign() {
-  if (ST.isBusy) return null;
+  // 방어 2: 중복 실행 및 완료 후 재호출 원천 차단
+  if (ST.isSubmitting || ST.isSubmitted) return null;
+  ST.isSubmitting = true;
   ST.isBusy = true;
+  ST.genSeq++;
+
   const btn = $('#btn-submit-campaign');
-  btn.disabled = true;
-  showLoadingOverlay((ST.subIndustry || '대표님') + ' 맞춤 제안서를 만들고 있어요', { icon: '🚀' });
+  const errEl = $('#step5-submit-err');
+  if (btn) btn.disabled = true;
+  if (errEl) { errEl.hidden = true; errEl.textContent = ''; }
 
-  // V2.3 원가 방어: 인터뷰 제출 단계에서는 텍스트 5대 탭 JSON만 생성 (이미지 생성 보류)
-  const ctx = {
-    mode: getAiMode(),
-    proxyUrl: getProxyUrl(),
-    token: ST.partnerToken || ST.userToken,
-    skipImageGen: true,
-    sectorId: ST.sectorId,
-    subIndustry: ST.subIndustry,
-    flowId: ST.flowId,
-    customFlows: ST.customFlows,
-    answers: ST.answers,
-    notes: ST.notes,
-    pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
-    summary: ST.summary,
-    partner: Object.assign({}, ST.partnerInfo, {
-      kakao_user_id: ST.user.kakao_user_id || ST.partnerInfo.kakao_user_id || '',
-      tier: normalizeTier((ST.quota && ST.quota.tier) || ST.partnerInfo.tier)
-    }),
-    brandAssets: {
-      logoBase64: ST.brandAssets.logoBase64,
-      logoMode: ST.brandAssets.logoBase64 ? 'image' : 'text_auto',
-      colorThemeId: ST.brandAssets.colorThemeId,
-      colorThemeLabel: ST.brandAssets.colorThemeLabel,
-      primaryColor: ST.brandAssets.primaryColor,
-      secondaryColor: ST.brandAssets.secondaryColor,
-      photos: ST.brandAssets.photos.filter(Boolean),
-      photoMode: ST.brandAssets.photos.some(Boolean) ? 'uploaded' : 'ai_auto'
-    }
-  };
+  showLoadingOverlay('요청하신 내용을 정리하고 있어요...', {
+    icon: '📋',
+    startPct: 18,
+    sub: '잠시만 기다려 주시면 접수 완료 화면이 열립니다'
+  });
 
-  let master = null;
   try {
-    master = await Consult.generateCampaign(ctx);
-  } catch (e) {
-    master = Consult.assembleCampaign(null, ctx);
-  }
-
-  // 텍스트 전용 설계 플래그 강제 보증 (이미지 생성 비용 0원)
-  if (!master.meta) master.meta = {};
-  master.meta.skip_image_gen = true;
-  master.meta.generation_mode = 'TEXT_ONLY_5TABS';
-  master.meta.auto_generate_visuals = false;
-
-  ST.lastGeneratedCampaign = master;
-  Engine.saveBridgeCampaign(master);
-
-  let cloudResult = null;
-  const proxyUrl = getProxyUrl();
-  if (proxyUrl) {
-    try {
-      cloudResult = await Toss.submitCampaign(proxyUrl, {
-        userToken: ST.userToken,
-        partnerToken: ST.partnerToken,
-        kakao_user_id: ST.user.kakao_user_id || ST.partnerInfo.kakao_user_id || '',
-        name: ST.partnerInfo.ownerName,
-        phone: ST.partnerInfo.phone,
-        adminBypass: ST.isAdminBypass,
-        skip_image_gen: true
-      }, master);
-    } catch (e) {
-      cloudResult = (e && e.data) ? e.data : { ok: false, error: e.message };
+    // 방어 2: 직렬 대기 — 아직 진행 중인 초안 요약 Promise가 있으면 먼저 완료 대기
+    if (ST.summaryPromise) {
+      try { await ST.summaryPromise; } catch (waitErr) {}
     }
-  }
 
-  ST.isBusy = false;
-  btn.disabled = false;
-  btn.textContent = '✅ 이대로 제안서 만들기';
-  hideLoadingOverlay(true);
+    // V2.3 원가 방어: 인터뷰 제출 단계에서는 텍스트 JSON만 생성 (이미지 생성 보류)
+    const ctx = {
+      mode: getAiMode(),
+      proxyUrl: getProxyUrl(),
+      token: ST.partnerToken || ST.userToken,
+      skipImageGen: true,
+      sectorId: ST.sectorId,
+      subIndustry: ST.subIndustry,
+      flowId: ST.flowId,
+      customFlows: ST.customFlows,
+      answers: ST.answers,
+      notes: ST.notes,
+      pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
+      summary: ST.summary,
+      partner: Object.assign({}, ST.partnerInfo, {
+        kakao_user_id: ST.user.kakao_user_id || ST.partnerInfo.kakao_user_id || '',
+        tier: normalizeTier((ST.quota && ST.quota.tier) || ST.partnerInfo.tier)
+      }),
+      brandAssets: {
+        logoBase64: ST.brandAssets.logoBase64,
+        logoMode: ST.brandAssets.logoBase64 ? 'image' : 'text_auto',
+        colorThemeId: ST.brandAssets.colorThemeId,
+        colorThemeLabel: ST.brandAssets.colorThemeLabel,
+        primaryColor: ST.brandAssets.primaryColor,
+        secondaryColor: ST.brandAssets.secondaryColor,
+        photos: ST.brandAssets.photos.filter(Boolean),
+        photoMode: ST.brandAssets.photos.some(Boolean) ? 'uploaded' : 'ai_auto'
+      }
+    };
 
-  // 서버단 한도 초과 차단 응답 처리
-  if (cloudResult && cloudResult.quotaExceeded) {
-    const blockedQuota = cloudResult.quota || Object.assign({}, ST.quota, {
-      tier: normalizeTier(cloudResult.tier || (ST.quota && ST.quota.tier)),
-      remaining: 0,
-      allowed: false,
-      message: cloudResult.error || ''
-    });
-    ST.quota = Object.assign({}, ST.quota, blockedQuota, { tier: normalizeTier(blockedQuota.tier) });
+    let master = null;
+    try {
+      master = await Consult.generateCampaign(ctx);
+    } catch (e) {
+      master = Consult.assembleCampaign(null, ctx);
+    }
+
+    if (!master.meta) master.meta = {};
+    master.meta.skip_image_gen = true;
+    master.meta.generation_mode = 'TEXT_ONLY_5TABS';
+    master.meta.auto_generate_visuals = false;
+
+    ST.lastGeneratedCampaign = master;
+    Engine.saveBridgeCampaign(master);
+
+    updateLoadingOverlayText('전담 캠페인 전문가팀에 전달 중이에요...', { icon: '🚀', pct: 68 });
+
+    let cloudResult = null;
+    const proxyUrl = getProxyUrl();
+    if (proxyUrl) {
+      try {
+        cloudResult = await Toss.submitCampaign(proxyUrl, {
+          userToken: ST.userToken,
+          partnerToken: ST.partnerToken,
+          kakao_user_id: ST.user.kakao_user_id || ST.partnerInfo.kakao_user_id || '',
+          name: ST.partnerInfo.ownerName,
+          phone: ST.partnerInfo.phone,
+          adminBypass: ST.isAdminBypass,
+          skip_image_gen: true
+        }, master);
+      } catch (netErr) {
+        if (netErr && netErr.data && netErr.data.quotaExceeded) {
+          cloudResult = netErr.data;
+        } else {
+          throw netErr;
+        }
+      }
+      if (cloudResult && cloudResult.ok === false && !cloudResult.quotaExceeded) {
+        throw new Error(cloudResult.error || '서버 접수 중 오류가 발생했습니다.');
+      }
+    }
+
+    // 서버단 한도 초과 차단 응답 처리
+    if (cloudResult && cloudResult.quotaExceeded) {
+      const blockedQuota = cloudResult.quota || Object.assign({}, ST.quota, {
+        tier: normalizeTier(cloudResult.tier || (ST.quota && ST.quota.tier)),
+        remaining: 0,
+        allowed: false,
+        message: cloudResult.error || ''
+      });
+      ST.quota = Object.assign({}, ST.quota, blockedQuota, { tier: normalizeTier(blockedQuota.tier) });
+      ST.isSubmitting = false;
+      ST.isBusy = false;
+      if (btn) { btn.disabled = false; btn.textContent = '✅ 이대로 접수 신청하기'; }
+      renderQuotaBadge();
+      showQuotaBlockedGate(ST.quota);
+      hideLoadingOverlay(false);
+      return null;
+    }
+
+    updateLoadingOverlayText('접수가 완료되었습니다!', { icon: '✅', pct: 100 });
+
+    ST.isSubmitting = false;
+    ST.isBusy = false;
+    ST.submitted = true;
+    ST.isSubmitted = true;
+    ST.lastSubmitResult = cloudResult;
+
+    // 등급 및 잔여 횟수 상태 동기화 (서버 응답 우선, 오프라인 테스트 시 로컬 차감)
+    const resolvedTier = normalizeTier(
+      (cloudResult && cloudResult.tier) ||
+      (cloudResult && cloudResult.quota && cloudResult.quota.tier) ||
+      (ST.quota && ST.quota.tier) ||
+      '가망고객'
+    );
+    if (cloudResult && cloudResult.quota) {
+      ST.quota = Object.assign({}, ST.quota, cloudResult.quota, { tier: resolvedTier });
+    } else if (ST.quota) {
+      const nextUsed = (Number(ST.quota.used) || 0) + 1;
+      const lim = Number(ST.quota.limit) || (resolvedTier === 'Pro' ? 10 : 2);
+      ST.quota.used = nextUsed;
+      ST.quota.remaining = Math.max(0, lim - nextUsed);
+      ST.quota.allowed = ST.quota.remaining > 0;
+    }
+    ST.partnerInfo.tier = resolvedTier;
     renderQuotaBadge();
-    showQuotaBlockedGate(ST.quota);
+    updateStickyCtaBar();
+
+    const adminBtnsHtml = IS_ADMIN_ENV
+      ? '<div class="admin-action-row">' +
+          '<button type="button" class="btn-admin-sub" id="btn-open-cockpit">🚀 조종석에서 바로 열기</button>' +
+          '<button type="button" class="btn-admin-sub" id="btn-dl-json">💾 JSON 저장</button>' +
+        '</div>'
+      : '';
+
+    const summaryWrap = $('#summary-confirm-card');
+    if (summaryWrap) summaryWrap.hidden = true;
+
+    // Step 3: 고객 화면 직접 제안서 링크 제거 ➔ 전문가 검토 후 24시간 내 카톡 발송 땡큐 페이지
+    const doneCard = $('#submit-done-card');
+    doneCard.hidden = false;
+    doneCard.innerHTML =
+      '<div class="ty-hero">' +
+        '<div class="ty-check-circle">✓</div>' +
+        '<h2 class="ty-headline">맞춤 캠페인 설계 접수가<br>완료되었습니다</h2>' +
+      '</div>' +
+      '<div class="ty-process-card">' +
+        '<div class="ty-step-row done"><span>✓</span><span>1. 요청 접수 완료</span></div>' +
+        '<div class="ty-step-row active"><span>🔍</span><span>2. 전담 전문가 검토·설계 중</span><span class="ty-pulse-dot" aria-hidden="true"></span></div>' +
+        '<div class="ty-step-row"><span>💬</span><span>3. 24시간 내 카톡 발송</span></div>' +
+      '</div>' +
+      '<div class="ty-delivery-box">' +
+        '전담 전문가가 업종과 카카오 규정에 맞춰 꼼꼼히 검토한 뒤, <strong>영업일 기준 24시간 이내</strong>에 카카오 로그인하신 계정의 카카오톡으로 맞춤 시연 제안서를 보내드립니다.' +
+      '</div>' +
+      '<button type="button" class="btn-thankyou-home" id="btn-thankyou-home">처음 화면으로 돌아가기</button>' +
+      adminBtnsHtml;
+
+    const homeBtn = $('#btn-thankyou-home');
+    if (homeBtn) {
+      homeBtn.onclick = () => returnToAuthGate();
+    }
+
+    hideLoadingOverlay(true);
+    $('#stage-viewport').scrollTop = 0;
+
+    if (IS_ADMIN_ENV) {
+      const openBtn = $('#btn-open-cockpit');
+      if (openBtn) {
+        openBtn.onclick = () => {
+          Engine.saveBridgeCampaign(master);
+          window.open('LandingBuilder.html?from=bot', '_blank');
+        };
+      }
+      const dlBtn = $('#btn-dl-json');
+      if (dlBtn) {
+        dlBtn.onclick = () => {
+          const blob = new Blob([JSON.stringify(master, null, 2)], { type: 'application/json;charset=utf-8' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = (master.meta.campaign_id || 'CampaignMaster') + '.json';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        };
+      }
+    }
+    return master;
+  } catch (err) {
+    // 방어 4: 통신·서버 에러 시 100% 복구 (로딩 모달 닫기 + 플래그 해제 + 버튼 재활성화)
+    ST.isSubmitting = false;
+    ST.isBusy = false;
+    hideLoadingOverlay(false);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '🔄 다시 제출하기';
+    }
+    if (errEl) {
+      errEl.hidden = false;
+      errEl.textContent = '⚠️ 접수 전송 중 일시적 오류가 발생했어요. 잠시 후 아래 [다시 제출하기]를 눌러 주세요. (' + (err && err.message ? err.message : err) + ')';
+    }
+    showBotToast('⚠️ 전송 오류가 발생했어요. 다시 제출하기를 눌러 주세요.');
     return null;
   }
-
-  ST.submitted = true;
-  ST.lastSubmitResult = cloudResult;
-
-  // 등급 및 잔여 횟수 상태 동기화 (서버 응답 우선, 오프라인 테스트 시 로컬 차감)
-  const resolvedTier = normalizeTier(
-    (cloudResult && cloudResult.tier) ||
-    (cloudResult && cloudResult.quota && cloudResult.quota.tier) ||
-    (ST.quota && ST.quota.tier) ||
-    '가망고객'
-  );
-  if (cloudResult && cloudResult.quota) {
-    ST.quota = Object.assign({}, ST.quota, cloudResult.quota, { tier: resolvedTier });
-  } else if (ST.quota) {
-    const nextUsed = (Number(ST.quota.used) || 0) + 1;
-    const lim = Number(ST.quota.limit) || (resolvedTier === 'Pro' ? 10 : 2);
-    ST.quota.used = nextUsed;
-    ST.quota.remaining = Math.max(0, lim - nextUsed);
-    ST.quota.allowed = ST.quota.remaining > 0;
-  }
-  ST.partnerInfo.tier = resolvedTier;
-  renderQuotaBadge();
-  updateStickyCtaBar();
-
-  const isPaid = isPaidTier(resolvedTier);
-  const rawProposalUrl = (cloudResult && cloudResult.proposalUrl)
-    ? String(cloudResult.proposalUrl)
-    : ('Proposal.html?fileId=' + encodeURIComponent((cloudResult && cloudResult.fileId) || 'local_preview'));
-  const shareProposalUrl = resolveAbsoluteProposalUrl(rawProposalUrl);
-
-  const uploadedCnt = (master.brand_assets.partner_photos || []).length;
-  const adminBtnsHtml = IS_ADMIN_ENV
-    ? '<div class="admin-action-row">' +
-        '<button type="button" class="btn-admin-sub" id="btn-open-cockpit">🚀 조종석에서 바로 열기</button>' +
-        '<button type="button" class="btn-admin-sub" id="btn-dl-json">💾 JSON 저장</button>' +
-      '</div>'
-    : '';
-
-  const summaryWrap = $('#summary-confirm-card');
-  if (summaryWrap) summaryWrap.hidden = true;
-
-  const doneCard = $('#submit-done-card');
-  doneCard.hidden = false;
-
-  if (!isPaid) {
-    // ── 분기 A: 가망고객 ➔ 맞춤 제안서 바로 보기 + 링크 복사 완료 화면 ──
-    doneCard.style.borderColor = 'var(--blue)';
-    doneCard.innerHTML =
-      '<span class="done-track-badge lead">🎯 무료 맞춤 기획 완료 · ' + esc(formatQuotaBadgeText(ST.quota)) + '</span>' +
-      '<div class="summary-head" style="color:var(--g900)">🎉 대표님 맞춤 고마워톡 제안서가 완성되었어요!</div>' +
-      '<div class="summary-item"><b>캠페인 제목</b>' + esc(master.tab1_basic_settings.title_30chars) + '</div>' +
-      '<div class="summary-item"><b>메인 헤드카피</b>' + esc(master.tab2_landing_content.blocks_1000px[0].title) + '</div>' +
-      '<div class="done-reassure-box">✨ 고마워톡 도입 시 전문가가 업종 맞춤 고화질 이미지 제작 및 채널 세팅을 100% 완료해 드립니다.</div>' +
-      '<div class="done-cta-stack">' +
-        '<a class="btn-proposal-open" id="btn-open-proposal" href="' + esc(rawProposalUrl) + '">📱 내 맞춤 고마워톡 제안서 바로 보기</a>' +
-        '<button type="button" class="btn-proposal-copy" id="btn-copy-proposal-url">🔗 제안서 링크 복사하기</button>' +
-        '<div class="copy-toast-msg" id="proposal-copy-toast" hidden>✅ 제안서 링크가 복사되었어요! 카카오톡이나 메모장에 붙여넣어 보세요.</div>' +
-      '</div>' +
-      adminBtnsHtml;
-
-    const copyBtn = $('#btn-copy-proposal-url');
-    if (copyBtn) {
-      copyBtn.onclick = async () => {
-        const ok = await copyTextToClipboard(shareProposalUrl);
-        const toast = $('#proposal-copy-toast');
-        if (toast) {
-          toast.hidden = false;
-          toast.textContent = ok
-            ? '✅ 제안서 링크가 복사되었어요! (' + shareProposalUrl + ')'
-            : '⚠️ 자동 복사에 실패했어요. 제안서 바로 보기에서 주소를 복사해 주세요.';
-        }
-      };
-    }
-  } else {
-    // ── 분기 B: Starter / Pro 유료 파트너 ➔ 제안서 버튼 없이 즉시 제작 접수 완료 화면 ──
-    const isPro = resolvedTier === 'Pro';
-    const slaText = isPro
-      ? '⚡ Pro 패스트트랙 적용 · 영업일 1일 이내 고마워톡 어드민 비공개(발송 대기) 상태로 세팅 완료 후 안내해 드려요.'
-      : '📋 Starter 유료 제작 적용 · 영업일 3일 이내 고마워톡 어드민 비공개(발송 대기) 상태로 세팅 완료 후 안내해 드려요.';
-
-    doneCard.style.borderColor = 'var(--green)';
-    doneCard.innerHTML =
-      '<span class="done-track-badge paid">' + (isPro ? '👑 Pro 유료 파트너' : '⭐ Starter 유료 파트너') + ' · ' + esc(formatQuotaBadgeText(ST.quota)) + '</span>' +
-      '<div class="summary-head" style="color:var(--green)">✅ 유료 파트너 제작 의뢰가 접수되었습니다!</div>' +
-      '<div class="done-paid-box">유료 파트너 제작 의뢰가 접수되었습니다! 담당 전문가가 맞춤 실사 이미지 생성 및 고마워톡 어드민 세팅을 바로 진행합니다.</div>' +
-      '<div class="summary-item"><b>캠페인 제목</b>' + esc(master.tab1_basic_settings.title_30chars) + '</div>' +
-      '<div class="summary-item"><b>메인 헤드카피</b>' + esc(master.tab2_landing_content.blocks_1000px[0].title) + '</div>' +
-      '<div class="summary-item"><b>브랜드 에셋 연동</b>로고: ' + (master.brand_assets.logo_base64 ? '로고 이미지 첨부됨' : '✨ 상호명 텍스트 로고 자동 적용') +
-        ' · 컬러: ' + esc(master.brand_assets.primary_color) +
-        ' · 사진: ' + (uploadedCnt ? ('실사 ' + uploadedCnt + '장 우선 배치') : '전문가 AI 실사 생성 예정') + '</div>' +
-      '<div style="font-size:12.5px;color:var(--g700);line-height:1.5">' + esc(slaText) + '</div>' +
-      adminBtnsHtml;
-  }
-
-  doneCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-  if (IS_ADMIN_ENV) {
-    const openBtn = $('#btn-open-cockpit');
-    if (openBtn) {
-      openBtn.onclick = () => {
-        Engine.saveBridgeCampaign(master);
-        window.open('LandingBuilder.html?from=bot', '_blank');
-      };
-    }
-    const dlBtn = $('#btn-dl-json');
-    if (dlBtn) {
-      dlBtn.onclick = () => {
-        const blob = new Blob([JSON.stringify(master, null, 2)], { type: 'application/json;charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = (master.meta.campaign_id || 'CampaignMaster') + '.json';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      };
-    }
-  }
-  return master;
 }
 
 /* ═══════════════ 이벤트 바인딩 ═══════════════ */
@@ -4344,11 +4581,7 @@ $('#btn-quota-recheck').onclick = async () => {
     showAuthMessage('카카오로 다시 로그인하여 최신 등급 및 잔여 횟수를 확인해 주세요.', false);
   }
 };
-$('#btn-blocked-back-auth').onclick = () => {
-  $('#quota-blocked-gate').hidden = true;
-  $('#consult-app').hidden = true;
-  $('#auth-gate').hidden = false;
-};
+$('#btn-blocked-back-auth').onclick = () => returnToAuthGate();
 
 // Step 1
 $('#btn-to-stage2').onclick = proceedToStage2;
@@ -4525,6 +4758,9 @@ if (IS_ADMIN_ENV) {
   $('#admin-freepass-box').hidden = false;
 }
 
+// 초기 진입 시 로그인 전 플로팅 위젯 완전 숨김 강제
+syncFloatingWidgetVisibility();
+
 // 카카오싱크 OAuth 인가 코드(?code=...) 리다이렉트 콜백 자동 감지
 checkKakaoAuthCallbackOnLoad();
 
@@ -4541,6 +4777,8 @@ window.BOT = {
   verifyUserAndQuotaWithBackend,
   verifyPartnerWithBackend,
   bypassAuthForAdmin,
+  returnToAuthGate,
+  syncFloatingWidgetVisibility,
   selectSector,
   proceedToStage2,
   selectFlow,
@@ -4549,6 +4787,7 @@ window.BOT = {
   askFeatureQA,
   showLoadingOverlay,
   hideLoadingOverlay,
+  updateLoadingOverlayText,
   handleHeaderBackClick,
   openFloatingWidget,
   closeFloatingWidget,

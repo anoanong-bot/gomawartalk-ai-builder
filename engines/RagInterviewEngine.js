@@ -1373,11 +1373,11 @@
   }
 
   function isBeginnerOptionLabel(txt) {
-    return /초보|입문|기초|처음|고민|모르|예방|천천히|\(하\)|^하$|하급|중등\s*기초|중1|생활\s*복지/i.test(String(txt || ''));
+    return /초보|입문|기초|처음|고민|모르|모름|아니오|없음|아직|예방|천천히|\(하\)|^하$|하급|중등\s*기초|중1|생활\s*복지/i.test(String(txt || ''));
   }
 
   function isAdvancedOptionLabel(txt) {
-    return /고급|심화|실전|숙련|마스터|상위권|수능|고등|고3|바로|즉시|적극|\(상\)|^상$|상급|정밀\s*진단|광역\s*교통/i.test(String(txt || ''));
+    return /고급|심화|실전|숙련|마스터|상위권|수능|고등|고3|바로|즉시|적극|\(상\)|^상$|상급|^예$|^네$|있음|정밀\s*진단|광역\s*교통/i.test(String(txt || ''));
   }
 
   function buildSpotlightBranchPair(ctx) {
@@ -3300,11 +3300,24 @@
     });
   };
 
+  var VIP_CUSTOM_QUOTE_ANSWER = '기본 요금제(Starter · Pro)는 빠른 오픈과 경제적 운영을 위해 핵심 1회차 맞춤 분기와 표준 세팅을 제공합니다. 만약 ① 전 구간 다중 조건 분기(최대 5순위 풀파워 퍼널), ② 고객 선택값에 따라 자동 계산되는 맞춤 견적·진단 프로그램 제작 및 카톡 연동, ③ 자사몰·CRM·외부 DB API 연동 등 고전환 맞춤 개발이 필요하시다면 전문가 별도 견적 프로젝트(300만 원 이상)로 의뢰하실 수 있습니다.';
+
+  function isVipCustomQuoteQuestion(q) {
+    return /견적\s*프로그램|API\s*연동|외부\s*DB|자사몰|CRM|풀파워|모든\s*카톡.*다르게|답변별로\s*모든|전\s*구간.*분기|맞춤\s*구축|맞춤구축|별도\s*견적|300만/i.test(String(q || ''));
+  }
+
   // ── 4) 별도 분리된 [💬 고마워톡 기능 가능 여부 물어보기] Q&A 엔진
+  CONSULT.VIP_CUSTOM_QUOTE_ANSWER = VIP_CUSTOM_QUOTE_ANSWER;
+  CONSULT.isVipCustomQuoteQuestion = isVipCustomQuoteQuestion;
+
   CONSULT.askFeatureQA = function (questionText, ctx) {
     ctx = ctx || {};
     var q = String(questionText || '').trim();
     if (!q) return Promise.resolve('궁금한 고마워톡 기능이나 요금·규정을 편하게 적어 주세요!');
+
+    if (isVipCustomQuoteQuestion(q)) {
+      return Promise.resolve(VIP_CUSTOM_QUOTE_ANSWER);
+    }
 
     var localGuard = CONSULT.checkFeasibilityLocal(q);
     var ragSnippet = searchKnowledge(q, global.GOMAWARTALK_MANUAL || global.GomawartalkManual || []);
@@ -3321,7 +3334,7 @@
       if (ragSnippet) {
         return CONSULT.cleanPartnerText(ragSnippet.slice(0, 520));
       }
-      return '고마워톡은 **카카오 1초 신청 ➔ 즉시 첫 카톡(알림톡) ➔ 채널 친구 대상 후속 자동 카톡(친구톡/캐러셀) 및 날짜 예약 발송**을 지원해요. 요금제(Starter 연 24만 / Pro 연 40만), 신청폼 분류, 모바일 웹진 연동 등 구체적인 기능을 물어보시면 바로 안내해 드릴게요!';
+      return '고마워톡은 **카카오 1초 신청 ➔ 즉시 첫 카톡(알림톡) ➔ 채널 친구 대상 후속 자동 카톡(친구톡/캐러셀) 및 날짜 예약 발송**을 지원해요. 요금제(Starter 연 24만 / Pro 연 40만), 맞춤 구축 프로젝트(300만 원 이상), 신청폼 분류, 모바일 웹진 연동 등 구체적인 기능을 물어보시면 바로 안내해 드릴게요!';
     }
 
     if (!CONSULT.hasAiAvailable(ctx)) {
@@ -3332,6 +3345,7 @@
       '당신은 고마워톡 공식 매뉴얼 기반 친절한 기능 상담원입니다.',
       '아래 [고마워톡 공식 매뉴얼]과 [지원 불가 및 대안 규칙]에만 근거하여 사실대로 정확히 답변하세요.',
       '불가능한 기능이면 먼저 "대표님, 고마워톡에서는 ~ 기능은 지원하지 않아요."라고 명확히 말한 뒤, 고마워톡에서 가능한 스마트 대안 2가지를 쉽게 알려주세요.',
+      '전 구간 다중 분기(풀파워 퍼널), 자동 견적·진단 프로그램 제작, 자사몰·CRM·외부 DB API 연동 문의 시에는 반드시 "전문가 별도 견적 프로젝트(300만 원 이상)" 기준을 안내하세요.',
       '내부 전문용어(뜰채, 시트 정수 더하기, ' + TOSS_BANNED_LIT + ')는 쉬운 일상 언어로 바꿔서 4~6문장 이내로 깔끔하게 답하세요.',
       '',
       '[지원 불가 및 대안 규칙]\n' + CONSULT.buildGuardrailManualSummary(),

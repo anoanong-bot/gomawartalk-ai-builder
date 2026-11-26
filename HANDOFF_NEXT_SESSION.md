@@ -1,11 +1,11 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-26 (KST · V2.8.2 원포인트 맞춤 분기 & 용어·레이아웃 정돈 패치 완료 — 단 1개 핵심 회차 × 2종 진짜 맞춤 원고 · 스포트라이트 A↔B 전환 연출 · `미친추`/`미친구` 0건 퇴출 · 우하단 버튼 비간섭 분리)
-- **기준 버전:** Master PRD V2.8.2 / `InterviewBot.html` V2.8 / `Proposal.html` V2.8.2 / `LandingBuilder.html` V2.8.2 / `engines/RagInterviewEngine.js` V2.8.2 / `Backend_Proxy.gs` V2.8-0 (V2.2~V2.8 As-Built 100% 무손실 보존)
+- **최종 갱신일시:** 2026-11-26 (KST · V2.9 최종 폴리싱 패치 완료 — 50대+ 빅폰트·미니멀 클린 UI · 순수 챗봇·물음표 원형 아이콘(`52px`) & 3탭 도움말/VIP 맞춤구축(`300만 원+`)/오류제보 모달 · `VIP_CUSTOM_QUOTE` 구글챗 즉시 알림 · 단 1회차 스포트라이트 분기 · `미친추`/`미친구` 0건)
+- **기준 버전:** Master PRD V2.9 / `InterviewBot.html` V2.9 / `Proposal.html` V2.9 / `LandingBuilder.html` V2.8.2 / `engines/RagInterviewEngine.js` V2.9 / `data/GomawartalkManual.js` V2.9 / `Backend_Proxy.gs` V2.9-0 (V2.2~V2.8.2 As-Built 100% 무손실 보존)
 - **본체 프로젝트 완공 목표일:** **2026년 11월 30일(월)** *(개발 팀장님 본체 어드민 내 구글 폼·시트 연동 마감일 **12월 7일**과 별도 구분)*
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
 - **실서버 배포 URL:** `https://anoanong-bot.github.io/gomawartalk-ai-builder/`
-- **코드 검증 상태:** 전 파일(10/10) V8 구문 · 보안(비밀키 0건, 금지어 0건, 구형 모델 0건, `미친추`/`미친구` 0건, 구형 `20:30` 0건, GAS 백틱 0건, 가짜 기능 0건) · `test_v25_widget_sockets.js`(152/152) · `test_subindustry_examples.js` · `test_proposal_sim.js` · `test_v23_3.js` · `test_v23_full_e2e.js` **전원 PASS**
+- **코드 검증 상태:** 전 파일(10/10) V8 구문 · 보안(비밀키 0건, 금지어 0건, 구형 모델 0건, `미친추`/`미친구` 0건, `200만 원` 0건, 구형 `20:30` 0건, 외부 텍스트 캡슐 0건, GAS 백틱 0건, 가짜 기능 0건) · `test_v25_widget_sockets.js`(188/188) · `test_subindustry_examples.js` · `test_proposal_sim.js` · `test_v23_3.js` · `test_v23_full_e2e.js` **전원 PASS**
 
 ---
 
@@ -93,6 +93,17 @@
     - **표준 용어 통일 & 우하단 비간섭 레이아웃 (`Proposal.html` · `LandingBuilder.html` · `RagInterviewEngine.js` · `GomawartalkManual.js`):**
       - 전체 코드·UI·매뉴얼에서 `미친추`·`미친구` 0건 퇴출 ➔ **`채널 추가 전`** / **`채널 추가 전 고객 2회 자동 안내`** / 시뮬레이터 버튼 **`🛡️ 채널 추가 안 한 고객은 어떻게 받나요?`** 통일 + 잔존 `20:30` 오기 0건 해소.
       - `Proposal.html` 우하단 `#flt-pill-label` 2.5초 후·스크롤 시 `0px` 자동 접힘(`collapseFloatingPill`) + 슬림 FAB(`48px`) + `.sim-ext-nav` `332px` 정렬 + `#btn-sim-next` 코치마크(`👆`) 좌측 중앙(`0.32`) 배치로 버튼 간섭 완전 해소. 5종 테스트 스위트 전원 PASS(`152/152` 포함).
+15. **V2.9 최종 폴리싱 패치 — 50대+ 빅폰트·미니멀 클린 UI · 순수 챗봇·물음표 원형 아이콘(`300만 원+` VIP 맞춤구축 견적 통합) · 스포트라이트 분기 & 표준 용어 완성 *(2026-11-26 완료)*:**
+    - **50대+ 시니어 친화 빅폰트 & 미니멀 클린 UI (`InterviewBot.html` · `Proposal.html`):**
+      - 메인 질문·섹션 헤드라인 `24px~26px`(`font-weight: 800`, `line-height: 1.38`, `letter-spacing: -0.025em`), 본문·선택 카드·입력창·폼 라벨 `18px~19px`(`line-height: 1.55`), 상단 스텝 칩·탭 버튼·배지·도움말 최소 `16px~17px` 전면 상향(외부 UI `11~13.5px` 0건, `332px` 폰 액정 내부 순정 카톡만 실제 비율 유지), 메인 CTA `58px~60px` / `18.5px~19.5px` + 전 구간 `word-break: keep-all` & 중첩 테두리 제거.
+    - **우측 하단 순수 챗봇·물음표 원형 아이콘(`52px`) & 하단 버튼 비간섭 + 3탭 모달 (`InterviewBot.html` · `Proposal.html`):**
+      - 바깥 흰색 텍스트 캡슐(`#flt-pill-label` / `질문·오류제보`) 완전 삭제(`#flt-launcher` 외부 텍스트 0건), **챗봇+물음표(`?`) SVG 아이콘** `52px × 52px` 정원형 버튼 적용(로그인 전/로딩 중 숨김 유지). `Proposal.html` 하단 내비게이션 `.sim-ext-nav-wrap` `margin-bottom: 72px` 안전 여백 확보로 버튼·코치마크(`👆`) 간섭 0%.
+      - 모달(`#flt-sheet`) 헤더 **`💬 무엇을 도와드릴까요?`**(`22px`) + **`궁금한 점 확인 · 맞춤 구축(300만 원+) 견적 · 화면 오류 제보`**(`16.5px`) 및 3개 탭(`자주 묻는 질문` / `맞춤구축 견적(300만+)` / `화면 오류제보`) 완성.
+    - **`300만 원 이상` VIP 고급 구축 별도 견적 파이프라인 (`Proposal.html` · `InterviewBot.html` · `GomawartalkManual.js` · `RagInterviewEngine.js` · `Backend_Proxy.gs` `V2.9-0`):**
+      - `300만 원 이상` 기준선 통일(`200만 원` 0건). FAQ 최상단 2대 VIP 칩(`💎 견적 프로그램 제작 · API 연동 · 풀파워 분기 의뢰`, `설문 답변별로 모든 카톡을 다 다르게 보낼 수 있나요?`) 답변 하단 **`[💎 맞춤 구축(300만 원+) 상담 신청하기 →]`** 버튼 ➔ 탭 2 즉시 이동.
+      - 탭 2 폼(희망 4항목 체크 + 요청 내용 + 성함/연락처 자동 채움 + `300만 원 이상` 기준 확인 체크) 제출 ➔ `Backend_Proxy.gs`(`V2.9-0`, 백틱 0건) `report_issue`(`issueType: 'VIP_CUSTOM_QUOTE'`)에서 `파트너제보함` 시트 기록 + 대표님 구글챗 **`💎 [VIP 고액 맞춤구축·견적프로그램 문의 도착! (300만 원+)]`** 즉시 알림 발송.
+    - **단 1회차 스포트라이트 분기 최종 정돈 & 5종 테스트 스위트 전원 PASS:**
+      - `Proposal.html` 상단 스텝 칩 **`⚡맞춤`**(`16px`), 스포트라이트 헤더 **`⚡ 신청폼 선택에 따라 전혀 다른 맞춤 카톡이 발송됩니다`**, 스위치 **`[🙋‍♀️ '선택지A' 고른 김민지 님]` ↔ `[🙋‍♂️ '선택지B' 고른 박준호 님]`** 정돈, 이진 `(예 / 모름)` 설문 포함 기계식 치환 0건 및 전 파일 `미친추`·`미친구` 0건 확인. 5종 테스트 스위트 전원 PASS(`test_v25_widget_sockets.js` 188/188 포함).
 
 ---
 
@@ -110,9 +121,9 @@
    - [ ] `Backend_Proxy.gs`에서 카카오 사용자 정보 응답(`kakao_account.phone_number` 국제번호/하이픈 포맷 및 권한 미반환 케이스) 파싱 로직과 시트 기록 과정을 정밀 진단해 `01000000000` 폴백 발생 원인 완전 해소
 2. **[P0 · 인프라 영구 해결] 모바일 접속 시 카카오 REST API 호출 서버 유동 IP(`-401`) 영구 해결:**
    - [ ] Google Apps Script(`UrlFetchApp`) 아웃바운드 유동 IP 특성으로 인해 모바일 접속 시 카카오 REST API `-401` 차단이 발생하는 이슈의 영구 해결책 적용(허용 IP 정책 정리 또는 고정 프록시/인증 흐름 확정)
-3. **[P1 · 배포 반영] 로컬 커밋 원격 Push & GAS 웹 앱 V2.8-0 재배포:**
-   - [ ] GitHub Desktop에서 로컬 커밋을 `origin/master`로 Push (`InterviewBot.html`, `Proposal.html`, `engines/RagInterviewEngine.js`, `data/GomawartalkManual.js`, `data/AlimtalkTemplates.js`, `data/IndustryPresets.js`, `Backend_Proxy.gs`, `PRD.md`, `HANDOFF_NEXT_SESSION.md` 실서버 반영)
-   - [ ] Google Apps Script 편집기에 갱신된 `Backend_Proxy.gs` (`V2.8-0`) 반영 후 `[배포 > 배포 관리 > 새 버전]` 배포 + 에디터에서 `testGoogleChatWebhook()` 1회 실행해 구글 챗 수신 확인 (`GOOGLE_CHAT_WEBHOOK_URL` 스크립트 속성 등록 여부 점검)
+3. **[P1 · 배포 반영] 로컬 커밋 원격 Push & GAS 웹 앱 V2.9-0 재배포:**
+   - [ ] GitHub Desktop에서 로컬 커밋을 `origin/master`로 Push (`InterviewBot.html`, `Proposal.html`, `engines/RagInterviewEngine.js`, `data/GomawartalkManual.js`, `Backend_Proxy.gs`, `PRD.md`, `HANDOFF_NEXT_SESSION.md` 실서버 반영)
+   - [ ] Google Apps Script 편집기에 갱신된 `Backend_Proxy.gs` (`V2.9-0`) 반영 후 `[배포 > 배포 관리 > 새 버전]` 배포 + 에디터에서 `testGoogleChatWebhook()` 1회 실행해 구글 챗 수신 확인 (`GOOGLE_CHAT_WEBHOOK_URL` 스크립트 속성 등록 여부 점검)
 4. **[P1 · 11/30 본체 완공 마감] 모바일 카톡 인앱 E2E 최종 검수:**
    - [ ] **11월 30일(월) 완공 목표:** 실전 스마트폰 카톡 인앱 브라우저에서 `카카오싱크 로그인(실제 전화번호 정상 기록)` ➔ `인터뷰봇 무료 체험 + 플로팅 위젯 Q&A 설계 핀·1초 제보` ➔ `파트너캠페인관제탑(18컬럼)·파트너제보함(9컬럼) 기록` ➔ `Proposal.html V2.5 시뮬레이터 & 1회 수정메모 연동·확정 제출` ➔ `Google Chat 알림 수신` ➔ `LandingBuilder.html 유료 조종석 포스트잇·AI 이미지 채우기`까지 전 구간 E2E 최종 검수 완료
 5. **[Post 11/30 · Wave 1 착수] 독자 외부 스토어 공식 앱 (Track B):**

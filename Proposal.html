@@ -49,19 +49,19 @@ html {
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 18% 8%, rgba(124, 58, 237, 0.07), transparent 36%),
-    radial-gradient(circle at 84% 28%, rgba(37, 99, 235, 0.07), transparent 40%),
+    radial-gradient(circle at 18% 8%, rgba(124, 58, 237, 0.06), transparent 36%),
+    radial-gradient(circle at 84% 28%, rgba(37, 99, 235, 0.06), transparent 40%),
     linear-gradient(180deg, #EDF1F7 0%, #F4F7FB 60%, #EAEFF7 100%);
   color: var(--g900);
   font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  font-size: 15px;
-  line-height: 1.54;
+  font-size: 18px;
+  line-height: 1.55;
   letter-spacing: -0.02em;
   word-break: keep-all;
   -webkit-font-smoothing: antialiased;
 }
 
-button, input, textarea, select { font: inherit; color: inherit; }
+button, input, textarea, select { font: inherit; color: inherit; word-break: keep-all; }
 button { cursor: pointer; border: none; background: none; }
 [hidden] { display: none !important; }
 
@@ -71,14 +71,14 @@ button { cursor: pointer; border: none; background: none; }
   .pc-rail {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
     position: fixed;
     top: 92px;
-    left: max(24px, calc(50% - 260px - 224px));
-    width: 196px;
-    padding: 15px 13px;
+    left: max(18px, calc(50% - 260px - 246px));
+    width: 222px;
+    padding: 16px 14px;
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(15, 23, 42, 0.07);
@@ -86,10 +86,10 @@ button { cursor: pointer; border: none; background: none; }
     z-index: 30;
   }
   .pc-rail-title {
-    font-size: 11.5px;
+    font-size: 16px;
     font-weight: 800;
-    color: var(--g500);
-    padding: 0 8px 7px;
+    color: var(--g700);
+    padding: 0 8px 8px;
     border-bottom: 1px solid var(--g200);
     margin-bottom: 2px;
   }
@@ -97,11 +97,11 @@ button { cursor: pointer; border: none; background: none; }
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 10px;
-    border-radius: 11px;
-    font-size: 12.5px;
+    padding: 9px 10px;
+    border-radius: 12px;
+    font-size: 16px;
     font-weight: 700;
-    color: var(--g500);
+    color: var(--g700);
     text-decoration: none;
     transition: all 0.16s ease;
   }
@@ -112,8 +112,8 @@ button { cursor: pointer; border: none; background: none; }
     box-shadow: 0 4px 12px rgba(124, 58, 237, 0.24);
   }
   .pc-rail-dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: currentColor;
     opacity: 0.7;
@@ -130,7 +130,7 @@ button { cursor: pointer; border: none; background: none; }
   background: #FFFFFF;
   position: relative;
   box-shadow: 0 0 48px rgba(15, 23, 42, 0.1);
-  padding-bottom: calc(102px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(116px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ═════════ 상단 고정 바 ═════════ */
@@ -138,13 +138,13 @@ button { cursor: pointer; border: none; background: none; }
   position: sticky;
   top: 0;
   z-index: 40;
-  height: 56px;
+  height: 62px;
   padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
@@ -154,17 +154,17 @@ button { cursor: pointer; border: none; background: none; }
   align-items: center;
   gap: 8px;
   min-width: 0;
-  padding: 5px 11px 5px 6px;
+  padding: 6px 13px 6px 7px;
   border-radius: 99px;
   background: var(--g100);
 }
 .top-brand-dot {
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: var(--brand);
   color: #FFFFFF;
-  font-size: 11px;
+  font-size: 16px;
   font-weight: 800;
   display: grid;
   place-items: center;
@@ -173,7 +173,7 @@ button { cursor: pointer; border: none; background: none; }
 }
 .top-brand-dot img { width: 100%; height: 100%; object-fit: cover; }
 .top-brand-text {
-  font-size: 12.5px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--g900);
   white-space: nowrap;
@@ -184,12 +184,13 @@ button { cursor: pointer; border: none; background: none; }
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 7px 12px;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 14px;
   border-radius: 99px;
   background: var(--g900);
   color: #FFFFFF;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 800;
 }
 .btn-top-share:active { transform: scale(0.96); }
@@ -197,14 +198,14 @@ button { cursor: pointer; border: none; background: none; }
 .floating-toast {
   position: fixed;
   left: 50%;
-  top: 66px;
+  top: 72px;
   transform: translateX(-50%) translateY(-8px);
   z-index: 120;
   background: rgba(15, 23, 42, 0.94);
   color: #FFFFFF;
-  padding: 10px 16px;
+  padding: 12px 18px;
   border-radius: 99px;
-  font-size: 13px;
+  font-size: 16.5px;
   font-weight: 700;
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.25);
   opacity: 0;
@@ -218,15 +219,16 @@ button { cursor: pointer; border: none; background: none; }
 .floating-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 .source-ribbon {
-  padding: 7px 16px;
+  padding: 10px 16px;
   background: #F5F3FF;
   border-bottom: 1px solid #EDE9FE;
   color: #5B21B6;
-  font-size: 11.5px;
+  font-size: 16px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -236,13 +238,13 @@ button { cursor: pointer; border: none; background: none; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 16px;
   padding: 36px 24px;
   text-align: center;
 }
 .spinner {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 3.5px solid var(--g200);
   border-top-color: var(--purple-md);
@@ -261,128 +263,133 @@ button { cursor: pointer; border: none; background: none; }
 .reveal.delay-2 { transition-delay: 0.16s; }
 .reveal.delay-3 { transition-delay: 0.24s; }
 
-/* ═════════ [상단 타이틀 & 한 줄 요약] ═════════ */
+/* ═════════ [상단 타이틀 & 한 줄 요약 — 50+ 빅폰트] ═════════ */
 .cover-section {
-  padding: 24px 20px 18px;
-  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+  padding: 28px 22px 22px;
+  background: #FFFFFF;
 }
 .cover-meta-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 .cover-logo-chip {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 5px 11px;
+  padding: 7px 14px;
   border-radius: 99px;
   background: var(--brand-soft);
   color: var(--brand);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 800;
 }
-.cover-logo-chip img { height: 18px; max-width: 78px; object-fit: contain; border-radius: 3px; }
+.cover-logo-chip img { height: 22px; max-width: 84px; object-fit: contain; border-radius: 4px; }
 .cover-ind-chip {
-  padding: 5px 10px;
+  padding: 7px 13px;
   border-radius: 99px;
   background: var(--g100);
   color: var(--g700);
-  font-size: 11.5px;
+  font-size: 16px;
   font-weight: 800;
 }
 .cover-title {
-  font-size: 24px;
-  font-weight: 900;
-  line-height: 1.3;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.38;
   color: var(--g900);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.025em;
 }
 .cover-title .hl { color: var(--brand); }
 .cover-sub {
-  margin-top: 7px;
-  font-size: 13.5px;
-  color: var(--g500);
-  line-height: 1.48;
+  margin-top: 10px;
+  font-size: 18px;
+  color: var(--g700);
+  line-height: 1.55;
 }
 
-/* ═════════ [핵심] 올인원 5단계 모바일 연속 시나리오 시뮬레이터 (V2.6 플래그십 슬림 목업 · 순정 카톡 100% · 외부 리모컨) ═════════ */
+/* ═════════ [핵심] 올인원 5단계 모바일 연속 시나리오 시뮬레이터 (332px 실버 목업 · 순정 카톡 100% · 외부 50+ 빅폰트) ═════════ */
 .sim-section {
-  padding: 14px 14px 30px;
-  background: linear-gradient(180deg, #F1F5F9 0%, #E2E8F0 100%);
+  padding: 18px 16px 38px;
+  background: linear-gradient(180deg, #F3F6FA 0%, #E7ECF3 100%);
   border-bottom: 8px solid #E2E8F0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
-/* 5단계 점프 스텝 바 + 우측 아이콘형 처음으로(↻) 버튼 */
+/* 5단계 점프 스텝 칩 바 (최소 16px · 가로 스크롤 쾌적 배치 + ⚡맞춤 인라인 배지 + ↻ 버튼) */
 .sim-steps-row {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr) 36px;
-  gap: 5px;
+  display: flex;
   align-items: stretch;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 2px 2px 4px;
 }
+.sim-steps-row::-webkit-scrollbar { display: none; }
 .sim-steps-row.four-steps {
-  grid-template-columns: repeat(4, 1fr) 36px;
+  justify-content: flex-start;
 }
 .sim-step-pill {
   position: relative;
-  padding: 7px 2px;
-  border-radius: 12px;
+  flex: 0 0 auto;
+  min-width: 96px;
+  padding: 10px 13px;
+  border-radius: 14px;
   background: #FFFFFF;
   border: 1.5px solid var(--g200);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 3px;
   text-align: center;
   transition: all 0.16s ease;
-  min-width: 0;
 }
 .sim-step-pill.has-spotlight {
   border-color: #C4B5FD;
-  background: linear-gradient(180deg, #FFFFFF 0%, #F5F3FF 100%);
+  background: #FAF5FF;
+}
+.sp-head-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 .sp-spotlight-badge {
-  position: absolute;
-  top: -9px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 1.5px 5px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
   border-radius: 99px;
   background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
   color: #FEF08A;
-  font-size: 8.5px;
-  font-weight: 900;
+  font-size: 16px;
+  font-weight: 800;
   line-height: 1.25;
   white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.34);
   letter-spacing: -0.02em;
-  pointer-events: none;
 }
 .sim-step-pill.active .sp-spotlight-badge {
   background: #FEE500;
   color: #191919;
 }
 .sim-step-pill .sp-num {
-  font-size: 10.5px;
-  font-weight: 900;
-  color: var(--g400);
-  line-height: 1.1;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--g500);
+  line-height: 1.2;
 }
 .sim-step-pill .sp-lbl {
-  font-size: 9.5px;
+  font-size: 16px;
   font-weight: 800;
-  color: var(--g700);
-  line-height: 1.15;
+  color: var(--g900);
+  line-height: 1.25;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
 }
 .sim-step-pill.done {
   border-color: var(--purple-bd);
@@ -398,11 +405,13 @@ button { cursor: pointer; border: none; background: none; }
 .sim-step-pill.active .sp-num { color: #FEF08A; }
 .sim-step-pill.active .sp-lbl { color: #FFFFFF; }
 .btn-sim-restart-icon {
-  border-radius: 12px;
+  flex: 0 0 48px;
+  min-width: 48px;
+  border-radius: 14px;
   background: #FFFFFF;
   border: 1.5px solid var(--g200);
   color: var(--g700);
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 900;
   display: grid;
   place-items: center;
@@ -417,22 +426,22 @@ button { cursor: pointer; border: none; background: none; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
 }
 
-/* 폰 프레임 위: 원포인트 맞춤 분기 스포트라이트 카드 (분기 단계에서만 오픈, 공통 단계에서는 display:none) */
+/* 폰 프레임 위: 원포인트 맞춤 분기 스포트라이트 카드 (분기 단계 1곳에서만 오픈, 공통 단계에서는 display:none) */
 .sim-remote-panel {
   width: 100%;
-  max-width: 392px;
-  padding: 13px 14px;
-  border-radius: 18px;
+  max-width: 420px;
+  padding: 18px 16px;
+  border-radius: 20px;
   background: linear-gradient(135deg, #FAF5FF 0%, #FFFFFF 55%, #EFF6FF 100%);
   border: 1.5px solid #C4B5FD;
-  box-shadow: 0 10px 26px rgba(124, 58, 237, 0.13);
+  box-shadow: 0 10px 26px rgba(124, 58, 237, 0.12);
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 12px;
 }
 .sim-remote-panel[hidden] { display: none !important; }
 .sim-remote-panel.spotlight-open {
@@ -443,29 +452,30 @@ button { cursor: pointer; border: none; background: none; }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .remote-caption {
-  font-size: 12px;
-  font-weight: 900;
+  font-size: 18px;
+  font-weight: 800;
   color: #4C1D95;
   display: flex;
-  align-items: center;
-  gap: 5px;
-  line-height: 1.38;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.45;
   letter-spacing: -0.02em;
 }
 .remote-pill-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 7px;
+  gap: 9px;
 }
 .remote-visit-btn, .remote-branch-btn {
-  padding: 9px 10px;
-  border-radius: 12px;
+  min-height: 58px;
+  padding: 12px 10px;
+  border-radius: 14px;
   background: #FFFFFF;
-  color: var(--g700);
+  color: var(--g900);
   border: 1.5px solid #DDD6FE;
-  font-size: 11.5px;
+  font-size: 16.5px;
   font-weight: 800;
-  line-height: 1.32;
+  line-height: 1.38;
   transition: all 0.18s ease;
   text-align: center;
   word-break: keep-all;
@@ -479,20 +489,19 @@ button { cursor: pointer; border: none; background: none; }
 }
 .remote-visit-btn:active, .remote-branch-btn:active { transform: scale(0.97); }
 .remote-step2-note {
-  font-size: 12px;
+  font-size: 16.5px;
   font-weight: 700;
-  color: var(--g500);
-  line-height: 1.4;
+  color: var(--g700);
+  line-height: 1.5;
 }
 .remote-branch-summary {
-  padding: 8px 11px;
-  border-radius: 11px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid #DDD6FE;
+  padding: 12px 14px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.94);
   color: #4C1D95;
-  font-size: 11.5px;
+  font-size: 16.5px;
   font-weight: 800;
-  line-height: 1.38;
+  line-height: 1.48;
 }
 
 /* 밝은 실버·플래티넘 메탈릭 슬림 스마트폰 프레임 (332px 슬림 비율 유지) */
@@ -581,37 +590,45 @@ button { cursor: pointer; border: none; background: none; }
   background: rgba(15, 23, 42, 0.24);
 }
 
-/* 폰 프레임 아래: 외부 장면 이동 버튼 ([◀ 이전 장면] | [다음 발송 장면 보기 ▶]) — 우하단 플로팅 아이콘 비간섭 폭 정렬 */
+/* 폰 프레임 아래: 외부 장면 이동 버튼 ([◀ 이전 장면] | [다음 장면 보기 ▶]) — 하단 안전 여백(72px) 확보로 플로팅 아이콘·코치마크 겹침 0% */
+.sim-ext-nav-wrap {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  margin-top: 6px;
+  margin-bottom: 72px;
+}
 .sim-ext-nav {
   width: 100%;
-  max-width: 332px;
-  margin-top: 4px;
   display: grid;
-  grid-template-columns: 98px 1fr;
-  gap: 8px;
+  grid-template-columns: 122px 1fr;
+  gap: 9px;
 }
 .btn-ext-prev {
-  min-height: 48px;
-  padding: 10px 10px;
-  border-radius: 14px;
+  min-height: 58px;
+  padding: 12px 10px;
+  border-radius: 15px;
   background: #FFFFFF;
   border: 1.5px solid var(--g200);
-  color: var(--g700);
-  font-size: 12.5px;
+  color: var(--g900);
+  font-size: 17px;
   font-weight: 800;
   transition: all 0.15s ease;
 }
 .btn-ext-prev:disabled { opacity: 0.42; cursor: not-allowed; }
 .btn-ext-prev:not(:disabled):active { transform: scale(0.97); }
 .btn-ext-next {
-  min-height: 48px;
-  padding: 10px 14px;
-  border-radius: 14px;
+  min-height: 58px;
+  padding: 12px 14px;
+  border-radius: 15px;
   background: linear-gradient(135deg, #111827 0%, #1E293B 100%);
   color: #FFFFFF;
-  font-size: 13.5px;
-  font-weight: 900;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.2);
+  font-size: 18.5px;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
   transition: all 0.15s ease;
 }
 .btn-ext-next:active { transform: scale(0.98); }
@@ -619,20 +636,18 @@ button { cursor: pointer; border: none; background: none; }
 /* 채널 추가 전 고객 2회 자동 안내 체험 토글 버튼 */
 .btn-sim-rescue-toggle {
   width: 100%;
-  max-width: 332px;
-  min-height: 44px;
-  margin-bottom: 18px;
-  padding: 10px 14px;
-  border-radius: 13px;
+  min-height: 54px;
+  padding: 12px 15px;
+  border-radius: 14px;
   background: #FFFFFF;
   border: 1.5px solid #CBD5E1;
   color: #1E293B;
-  font-size: 12.5px;
+  font-size: 17px;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 7px;
   box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
   transition: all 0.16s ease;
 }
@@ -1558,17 +1573,17 @@ button { cursor: pointer; border: none; background: none; }
   flex-shrink: 0;
 }
 
-/* ═════════ 등급별 하단 분기 카드 (Starter 업그레이드 1줄 토글 / Pro 전용 배지) & Q&A 미니 비교 카드 ═════════ */
+/* ═════════ 등급별 하단 분기 카드 (50+ 빅폰트 · 미니멀 클린 UI) & Q&A 미니 비교 카드 ═════════ */
 .tier-status-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 9px 16px;
   border-radius: 99px;
-  font-size: 12.5px;
-  font-weight: 900;
-  line-height: 1.35;
+  font-size: 16.5px;
+  font-weight: 800;
+  line-height: 1.4;
   text-align: center;
 }
 .tier-status-badge.starter {
@@ -1584,14 +1599,14 @@ button { cursor: pointer; border: none; background: none; }
 }
 .starter-upgrade-card {
   width: 100%;
-  padding: 13px 14px;
-  border-radius: 14px;
+  padding: 16px 16px;
+  border-radius: 16px;
   background: linear-gradient(135deg, #FAF5FF 0%, #EFF6FF 100%);
   border: 1.5px solid #C4B5FD;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   text-align: left;
   transition: all 0.16s ease;
 }
@@ -1602,27 +1617,28 @@ button { cursor: pointer; border: none; background: none; }
 }
 .starter-upgrade-text b {
   display: block;
-  font-size: 13px;
-  font-weight: 900;
+  font-size: 18px;
+  font-weight: 800;
   color: #4C1D95;
-  line-height: 1.35;
+  line-height: 1.42;
 }
 .starter-upgrade-text small {
   display: block;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #64748B;
-  margin-top: 2px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #475569;
+  margin-top: 4px;
+  line-height: 1.48;
 }
 .starter-upgrade-pill {
   flex-shrink: 0;
-  padding: 5px 10px;
+  padding: 8px 13px;
   border-radius: 99px;
   background: #FFFFFF;
   border: 1px solid #C4B5FD;
   color: #6D28D9;
-  font-size: 11px;
-  font-weight: 900;
+  font-size: 16px;
+  font-weight: 800;
 }
 .starter-upgrade-card.active .starter-upgrade-pill {
   background: #7C3AED;
@@ -1632,14 +1648,14 @@ button { cursor: pointer; border: none; background: none; }
 .pro-quick-action-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 10px;
 }
 .btn-pro-quick {
-  min-height: 46px;
-  padding: 10px 10px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 900;
+  min-height: 58px;
+  padding: 13px 10px;
+  border-radius: 14px;
+  font-size: 17.5px;
+  font-weight: 800;
   text-align: center;
   border: 1.5px solid var(--g200);
   background: var(--g50);
@@ -1652,54 +1668,54 @@ button { cursor: pointer; border: none; background: none; }
   color: var(--purple);
 }
 .qa-pro-cmp-card {
-  margin-top: 8px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .qa-pro-mini {
-  border-radius: 10px;
+  border-radius: 14px;
   border: 1px solid #E2E8F0;
   background: #FFFFFF;
   overflow: hidden;
-  font-size: 10.5px;
-  line-height: 1.38;
+  font-size: 16px;
+  line-height: 1.48;
 }
 .qa-pro-mini.pro { border: 1.5px solid #7C3AED; }
 .qa-pro-mini-top {
   background: #FEE500;
   color: #191919;
-  padding: 4px 7px;
-  font-size: 9.5px;
-  font-weight: 900;
+  padding: 7px 12px;
+  font-size: 16px;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .qa-pro-mini-body {
-  padding: 7px 7px;
+  padding: 11px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 7px;
   color: #334155;
 }
 .qa-pro-mini-btn {
-  padding: 3px 5px;
-  border-radius: 5px;
+  padding: 8px 10px;
+  border-radius: 9px;
   background: #F1F5F9;
   color: #1E293B;
-  font-size: 9.5px;
+  font-size: 16px;
   font-weight: 800;
   text-align: center;
 }
 .qa-pro-mini-btn.ch { background: #FEE500; color: #191919; }
 
-/* ═════════ [컴팩트 시나리오 타임라인 요약 카드] ═════════ */
+/* ═════════ [컴팩트 시나리오 타임라인 요약 카드 — 50+ 빅폰트] ═════════ */
 .stage-section {
-  padding: 34px 20px 32px;
+  padding: 40px 22px 38px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   border-bottom: 8px solid #F1F5F9;
   background: #FFFFFF;
 }
@@ -1709,141 +1725,139 @@ button { cursor: pointer; border: none; background: none; }
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
+  gap: 10px;
 }
 .sec-num-circle {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
   color: #FFFFFF;
-  font-size: 16px;
-  font-weight: 900;
+  font-size: 18px;
+  font-weight: 800;
   display: grid;
   place-items: center;
-  box-shadow: 0 6px 14px rgba(124, 58, 237, 0.26);
+  box-shadow: 0 6px 14px rgba(124, 58, 237, 0.24);
 }
 .sec-title {
-  font-size: 20.5px;
-  font-weight: 900;
-  line-height: 1.34;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.38;
   color: var(--g900);
   letter-spacing: -0.025em;
 }
-.sec-desc { font-size: 13.5px; color: var(--g500); line-height: 1.48; }
+.sec-desc { font-size: 18px; color: var(--g700); line-height: 1.55; }
 
 .compact-tl-card {
   background: #FFFFFF;
-  border-radius: 20px;
-  padding: 14px 14px;
-  border: 1px solid rgba(15, 23, 42, 0.07);
+  border-radius: 22px;
+  padding: 16px 14px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 .ctl-row {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 10px 9px;
-  border-radius: 13px;
+  gap: 13px;
+  padding: 13px 11px;
+  border-radius: 15px;
   text-align: left;
   width: 100%;
   transition: background 0.14s ease;
 }
 .ctl-row:hover { background: var(--g50); }
 .ctl-step-dot {
-  width: 28px;
-  height: 28px;
-  border-radius: 9px;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
   background: var(--purple-lt);
   color: var(--purple);
-  font-size: 12px;
-  font-weight: 900;
+  font-size: 16.5px;
+  font-weight: 800;
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
 .ctl-copy { flex: 1; min-width: 0; }
-.ctl-copy b { display: block; font-size: 13.5px; font-weight: 800; color: var(--g900); line-height: 1.3; }
-.ctl-copy span { display: block; font-size: 12px; color: var(--g500); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctl-copy b { display: block; font-size: 18px; font-weight: 800; color: var(--g900); line-height: 1.38; }
+.ctl-copy span { display: block; font-size: 16px; color: var(--g500); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ctl-go {
-  font-size: 11px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--purple-md);
   background: var(--purple-lt);
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: 99px;
   flex-shrink: 0;
 }
 
 /* ═════════ [④ 문자·수동 카톡과의 3가지 핵심 차이] ═════════ */
-.diff-cards { display: flex; flex-direction: column; gap: 10px; }
+.diff-cards { display: flex; flex-direction: column; gap: 14px; }
 .diff-card {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 15px;
-  border-radius: 18px;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px 18px;
+  border-radius: 20px;
   background: #FFFFFF;
-  border: 1px solid rgba(15, 23, 42, 0.07);
   box-shadow: var(--shadow-soft);
 }
 .diff-icon-badge {
-  width: 48px;
-  height: 48px;
-  border-radius: 15px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  font-size: 22px;
+  font-size: 24px;
 }
-.diff-icon-badge.c1 { background: #FEF9C3; border: 1px solid #FDE047; }
-.diff-icon-badge.c2 { background: #F5F3FF; border: 1px solid #DDD6FE; }
-.diff-icon-badge.c3 { background: #ECFDF5; border: 1px solid #A7F3D0; }
-.diff-copy h4 { font-size: 14.5px; font-weight: 900; color: var(--g900); line-height: 1.32; }
-.diff-copy p { margin-top: 3px; font-size: 12.5px; font-weight: 600; color: var(--g500); line-height: 1.44; }
+.diff-icon-badge.c1 { background: #FEF9C3; }
+.diff-icon-badge.c2 { background: #F5F3FF; }
+.diff-icon-badge.c3 { background: #ECFDF5; }
+.diff-copy h4 { font-size: 19px; font-weight: 800; color: var(--g900); line-height: 1.38; }
+.diff-copy p { margin-top: 6px; font-size: 17.5px; font-weight: 500; color: var(--g700); line-height: 1.55; }
 
-/* ═════════ [기존 무인 세팅 확정 폼 — 100% 보존] ═════════ */
+/* ═════════ [기존 무인 세팅 확정 폼 — 14개 DOM ID 100% 보존 + 50+ 빅폰트] ═════════ */
 .confirm-section {
-  padding: 36px 20px 26px;
+  padding: 40px 22px 30px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   background: #F7F9FC;
 }
 .e-card {
   background: #FFFFFF;
-  border-radius: 22px;
-  padding: 20px 18px;
-  border: 1px solid rgba(15, 23, 42, 0.07);
+  border-radius: 24px;
+  padding: 24px 20px;
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 .already-confirmed-banner {
-  padding: 13px 15px;
-  border-radius: 15px;
+  padding: 16px 18px;
+  border-radius: 16px;
   background: var(--green-lt);
   border: 1.5px solid var(--green-bd);
   color: #065F46;
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 800;
-  line-height: 1.48;
+  line-height: 1.52;
 }
-.plan-select-stack { display: flex; flex-direction: column; gap: 10px; }
+.plan-select-stack { display: flex; flex-direction: column; gap: 12px; }
 .plan-option-card {
   width: 100%;
-  padding: 15px;
-  border-radius: 16px;
+  padding: 18px 18px;
+  border-radius: 18px;
   border: 2px solid var(--g200);
   background: #FFFFFF;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 9px;
   transition: all 0.15s ease;
 }
 .plan-option-card.selected {
@@ -1851,101 +1865,100 @@ button { cursor: pointer; border: none; background: none; }
   background: #FAF5FF;
   box-shadow: 0 6px 18px rgba(124, 58, 237, 0.14);
 }
-.plan-head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.plan-name-wrap { display: flex; align-items: center; gap: 6px; font-size: 15.5px; font-weight: 900; color: var(--g900); }
+.plan-head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.plan-name-wrap { display: flex; align-items: center; gap: 8px; font-size: 19px; font-weight: 800; color: var(--g900); }
 .plan-best-badge {
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 99px;
   background: var(--purple-md);
   color: #FFFFFF;
-  font-size: 10.5px;
+  font-size: 16px;
   font-weight: 800;
 }
-.plan-price-tag { font-size: 15px; font-weight: 900; color: var(--purple); }
-.plan-feats { font-size: 12.5px; color: var(--g700); line-height: 1.5; display: flex; flex-direction: column; gap: 2px; }
-.mode-radio-stack { display: flex; flex-direction: column; gap: 8px; }
+.plan-price-tag { font-size: 19px; font-weight: 800; color: var(--purple); }
+.plan-feats { font-size: 17.5px; color: var(--g700); line-height: 1.55; display: flex; flex-direction: column; gap: 4px; }
+.mode-radio-stack { display: flex; flex-direction: column; gap: 11px; }
 .mode-radio-card {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 14px;
+  padding: 16px 16px;
+  border-radius: 16px;
   border: 1.5px solid var(--g200);
   background: var(--g50);
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   cursor: pointer;
 }
 .mode-radio-card.selected { border-color: var(--purple-md); background: #F5F3FF; }
-.mode-radio-card input[type="radio"] { margin-top: 3px; accent-color: var(--purple-md); width: 17px; height: 17px; flex-shrink: 0; }
-.mode-radio-text b { display: block; font-size: 13.5px; font-weight: 800; color: var(--g900); }
-.mode-radio-text small { display: block; font-size: 12px; color: var(--g500); margin-top: 2px; }
-.memo-box-wrap { margin-top: 4px; display: flex; flex-direction: column; gap: 6px; }
+.mode-radio-card input[type="radio"] { margin-top: 4px; accent-color: var(--purple-md); width: 20px; height: 20px; flex-shrink: 0; }
+.mode-radio-text b { display: block; font-size: 18.5px; font-weight: 800; color: var(--g900); line-height: 1.4; }
+.mode-radio-text small { display: block; font-size: 16.5px; color: var(--g700); margin-top: 4px; line-height: 1.5; }
+.memo-box-wrap { margin-top: 6px; display: flex; flex-direction: column; gap: 8px; }
 .memo-textarea {
   width: 100%;
-  min-height: 98px;
-  padding: 12px 14px;
-  border-radius: 13px;
+  min-height: 112px;
+  padding: 14px 16px;
+  border-radius: 15px;
   border: 1.5px solid var(--purple-md);
   background: #FFFFFF;
-  font-size: 16px;
-  line-height: 1.48;
+  font-size: 18px;
+  line-height: 1.55;
   resize: vertical;
   outline: none;
 }
 .btn-confirm-submit {
   width: 100%;
-  min-height: 54px;
-  padding: 14px 18px;
-  border-radius: 15px;
+  min-height: 60px;
+  padding: 16px 18px;
+  border-radius: 16px;
   background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
   color: #FFFFFF;
-  font-size: 15.5px;
-  font-weight: 900;
+  font-size: 19px;
+  font-weight: 800;
   text-align: center;
   box-shadow: 0 10px 24px rgba(124, 58, 237, 0.28);
 }
 .btn-confirm-submit:active { transform: scale(0.985); }
 .btn-confirm-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 .confirm-err-box {
-  padding: 10px 13px;
-  border-radius: 11px;
+  padding: 14px 15px;
+  border-radius: 13px;
   background: var(--red-lt);
   color: var(--red);
-  font-size: 12.5px;
+  font-size: 16.5px;
   font-weight: 700;
 }
 .confirm-done-card {
   background: #FFFFFF;
   border: 2px solid var(--green);
-  border-radius: 22px;
-  padding: 22px 18px;
+  border-radius: 24px;
+  padding: 26px 20px;
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 11px;
+  gap: 14px;
 }
 .done-check-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
   background: var(--green-lt);
   color: var(--green);
-  font-size: 24px;
+  font-size: 26px;
   display: grid;
   place-items: center;
 }
 .done-meta-box {
-  padding: 12px 14px;
-  border-radius: 13px;
+  padding: 16px 16px;
+  border-radius: 15px;
   background: var(--g50);
-  border: 1px solid var(--g200);
-  font-size: 13px;
+  font-size: 18px;
   color: var(--g700);
-  line-height: 1.55;
+  line-height: 1.58;
 }
 .done-meta-box b { color: var(--g900); }
 
-/* ═════════ 하단 고정 Sticky CTA 바 ═════════ */
+/* ═════════ 하단 고정 Sticky CTA 바 (60px / 19px) ═════════ */
 .sticky-bottom-bar {
   position: fixed;
   left: 50%;
@@ -1954,8 +1967,8 @@ button { cursor: pointer; border: none; background: none; }
   width: 100%;
   max-width: 520px;
   z-index: 45;
-  padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 0px));
-  background: rgba(255, 255, 255, 0.94);
+  padding: 14px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-top: 1px solid rgba(15, 23, 42, 0.08);
@@ -1969,84 +1982,59 @@ button { cursor: pointer; border: none; background: none; }
 }
 .btn-sticky-go {
   width: 100%;
-  min-height: 52px;
-  padding: 14px 18px;
-  border-radius: 14px;
+  min-height: 60px;
+  padding: 15px 18px;
+  border-radius: 16px;
   background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
   color: #FFFFFF;
-  font-size: 15px;
-  font-weight: 900;
+  font-size: 19px;
+  font-weight: 800;
   text-align: center;
   box-shadow: 0 8px 20px rgba(124, 58, 237, 0.28);
 }
 .btn-sticky-go:active { transform: scale(0.985); }
 
 .footer-note {
-  padding: 18px 20px 28px;
+  padding: 22px 20px 32px;
   text-align: center;
-  font-size: 11.5px;
-  color: var(--g400);
+  font-size: 16px;
+  color: var(--g500);
   line-height: 1.55;
   background: #F7F9FC;
 }
 
-/* ═════════ 우측 하단 채널톡형 플로팅 런처 (하단 Sticky CTA · [다음 장면 보기 ▶] 버튼 겹침 원천 차단) ═════════ */
+/* ═════════ V2.9 우측 하단 순수 챗봇·물음표 원형 아이콘 런처 (외부 텍스트 0건 · 52px × 52px · 하단 버튼 비간섭) ═════════ */
 .flt-launcher {
   position: fixed;
-  right: 12px;
-  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  right: 14px;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   z-index: 950;
   display: flex;
   align-items: center;
-  gap: 8px;
-  pointer-events: none;
-}
-.flt-pill-label {
-  pointer-events: auto;
-  padding: 7px 12px;
-  border-radius: 99px;
-  background: #FFFFFF;
-  color: #1E293B;
-  border: 1px solid #E2E8F0;
-  font-size: 12px;
-  font-weight: 800;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.14);
-  white-space: nowrap;
-  max-width: 140px;
-  overflow: hidden;
-  transition: opacity 0.24s ease, transform 0.24s ease, max-width 0.24s ease, padding 0.24s ease, border-width 0.24s ease;
-}
-.flt-pill-label.is-hidden {
-  opacity: 0;
-  max-width: 0;
-  padding-left: 0;
-  padding-right: 0;
-  border-width: 0;
-  pointer-events: none;
-  transform: translateX(8px);
+  justify-content: center;
 }
 .flt-fab {
-  pointer-events: auto;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
   color: #FFFFFF;
-  font-size: 20px;
   display: grid;
   place-items: center;
   box-shadow: 0 10px 26px rgba(124, 58, 237, 0.36);
-  border: 2px solid rgba(255, 255, 255, 0.92);
+  border: 2px solid rgba(255, 255, 255, 0.94);
   transition: transform 0.16s ease;
 }
-.flt-fab:active { transform: scale(0.94); }
+.flt-fab:active { transform: scale(0.93); }
+.flt-fab-svg { display: block; }
 
+/* V2.9 3-Tab 도움말·맞춤구축(300만 원+)·오류제보 바텀시트 팝업 */
 .flt-sheet-backdrop {
   position: fixed;
   inset: 0;
   z-index: 980;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(3px);
+  background: rgba(15, 23, 42, 0.52);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -2055,110 +2043,272 @@ button { cursor: pointer; border: none; background: none; }
 .flt-sheet-backdrop[hidden] { display: none; }
 .flt-sheet {
   width: 100%;
-  max-width: 460px;
-  max-height: 82vh;
+  max-width: 472px;
+  max-height: 88vh;
   background: #FFFFFF;
-  border-radius: 22px;
-  padding: 16px;
+  border-radius: 24px;
+  padding: 20px 18px 18px;
   display: flex;
   flex-direction: column;
-  gap: 11px;
+  gap: 14px;
   overflow: hidden;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.32);
 }
-.flt-sheet-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.flt-sheet-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.flt-sheet-head-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.flt-sheet-title {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.32;
+  letter-spacing: -0.025em;
+  color: var(--g900);
+}
+.flt-sheet-sub {
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--g700);
+  word-break: keep-all;
+}
+.flt-close-btn {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: #F1F5F9; color: #0F172A; font-size: 18px; font-weight: 800;
+  display: grid; place-items: center; flex-shrink: 0;
+}
 .flt-tabs {
-  flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   background: #F1F5F9;
-  padding: 4px;
-  border-radius: 12px;
+  padding: 5px;
+  border-radius: 15px;
 }
 .flt-tab-btn {
-  padding: 8px 6px;
-  border-radius: 9px;
-  font-size: 12.5px;
+  min-height: 50px;
+  padding: 8px 4px;
+  border-radius: 11px;
+  font-size: 16.5px;
   font-weight: 800;
-  color: #64748B;
+  line-height: 1.25;
+  color: #475569;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .flt-tab-btn.active {
   background: #FFFFFF;
   color: #0F172A;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.09);
 }
-.flt-close-btn {
-  width: 32px; height: 32px; border-radius: 9px;
-  background: #F1F5F9; color: #334155; font-size: 14px; font-weight: 800;
-  display: grid; place-items: center; flex-shrink: 0;
-}
-.flt-panel { display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; }
+.flt-panel { display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow-y: auto; padding-bottom: 4px; }
 .flt-panel[hidden] { display: none; }
-.flt-faq-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.flt-panel-guide {
+  font-size: 16.5px;
+  color: #475569;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+.flt-faq-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .flt-faq-chip {
-  padding: 5px 10px; border-radius: 99px;
-  background: #F5F3FF; color: #6D28D9; border: 1px solid #DDD6FE;
-  font-size: 11.5px; font-weight: 800;
+  padding: 10px 14px; border-radius: 14px;
+  background: #F5F3FF; color: #5B21B6; border: 1px solid #DDD6FE;
+  font-size: 16px; font-weight: 800; text-align: left; line-height: 1.38;
+}
+.flt-faq-chip.vip-chip-highlight {
+  width: 100%;
+  background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
+  border: 1.5px solid #C4B5FD;
+  color: #4C1D95;
 }
 .flt-qa-stream {
   flex: 1; min-height: 150px; max-height: 290px; overflow-y: auto;
-  display: flex; flex-direction: column; gap: 9px;
-  background: #F8FAFC; border-radius: 13px; padding: 12px;
-  border: 1px solid #E2E8F0;
+  display: flex; flex-direction: column; gap: 11px;
+  background: #F6F8FA; border-radius: 16px; padding: 14px;
 }
 .flt-qa-msg {
-  padding: 10px 12px; border-radius: 12px; font-size: 13px; line-height: 1.5; word-break: keep-all;
+  padding: 14px 15px; border-radius: 15px; font-size: 18px; line-height: 1.55; word-break: keep-all;
 }
-.flt-qa-msg.bot { background: #FFFFFF; border: 1px solid #E2E8F0; color: #0F172A; }
-.flt-qa-msg.user { background: #7C3AED; color: #FFFFFF; align-self: flex-end; max-width: 85%; font-weight: 700; }
+.flt-qa-msg.bot { background: #FFFFFF; color: #0F172A; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05); }
+.flt-qa-msg.user { background: #7C3AED; color: #FFFFFF; align-self: flex-end; max-width: 88%; font-weight: 700; }
+.qa-action-stack {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.qa-vip-go-btn {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 15px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  color: #FFFFFF;
+  font-size: 17px;
+  font-weight: 800;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.24);
+}
+.qa-vip-go-btn:active { transform: scale(0.985); }
 .qa-memo-btn {
-  margin-top: 8px;
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 6px 10px; border-radius: 9px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 14px; border-radius: 11px;
   background: #F5F3FF; border: 1px solid #C4B5FD; color: #5B21B6;
-  font-size: 11.5px; font-weight: 800;
+  font-size: 16px; font-weight: 800;
 }
 .qa-memo-btn.added {
   background: #ECFDF5; border-color: #6EE7B7; color: #065F46;
 }
-.flt-qa-form { display: flex; gap: 7px; }
+.flt-qa-form { display: flex; gap: 8px; }
 .flt-qa-form input {
-  flex: 1; min-width: 0; padding: 10px 12px; border-radius: 11px;
-  border: 1.5px solid #E2E8F0; font-size: 15px; outline: none;
+  flex: 1; min-width: 0; min-height: 52px; padding: 12px 14px; border-radius: 13px;
+  border: 1.5px solid #E2E8F0; font-size: 18px; outline: none;
 }
 .flt-qa-form input:focus { border-color: #7C3AED; }
 .flt-qa-form button {
-  padding: 0 14px; border-radius: 11px; background: #7C3AED; color: #FFFFFF;
-  font-size: 13.5px; font-weight: 800; flex-shrink: 0;
+  padding: 0 18px; border-radius: 13px; background: #7C3AED; color: #FFFFFF;
+  font-size: 17px; font-weight: 800; flex-shrink: 0;
 }
-.flt-reason-list { display: flex; flex-direction: column; gap: 7px; }
+.flt-reason-list { display: flex; flex-direction: column; gap: 9px; }
 .flt-reason-btn {
-  width: 100%; text-align: left; padding: 11px 13px; border-radius: 12px;
-  background: #F8FAFC; border: 1.5px solid #E2E8F0;
-  font-size: 13.5px; font-weight: 700; color: #1E293B;
+  width: 100%; min-height: 54px; text-align: left; padding: 14px 16px; border-radius: 14px;
+  background: #F6F8FA; border: 1.5px solid #E2E8F0;
+  font-size: 18px; font-weight: 700; color: #0F172A;
 }
 .flt-reason-btn.selected {
   background: #F5F3FF; border-color: #7C3AED; color: #5B21B6;
 }
 .flt-memo-in {
-  width: 100%; padding: 11px 12px; border-radius: 11px;
-  border: 1.5px solid #E2E8F0; font-size: 15px; outline: none;
+  width: 100%; min-height: 54px; padding: 13px 15px; border-radius: 13px;
+  border: 1.5px solid #E2E8F0; font-size: 18px; outline: none;
 }
 .flt-memo-in:focus { border-color: #7C3AED; }
 .flt-submit-btn {
-  width: 100%; min-height: 46px; border-radius: 12px;
+  width: 100%; min-height: 58px; border-radius: 15px;
   background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-  color: #FFFFFF; font-size: 14px; font-weight: 800;
+  color: #FFFFFF; font-size: 18.5px; font-weight: 800;
   box-shadow: 0 6px 16px rgba(220, 38, 38, 0.24);
 }
 .flt-submit-btn:disabled { opacity: 0.6; }
 .flt-report-status {
-  padding: 10px 12px; border-radius: 11px; font-size: 12.5px; font-weight: 700; line-height: 1.45;
+  padding: 14px 15px; border-radius: 13px; font-size: 16.5px; font-weight: 700; line-height: 1.5;
   background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0;
 }
 .flt-report-status.err { background: #FEF2F2; color: #991B1B; border-color: #FECACA; }
+
+/* VIP 맞춤구축 견적(300만 원+) 전용 폼 스타일 */
+.vip-intro-banner {
+  padding: 14px 16px;
+  border-radius: 15px;
+  background: #F5F3FF;
+  color: #4C1D95;
+  font-size: 16.5px;
+  font-weight: 700;
+  line-height: 1.52;
+}
+.vip-chip-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vip-chip-btn {
+  width: 100%;
+  min-height: 52px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  color: #0F172A;
+  font-size: 17.5px;
+  font-weight: 700;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.vip-chip-btn.selected {
+  background: #EEF2FF;
+  border-color: #4F46E5;
+  color: #3730A3;
+  font-weight: 800;
+}
+.vip-field-lbl {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 6px;
+}
+.vip-ta {
+  width: 100%;
+  min-height: 96px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  border: 1.5px solid #E2E8F0;
+  font-size: 18px;
+  line-height: 1.55;
+  resize: vertical;
+  outline: none;
+}
+.vip-ta:focus { border-color: #4F46E5; }
+.vip-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.vip-in {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  border-radius: 13px;
+  border: 1.5px solid #E2E8F0;
+  font-size: 18px;
+  outline: none;
+}
+.vip-in:focus { border-color: #4F46E5; }
+.vip-agree-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 15px;
+  border-radius: 14px;
+  background: #FFFBEB;
+  border: 1.5px solid #FDE68A;
+  font-size: 17px;
+  font-weight: 800;
+  color: #78350F;
+  line-height: 1.48;
+  cursor: pointer;
+}
+.vip-agree-label input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  accent-color: #4F46E5;
+  flex-shrink: 0;
+}
+.vip-submit-btn {
+  width: 100%;
+  min-height: 58px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  color: #FFFFFF;
+  font-size: 18.5px;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.28);
+}
+.vip-submit-btn:disabled { opacity: 0.6; }
 </style>
 </head>
 <body>
@@ -2194,7 +2344,7 @@ button { cursor: pointer; border: none; background: none; }
   <!-- 로딩 화면 -->
   <section class="loading-screen" id="loading-screen">
     <div class="spinner"></div>
-    <div style="font-size:15px;font-weight:800;color:var(--g900)">대표님 맞춤 시뮬레이터를 준비하고 있어요…</div>
+    <div style="font-size:18.5px;font-weight:800;color:var(--g900)">대표님 맞춤 시뮬레이터를 준비하고 있어요…</div>
   </section>
 
   <!-- 메인 제안서 컨텐츠 -->
@@ -2217,29 +2367,26 @@ button { cursor: pointer; border: none; background: none; }
     <!-- ═════════ 2. 올인원 5단계 모바일 연속 시나리오 시뮬레이터 (V2.6 플래그십 슬림 목업 · 100% 순정 카톡 · 외부 리모컨) ═════════ -->
     <section class="sim-section" id="sec-sim">
 
-      <!-- 5단계 점프 스텝 바 + 우측 아이콘형 처음으로(↻) 버튼 -->
+      <!-- 5단계 점프 스텝 바 + 우측 아이콘형 처음으로(↻) 버튼 (50+ 최소 16px · ⚡맞춤 배지) -->
       <div class="sim-steps-row" id="sim-steps-bar" role="tablist" aria-label="시뮬레이터 5단계">
         <button type="button" class="sim-step-pill active" data-sim-step="1">
-          <span class="sp-num">①</span>
+          <span class="sp-head-inline"><span class="sp-num">①</span></span>
           <span class="sp-lbl">신청페이지</span>
         </button>
         <button type="button" class="sim-step-pill" data-sim-step="2">
-          <span class="sp-num">②</span>
+          <span class="sp-head-inline"><span class="sp-num">②</span></span>
           <span class="sp-lbl">신청폼</span>
         </button>
         <button type="button" class="sim-step-pill" data-sim-step="3">
-          <span class="sp-spotlight-badge" id="sp-spot-3" hidden>⚡맞춤분기</span>
-          <span class="sp-num">③</span>
+          <span class="sp-head-inline"><span class="sp-num">③</span><span class="sp-spotlight-badge" id="sp-spot-3" hidden>⚡맞춤</span></span>
           <span class="sp-lbl" id="sp-lbl-3">즉시 알림톡</span>
         </button>
         <button type="button" class="sim-step-pill" data-sim-step="4">
-          <span class="sp-spotlight-badge" id="sp-spot-4" hidden>⚡맞춤분기</span>
-          <span class="sp-num">④</span>
+          <span class="sp-head-inline"><span class="sp-num">④</span><span class="sp-spotlight-badge" id="sp-spot-4" hidden>⚡맞춤</span></span>
           <span class="sp-lbl" id="sp-lbl-4">+1일 뒤</span>
         </button>
         <button type="button" class="sim-step-pill" data-sim-step="5">
-          <span class="sp-spotlight-badge" id="sp-spot-5" hidden>⚡맞춤분기</span>
-          <span class="sp-num">⑤</span>
+          <span class="sp-head-inline"><span class="sp-num">⑤</span><span class="sp-spotlight-badge" id="sp-spot-5" hidden>⚡맞춤</span></span>
           <span class="sp-lbl" id="sp-lbl-5">+3일 전환</span>
         </button>
         <button type="button" class="btn-sim-restart-icon" id="btn-sim-restart" title="처음부터 다시 보기" aria-label="처음부터 다시 보기">↻</button>
@@ -2259,7 +2406,7 @@ button { cursor: pointer; border: none; background: none; }
         <!-- 폰 프레임 위: 원포인트 맞춤 분기 스포트라이트 카드 (분기 단계 1곳에서만 오픈, 나머지 단계 display:none) -->
         <div class="sim-remote-panel" id="sim-remote-panel" hidden style="display:none">
           <div id="remote-branch-bar" hidden>
-            <div class="remote-caption" id="remote-spotlight-caption">⚡ 고마워톡 핵심 무기 · 신청폼 답변에 따라 전혀 다른 카톡이 자동 발송됩니다</div>
+            <div class="remote-caption" id="remote-spotlight-caption">⚡ 신청폼 선택에 따라 전혀 다른 맞춤 카톡이 발송됩니다</div>
             <div class="remote-pill-row" id="ext-branch-pills"></div>
             <div class="remote-branch-summary" id="remote-branch-summary"></div>
           </div>
@@ -2424,12 +2571,14 @@ button { cursor: pointer; border: none; background: none; }
           </div>
         </div>
 
-        <!-- 폰 프레임 아래: 외부 장면 전환 버튼 + 채널 추가 전 고객 2회 자동 안내 체험 토글 -->
-        <div class="sim-ext-nav">
-          <button type="button" class="btn-ext-prev" id="btn-sim-prev" disabled>◀ 이전 장면</button>
-          <button type="button" class="btn-ext-next" id="btn-sim-next">다음 장면 보기 ▶</button>
+        <!-- 폰 프레임 아래: 외부 장면 전환 버튼 + 채널 추가 전 고객 2회 자동 안내 체험 토글 (하단 안전 여백 72px 확보) -->
+        <div class="sim-ext-nav-wrap">
+          <div class="sim-ext-nav">
+            <button type="button" class="btn-ext-prev" id="btn-sim-prev" disabled>◀ 이전 장면</button>
+            <button type="button" class="btn-ext-next" id="btn-sim-next">다음 장면 보기 ▶</button>
+          </div>
+          <button type="button" class="btn-sim-rescue-toggle" id="btn-sim-rescue-toggle">🛡️ 채널 추가 안 한 고객은 어떻게 받나요?</button>
         </div>
-        <button type="button" class="btn-sim-rescue-toggle" id="btn-sim-rescue-toggle">🛡️ 채널 추가 안 한 고객은 어떻게 받나요?</button>
 
       </div>
     </section>
@@ -2498,7 +2647,7 @@ button { cursor: pointer; border: none; background: none; }
       <div class="e-card reveal" id="confirm-form-card">
         <!-- 가망고객 전용: Starter / Pro 요금제 선택 블록 (Starter/Pro 유료 파트너는 hidden) -->
         <div id="confirm-plan-block">
-          <div style="font-size:13.5px;font-weight:800;color:var(--g900);margin-bottom:9px">1. 요금제를 선택해 주세요</div>
+          <div style="font-size:18.5px;font-weight:800;color:var(--g900);margin-bottom:11px">1. 요금제를 선택해 주세요</div>
           <div class="plan-select-stack" id="plan-select-stack">
             <button type="button" class="plan-option-card selected" data-plan="Pro">
               <div class="plan-head-row">
@@ -2543,7 +2692,7 @@ button { cursor: pointer; border: none; background: none; }
         </div>
 
         <div id="confirm-mode-block">
-          <div id="confirm-mode-heading" style="font-size:13.5px;font-weight:800;color:var(--g900);margin-bottom:9px">2. 세팅 방식을 선택해 주세요</div>
+          <div id="confirm-mode-heading" style="font-size:18.5px;font-weight:800;color:var(--g900);margin-bottom:11px">2. 세팅 방식을 선택해 주세요</div>
           <div class="mode-radio-stack" id="mode-radio-stack">
             <label class="mode-radio-card selected" id="mode-card-asis">
               <input type="radio" name="setting_mode" value="AS_IS" checked>
@@ -2563,7 +2712,7 @@ button { cursor: pointer; border: none; background: none; }
           </div>
 
           <div class="memo-box-wrap" id="memo-box-wrap" hidden>
-            <label for="confirm-memo-input" style="font-size:12.5px;font-weight:800;color:var(--purple)">✏️ 수정할 핵심 내용 (1회 요약 메모)</label>
+            <label for="confirm-memo-input" style="font-size:18px;font-weight:800;color:var(--purple)">✏️ 수정할 핵심 내용 (1회 요약 메모)</label>
             <textarea class="memo-textarea" id="confirm-memo-input" placeholder="예) 행사 날짜를 12월 14일로 바꾸고, 2회차 발송을 오전 10시로 맞춰주세요."></textarea>
           </div>
         </div>
@@ -2575,12 +2724,12 @@ button { cursor: pointer; border: none; background: none; }
 
       <div class="confirm-done-card" id="confirm-done-card" hidden>
         <div class="done-check-icon">✅</div>
-        <h3 style="font-size:19px;font-weight:900;color:var(--g900);line-height:1.35" id="done-title">세팅 확정 신청이 접수되었습니다!</h3>
-        <p style="font-size:13.5px;color:var(--g700);line-height:1.52" id="done-desc">
+        <h3 style="font-size:24px;font-weight:800;color:var(--g900);line-height:1.38;letter-spacing:-0.025em" id="done-title">세팅 확정 신청이 접수되었습니다!</h3>
+        <p style="font-size:18px;color:var(--g700);line-height:1.55" id="done-desc">
           담당 전문가에게 즉시 알림이 전송되었습니다. 입금 확인 즉시 고화질 이미지 제작 및 어드민 세팅을 진행합니다.
         </p>
         <div class="done-meta-box" id="done-meta-box"></div>
-        <button type="button" class="btn-top-share" id="btn-done-copy-link" style="justify-content:center;padding:12px 16px;border-radius:12px;font-size:13.5px">🔗 이 설계안 링크 복사해 두기</button>
+        <button type="button" class="btn-top-share" id="btn-done-copy-link" style="justify-content:center;min-height:58px;padding:14px 18px;border-radius:15px;font-size:18.5px">🔗 이 설계안 링크 복사해 두기</button>
       </div>
     </section>
 
@@ -2596,29 +2745,41 @@ button { cursor: pointer; border: none; background: none; }
   <button type="button" class="btn-sticky-go" id="btn-sticky-go">🚀 이 설계안 그대로 내 채널에 세팅 신청하기</button>
 </div>
 
-<!-- 우측 하단 채널톡형 플로팅 런처 (💬 물어보기 + ✏️ 수정 메모 담기 / 🚨 1초 제보) -->
+<!-- V2.9 우측 하단 순수 챗봇·물음표 원형 아이콘 런처 (외부 텍스트 0건 · 52px × 52px) -->
 <div class="flt-launcher" id="flt-launcher">
-  <button type="button" class="flt-pill-label" id="flt-pill-label">질문·오류제보</button>
-  <button type="button" class="flt-fab" id="flt-fab" aria-label="질문 및 1초 제보 열기">💬</button>
+  <button type="button" class="flt-fab" id="flt-fab" aria-label="무엇을 도와드릴까요? 질문·맞춤구축 견적·오류제보 열기" title="질문 · 맞춤구축 견적(300만 원+) · 오류제보">
+    <svg class="flt-fab-svg" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <line x1="14" y1="2.2" x2="14" y2="5.4" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round"/>
+      <circle cx="14" cy="2" r="1.45" fill="#FEE500"/>
+      <path d="M6.2 5.6H21.8C23.8 5.6 25.4 7.2 25.4 9.2V17.4C25.4 19.4 23.8 21 21.8 21H12.2L7.4 24.8C6.9 25.2 6.2 24.85 6.2 24.2V21C4.2 20.85 2.6 19.3 2.6 17.4V9.2C2.6 7.2 4.2 5.6 6.2 5.6Z" stroke="#FFFFFF" stroke-width="2.1" stroke-linejoin="round"/>
+      <path d="M11.3 11.1C11.3 9.7 12.45 8.7 14.05 8.7C15.55 8.7 16.7 9.55 16.7 10.9C16.7 11.95 16.05 12.55 15.05 13.15C14.3 13.6 13.95 13.95 13.95 14.75" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="14" cy="17.5" r="1.3" fill="#FEE500"/>
+    </svg>
+  </button>
 </div>
 
-<!-- 2-Tab 플로팅 바텀시트 팝업 -->
+<!-- V2.9 3-Tab 도움말·맞춤구축(300만 원+)·오류제보 바텀시트 팝업 -->
 <div class="flt-sheet-backdrop" id="flt-sheet-backdrop" hidden>
-  <div class="flt-sheet" id="flt-sheet" role="dialog" aria-label="고마워톡 도우미 및 1초 제보">
-    <div class="flt-sheet-top">
-      <div class="flt-tabs" role="tablist">
-        <button type="button" class="flt-tab-btn active" id="flt-tab-qa" data-flt-tab="qa" role="tab" aria-selected="true">💬 무엇이든 물어보기</button>
-        <button type="button" class="flt-tab-btn" id="flt-tab-report" data-flt-tab="report" role="tab" aria-selected="false">🚨 1초 화면·문구 제보</button>
+  <div class="flt-sheet" id="flt-sheet" role="dialog" aria-label="무엇을 도와드릴까요?">
+    <div class="flt-sheet-header">
+      <div class="flt-sheet-head-copy">
+        <div class="flt-sheet-title" id="flt-sheet-title">💬 무엇을 도와드릴까요?</div>
+        <div class="flt-sheet-sub" id="flt-sheet-sub">궁금한 점 확인 · 맞춤 구축(300만 원+) 견적 · 화면 오류 제보</div>
       </div>
       <button type="button" class="flt-close-btn" id="btn-close-flt" aria-label="닫기">✕</button>
     </div>
 
-    <!-- 탭 1: 매뉴얼 Q&A + [✏️ 1회 수정 메모에 담기] -->
+    <div class="flt-tabs" role="tablist">
+      <button type="button" class="flt-tab-btn active" id="flt-tab-qa" data-flt-tab="qa" role="tab" aria-selected="true">자주 묻는 질문</button>
+      <button type="button" class="flt-tab-btn" id="flt-tab-vip" data-flt-tab="vip" role="tab" aria-selected="false">맞춤구축 견적(300만+)</button>
+      <button type="button" class="flt-tab-btn" id="flt-tab-report" data-flt-tab="report" role="tab" aria-selected="false">화면 오류제보</button>
+    </div>
+
+    <!-- 탭 1: 자주 묻는 질문 + [✏️ 1회 수정 메모에 담기] + VIP 견적 직행 -->
     <div class="flt-panel" id="flt-panel-qa">
-      <div style="font-size:12px;color:#475569;line-height:1.45">
-        궁금한 기능·요금을 바로 물어보세요. 바꾸고 싶은 내용은 <strong>[✏️ 1회 수정 메모에 담기]</strong>로 하단 신청란에 자동 연결됩니다.
-      </div>
       <div class="flt-faq-chips" id="flt-faq-chips">
+        <button type="button" class="flt-faq-chip vip-chip-highlight">💎 견적 프로그램 제작 · API 연동 · 풀파워 분기 의뢰</button>
+        <button type="button" class="flt-faq-chip vip-chip-highlight">설문 답변별로 모든 카톡을 다 다르게 보낼 수 있나요?</button>
         <button type="button" class="flt-faq-chip">👑 공용 알림톡 vs Pro 내 로고 맞춤 알림톡 차이</button>
         <button type="button" class="flt-faq-chip">문자·일반 카톡과 무엇이 다른가요?</button>
         <button type="button" class="flt-faq-chip">알림톡·친구톡 차이</button>
@@ -2627,26 +2788,60 @@ button { cursor: pointer; border: none; background: none; }
         <button type="button" class="flt-faq-chip">Starter vs Pro 차이</button>
       </div>
       <div class="flt-qa-stream" id="flt-qa-stream">
-        <div class="flt-qa-msg bot">안녕하세요 대표님! 설계안이나 고마워톡 기능·요금제가 궁금하시면 무엇이든 물어보세요.</div>
+        <div class="flt-qa-msg bot">안녕하세요 대표님! 설계안이나 고마워톡 기능·요금·맞춤 구축(300만 원 이상)까지 무엇이든 물어보세요.</div>
       </div>
       <form class="flt-qa-form" id="flt-qa-form">
-        <input type="text" id="flt-qa-input" placeholder="궁금한 점이나 수정하고 싶은 내용을 적어주세요" autocomplete="off">
+        <input type="text" id="flt-qa-input" placeholder="궁금한 점이나 수정 내용을 적어주세요" autocomplete="off">
         <button type="submit" id="flt-qa-send">질문</button>
       </form>
     </div>
 
-    <!-- 탭 2: 원클릭 1초 블랙박스 제보 -->
+    <!-- 탭 2: 맞춤구축 견적(300만 원+) VIP 상담 신청 -->
+    <div class="flt-panel" id="flt-panel-vip" hidden>
+      <div class="vip-intro-banner">
+        💎 <strong>전문가 별도 견적 프로젝트 (300만 원 이상)</strong><br>
+        전 구간 풀파워 다중 분기, 자동 견적·진단 프로그램 제작, 자사몰·CRM·외부 API 연동 등 고전환 맞춤 개발을 전담 설계해 드립니다.
+      </div>
+      <div>
+        <span class="vip-field-lbl">1. 희망하시는 구축 항목 (복수 선택 가능)</span>
+        <div class="vip-chip-grid" id="flt-vip-chips">
+          <button type="button" class="vip-chip-btn selected" data-vip-item="전 구간 풀파워 다중 분기"><span>전 구간 풀파워 다중 분기</span><span>✓</span></button>
+          <button type="button" class="vip-chip-btn" data-vip-item="맞춤 자동 견적·진단 프로그램 제작"><span>맞춤 자동 견적·진단 프로그램 제작</span><span>+</span></button>
+          <button type="button" class="vip-chip-btn" data-vip-item="외부 API·DB 연동"><span>외부 API·DB 연동</span><span>+</span></button>
+          <button type="button" class="vip-chip-btn" data-vip-item="고전환 전담 기획·카피"><span>고전환 전담 기획·카피</span><span>+</span></button>
+        </div>
+      </div>
+      <div>
+        <label class="vip-field-lbl" for="flt-vip-desc">2. 원하시는 구축 내용</label>
+        <textarea class="vip-ta" id="flt-vip-desc" placeholder="예) 고객이 평수·옵션을 고르면 자동 견적이 계산되고, 결과에 따라 카톡이 분기 발송되게 만들고 싶어요."></textarea>
+      </div>
+      <div>
+        <span class="vip-field-lbl">3. 담당자 성함 · 연락처</span>
+        <div class="vip-contact-grid">
+          <input type="text" class="vip-in" id="flt-vip-name" placeholder="성함" autocomplete="name">
+          <input type="tel" class="vip-in" id="flt-vip-phone" placeholder="010-0000-0000" autocomplete="tel">
+        </div>
+      </div>
+      <label class="vip-agree-label" for="flt-vip-agree">
+        <input type="checkbox" id="flt-vip-agree">
+        <span>네, 별도 구축 프로젝트(300만 원 이상) 기준을 확인했습니다</span>
+      </label>
+      <button type="button" class="vip-submit-btn" id="btn-flt-vip-submit">💎 맞춤 구축(300만 원+) 상담 신청하기</button>
+      <div class="flt-report-status" id="flt-vip-status" hidden></div>
+    </div>
+
+    <!-- 탭 3: 화면 오류제보 (1초 블랙박스 자동 첨부) -->
     <div class="flt-panel" id="flt-panel-report" hidden>
-      <div style="font-size:12px;color:#475569;line-height:1.45">
-        화면이나 문구가 어색하다면 1초 만에 제보해 주세요. <strong>현재 시뮬레이터 단계·설계안 ID·기기 정보가 자동 첨부</strong>됩니다.
+      <div class="flt-panel-guide">
+        화면이나 문구가 어색하다면 알려주세요. <strong>현재 시뮬레이터 단계·설계안 ID·기기 정보가 자동 첨부</strong>됩니다.
       </div>
       <div class="flt-reason-list" id="flt-reason-list">
         <button type="button" class="flt-reason-btn selected" data-report-reason="ai_mismatch">🤔 AI 문구가 내 업종과 안 맞아요</button>
         <button type="button" class="flt-reason-btn" data-report-reason="ui_bug">📱 버튼·화면 작동이 이상해요</button>
         <button type="button" class="flt-reason-btn" data-report-reason="feature_wish">💡 이런 기능도 원해요</button>
       </div>
-      <input type="text" class="flt-memo-in" id="flt-report-memo" placeholder="한 줄 메모(선택) — 비워두셔도 현재 화면 정보가 자동 첨부됩니다" autocomplete="off">
-      <button type="button" class="flt-submit-btn" id="btn-flt-report-submit">🚀 1초 제보 보내기</button>
+      <input type="text" class="flt-memo-in" id="flt-report-memo" placeholder="한 줄 메모(선택) — 비워두셔도 화면 정보가 자동 첨부됩니다" autocomplete="off">
+      <button type="button" class="flt-submit-btn" id="btn-flt-report-submit">🚀 화면 오류 제보 보내기</button>
       <div class="flt-report-status" id="flt-report-status" hidden></div>
     </div>
   </div>
@@ -3976,7 +4171,7 @@ function renderRemotePanel(animateReveal) {
   if (pillWrap) {
     pillWrap.innerHTML = pair.map((item, idx) =>
       '<button type="button" class="remote-branch-btn' + (activeIdx === idx ? ' on' : '') + '" data-spot-slot="' + idx + '">' +
-        esc(item.personaIcon) + " '" + esc(shortText(item.optionLabel, 11)) + "' 고른<br>" + esc(item.personaName) + ' 님 카톡' +
+        esc(item.personaIcon) + " '" + esc(shortText(item.optionLabel, 11)) + "' 고른<br>" + esc(item.personaName) + ' 님' +
       '</button>'
     ).join('');
     if (sumEl && activeItem) {
@@ -5289,39 +5484,31 @@ async function submitConfirmProposal() {
   showToast('✅ 세팅 확정 요청이 정상 접수되었습니다!');
 }
 
-/* ═══════════════ 6. 우측 하단 채널톡형 플로팅 위젯 (💬 Q&A + ✏️ 메모담기 / 🚨 1초 제보) ═══════════════ */
+/* ═══════════════ 6. V2.9 순수 챗봇·물음표 원형 아이콘 3-Tab 위젯 (자주 묻는 질문 / 맞춤구축 300만+ / 화면 오류제보) ═══════════════ */
 const FLT_STATE = { activeTab: 'qa', reportReason: 'ai_mismatch' };
 const FLT_REASON_LABELS = {
   ai_mismatch: '🤔 AI 문구가 내 업종과 안 맞아요',
   ui_bug: '📱 버튼·화면 작동이 이상해요',
   feature_wish: '💡 이런 기능도 원해요'
 };
+const VIP_CUSTOM_QUOTE_ANSWER = '기본 요금제(Starter · Pro)는 빠른 오픈과 경제적 운영을 위해 핵심 1회차 맞춤 분기와 표준 세팅을 제공합니다. 만약 ① 전 구간 다중 조건 분기(최대 5순위 풀파워 퍼널), ② 고객 선택값에 따라 자동 계산되는 맞춤 견적·진단 프로그램 제작 및 카톡 연동, ③ 자사몰·CRM·외부 DB API 연동 등 고전환 맞춤 개발이 필요하시다면 전문가 별도 견적 프로젝트(300만 원 이상)로 의뢰하실 수 있습니다.';
 
-let fltPillTimer = null;
-let fltPillAutoHidden = false;
-
-function collapseFloatingPill() {
-  if (fltPillTimer) { clearTimeout(fltPillTimer); fltPillTimer = null; }
-  fltPillAutoHidden = true;
-  const pill = $('#flt-pill-label');
-  if (pill) pill.classList.add('is-hidden');
+function isVipCustomQuoteQuestion(q) {
+  return /견적\s*프로그램|API\s*연동|외부\s*DB|자사몰|CRM|풀파워|모든\s*카톡.*다르게|답변별로\s*모든|전\s*구간.*분기|맞춤\s*구축|맞춤구축|별도\s*견적|300만/i.test(String(q || ''));
 }
 
-function scheduleFloatingPillAutoHide() {
-  if (fltPillAutoHidden) return;
-  const pill = $('#flt-pill-label');
-  if (!pill || (pill.classList && typeof pill.classList.contains === 'function' && pill.classList.contains('is-hidden'))) return;
-  if (fltPillTimer) clearTimeout(fltPillTimer);
-  // 진입 2.5초 후 흰색 [질문·오류제보] 캡슐 자동 접힘 -> 우하단 [다음 장면 보기 ▶] 버튼 비간섭 보장
-  fltPillTimer = setTimeout(() => {
-    collapseFloatingPill();
-  }, 2500);
+function prefillVipContactFields() {
+  const pi = (STATE.campaign && STATE.campaign.partner_info) || {};
+  const nameEl = $('#flt-vip-name');
+  if (nameEl && !nameEl.value.trim() && pi.owner_name) {
+    nameEl.value = String(pi.owner_name).trim();
+  }
 }
 
 function openFloatingWidget(tabName) {
-  collapseFloatingPill();
   const bd = $('#flt-sheet-backdrop');
   if (bd) bd.hidden = false;
+  prefillVipContactFields();
   switchFloatingTab(tabName || FLT_STATE.activeTab || 'qa');
 }
 
@@ -5331,15 +5518,21 @@ function closeFloatingWidget() {
 }
 
 function switchFloatingTab(tabName) {
-  FLT_STATE.activeTab = (tabName === 'report') ? 'report' : 'qa';
-  const isQa = FLT_STATE.activeTab === 'qa';
-  $('#flt-tab-qa').classList.toggle('active', isQa);
-  $('#flt-tab-qa').setAttribute('aria-selected', isQa ? 'true' : 'false');
-  $('#flt-tab-report').classList.toggle('active', !isQa);
-  $('#flt-tab-report').setAttribute('aria-selected', !isQa ? 'true' : 'false');
-  $('#flt-panel-qa').hidden = !isQa;
-  $('#flt-panel-report').hidden = isQa;
-  if (isQa) {
+  const next = (tabName === 'vip' || tabName === 'report') ? tabName : 'qa';
+  FLT_STATE.activeTab = next;
+  ['qa', 'vip', 'report'].forEach(t => {
+    const tabBtn = $('#flt-tab-' + t);
+    const panel = $('#flt-panel-' + t);
+    const active = (next === t);
+    if (tabBtn) {
+      tabBtn.classList.toggle('active', active);
+      tabBtn.setAttribute('aria-selected', active ? 'true' : 'false');
+    }
+    if (panel) panel.hidden = !active;
+  });
+  if (next === 'vip') {
+    prefillVipContactFields();
+  } else if (next === 'qa') {
     const inp = $('#flt-qa-input');
     if (inp) inp.focus();
   }
@@ -5347,6 +5540,9 @@ function switchFloatingTab(tabName) {
 
 function answerProposalManualLocal(q) {
   const s = String(q || '');
+  if (isVipCustomQuoteQuestion(s)) {
+    return VIP_CUSTOM_QUOTE_ANSWER;
+  }
   if (/공용\s*알림톡|내\s*로고|맞춤\s*알림톡/.test(s)) {
     return '두 알림톡 모두 상단 노란색 [알림톡 도착] 바와 우상단 원형 kakao 배지, 하단 노란색 [Ch+ 채널 추가] 공식 틀은 동일합니다. 공용 알림톡(Starter)은 기본 감사 배너와 [신청페이지 바로가기] 공용 버튼 1개가 제공되며, Pro 나만 쓰는 맞춤 알림톡은 대표님 브랜드 로고 배너 고정 + 내 업종 전용 항목 포맷 + 캠페인 목적에 맞춘 전용 다중 버튼(2~3개)을 자유롭게 구성할 수 있습니다.';
   }
@@ -5434,16 +5630,17 @@ async function askProposalQA(questionText) {
   stream.appendChild(bEl);
   stream.scrollTop = stream.scrollHeight;
 
+  const isVipQ = isVipCustomQuoteQuestion(q);
   let ans = answerProposalManualLocal(q);
   const proxyUrl = getProxyUrl();
-  if (proxyUrl && STATE.sourceMode === 'server') {
+  if (!isVipQ && proxyUrl && STATE.sourceMode === 'server') {
     try {
       const res = await fetch(proxyUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           action: 'chat',
-          systemPrompt: '당신은 고마워톡 전문 컨설턴트입니다. Starter(연 24만원/월 2회), Pro(연 40만원/월 10회/로고 맞춤 알림톡), 알림톡(정보성 100% 도달), 친구톡(채널 추가 고객 홍보), 마케팅 수신동의·M형, 구글폼 연동에 대해 3문장 이내 쉬운 한국어 존댓말로 답변하세요. 금지어를 쓰지 마세요.',
+          systemPrompt: '당신은 고마워톡 전문 컨설턴트입니다. Starter(연 24만원/월 2회), Pro(연 40만원/월 10회/로고 맞춤 알림톡), 별도 맞춤 구축 프로젝트(300만 원 이상: 전 구간 풀파워 다중 분기, 자동 견적·진단 프로그램 제작, 외부 API·DB 연동), 알림톡(정보성 100% 도달), 친구톡(채널 추가 고객 홍보), 마케팅 수신동의·M형, 구글폼 연동에 대해 3문장 이내 쉬운 한국어 존댓말로 답변하세요. 금지어를 쓰지 마세요.',
           userText: q,
           temperature: 0.3,
           maxOutputTokens: 512,
@@ -5458,10 +5655,18 @@ async function askProposalQA(questionText) {
   }
 
   const showProCompareCard = /공용\s*알림톡|내\s*로고|맞춤\s*알림톡|Starter\s*vs\s*Pro/i.test(q);
+  const showVipGoBtn = isVipQ || /300만\s*원/.test(ans);
   const memoLine = shortText(q + ' 반영 요청', 80);
   bEl.innerHTML = '<div>' + esc(ans).replace(/\r?\n/g, '<br>') + '</div>' +
     (showProCompareCard ? buildProAlimtalkMiniCompareHtml() : '') +
-    '<button type="button" class="qa-memo-btn">✏️ 1회 수정 메모에 담기</button>';
+    '<div class="qa-action-stack">' +
+      (showVipGoBtn ? '<button type="button" class="qa-vip-go-btn">💎 맞춤 구축(300만 원+) 상담 신청하기 →</button>' : '') +
+      '<button type="button" class="qa-memo-btn">✏️ 1회 수정 메모에 담기</button>' +
+    '</div>';
+  const vipGoBtn = bEl.querySelector('.qa-vip-go-btn');
+  if (vipGoBtn) {
+    vipGoBtn.onclick = () => switchFloatingTab('vip');
+  }
   const memoBtn = bEl.querySelector('.qa-memo-btn');
   if (memoBtn) {
     memoBtn.onclick = () => {
@@ -5472,6 +5677,97 @@ async function askProposalQA(questionText) {
   }
   stream.scrollTop = stream.scrollHeight;
   return ans;
+}
+
+function getSelectedVipItems() {
+  return $$('[data-vip-item].selected').map(el => el.dataset.vipItem || '').filter(Boolean);
+}
+
+async function submitVipCustomQuote() {
+  const btn = $('#btn-flt-vip-submit');
+  const statusEl = $('#flt-vip-status');
+  const selectedItems = getSelectedVipItems();
+  const desc = (($('#flt-vip-desc') && $('#flt-vip-desc').value) || '').trim();
+  const contactName = (($('#flt-vip-name') && $('#flt-vip-name').value) || '').trim();
+  const contactPhone = (($('#flt-vip-phone') && $('#flt-vip-phone').value) || '').trim();
+  const agreed = !!($('#flt-vip-agree') && $('#flt-vip-agree').checked);
+
+  const showVipErr = msg => {
+    if (statusEl) {
+      statusEl.hidden = false;
+      statusEl.classList.add('err');
+      statusEl.textContent = msg;
+    }
+  };
+  if (statusEl) { statusEl.hidden = true; statusEl.classList.remove('err'); }
+  if (!selectedItems.length && desc.length < 2) {
+    showVipErr('⚠️ 희망 구축 항목을 선택하거나 요청 내용을 입력해 주세요.');
+    return { ok: false, error: 'missing_items' };
+  }
+  if (!contactName || !contactPhone) {
+    showVipErr('⚠️ 상담받으실 성함과 연락처를 입력해 주세요.');
+    return { ok: false, error: 'missing_contact' };
+  }
+  if (!agreed) {
+    showVipErr('⚠️ 별도 구축 프로젝트(300만 원 이상) 기준 확인에 체크해 주세요.');
+    return { ok: false, error: 'missing_agree' };
+  }
+
+  const snapshot = buildBlackboxSnapshot();
+  const payload = {
+    action: 'report_issue',
+    issueType: 'VIP_CUSTOM_QUOTE',
+    reasonType: 'VIP_CUSTOM_QUOTE',
+    reasonLabel: '💎 VIP 맞춤구축·견적프로그램 문의 (300만 원+)',
+    selectedItems,
+    memo: desc,
+    contactName,
+    contactPhone,
+    confirmedBudget300: true,
+    blackbox_snapshot: snapshot
+  };
+
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ VIP 맞춤 구축 상담을 접수 중이에요…'; }
+  const proxyUrl = getProxyUrl();
+  let resData = null;
+  try {
+    if (proxyUrl && STATE.sourceMode === 'server') {
+      const res = await fetch(proxyUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      resData = await res.json();
+      if (!res.ok || (resData && resData.ok === false)) {
+        throw new Error((resData && resData.error) || ('HTTP ' + res.status));
+      }
+    } else if (proxyUrl && typeof fetch === 'function') {
+      try {
+        const res = await fetch(proxyUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        resData = await res.json();
+      } catch (netErr) {
+        resData = { ok: true, simulated: true, sheetName: '파트너제보함', issueType: 'VIP_CUSTOM_QUOTE' };
+      }
+    } else {
+      resData = { ok: true, simulated: true, sheetName: '파트너제보함', issueType: 'VIP_CUSTOM_QUOTE' };
+    }
+    if ($('#flt-vip-desc')) $('#flt-vip-desc').value = '';
+    if (statusEl) {
+      statusEl.hidden = false;
+      statusEl.textContent = '✅ 맞춤 구축(300만 원+) 상담 신청이 접수되었습니다! 전담 담당자가 빠르게 연락드리겠습니다.';
+    }
+    showToast('💎 VIP 맞춤 구축 상담이 접수되었어요!');
+    return { ok: true, payload, response: resData };
+  } catch (err) {
+    showVipErr('⚠️ 전송 중 오류가 발생했어요: ' + (err.message || err));
+    return { ok: false, payload, error: err.message || String(err) };
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '💎 맞춤 구축(300만 원+) 상담 신청하기'; }
+  }
 }
 
 function buildBlackboxSnapshot() {
@@ -5573,11 +5869,9 @@ async function submitBlackboxReport() {
 
 function bindFloatingWidgetEvents() {
   const fab = $('#flt-fab');
-  const pill = $('#flt-pill-label');
   const closeBtn = $('#btn-close-flt');
   const backdrop = $('#flt-sheet-backdrop');
   if (fab) fab.onclick = () => openFloatingWidget();
-  if (pill) pill.onclick = () => openFloatingWidget();
   if (closeBtn) closeBtn.onclick = closeFloatingWidget;
   if (backdrop) {
     backdrop.addEventListener('click', e => {
@@ -5587,6 +5881,15 @@ function bindFloatingWidgetEvents() {
   $$('[data-flt-tab]').forEach(btn => {
     btn.onclick = () => switchFloatingTab(btn.dataset.fltTab);
   });
+  $$('[data-vip-item]').forEach(btn => {
+    btn.onclick = () => {
+      const on = btn.classList.toggle('selected');
+      const mark = btn.querySelector('span:last-child');
+      if (mark) mark.textContent = on ? '✓' : '+';
+    };
+  });
+  const vipSubmitBtn = $('#btn-flt-vip-submit');
+  if (vipSubmitBtn) vipSubmitBtn.onclick = submitVipCustomQuote;
   $$('[data-report-reason]').forEach(btn => {
     btn.onclick = () => {
       FLT_STATE.reportReason = btn.dataset.reportReason || 'ai_mismatch';
@@ -5609,10 +5912,6 @@ function bindFloatingWidgetEvents() {
       askProposalQA(v);
     });
   }
-  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
-    window.addEventListener('scroll', collapseFloatingPill, { passive: true, once: true });
-  }
-  scheduleFloatingPillAutoHide();
 }
 
 /* ═══════════════ 초기화 & 외부 테스트 인터페이스 (window.PROPOSAL) ═══════════════ */
@@ -5633,7 +5932,6 @@ window.PROPOSAL = {
   isSpotlightStep,
   getSpotlightBranchPair,
   switchSpotlightSlot,
-  collapseFloatingPill,
   refreshCoachmark,
   startAutoPlayFrom,
   switchToManualMode,
@@ -5650,7 +5948,8 @@ window.PROPOSAL = {
   askProposalQA,
   appendToProposalMemo,
   buildBlackboxSnapshot,
-  submitBlackboxReport
+  submitBlackboxReport,
+  submitVipCustomQuote
 };
 
 })();

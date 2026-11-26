@@ -391,7 +391,7 @@ function setupV23ControlTowerSheet() {
       "한도 기준",
       "가망:누적2 / Starter:월2 / Pro:월10",
       "버전",
-      "V2.8-0",
+      "V2.9-0",
       "외부소켓",
       "본체:NATIVE / 외부앱:연동코드",
       ""
@@ -582,7 +582,7 @@ function doGet(e) {
       return jsonResponse_({
         ok: true,
         service: "Gomawartalk Backend_Proxy",
-        version: "V2.8-0",
+        version: "V2.9-0",
         defaultModel: DEFAULT_GEMINI_MODEL,
         currentMonth: getCurrentYearMonth_(),
         webhookConfigured: !!getGoogleChatWebhookUrl_(),
@@ -2233,9 +2233,27 @@ function getOrCreateReportSheet_() {
 function handleReportIssue_(body) {
   body = body || {};
   var tsDisplay = getNowDisplay_();
-  var reasonType = String(body.reasonType || body.reason_type || "general").trim();
-  var reasonLabel = String(body.reasonLabel || body.reason_label || reasonType || "기타 제보").trim();
+  var issueType = String(body.issueType || body.issue_type || "").trim();
+  var reasonType = String(body.reasonType || body.reason_type || issueType || "general").trim();
+  var isVipQuote = (issueType === "VIP_CUSTOM_QUOTE" || reasonType === "VIP_CUSTOM_QUOTE");
+  var reasonLabel = String(
+    body.reasonLabel ||
+    body.reason_label ||
+    (isVipQuote ? "💎 VIP 맞춤구축·견적프로그램 문의 (300만 원+)" : (reasonType || "기타 제보"))
+  ).trim();
   var memo = String(body.memo || "").trim();
+
+  var rawItems = body.selectedItems || body.selected_items || [];
+  var vipItemsList = [];
+  if (Array.isArray(rawItems)) {
+    for (var vi = 0; vi < rawItems.length; vi++) {
+      var itemStr = String(rawItems[vi] || "").trim();
+      if (itemStr) vipItemsList.push(itemStr);
+    }
+  } else if (typeof rawItems === "string" && rawItems.trim()) {
+    vipItemsList.push(rawItems.trim());
+  }
+  var vipItemsText = vipItemsList.join(", ");
 
   var snapObj = body.blackbox_snapshot || body.blackboxSnapshot || {};
   if (typeof snapObj === "string") {
@@ -2254,8 +2272,11 @@ function handleReportIssue_(body) {
   var pageAndStep = stepVal ? (pageName + " / " + stepVal) : pageName;
 
   var pObj = snapObj.partner || {};
+  var contactName = String(body.contactName || body.contact_name || pObj.name || "").trim();
+  var contactPhone = normalizePhone_(body.contactPhone || body.contact_phone || pObj.phone || "");
   var partnerParts = [];
-  if (pObj.name) partnerParts.push(String(pObj.name));
+  if (contactName) partnerParts.push(contactName);
+  if (contactPhone) partnerParts.push("(" + contactPhone + ")");
   if (pObj.tier) partnerParts.push("[" + String(pObj.tier) + "]");
   if (pObj.kakao_user_id) partnerParts.push("id:" + String(pObj.kakao_user_id));
   var partnerInfo = partnerParts.join(" ") || "-";
@@ -2270,10 +2291,28 @@ function handleReportIssue_(body) {
   if (snapObj.channelName) ctxParts.push("채널:" + String(snapObj.channelName));
   var contextSummary = ctxParts.join(" | ").slice(0, 500) || "-";
 
+  var sheetMemo = memo || "(메모 없음)";
+  if (isVipQuote) {
+    var vipMemoParts = [];
+    if (vipItemsText) vipMemoParts.push("[희망항목: " + vipItemsText + "]");
+    if (memo) vipMemoParts.push(memo);
+    if (body.confirmedBudget300 !== false) vipMemoParts.push("[300만 원 이상 기준 확인]");
+    sheetMemo = vipMemoParts.join(" ") || "[300만 원 이상 맞춤구축 문의]";
+  }
+
   var isInAppBool = !!(snapObj.isKakaoInApp || snapObj.kakaoInApp);
   var kakaoInAppLabel = isInAppBool ? "Y (카톡인앱)" : "N";
   var blackboxJsonStr = "";
   try {
+    if (isVipQuote) {
+      snapObj.vipQuote = {
+        issueType: "VIP_CUSTOM_QUOTE",
+        selectedItems: vipItemsList,
+        contactName: contactName,
+        contactPhone: contactPhone,
+        confirmedBudget300: body.confirmedBudget300 !== false
+      };
+    }
     blackboxJsonStr = JSON.stringify(snapObj);
     if (blackboxJsonStr.length > 45000) {
       blackboxJsonStr = blackboxJsonStr.slice(0, 45000) + "...(truncated)";
@@ -2296,7 +2335,7 @@ function handleReportIssue_(body) {
         pageAndStep,
         partnerInfo,
         contextSummary,
-        memo || "(메모 없음)",
+        sheetMemo,
         kakaoInAppLabel,
         blackboxJsonStr,
         "접수"
@@ -2321,7 +2360,23 @@ function handleReportIssue_(body) {
     reasonLabel.indexOf("이상해") !== -1
   );
   var notified = false;
-  if (isUrgentType) {
+  if (isVipQuote) {
+    try {
+      var vipMsg =
+        "💎 [VIP 고액 맞춤구축·견적프로그램 문의 도착! (300만 원+)]\n" +
+        "- 성함·연락처: " + (contactName || "-") + " (" + (contactPhone || "-") + ")\n" +
+        "- 희망 구축 항목: " + (vipItemsText || "맞춤 상담 요청") + "\n" +
+        "- 요청 내용: " + (memo || "(상세 내용 상담 요청)") + "\n" +
+        "- 300만 원 이상 기준 확인: " + (body.confirmedBudget300 !== false ? "확인 완료" : "미확인") + "\n" +
+        "- 유입 화면·업종: " + pageAndStep + " | " + contextSummary + "\n" +
+        "- 시트기록: " + SHEET_NAME_REPORTS + (rowNumber > 0 ? (" " + rowNumber + "행") : " (시트 미연결)");
+      var vipHookRes = postGoogleChatWebhook_(vipMsg, -1);
+      notified = !!(vipHookRes && vipHookRes.ok);
+    } catch (vipNotifyErr) {
+      Logger.log("[handleReportIssue_ VIP Notify Warning] " + vipNotifyErr);
+      notified = false;
+    }
+  } else if (isUrgentType) {
     try {
       var chatMsg =
         "🚨 [파트너 현장 제보] 파트너 현장 제보 도착\n" +
@@ -2346,6 +2401,7 @@ function handleReportIssue_(body) {
     sheetSaved: sheetSaved,
     rowNumber: rowNumber,
     notified: notified,
+    issueType: isVipQuote ? "VIP_CUSTOM_QUOTE" : (issueType || reasonType),
     reasonType: reasonType,
     createdAt: tsDisplay
   };

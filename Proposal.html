@@ -325,6 +325,9 @@ button { cursor: pointer; border: none; background: none; }
   gap: 5px;
   align-items: stretch;
 }
+.sim-steps-row.four-steps {
+  grid-template-columns: repeat(4, 1fr) 36px;
+}
 .sim-step-pill {
   padding: 7px 2px;
   border-radius: 12px;
@@ -337,6 +340,7 @@ button { cursor: pointer; border: none; background: none; }
   gap: 2px;
   text-align: center;
   transition: all 0.16s ease;
+  min-width: 0;
 }
 .sim-step-pill .sp-num {
   font-size: 10.5px;
@@ -345,11 +349,14 @@ button { cursor: pointer; border: none; background: none; }
   line-height: 1.1;
 }
 .sim-step-pill .sp-lbl {
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 800;
   color: var(--g700);
   line-height: 1.15;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 .sim-step-pill.done {
   border-color: var(--purple-bd);
@@ -2910,6 +2917,70 @@ function formatKoreanDateCapsule(baseDate, offsetDays, offsetMonths) {
   return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + days[d.getDay()] + '요일';
 }
 
+function parseIsoYmdParts(ymd) {
+  const m = String(ymd || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return null;
+  const yr = Number(m[1]), mo = Number(m[2]), dy = Number(m[3]);
+  const d = new Date(yr, mo - 1, dy);
+  const days = ['일', '월', '화', '수', '목', '금', '토'];
+  const dow = days[d.getDay()] || '';
+  return {
+    year: yr,
+    month: mo,
+    day: dy,
+    dow: dow,
+    shortWithDow: mo + '/' + dy + '(' + dow + ')',
+    fullNoDow: yr + '년 ' + mo + '월 ' + dy + '일',
+    capsule: yr + '년 ' + mo + '월 ' + dy + '일 ' + dow + '요일'
+  };
+}
+
+function formatTime24Parts(time24, fallbackKo) {
+  const m = String(time24 || '').trim().match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) {
+    const ko = String(fallbackKo || '오전 9:00').trim();
+    const km = ko.match(/(\d{1,2}:\d{2})/);
+    return { time24: '09:00', timeKo: ko, clockLabel: km ? km[1] : '9:00' };
+  }
+  const h24 = parseInt(m[1], 10);
+  const min = m[2];
+  const isPm = h24 >= 12;
+  const h12 = (h24 % 12) || 12;
+  const norm24 = String(h24).padStart(2, '0') + ':' + min;
+  const ko = String(fallbackKo || ((isPm ? '오후 ' : '오전 ') + h12 + ':' + min)).trim();
+  return { time24: norm24, timeKo: ko, clockLabel: h12 + ':' + min };
+}
+
+function computeNextRecurringCapsule(baseDate, freq, dayStr) {
+  const d = new Date(baseDate.getTime());
+  const days = ['일', '월', '화', '수', '목', '금', '토'];
+  if (String(freq || '').toUpperCase() === 'WEEKLY') {
+    const targetDowIdx = days.findIndex(ch => String(dayStr || '').indexOf(ch) === 0);
+    const want = targetDowIdx >= 0 ? targetDowIdx : 1;
+    let diff = (want - d.getDay() + 7) % 7;
+    if (diff === 0) diff = 7;
+    d.setDate(d.getDate() + diff);
+    return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + days[d.getDay()] + '요일';
+  }
+  // MONTHLY
+  const raw = String(dayStr || '1일').trim();
+  if (/말일/.test(raw)) {
+    const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+    if (lastDay.getDate() <= d.getDate()) {
+      const nextLast = new Date(d.getFullYear(), d.getMonth() + 2, 0);
+      return nextLast.getFullYear() + '년 ' + (nextLast.getMonth() + 1) + '월 ' + nextLast.getDate() + '일 ' + days[nextLast.getDay()] + '요일';
+    }
+    return lastDay.getFullYear() + '년 ' + (lastDay.getMonth() + 1) + '월 ' + lastDay.getDate() + '일 ' + days[lastDay.getDay()] + '요일';
+  }
+  const numM = raw.match(/(\d{1,2})/);
+  const targetDay = numM ? Math.max(1, Math.min(28, parseInt(numM[1], 10))) : 1;
+  const cand = new Date(d.getFullYear(), d.getMonth(), targetDay);
+  if (cand.getTime() <= d.getTime()) {
+    cand.setMonth(cand.getMonth() + 1);
+  }
+  return cand.getFullYear() + '년 ' + (cand.getMonth() + 1) + '월 ' + cand.getDate() + '일 ' + days[cand.getDay()] + '요일';
+}
+
 function resolveCampaignSchedule(camp) {
   camp = camp || DEMO_CAMPAIGN;
   const m = camp.meta || {};
@@ -2917,7 +2988,31 @@ function resolveCampaignSchedule(camp) {
   const t1 = camp.tab1_basic_settings || {};
   const t2 = camp.tab2_landing_content || {};
   const t4 = camp.tab4_interval_messages || {};
+  const t5List = Array.isArray(camp.tab5_date_messages) ? camp.tab5_date_messages : [];
+  const t5First = t5List[0] || null;
   const seq = Array.isArray(t4.sequence) ? t4.sequence : [];
+
+  const schedCfg = m.schedule_config || {};
+  const intervalCfg = schedCfg.interval_config || t4.interval_config || null;
+  let dateRes = (schedCfg.date_reservation && (schedCfg.date_reservation.mode === 'ONCE' || schedCfg.date_reservation.mode === 'RECURRING'))
+    ? schedCfg.date_reservation
+    : null;
+  if (!dateRes && t5First && (t5First.mode === 'ONCE' || t5First.mode === 'RECURRING')) {
+    dateRes = {
+      mode: t5First.mode,
+      date: t5First.send_date || (t5First.send_datetime ? String(t5First.send_datetime).slice(0, 10) : ''),
+      time24: t5First.send_time || (t5First.send_datetime && String(t5First.send_datetime).match(/(\d{2}:\d{2})/) ? String(t5First.send_datetime).match(/(\d{2}:\d{2})/)[1] : ''),
+      timeKo: t5First.send_time_ko || '',
+      recurringFreq: t5First.recurring_freq || '',
+      recurringDay: t5First.recurring_day || '',
+      recurringLabel: t5First.recurring_label || t5First.send_datetime || '',
+      message_hint: t5First.message_hint || t5First.title || ''
+    };
+  }
+  const intervalEnabled = !(
+    (intervalCfg && (intervalCfg.enabled === false || intervalCfg.preset === 'SKIP')) ||
+    t4.enabled === false
+  );
 
   let baseDate = new Date(2026, 10, 26); // 2026-11-26 기본 기준일
   if (m.created_at) {
@@ -2945,7 +3040,9 @@ function resolveCampaignSchedule(camp) {
   ].filter(Boolean).join(' ');
 
   let cadenceType = String(t4.cadence_type || '').toUpperCase();
-  if (!['MONTHLY', 'WEEKLY', 'EVENT', 'SHORT'].includes(cadenceType)) {
+  if (intervalCfg && intervalCfg.preset === 'MONTHLY_30D') cadenceType = 'MONTHLY';
+  else if (intervalCfg && intervalCfg.preset === 'WEEKLY_7D') cadenceType = 'WEEKLY';
+  else if (!['MONTHLY', 'WEEKLY', 'EVENT', 'SHORT'].includes(cadenceType)) {
     if (/매월|월간|한\s*달|달마다|정기\s*인터뷰|월간지|매달|AFTER_1_MONTH/i.test(seedAll)) {
       cadenceType = 'MONTHLY';
     } else if (/매주|주간|주보|챌린지|일주일|주\s*1회|AFTER_7_DAYS/i.test(seedAll)) {
@@ -3135,6 +3232,71 @@ function resolveCampaignSchedule(camp) {
       }
     };
   }
+
+  // ★ V2.7: Q5 지정 날짜·시각(ONCE) 또는 정기 날짜(RECURRING) 완벽 정각 동기화
+  cfg.intervalEnabled = intervalEnabled;
+  cfg.skipStep4 = false;
+  cfg.hasDateReservation = false;
+
+  if (dateRes && dateRes.mode === 'ONCE' && dateRes.date) {
+    const dParts = parseIsoYmdParts(dateRes.date);
+    const tParts = formatTime24Parts(dateRes.time24 || '09:00', dateRes.timeKo);
+    if (dParts) {
+      cfg.hasDateReservation = true;
+      cfg.dateReservation = dateRes;
+      const pillLabel = dParts.shortWithDow + ' ' + tParts.time24 + ' 예약';
+      const hintText = cleanText(dateRes.message_hint || (t5First && (t5First.message_hint || t5First.title)) || '지정하신 일정 안내가 도착했습니다.');
+      cfg.steps[5] = {
+        isDateReserved: true,
+        reserveMode: 'ONCE',
+        shortLabel: pillLabel,
+        dateLabel: dParts.capsule,
+        timeLabel: tParts.timeKo,
+        clockLabel: tParts.clockLabel,
+        twEmoji: '🗓️',
+        twTitle: '🗓️ 지정하신 ' + dParts.fullNoDow + ' ' + tParts.timeKo + ' 정각 동시 발송',
+        twSub: '언제 신청했든 지정하신 정확한 날짜와 시각에 전원에게 동시 발송됩니다',
+        nextBtnLabel: '처음부터 다시 보기 ↻',
+        tlTitle: dParts.shortWithDow + ' ' + tParts.timeKo + ' 정각 동시 예약 발송',
+        tlSub: shortText(hintText, 36),
+        messageHint: hintText
+      };
+      cfg.steps[4].nextBtnLabel = pillLabel + ' 보기 ▶';
+    }
+  } else if (dateRes && dateRes.mode === 'RECURRING' && (dateRes.recurringLabel || dateRes.recurringDay)) {
+    const tParts = formatTime24Parts(dateRes.time24 || '10:00', dateRes.timeKo);
+    const freqKo = String(dateRes.recurringFreq || '').toUpperCase() === 'WEEKLY' ? '매주' : '매월';
+    const dayStr = dateRes.recurringDay || (freqKo === '매주' ? '월요일' : '1일');
+    const recFull = dateRes.recurringLabel || (freqKo + ' ' + dayStr + ' ' + tParts.timeKo);
+    const pillShort = freqKo + ' ' + dayStr.replace(/요일$/, '') + ' ' + tParts.time24;
+    const nextCapsule = computeNextRecurringCapsule(baseDate, dateRes.recurringFreq, dayStr);
+    const hintText = cleanText(dateRes.message_hint || (t5First && (t5First.message_hint || t5First.title)) || '정기 예약 소식이 도착했습니다.');
+    cfg.hasDateReservation = true;
+    cfg.dateReservation = dateRes;
+    cfg.steps[5] = {
+      isDateReserved: true,
+      reserveMode: 'RECURRING',
+      shortLabel: pillShort,
+      dateLabel: nextCapsule,
+      timeLabel: tParts.timeKo,
+      clockLabel: tParts.clockLabel,
+      twEmoji: '🗓️',
+      twTitle: '🗓️ 지정하신 ' + recFull + ' 정각 동시 발송',
+      twSub: '정해진 날짜와 시각마다 신청자 전원에게 동시 발송됩니다',
+      nextBtnLabel: '처음부터 다시 보기 ↻',
+      tlTitle: recFull + ' 정기 동시 발송',
+      tlSub: shortText(hintText, 36),
+      messageHint: hintText
+    };
+    cfg.steps[4].nextBtnLabel = pillShort + ' 예약 보기 ▶';
+  }
+
+  // Q4를 건너뛰고 Q5(날짜지정)만 지정한 경우: 즉시 알림톡(Step 3) ➔ 지정 날짜 발송(Step 5) 직결
+  if (!intervalEnabled && cfg.hasDateReservation) {
+    cfg.skipStep4 = true;
+    cfg.steps[3].nextBtnLabel = cfg.steps[5].shortLabel + ' 보기 ▶';
+  }
+
   return cfg;
 }
 
@@ -3374,11 +3536,35 @@ function renderKakaoStep5() {
   const bodyEl = $('#s5-chat-body');
   if (!bodyEl) return;
 
+  const t5List = Array.isArray(camp.tab5_date_messages) ? camp.tab5_date_messages : [];
+  const t5First = t5List[0] || null;
+  const t5Branch = (t5First && Array.isArray(t5First.branches) && t5First.branches[0]) || {};
+
   let bubbleHtml = '';
-  if (isYt3) {
-    const ytTitle = (media3 && media3.title) || (sched.type === 'MONTHLY' ? ('[월간 2호 인터뷰] ' + channelName) : (channelName + ' 후속 인터뷰 영상'));
+  if (st5.isDateReserved && !isYt3) {
+    const resBadge = st5.reserveMode === 'RECURRING' ? '정기 예약 발송' : '지정 날짜 정각 예약';
+    const resTitle = cleanText((t5First && t5First.title) || st5.messageHint || (channelName + ' 예약 안내'));
+    const resBody = cleanText(t5Branch.body_text_400chars || ('#{이름}님, 안내드린 일정이 다가왔습니다.\n' + (st5.messageHint || '자세한 내용은 아래 버튼을 눌러 확인해 주세요.')));
+    const resBtn = (t5Branch.buttons && t5Branch.buttons[0] && t5Branch.buttons[0].name)
+      ? cleanText(t5Branch.buttons[0].name)
+      : '상세 안내 바로 보기';
+    bubbleHtml =
+      '<div class="kk-bubble-wrap">' +
+        '<div class="kk-friend-card">' +
+          '<div class="kk-friend-banner">' +
+            '<div style="font-size:10px;font-weight:700;opacity:0.86">' + esc(resBadge + ' · ' + st5.timeLabel) + '</div>' +
+            '<div style="font-size:13px;font-weight:800;line-height:1.3">' + esc(shortText(resTitle, 30)) + '</div>' +
+          '</div>' +
+          '<div class="kk-ad-badge">' + esc(channelName) + '</div>' +
+          '<div class="kk-card-body">' + renderKakaoTextWithVars(resBody, t5Branch.sheet_fallback_strings || b3.sheet_fallback_strings) + '</div>' +
+          '<div class="kk-card-btns"><div class="kk-btn-mock">' + esc(resBtn) + '</div></div>' +
+        '</div>' +
+        '<span class="kk-time">' + esc(st5.timeLabel) + '</span>' +
+      '</div>';
+  } else if (isYt3) {
+    const ytTitle = (media3 && media3.title) || (st5.isDateReserved ? (st5.messageHint || channelName + ' 예약 영상') : (sched.type === 'MONTHLY' ? ('[월간 2호 인터뷰] ' + channelName) : (channelName + ' 후속 인터뷰 영상')));
     const ytDur = (media3 && media3.duration) || '06:18';
-    const ytBody = cleanText(b3.body_text_400chars || ('#{이름}님, ' + (sched.type === 'MONTHLY' ? '두 번째 월간 인터뷰 영상이 도착했습니다.' : '후속 영상 콘텐츠가 공개되었습니다.') + ' 아래 버튼을 눌러 유튜브에서 바로 시청해 보세요.'));
+    const ytBody = cleanText((st5.isDateReserved && t5Branch.body_text_400chars) || b3.body_text_400chars || ('#{이름}님, ' + (sched.type === 'MONTHLY' ? '두 번째 월간 인터뷰 영상이 도착했습니다.' : '후속 영상 콘텐츠가 공개되었습니다.') + ' 아래 버튼을 눌러 유튜브에서 바로 시청해 보세요.'));
     const ytBtn = (b3.buttons && b3.buttons[0] && b3.buttons[0].name) ? cleanText(b3.buttons[0].name) : '▶ 유튜브에서 영상 바로 보기';
     bubbleHtml =
       '<div class="kk-bubble-wrap">' +
@@ -3632,11 +3818,13 @@ function scheduleAutoAdvance() {
       });
     }, 1700);
   } else if (step === 3) {
+    const sched = STATE.schedule || resolveCampaignSchedule(STATE.campaign);
+    const nextFrom3 = sched.skipStep4 ? 5 : 4;
     positionCoachmarkOn($('#btn-sim-next'));
     addSimTimer(() => {
       if (!STATE.simAutoPlay) return;
       pressCoachmarkOn($('#btn-sim-next'), () => {
-        if (STATE.simAutoPlay) goSimStep(4, true);
+        if (STATE.simAutoPlay) goSimStep(nextFrom3, true);
       });
     }, 2600);
   } else if (step === 4) {
@@ -3696,10 +3884,14 @@ function renderCompactSummaryCard() {
   const rows = [
     { step: 1, num: '①', title: '맞춤 신청페이지', sub: shortText(t1.title_30chars || (channelName + ' 신청 안내'), 28) },
     { step: 2, num: '②', title: '신청폼 설문 & 자동 분류', sub: shortText((q1.question_text || '유형 분류') + ' (' + ansPreview + ')', 30) },
-    { step: 3, num: '③', title: sched.steps[3].tlTitle, sub: sched.steps[3].tlSub },
-    { step: 4, num: '④', title: sched.steps[4].tlTitle, sub: sched.steps[4].tlSub },
-    { step: 5, num: '⑤', title: sched.steps[5].tlTitle, sub: sched.steps[5].tlSub }
+    { step: 3, num: '③', title: sched.steps[3].tlTitle, sub: sched.steps[3].tlSub }
   ];
+  if (!sched.skipStep4) {
+    rows.push({ step: 4, num: '④', title: sched.steps[4].tlTitle, sub: sched.steps[4].tlSub });
+    rows.push({ step: 5, num: '⑤', title: sched.steps[5].tlTitle, sub: sched.steps[5].tlSub });
+  } else {
+    rows.push({ step: 5, num: '④', title: sched.steps[5].tlTitle, sub: sched.steps[5].tlSub });
+  }
 
   const wrap = $('#compact-tl-card');
   if (!wrap) return;
@@ -3737,7 +3929,13 @@ function renderProposal() {
 
   document.title = channelName + ' · 고마워톡 맞춤 카톡 자동화 설계안';
 
-  // 상단 5단계 스텝 바 라벨 동적 바인딩 (월간/주간/행사/단기 실제 주기 반영)
+  // 상단 5단계 스텝 바 라벨 동적 바인딩 (간격발송 + Q5 지정 날짜·시각 정각 예약 반영)
+  const stepsBar = $('#sim-steps-bar');
+  const pill4Btn = $('[data-sim-step="4"]');
+  const pill5Num = $('[data-sim-step="5"] .sp-num');
+  if (stepsBar) stepsBar.classList.toggle('four-steps', !!STATE.schedule.skipStep4);
+  if (pill4Btn) pill4Btn.hidden = !!STATE.schedule.skipStep4;
+  if (pill5Num) pill5Num.textContent = STATE.schedule.skipStep4 ? '④' : '⑤';
   const lbl3 = $('#sp-lbl-3');
   const lbl4 = $('#sp-lbl-4');
   const lbl5 = $('#sp-lbl-5');
@@ -3912,12 +4110,18 @@ function bindSimulatorEvents() {
   // 폰 프레임 아래 외부 장면 이동 버튼 ([◀ 이전 장면] | [다음 발송 장면 보기 ▶])
   $('#btn-sim-prev').onclick = () => {
     switchToManualMode();
+    const sched = STATE.schedule || resolveCampaignSchedule(STATE.campaign);
+    if (STATE.simStep === 5 && sched.skipStep4) {
+      goSimStep(3, false);
+      return;
+    }
     if (STATE.simStep > 1) {
       goSimStep(STATE.simStep - 1, false);
     }
   };
   $('#btn-sim-next').onclick = () => {
     switchToManualMode();
+    const sched = STATE.schedule || resolveCampaignSchedule(STATE.campaign);
     if (STATE.simStep >= 5) {
       goSimStep(1, false);
       return;
@@ -3930,7 +4134,7 @@ function bindSimulatorEvents() {
       renderKakaoStep4(false);
       renderKakaoStep5();
     }
-    const nextStep = STATE.simStep + 1;
+    const nextStep = (STATE.simStep === 3 && sched.skipStep4) ? 5 : (STATE.simStep + 1);
     goSimStep(nextStep, nextStep === 4 || nextStep === 5);
   };
 

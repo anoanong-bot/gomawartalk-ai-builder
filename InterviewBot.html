@@ -427,7 +427,7 @@ button { cursor: pointer; border: none; background: none; }
   text-align: center;
 }
 
-/* 5단계 진행률 바 (시니어 고시인성 대형 한글 표기 + 8px 굵은 바) */
+/* 5단계 진행률 바 & STEP 3 상단 5단 한글 코스 바 (추가 면적 소모 제로) */
 .stage-progress-wrap { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
 .stage-progress-top { display: flex; align-items: center; justify-content: space-between; font-size: 16px; font-weight: 900; }
 .stage-progress-label { color: var(--g900); font-size: 16.5px; font-weight: 900; letter-spacing: -0.02em; }
@@ -437,6 +437,48 @@ button { cursor: pointer; border: none; background: none; }
   height: 100%; width: 20%; border-radius: 99px;
   background: linear-gradient(90deg, #1B64DA 0%, #3182F6 60%, #60A5FA 100%);
   transition: width 0.28s ease;
+}
+.course-bar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 2px 0;
+}
+.course-bar::-webkit-scrollbar { display: none; }
+.course-chip {
+  flex-shrink: 0;
+  padding: 6px 9px;
+  border-radius: 99px;
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: all 0.14s ease;
+}
+.course-chip:active { transform: scale(0.97); }
+.course-chip.done {
+  background: var(--green-lt);
+  border-color: var(--green-bd);
+  color: #065F46;
+}
+.course-chip.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(49, 130, 246, 0.28);
+}
+.course-sep {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 900;
+  color: #94A3B8;
+  user-select: none;
 }
 
 /* 메인 스크롤 영역 (하단 고정 CTA 가림 방지를 위해 stage-pane padding-bottom: 120px 확보) */
@@ -1025,13 +1067,18 @@ button { cursor: pointer; border: none; background: none; }
   padding: 3px 7px; border-radius: 6px; background: var(--blue-lt);
 }
 
-/* AI 컨설턴트 질문 카드 (50대+ 시니어 빅폰트 22px 굵게 · 해설 군더더기 제거) */
-.question-card {
+/* V2.7 토스식 오픈 화이트 캔버스 (테두리 감옥 해체 · 입력창 상단 우선) */
+#stage-3.stage-pane {
   background: #FFFFFF;
-  border-radius: 20px;
-  padding: 20px 18px;
-  border: 1.5px solid var(--g200);
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  padding: 24px 18px 146px;
+  gap: 16px;
+}
+.question-card {
+  background: transparent;
+  border-radius: 0;
+  padding: 2px 0 0;
+  border: none;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1043,12 +1090,202 @@ button { cursor: pointer; border: none; background: none; }
   font-size: 13px; font-weight: 800;
 }
 .q-text {
-  font-size: 22px; font-weight: 800; line-height: 1.42;
+  font-size: 22px; font-weight: 900; line-height: 1.42;
   color: var(--g900); word-break: keep-all;
 }
 .q-text strong { color: var(--blue-dk); font-weight: 900; }
 .q-usage-hint {
   display: none !important;
+}
+
+/* 스마트 자동 토스(Auto-Toss) 알림 배지 & 쉬운 일상 비유 배지 */
+.auto-toss-banner {
+  padding: 13px 15px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #EFF6FF 0%, #ECFDF5 100%);
+  border: 1.5px solid #93C5FD;
+  color: #1E3A8A;
+  font-size: 15.5px;
+  font-weight: 800;
+  line-height: 1.48;
+  word-break: keep-all;
+  animation: fadeSlide 0.2s ease;
+}
+.analogy-badge {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  color: #334155;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.48;
+  word-break: keep-all;
+}
+
+/* Q2 패스 칩 · Q4 간격 프리셋 칩 4종 · Q5 3대 선택 카드 & 터치형 날짜·시각 픽커 */
+.smart-controls-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.btn-one-touch-pass {
+  width: 100%;
+  min-height: 52px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  color: #1E293B;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition: all 0.14s ease;
+}
+.btn-one-touch-pass:hover, .btn-one-touch-pass:active {
+  background: var(--blue-lt);
+  border-color: var(--blue);
+  color: var(--blue-dk);
+}
+.btn-one-touch-pass.selected {
+  background: var(--blue-lt);
+  border-color: var(--blue);
+  color: var(--blue-dk);
+}
+.preset-chips-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.interval-preset-btn, .q5-mode-card {
+  width: 100%;
+  min-height: 54px;
+  padding: 13px 15px;
+  border-radius: 15px;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  color: var(--g900);
+  font-size: 16.5px;
+  font-weight: 800;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  word-break: keep-all;
+  transition: all 0.14s ease;
+}
+.interval-preset-btn:hover, .q5-mode-card:hover {
+  border-color: #93C5FD;
+  background: #F4F9FF;
+}
+.interval-preset-btn.selected, .q5-mode-card.selected {
+  border-color: var(--blue);
+  background: var(--blue-lt);
+  color: var(--blue-dk);
+  box-shadow: 0 4px 12px rgba(49, 130, 246, 0.14);
+}
+.interval-preset-btn.skip-btn, .q5-mode-card.skip-card {
+  background: #FFFFFF;
+  border-style: dashed;
+  border-color: #CBD5E1;
+  color: #475569;
+  font-size: 15.5px;
+}
+.q5-mode-sub {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #64748B;
+  margin-top: 2px;
+}
+.q5-mode-card.selected .q5-mode-sub { color: #1E40AF; }
+.q5-picker-panel {
+  padding: 16px 14px;
+  border-radius: 16px;
+  background: #F8FAFC;
+  border: 1.5px solid #BFDBFE;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeSlide 0.16s ease;
+}
+.picker-field-label {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--g900);
+  margin-bottom: 5px;
+  display: block;
+}
+.picker-date-in {
+  width: 100%;
+  min-height: 52px;
+  padding: 11px 14px;
+  border-radius: 13px;
+  border: 1.5px solid #94A3B8;
+  background: #FFFFFF;
+  color: var(--g900);
+  font-size: 18px;
+  font-weight: 800;
+  outline: none;
+}
+.picker-date-in:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.14); }
+.picker-time-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.picker-select {
+  width: 100%;
+  min-height: 50px;
+  padding: 10px 8px;
+  border-radius: 13px;
+  border: 1.5px solid #94A3B8;
+  background: #FFFFFF;
+  color: var(--g900);
+  font-size: 17px;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+}
+.picker-select:focus { border-color: var(--blue); }
+.rec-freq-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.rec-freq-btn {
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1.5px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #334155;
+  font-size: 16.5px;
+  font-weight: 800;
+}
+.rec-freq-btn.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #FFFFFF;
+}
+.picker-summary-pill {
+  padding: 10px 13px;
+  border-radius: 11px;
+  background: #FFFFFF;
+  border: 1px solid #93C5FD;
+  color: var(--blue-dk);
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+}
+.composer-top-label {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--g700);
 }
 
 /* 실시간 매뉴얼 검문소 경고 & 대안 역제안 카드 */
@@ -1143,29 +1380,31 @@ button { cursor: pointer; border: none; background: none; }
   line-height: 1.2;
 }
 
-/* 중앙 주인공 멀티라인 주관식 입력창 (18px 50대+ 빅폰트 · 모바일 자동 줌 방지) */
+/* 주인공 멀티라인 주관식 입력창 (오픈 캔버스 상단 우선 · 18px 50대+ 빅폰트) */
 .answer-composer-card {
-  background: #FFFFFF;
-  border: 2px solid var(--g200);
-  border-radius: 18px;
-  padding: 16px;
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 16px;
+  padding: 14px 15px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+  gap: 8px;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
 }
 .answer-composer-card:focus-within {
+  background: #FFFFFF;
   border-color: var(--blue);
   box-shadow: 0 0 0 4px rgba(49, 130, 246, 0.12);
 }
 .answer-composer-card.flash-fill {
+  background: #FFFFFF;
   border-color: var(--green);
   box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.16);
 }
 #interview-textarea {
   width: 100%;
-  min-height: 132px;
-  max-height: 280px;
+  min-height: 108px;
+  max-height: 260px;
   border: none;
   outline: none;
   resize: none;
@@ -1981,10 +2220,12 @@ button { cursor: pointer; border: none; background: none; }
         <span class="quota-sub-hint" id="quota-sub-hint" hidden></span>
       </div>
       <div class="stage-progress-wrap">
-        <div class="stage-progress-top">
+        <div class="stage-progress-top" id="stage-progress-top">
           <span class="stage-progress-label" id="stage-progress-label">1단계 · 업종 선택</span>
           <span class="stage-progress-sub" id="stage-progress-sub" hidden></span>
         </div>
+        <!-- V2.7 STEP 3 상단 고정 5단 한글 코스 바 (맹목적 '질문 1/5' 대체, 추가 면적 소모 제로) -->
+        <nav class="course-bar" id="q-course-bar" aria-label="5단계 질문 코스" hidden></nav>
         <div class="stage-bar-track">
           <div class="stage-bar-fill" id="stage-progress-fill"></div>
         </div>
@@ -2039,7 +2280,7 @@ button { cursor: pointer; border: none; background: none; }
         <div class="flow-list" id="flow-list"></div>
       </section>
 
-      <!-- ── STEP 3: Tap-to-Edit 주관식 5단계 심층 인터뷰 + 매뉴얼 검문소 ── -->
+      <!-- ── STEP 3: V2.7 토스식 오픈 캔버스 (5대 탭 1:1 매칭 + 입력창 상단 우선 + 간격/날짜 스마트 선택기 + 자동 토스) ── -->
       <section class="stage-pane" id="stage-3" hidden>
         <div class="interview-top-bar" hidden>
           <button type="button" class="btn-back" id="btn-back-to-s2">← 흐름 변경</button>
@@ -2048,7 +2289,7 @@ button { cursor: pointer; border: none; background: none; }
 
         <div class="q-dots" id="q-dots" hidden></div>
 
-        <!-- 완료된 이전 답변 확인 & 바로 수정 트레이 -->
+        <!-- 완료된 이전 답변 확인 & 바로 수정 트레이 (하위 호환 유지, 상단 코스 바로 대체되어 기본 숨김) -->
         <div class="prev-answers-box" id="prev-answers-box" hidden>
           <button type="button" class="prev-answers-head" id="btn-toggle-prev">
             <span id="prev-answers-title">이전 답변 보기 (0개)</span>
@@ -2057,14 +2298,23 @@ button { cursor: pointer; border: none; background: none; }
           <div class="prev-answers-body" id="prev-answers-body" hidden></div>
         </div>
 
-        <!-- AI 컨설턴트 맥락 맞춤 질문 카드 (빅폰트 22px · 군더더기 해설 제거) -->
+        <!-- 1) 오픈 화이트 큰 질문 타이틀 (22px 굵게 · 중첩 테두리 제거) -->
         <div class="question-card">
           <div class="q-meta-row" hidden>
-            <span class="q-badge" id="q-step-badge">질문 1 / 5</span>
+            <span class="q-badge" id="q-step-badge">① 신청화면</span>
           </div>
           <div class="q-text" id="q-question-text"></div>
           <div class="q-usage-hint" id="q-usage-hint" hidden></div>
         </div>
+
+        <!-- 2) 스마트 자동 토스(Auto-Toss) 알림 배지 (Q4/Q5 선입력 감지 시에만 노출) -->
+        <div class="auto-toss-banner" id="auto-toss-banner" hidden></div>
+
+        <!-- 3) 쉬운 일상 비유 배지 (Q4 간격발송 / Q5 날짜지정 전용) -->
+        <div class="analogy-badge" id="q-analogy-badge" hidden></div>
+
+        <!-- 4) 문항별 스마트 원터치 칩 / 3대 선택 카드 & 달력·시각 픽커 -->
+        <div class="smart-controls-wrap" id="q-smart-controls" hidden></div>
 
         <!-- 실시간 고마워톡 매뉴얼 검문소(Feasibility Guardrail) 경고 카드 -->
         <div class="guardrail-card" id="guardrail-box" hidden>
@@ -2074,19 +2324,20 @@ button { cursor: pointer; border: none; background: none; }
           <div id="guardrail-alts" style="display:flex;flex-direction:column;gap:8px"></div>
         </div>
 
-        <!-- Tap-to-Edit 업종·맥락 맞춤 예시 칩 3개 (터치 시 전송 X, 아래 textarea 초안 복사!) -->
-        <div class="examples-wrap">
-          <div class="examples-caption">👇 아래 예시를 누르면 입력칸에 바로 채워져요</div>
-          <div id="example-chips-list" style="display:flex;flex-direction:column;gap:10px"></div>
-        </div>
-
-        <!-- 주인공: 큼직한 멀티라인 주관식 입력창 (18px 50대+ 빅폰트) -->
+        <!-- 5) 입력창 상단 우선(Input-First): 스크롤 없이 한눈에 들어오는 18px 답변 입력창 -->
         <div class="answer-composer-card" id="answer-composer-card">
-          <textarea id="interview-textarea" placeholder="위 예시를 눌러 채우거나 편하게 적어주세요"></textarea>
+          <div class="composer-top-label" id="composer-top-label" hidden></div>
+          <textarea id="interview-textarea" placeholder="편하게 적어주시거나 아래 예시를 눌러 바로 채워보세요"></textarea>
           <div class="composer-meta-row">
             <span class="tap-edit-toast" id="tap-edit-toast"></span>
             <span id="textarea-char-count">0자</span>
           </div>
+        </div>
+
+        <!-- 6) 입력창 아래쪽: Tap-to-Edit 업종·맥락 맞춤 예시 카드 3종 -->
+        <div class="examples-wrap" id="examples-wrap">
+          <div class="examples-caption">👇 막막하시면 예시를 눌러 바로 채워보세요</div>
+          <div id="example-chips-list" style="display:flex;flex-direction:column;gap:10px"></div>
         </div>
       </section>
 
@@ -2434,6 +2685,15 @@ const ST = {
 
   qNum: 1, // 1..5
   answers: {},
+  skipFormQuestion: false,
+  intervalConfig: {
+    enabled: true, preset: '', label: '', days: [], displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
+  },
+  dateReservation: {
+    mode: '', date: '', time24: '09:00', timeKo: '오전 9:00', ampm: 'AM', hour12: 9, minute: 0,
+    recurringFreq: 'MONTHLY', recurringDay: '1일', recurringLabel: '', displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
+  },
+  userEditedQ: { 1: false, 2: false, 3: false, 4: false, 5: false },
   currentQPack: null,
   guardrail: null,
   notes: [],
@@ -3094,9 +3354,18 @@ function goStage(n) {
   [1, 2, 3, 4, 5].forEach(i => { $('#stage-' + i).hidden = (i !== n); });
   let pct = n * 20;
   let labelText = STAGE_LABELS[n] || '';
+  const progTop = $('#stage-progress-top');
+  const courseBar = $('#q-course-bar');
   if (n === 3) {
     pct = 40 + Math.round((ST.qNum / Consult.TOTAL_Q) * 20);
-    labelText = '질문 ' + ST.qNum + ' / ' + Consult.TOTAL_Q;
+    const meta = Consult.Q_META[ST.qNum - 1] || Consult.Q_META[0];
+    labelText = meta ? meta.courseLabel : '① 신청화면';
+    if (progTop) progTop.hidden = true;
+    if (courseBar) courseBar.hidden = false;
+    renderCourseBar();
+  } else {
+    if (progTop) progTop.hidden = false;
+    if (courseBar) courseBar.hidden = true;
   }
   $('#stage-progress-label').textContent = labelText;
   const subEl = $('#stage-progress-sub');
@@ -3144,6 +3413,15 @@ function resetConsultFlow() {
   ST.qNum = 1;
   ST.pinnedConsultNotes = [];
   ST.answers = {};
+  ST.skipFormQuestion = false;
+  ST.intervalConfig = {
+    enabled: true, preset: '', label: '', days: [], displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
+  };
+  ST.dateReservation = {
+    mode: '', date: '', time24: '09:00', timeKo: '오전 9:00', ampm: 'AM', hour12: 9, minute: 0,
+    recurringFreq: 'MONTHLY', recurringDay: '1일', recurringLabel: '', displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
+  };
+  ST.userEditedQ = { 1: false, 2: false, 3: false, 4: false, 5: false };
   ST.currentQPack = null;
   ST.guardrail = null;
   ST.notes = [];
@@ -3469,49 +3747,435 @@ async function runFlowAiRecommend() {
   }
 }
 
-/* ═══════════════ STEP 3: Tap-to-Edit 주관식 5단계 심층 인터뷰 + 실시간 매뉴얼 검문소 ═══════════════ */
+/* ═══════════════ STEP 3: V2.7 5단 한글 코스 바 + 간격/날짜 스마트 선택기 + 자동 토스(Auto-Toss) ═══════════════ */
+const Q4_INTERVAL_PRESETS = [
+  { id: 'D1_D3',       label: '1일 · 3일 뒤 연속 챙기기',               days: [1, 3],   draft: '신청일 기준 1일·3일 뒤 연속으로 안부와 핵심 안내 카톡을 자동 발송하고 싶어요.' },
+  { id: 'WEEKLY_7D',   label: '일주일(7일)마다 정기 발송',              days: [7, 14],  draft: '신청일 기준 일주일(7일)마다 유익한 칼럼·소식 카톡을 정기 발송하고 싶어요.' },
+  { id: 'MONTHLY_30D', label: '한 달(30일)마다 정기 발송',              days: [30, 60], draft: '신청일 기준 한 달(30일)마다 월간 정기 소식·안내 카톡을 발송하고 싶어요.' },
+  { id: 'SKIP',        label: '⏭️ 며칠 뒤 자동 카톡은 안 보냄 (건너뛰기)', days: [],       skip: true }
+];
+
+const Q_PREVIEW_CTAS = {
+  1: '다음: ② 신청 질문 고르기 →',
+  2: '다음: ③ 첫 카톡 내용 정하기 →',
+  3: '다음: ④ 며칠 뒤 자동 카톡 →',
+  4: '다음: ⑤ 날짜·시간 지정 카톡 →',
+  5: '완료 · 브랜드 스타일 입력하기 →'
+};
+
+function getDefaultFutureDateStr() {
+  const d = new Date();
+  d.setDate(d.getDate() + 7);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function formatDateYmdKorean(ymd) {
+  const m = String(ymd || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return '';
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  const dow = ['일', '월', '화', '수', '목', '금', '토'][d.getDay()] || '';
+  return Number(m[1]) + '년 ' + Number(m[2]) + '월 ' + Number(m[3]) + '일 (' + dow + ')';
+}
+
 function autoResizeTextarea(ta) {
   if (!ta) return;
   ta.style.height = 'auto';
-  ta.style.height = Math.max(126, Math.min(260, ta.scrollHeight)) + 'px';
+  ta.style.height = Math.max(108, Math.min(240, ta.scrollHeight)) + 'px';
   $('#textarea-char-count').textContent = ta.value.length + '자';
 }
 
+function saveCurrentDraftQuietly() {
+  if (ST.stage !== 3) return;
+  const ta = $('#interview-textarea');
+  if (!ta) return;
+  const val = (ta.value || '').trim();
+  if (val) {
+    ST.answers[ST.qNum] = val;
+    if (ST.qNum === 4) ST.intervalConfig.message_hint = val;
+    if (ST.qNum === 5) ST.dateReservation.message_hint = val;
+    if (ST.qNum >= 1 && ST.qNum <= 3) {
+      applyAutoTossFromText(ST.qNum, val);
+    }
+  }
+}
+
+function applyAutoTossFromText(sourceQ, text) {
+  if (sourceQ < 1 || sourceQ > 3) return { hasAny: false, interval: null, dateReservation: null };
+  const hints = Consult.autoTossScheduleHints(text);
+  if (!hints || !hints.hasAny) return hints;
+
+  if (hints.interval && !ST.userEditedQ[4]) {
+    ST.intervalConfig = Object.assign({}, hints.interval, { sourceQ: sourceQ, autoTossed: true });
+    ST.answers[4] = hints.interval.draftText;
+  }
+  if (hints.dateReservation && !ST.userEditedQ[5]) {
+    ST.dateReservation = Object.assign({}, hints.dateReservation, { sourceQ: sourceQ, autoTossed: true });
+    ST.answers[5] = hints.dateReservation.draftText;
+  }
+  return hints;
+}
+
+function renderCourseBar() {
+  const bar = $('#q-course-bar');
+  if (!bar) return;
+  bar.innerHTML = Consult.Q_META.map((m, idx) => {
+    const isActive = m.n === ST.qNum;
+    const isDone = !isActive && !!ST.answers[m.n];
+    const cls = isActive ? 'active' : (isDone ? 'done' : '');
+    const prefix = isActive ? '● ' : (isDone ? '✓ ' : '');
+    const sep = idx < Consult.Q_META.length - 1 ? '<span class="course-sep" aria-hidden="true">─</span>' : '';
+    return '<button type="button" class="course-chip ' + cls + '" data-course-q="' + m.n + '">' +
+      prefix + esc(m.courseLabel) +
+    '</button>' + sep;
+  }).join('');
+
+  $$('[data-course-q]', bar).forEach(btn => {
+    btn.onclick = () => {
+      const targetQ = Number(btn.dataset.courseQ);
+      if (!targetQ || targetQ === ST.qNum) return;
+      saveCurrentDraftQuietly();
+      jumpToInterviewQuestion(targetQ);
+    };
+  });
+}
+
 function renderQDots() {
+  renderCourseBar();
   const wrap = $('#q-dots');
+  if (!wrap) return;
   wrap.innerHTML = Consult.Q_META.map(m => {
     const cls = m.n === ST.qNum ? 'active' : (ST.answers[m.n] ? 'done' : '');
-    return '<button type="button" class="q-dot ' + cls + '" data-jump-q="' + m.n + '">Q' + m.n + (ST.answers[m.n] && m.n !== ST.qNum ? ' ✓' : '') + '</button>';
+    return '<button type="button" class="q-dot ' + cls + '" data-jump-q="' + m.n + '">' + esc(m.courseLabel) + (ST.answers[m.n] && m.n !== ST.qNum ? ' ✓' : '') + '</button>';
   }).join('');
 
   $$('[data-jump-q]', wrap).forEach(b => {
     b.onclick = () => {
       const targetQ = Number(b.dataset.jumpQ);
       if (targetQ === ST.qNum) return;
-      if (targetQ < ST.qNum || ST.answers[targetQ]) {
-        jumpToInterviewQuestion(targetQ);
-      }
+      saveCurrentDraftQuietly();
+      jumpToInterviewQuestion(targetQ);
     };
   });
 }
 
 function renderPrevAnswersTray() {
-  const doneKeys = [1, 2, 3, 4, 5].filter(n => n !== ST.qNum && ST.answers[n]);
+  // V2.7: 상단 5단 한글 코스 바에서 언제든 모든 질문으로 자유 점프 가능하므로 중복 트레이는 숨김 유지
   const box = $('#prev-answers-box');
-  if (!doneKeys.length) { box.hidden = true; return; }
-  box.hidden = false;
-  $('#prev-answers-title').textContent = '작성한 이전 답변 보기 (' + doneKeys.length + '개)';
-  const body = $('#prev-answers-body');
-  body.innerHTML = doneKeys.map(n => {
-    const meta = Consult.Q_META[n - 1];
-    return '<div class="prev-ans-item">' +
-      '<div><b>Q' + n + '. ' + esc(meta.label) + '</b><br>' + esc(ST.answers[n]) + '</div>' +
-      '<button type="button" class="btn-jump-q" data-edit-q="' + n + '">수정</button>' +
+  if (box) box.hidden = true;
+}
+
+function selectQ4Preset(presetId) {
+  const found = Q4_INTERVAL_PRESETS.find(p => p.id === presetId);
+  if (!found) return;
+  ST.userEditedQ[4] = true;
+  if (found.skip) {
+    ST.intervalConfig = {
+      enabled: false, preset: 'SKIP', label: '건너뛰기 (안 보냄)', days: [],
+      displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
+    };
+    ST.answers[4] = '며칠 뒤 자동 카톡은 안 보냄 (건너뛰기)';
+    jumpToInterviewQuestion(5);
+    return;
+  }
+  ST.intervalConfig = {
+    enabled: true, preset: found.id, label: found.label, days: found.days.slice(),
+    displayLabel: found.label, message_hint: found.draft, autoTossed: false, sourceQ: 0
+  };
+  const ta = $('#interview-textarea');
+  if (ta) {
+    fillTextareaWithDraft(found.draft, '✅ [' + found.label + '] 간격이 선택되었어요! 내용을 수정하거나 바로 다음을 누르세요.');
+    ST.answers[4] = ta.value.trim();
+  }
+  renderSmartControlsForQ(4);
+}
+
+function syncQ5ReservationFromPickers() {
+  const dr = ST.dateReservation;
+  if (dr.mode === 'ONCE') {
+    const dateEl = $('#q5-once-date');
+    const ampmEl = $('#q5-once-ampm');
+    const hourEl = $('#q5-once-hour');
+    const minEl = $('#q5-once-min');
+    if (dateEl && dateEl.value) dr.date = dateEl.value;
+    if (ampmEl) dr.ampm = ampmEl.value || 'AM';
+    if (hourEl) dr.hour12 = Number(hourEl.value) || 9;
+    if (minEl) dr.minute = Number(minEl.value) || 0;
+    dr.time24 = Consult.toTime24(dr.ampm, dr.hour12, dr.minute);
+    dr.timeKo = Consult.formatTime24ToKo(dr.time24);
+    dr.recurringLabel = '';
+    const sumEl = $('#q5-picker-summary');
+    if (sumEl) {
+      sumEl.textContent = '📌 ' + (formatDateYmdKorean(dr.date) || dr.date) + ' · ' + dr.timeKo + ' 정각 동시 발송';
+    }
+  } else if (dr.mode === 'RECURRING') {
+    const dayEl = $('#q5-rec-day');
+    const ampmEl = $('#q5-rec-ampm');
+    const hourEl = $('#q5-rec-hour');
+    const minEl = $('#q5-rec-min');
+    if (dayEl && dayEl.value) dr.recurringDay = dayEl.value;
+    if (ampmEl) dr.ampm = ampmEl.value || 'AM';
+    if (hourEl) dr.hour12 = Number(hourEl.value) || 10;
+    if (minEl) dr.minute = Number(minEl.value) || 0;
+    dr.time24 = Consult.toTime24(dr.ampm, dr.hour12, dr.minute);
+    dr.timeKo = Consult.formatTime24ToKo(dr.time24);
+    const freqKo = dr.recurringFreq === 'WEEKLY' ? '매주' : '매월';
+    dr.recurringLabel = freqKo + ' ' + dr.recurringDay + ' ' + dr.timeKo;
+    dr.date = '';
+    const sumEl = $('#q5-picker-summary');
+    if (sumEl) {
+      sumEl.textContent = '📌 ' + freqKo + ' ' + dr.recurringDay + ' · ' + dr.timeKo + ' 정기 동시 발송';
+    }
+  }
+}
+
+function selectQ5Mode(mode, isManual) {
+  if (isManual !== false) ST.userEditedQ[5] = true;
+  if (mode === 'SKIP') {
+    ST.dateReservation = {
+      mode: 'SKIP', date: '', time24: '', timeKo: '', ampm: 'AM', hour12: 9, minute: 0,
+      recurringFreq: '', recurringDay: '', recurringLabel: '', displayLabel: '', message_hint: '', autoTossed: false, sourceQ: 0
+    };
+    ST.answers[5] = '정해진 날짜 카톡은 없어요 (건너뛰기)';
+    renderStage4BrandAssets();
+    goStage(4);
+    return;
+  }
+  ST.dateReservation.mode = mode;
+  if (mode === 'ONCE') {
+    if (!ST.dateReservation.date) ST.dateReservation.date = getDefaultFutureDateStr();
+    if (!ST.dateReservation.time24) {
+      ST.dateReservation.time24 = '09:30';
+      ST.dateReservation.timeKo = '오전 9:30';
+      ST.dateReservation.ampm = 'AM';
+      ST.dateReservation.hour12 = 9;
+      ST.dateReservation.minute = 30;
+    }
+  } else if (mode === 'RECURRING') {
+    if (!ST.dateReservation.recurringFreq) ST.dateReservation.recurringFreq = 'MONTHLY';
+    if (!ST.dateReservation.recurringDay) {
+      ST.dateReservation.recurringDay = ST.dateReservation.recurringFreq === 'WEEKLY' ? '월요일' : '1일';
+    }
+    if (!ST.dateReservation.time24) {
+      ST.dateReservation.time24 = '10:00';
+      ST.dateReservation.timeKo = '오전 10:00';
+      ST.dateReservation.ampm = 'AM';
+      ST.dateReservation.hour12 = 10;
+      ST.dateReservation.minute = 0;
+    }
+  }
+  renderSmartControlsForQ(5);
+}
+
+function buildTimeOptionsHtml(selAmpm, selHour, selMin, idPrefix) {
+  const hourOpts = [];
+  for (let h = 1; h <= 12; h++) {
+    hourOpts.push('<option value="' + h + '"' + (Number(selHour) === h ? ' selected' : '') + '>' + h + '시</option>');
+  }
+  const minSteps = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+  if (minSteps.indexOf(Number(selMin)) === -1 && Number.isFinite(Number(selMin))) {
+    minSteps.push(Number(selMin));
+    minSteps.sort((a, b) => a - b);
+  }
+  const minOpts = minSteps.map(m =>
+    '<option value="' + m + '"' + (Number(selMin) === m ? ' selected' : '') + '>' + String(m).padStart(2, '0') + '분</option>'
+  );
+  return '<div class="picker-time-grid">' +
+    '<select class="picker-select" id="' + idPrefix + '-ampm" aria-label="오전 오후">' +
+      '<option value="AM"' + (selAmpm !== 'PM' ? ' selected' : '') + '>오전</option>' +
+      '<option value="PM"' + (selAmpm === 'PM' ? ' selected' : '') + '>오후</option>' +
+    '</select>' +
+    '<select class="picker-select" id="' + idPrefix + '-hour" aria-label="시">' + hourOpts.join('') + '</select>' +
+    '<select class="picker-select" id="' + idPrefix + '-min" aria-label="분">' + minOpts.join('') + '</select>' +
+  '</div>';
+}
+
+function renderSmartControlsForQ(qNum) {
+  const wrap = $('#q-smart-controls');
+  const analogyEl = $('#q-analogy-badge');
+  const tossEl = $('#auto-toss-banner');
+  const compLabel = $('#composer-top-label');
+  const ta = $('#interview-textarea');
+  const meta = Consult.Q_META[qNum - 1] || {};
+
+  // 일상 비유 배지 (Q4, Q5)
+  if (analogyEl) {
+    if (meta.analogyBadge) {
+      analogyEl.hidden = false;
+      analogyEl.textContent = meta.analogyBadge;
+    } else {
+      analogyEl.hidden = true;
+      analogyEl.textContent = '';
+    }
+  }
+
+  // 자동 토스 배지 (Q4, Q5)
+  if (tossEl) {
+    if (qNum === 4 && ST.intervalConfig.autoTossed && ST.intervalConfig.displayLabel) {
+      tossEl.hidden = false;
+      tossEl.textContent = "✨ 앞서 적어주신 '" + ST.intervalConfig.displayLabel + "' 일정을 미리 채워두었어요! 맞으시면 바로 다음을 누르세요.";
+    } else if (qNum === 5 && ST.dateReservation.autoTossed && ST.dateReservation.displayLabel) {
+      tossEl.hidden = false;
+      tossEl.textContent = "✨ 앞서 적어주신 '" + ST.dateReservation.displayLabel + "' 일정을 미리 채워두었어요! 맞으시면 바로 다음을 누르세요.";
+    } else {
+      tossEl.hidden = true;
+      tossEl.textContent = '';
+    }
+  }
+
+  if (compLabel) { compLabel.hidden = true; compLabel.textContent = ''; }
+  if (!wrap) return;
+
+  if (qNum === 2) {
+    wrap.hidden = false;
+    wrap.innerHTML =
+      '<button type="button" class="btn-one-touch-pass' + (ST.skipFormQuestion ? ' selected' : '') + '" id="btn-q2-skip">' +
+        '<span>⏭️ 추가 질문 없이 이름·연락처만 간단히 받기</span>' +
+        '<span style="font-size:13px;font-weight:900;color:var(--blue-dk)">바로 다음 →</span>' +
+      '</button>';
+    const skipBtn = $('#btn-q2-skip');
+    if (skipBtn) {
+      skipBtn.onclick = () => {
+        ST.skipFormQuestion = true;
+        ST.userEditedQ[2] = true;
+        ST.answers[2] = '추가 질문 없이 이름·연락처만 간단히 받기';
+        jumpToInterviewQuestion(3);
+      };
+    }
+    if (ta) ta.placeholder = '예) 현재 고민 분야를 선택해 주세요 (보기 3~4개) 또는 위 버튼으로 건너뛰기';
+    return;
+  }
+
+  if (qNum === 4) {
+    wrap.hidden = false;
+    wrap.innerHTML = '<div class="preset-chips-stack">' +
+      Q4_INTERVAL_PRESETS.map(p => {
+        const isSel = ST.intervalConfig.preset === p.id;
+        return '<button type="button" class="interval-preset-btn' + (isSel ? ' selected' : '') + (p.skip ? ' skip-btn' : '') + '" data-interval-preset="' + p.id + '">' +
+          '<span>' + esc(p.label) + '</span>' +
+          '<span>' + (isSel ? '✅' : (p.skip ? '→' : '선택')) + '</span>' +
+        '</button>';
+      }).join('') +
     '</div>';
-  }).join('');
-  $$('[data-edit-q]', body).forEach(b => {
-    b.onclick = () => jumpToInterviewQuestion(Number(b.dataset.editQ));
-  });
+    $$('[data-interval-preset]', wrap).forEach(btn => {
+      btn.onclick = () => selectQ4Preset(btn.dataset.intervalPreset);
+    });
+    if (compLabel) { compLabel.hidden = false; compLabel.textContent = '💬 선택한 간격에 맞춰 보낼 안부·정보 내용'; }
+    if (ta) ta.placeholder = '위 간격 버튼을 누르거나, 며칠 뒤에 보낼 카톡 내용을 적어주세요';
+    return;
+  }
+
+  if (qNum === 5) {
+    wrap.hidden = false;
+    const dr = ST.dateReservation;
+    const mode = dr.mode || '';
+    let pickerHtml = '';
+    if (mode === 'ONCE') {
+      const splitT = Consult.splitTime24(dr.time24 || '09:30');
+      const curDate = dr.date || getDefaultFutureDateStr();
+      dr.date = curDate;
+      pickerHtml =
+        '<div class="q5-picker-panel" id="q5-picker-panel">' +
+          '<div>' +
+            '<label class="picker-field-label" for="q5-once-date">📅 보낼 날짜 선택</label>' +
+            '<input type="date" class="picker-date-in" id="q5-once-date" value="' + esc(curDate) + '">' +
+          '</div>' +
+          '<div>' +
+            '<span class="picker-field-label">⏰ 보낼 시각 선택</span>' +
+            buildTimeOptionsHtml(splitT.ampm, splitT.hour12, splitT.minute, 'q5-once') +
+          '</div>' +
+          '<div class="picker-summary-pill" id="q5-picker-summary">📌 ' + esc((formatDateYmdKorean(curDate) || curDate) + ' · ' + splitT.timeKo + ' 정각 동시 발송') + '</div>' +
+        '</div>';
+    } else if (mode === 'RECURRING') {
+      const freq = dr.recurringFreq === 'WEEKLY' ? 'WEEKLY' : 'MONTHLY';
+      const splitT = Consult.splitTime24(dr.time24 || '10:00');
+      const monthDays = ['1일', '5일', '10일', '15일', '20일', '25일', '말일'];
+      const weekDays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
+      const dayChoices = (freq === 'WEEKLY' ? weekDays : monthDays).slice();
+      const curDay = dr.recurringDay || dayChoices[0];
+      if (dayChoices.indexOf(curDay) === -1) dayChoices.unshift(curDay);
+      dr.recurringDay = curDay;
+      dr.recurringFreq = freq;
+      const freqKo = freq === 'WEEKLY' ? '매주' : '매월';
+      dr.recurringLabel = freqKo + ' ' + curDay + ' ' + splitT.timeKo;
+      pickerHtml =
+        '<div class="q5-picker-panel" id="q5-picker-panel">' +
+          '<div>' +
+            '<span class="picker-field-label">🔁 반복 주기</span>' +
+            '<div class="rec-freq-row">' +
+              '<button type="button" class="rec-freq-btn' + (freq === 'MONTHLY' ? ' active' : '') + '" data-rec-freq="MONTHLY">매월</button>' +
+              '<button type="button" class="rec-freq-btn' + (freq === 'WEEKLY' ? ' active' : '') + '" data-rec-freq="WEEKLY">매주</button>' +
+            '</div>' +
+          '</div>' +
+          '<div>' +
+            '<label class="picker-field-label" for="q5-rec-day">' + (freq === 'WEEKLY' ? '📆 요일 선택' : '📆 날짜 선택') + '</label>' +
+            '<select class="picker-select" id="q5-rec-day">' +
+              dayChoices.map(d => '<option value="' + esc(d) + '"' + (d === curDay ? ' selected' : '') + '>' + esc(d) + '</option>').join('') +
+            '</select>' +
+          '</div>' +
+          '<div>' +
+            '<span class="picker-field-label">⏰ 보낼 시각 선택</span>' +
+            buildTimeOptionsHtml(splitT.ampm, splitT.hour12, splitT.minute, 'q5-rec') +
+          '</div>' +
+          '<div class="picker-summary-pill" id="q5-picker-summary">📌 ' + esc(freqKo + ' ' + curDay + ' · ' + splitT.timeKo + ' 정기 동시 발송') + '</div>' +
+        '</div>';
+    }
+
+    wrap.innerHTML =
+      '<div class="preset-chips-stack">' +
+        '<button type="button" class="q5-mode-card' + (mode === 'ONCE' ? ' selected' : '') + '" data-q5-mode="ONCE">' +
+          '<div><span>📅 특정 날짜·시각 1회 예약</span><span class="q5-mode-sub">예) 12월 24일 오전 9:30 행사·공지 동시 발송</span></div>' +
+          '<span>' + (mode === 'ONCE' ? '✅' : '선택') + '</span>' +
+        '</button>' +
+        '<button type="button" class="q5-mode-card' + (mode === 'RECURRING' ? ' selected' : '') + '" data-q5-mode="RECURRING">' +
+          '<div><span>🔁 매월·매주 정해진 날 발송</span><span class="q5-mode-sub">예) 매월 1일 오전 10:00 · 매주 금요일 오전 9:00</span></div>' +
+          '<span>' + (mode === 'RECURRING' ? '✅' : '선택') + '</span>' +
+        '</button>' +
+        '<button type="button" class="q5-mode-card skip-card' + (mode === 'SKIP' ? ' selected' : '') + '" data-q5-mode="SKIP">' +
+          '<span>⏭️ 정해진 날짜 카톡은 없어요 (건너뛰기)</span>' +
+          '<span>→</span>' +
+        '</button>' +
+      '</div>' +
+      pickerHtml;
+
+    $$('[data-q5-mode]', wrap).forEach(btn => {
+      btn.onclick = () => selectQ5Mode(btn.dataset.q5Mode, true);
+    });
+    $$('[data-rec-freq]', wrap).forEach(btn => {
+      btn.onclick = () => {
+        ST.userEditedQ[5] = true;
+        ST.dateReservation.recurringFreq = btn.dataset.recFreq === 'WEEKLY' ? 'WEEKLY' : 'MONTHLY';
+        ST.dateReservation.recurringDay = ST.dateReservation.recurringFreq === 'WEEKLY' ? '월요일' : '1일';
+        renderSmartControlsForQ(5);
+      };
+    });
+    ['#q5-once-date', '#q5-once-ampm', '#q5-once-hour', '#q5-once-min', '#q5-rec-day', '#q5-rec-ampm', '#q5-rec-hour', '#q5-rec-min'].forEach(sel => {
+      const el = $(sel, wrap);
+      if (el) {
+        el.addEventListener('change', () => {
+          ST.userEditedQ[5] = true;
+          ST.dateReservation.autoTossed = false;
+          syncQ5ReservationFromPickers();
+        });
+      }
+    });
+
+    if (mode === 'ONCE' || mode === 'RECURRING') {
+      if (compLabel) { compLabel.hidden = false; compLabel.textContent = '💬 지정하신 날짜·시각에 보낼 한 줄 내용'; }
+      if (ta) ta.placeholder = '예) 성탄 특별 집회 오시는 길과 입장 안내를 보내주세요';
+    } else {
+      if (ta) ta.placeholder = '위 3가지 카드 중 하나를 누르거나, 아래 예시를 눌러 채워보세요';
+    }
+    return;
+  }
+
+  // Q1, Q3
+  wrap.hidden = true;
+  wrap.innerHTML = '';
+  if (ta) {
+    ta.placeholder = qNum === 1
+      ? '예) 누구를 초대해서 어떤 안내·혜택을 드릴지 편하게 적어주세요'
+      : '예) 신청 직후 첫 카톡에 담을 환영 인사·자료·안내를 적어주세요';
+  }
 }
 
 function renderGuardrailBox(guard) {
@@ -3561,13 +4225,17 @@ function renderCurrentQuestionPack(pack) {
   renderQDots();
   renderPrevAnswersTray();
 
-  $('#q-step-badge').textContent = '질문 ' + pack.qNum + ' / ' + Consult.TOTAL_Q;
+  const meta = Consult.Q_META[pack.qNum - 1] || Consult.Q_META[0];
+  $('#q-step-badge').textContent = (meta && meta.courseLabel) || ('① 신청화면');
   $('#q-question-text').innerHTML = Toss.toHtml(pack.questionText);
   // 기획자용 부연 해설 전면 제거 (DOM ID는 유지하되 빈 텍스트·숨김 처리)
   const hintEl = $('#q-usage-hint');
   if (hintEl) { hintEl.textContent = ''; hintEl.hidden = true; }
 
-  // Tap-to-Edit 예시 칩 렌더링 (Q1이고 STEP 1 입력문에서 목표가 추출됐으면 상단 초안 힌트 칩 함께 제공!)
+  // V2.7: 문항별 스마트 컨트롤(Q2 패스 칩 / Q4 간격 프리셋 / Q5 3대 카드·달력 픽커) 및 자동 토스 배지 렌더링
+  renderSmartControlsForQ(pack.qNum);
+
+  // 입력창 아래쪽 Tap-to-Edit 예시 카드 3종 렌더링
   const chipsWrap = $('#example-chips-list');
   let goalHintHtml = '';
   if (pack.qNum === 1 && ST.extractedGoal && !ST.answers[1]) {
@@ -3587,6 +4255,7 @@ function renderCurrentQuestionPack(pack) {
   const goalHintBtn = $('#btn-fill-extracted-goal');
   if (goalHintBtn) {
     goalHintBtn.onclick = () => {
+      ST.userEditedQ[1] = true;
       fillTextareaWithDraft(ST.extractedGoal, '✅ 적어주신 목표가 입력칸에 채워졌어요!');
     };
   }
@@ -3594,6 +4263,21 @@ function renderCurrentQuestionPack(pack) {
   $$('[data-ex-idx]', chipsWrap).forEach(btn => {
     btn.onclick = () => {
       const txt = pack.exampleChips[Number(btn.dataset.exIdx)];
+      ST.userEditedQ[pack.qNum] = true;
+      if (pack.qNum === 2) ST.skipFormQuestion = false;
+      if (pack.qNum === 4) {
+        const h4 = Consult.autoTossScheduleHints(txt);
+        if (h4.interval) {
+          ST.intervalConfig = Object.assign({}, h4.interval, { autoTossed: false });
+          renderSmartControlsForQ(4);
+        }
+      } else if (pack.qNum === 5) {
+        const h5 = Consult.autoTossScheduleHints(txt);
+        if (h5.dateReservation) {
+          ST.dateReservation = Object.assign({}, h5.dateReservation, { autoTossed: false });
+          renderSmartControlsForQ(5);
+        }
+      }
       fillTextareaWithDraft(txt, '✏️ 예시가 입력칸에 채워졌어요! 필요하면 고쳐서 눌러주세요.');
     };
   });
@@ -3604,9 +4288,7 @@ function renderCurrentQuestionPack(pack) {
   autoResizeTextarea(ta);
 
   $('#btn-prev-q').hidden = pack.qNum <= 1;
-  $('#btn-submit-q').textContent = pack.qNum >= Consult.TOTAL_Q
-    ? '브랜드 스타일 담기 →'
-    : '다음 질문 →';
+  $('#btn-submit-q').textContent = Q_PREVIEW_CTAS[pack.qNum] || '다음 질문 →';
 
   goStage(3);
 }
@@ -3678,9 +4360,52 @@ function jumpToInterviewQuestion(targetQ) {
 async function submitCurrentInterviewAnswer() {
   if (ST.isBusy) return;
   const ta = $('#interview-textarea');
-  const txt = (ta.value || '').trim();
+  let txt = (ta.value || '').trim();
+
+  // Q5에서 날짜/정기 픽커가 세팅돼 있으면 픽커 값 동기화
+  if (ST.qNum === 5) {
+    if (ST.dateReservation.mode === 'SKIP') {
+      ST.answers[5] = '정해진 날짜 카톡은 없어요 (건너뛰기)';
+      renderStage4BrandAssets();
+      goStage(4);
+      return;
+    }
+    if (ST.dateReservation.mode === 'ONCE' || ST.dateReservation.mode === 'RECURRING') {
+      syncQ5ReservationFromPickers();
+      ST.dateReservation.message_hint = txt || ST.dateReservation.message_hint || ((ST.subIndustry || '맞춤') + ' 예약 안내');
+      if (!txt) {
+        txt = ST.dateReservation.mode === 'ONCE'
+          ? (ST.dateReservation.date + ' ' + ST.dateReservation.timeKo + ' — ' + ST.dateReservation.message_hint)
+          : (ST.dateReservation.recurringLabel + ' — ' + ST.dateReservation.message_hint);
+      }
+    } else if (txt.length >= 2) {
+      const h5 = Consult.autoTossScheduleHints(txt);
+      if (h5.dateReservation) {
+        ST.dateReservation = Object.assign({}, h5.dateReservation, { autoTossed: false });
+      }
+    }
+  } else if (ST.qNum === 4) {
+    if (ST.intervalConfig.preset === 'SKIP') {
+      ST.answers[4] = '며칠 뒤 자동 카톡은 안 보냄 (건너뛰기)';
+      jumpToInterviewQuestion(5);
+      return;
+    }
+    if (!txt && ST.intervalConfig.label) {
+      txt = ST.intervalConfig.label;
+    }
+    if (txt) {
+      ST.intervalConfig.message_hint = txt;
+      if (!ST.intervalConfig.preset) {
+        const h4 = Consult.autoTossScheduleHints(txt);
+        if (h4.interval) {
+          ST.intervalConfig = Object.assign({}, h4.interval, { autoTossed: false, message_hint: txt });
+        }
+      }
+    }
+  }
+
   if (txt.length < 2) {
-    $('#tap-edit-toast').textContent = '⚠️ 답변을 입력하시거나 위 예시 칩을 터치해 채워주세요!';
+    $('#tap-edit-toast').textContent = '⚠️ 답변을 입력하시거나 아래 예시를 눌러 바로 채워주세요!';
     ta.focus();
     return;
   }
@@ -3720,8 +4445,14 @@ async function submitCurrentInterviewAnswer() {
       return;
     }
 
-    // 통과! 답변 저장
+    // 통과! 답변 저장 + Q1~Q3 미래 발송 시기/주기 감지 시 Q4·Q5 스마트 자동 토스(Auto-Toss) 실행
     ST.answers[ST.qNum] = txt;
+    if (ST.qNum === 2) {
+      ST.skipFormQuestion = /추가\s*질문\s*없이|이름[·,\s]*연락처만/.test(txt);
+    }
+    if (ST.qNum >= 1 && ST.qNum <= 3) {
+      applyAutoTossFromText(ST.qNum, txt);
+    }
     ST.guardrail = null;
     renderGuardrailBox(null);
 
@@ -4244,6 +4975,9 @@ async function enterStage5Summary(revisionText) {
     flowId: ST.flowId,
     customFlows: ST.customFlows,
     answers: ST.answers,
+    skipFormQuestion: ST.skipFormQuestion,
+    intervalConfig: ST.intervalConfig,
+    dateReservation: ST.dateReservation,
     notes: ST.notes.concat(ST.pinnedConsultNotes.map(x => x.text))
   }, revisionText);
   ST.summaryPromise = sumTask;
@@ -4280,11 +5014,11 @@ async function enterStage5Summary(revisionText) {
 }
 
 const SUM_ROWS_META = [
-  { n: 1, key: 'goalTopic',   iconLabel: '🎯 목표·주제' },
-  { n: 2, key: 'targetPain',  iconLabel: '🙋 핵심 타겟' },
-  { n: 3, key: 'firstGift',   iconLabel: '🎁 첫 카톡 혜택' },
-  { n: 4, key: 'trustProof',  iconLabel: '🏆 대표님 강점' },
-  { n: 5, key: 'formAndFlow', iconLabel: '💬 후속 흐름' }
+  { n: 1, key: 'goalTopic',    iconLabel: '① 신청화면' },
+  { n: 2, key: 'formQ',        iconLabel: '② 신청질문' },
+  { n: 3, key: 'firstGift',    iconLabel: '③ 첫카톡' },
+  { n: 4, key: 'intervalAuto', iconLabel: '④ 며칠뒤 자동' },
+  { n: 5, key: 'dateReserve',  iconLabel: '⑤ 날짜지정' }
 ];
 
 function shortLine(text, max) {
@@ -4297,7 +5031,8 @@ function shortLine(text, max) {
 function renderStage5SummaryCard() {
   if (ST.isSubmitting || ST.isSubmitted) return;
   const sum = ST.summary || Consult.localSummary({
-    sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId, customFlows: ST.customFlows, answers: ST.answers
+    sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId, customFlows: ST.customFlows,
+    answers: ST.answers, skipFormQuestion: ST.skipFormQuestion, intervalConfig: ST.intervalConfig, dateReservation: ST.dateReservation
   });
   ST.summary = sum;
   const sec = Consult.getSector(ST.sectorId);
@@ -4501,6 +5236,9 @@ async function generateAndSubmitCampaign() {
       flowId: ST.flowId,
       customFlows: ST.customFlows,
       answers: ST.answers,
+      skipFormQuestion: ST.skipFormQuestion,
+      intervalConfig: ST.intervalConfig,
+      dateReservation: ST.dateReservation,
       notes: ST.notes,
       pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
       summary: ST.summary,
@@ -4738,7 +5476,10 @@ $('#btn-to-stage3').onclick = startStage3Interview;
 $('#btn-back-to-s2').onclick = () => goStage(2);
 $('#btn-prev-q').onclick = () => { if (ST.qNum > 1) jumpToInterviewQuestion(ST.qNum - 1); };
 $('#btn-submit-q').onclick = submitCurrentInterviewAnswer;
-$('#interview-textarea').addEventListener('input', e => autoResizeTextarea(e.target));
+$('#interview-textarea').addEventListener('input', e => {
+  autoResizeTextarea(e.target);
+  if (ST.stage === 3) ST.userEditedQ[ST.qNum] = true;
+});
 $('#btn-toggle-prev').onclick = () => {
   const b = $('#prev-answers-body');
   b.hidden = !b.hidden;
@@ -4930,6 +5671,11 @@ window.BOT = {
   proceedToStage2,
   selectFlow,
   startStage3Interview,
+  jumpToInterviewQuestion,
+  renderCourseBar,
+  applyAutoTossFromText,
+  selectQ4Preset,
+  selectQ5Mode,
   submitCurrentInterviewAnswer,
   askFeatureQA,
   showLoadingOverlay,
@@ -4947,7 +5693,11 @@ window.BOT = {
   buildCampaignMasterJson: () => ST.lastGeneratedCampaign || Consult.assembleCampaign(null, {
     skipImageGen: true,
     sectorId: ST.sectorId, subIndustry: ST.subIndustry, brandName: ST.brandName, flowId: ST.flowId,
-    answers: ST.answers, pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
+    answers: ST.answers,
+    skipFormQuestion: ST.skipFormQuestion,
+    intervalConfig: ST.intervalConfig,
+    dateReservation: ST.dateReservation,
+    pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
     partner: Object.assign({}, ST.partnerInfo, { businessName: ST.brandName, channel_name: ST.brandName }), brandAssets: {
       logoBase64: ST.brandAssets.logoBase64, primaryColor: ST.brandAssets.primaryColor,
       secondaryColor: ST.brandAssets.secondaryColor, photos: ST.brandAssets.photos.filter(Boolean),

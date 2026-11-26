@@ -1605,26 +1605,299 @@
   CONSULT.TOTAL_Q = 5;
   CONSULT.Q_META = [
     {
-      n: 1, key: 'goal_topic', label: '캠페인 목표 & 핵심 주제',
-      usageHint: '신청페이지 첫 화면(Hero) 헤드카피와 캠페인 전체 방향을 결정하는 핵심 재료예요.'
+      n: 1,
+      key: 'landing_screen',
+      courseLabel: '① 신청화면',
+      label: '① 신청화면',
+      tabRef: '탭 2 · 신청페이지',
+      nextCta: '다음: ② 신청 질문 고르기 →',
+      analogyBadge: '',
+      usageHint: '신청페이지 첫 화면(탭 2)에 들어갈 초대 대상과 핵심 안내·혜택을 정하는 단계예요.'
     },
     {
-      n: 2, key: 'target_pain', label: '핵심 타겟 & 현실 고민',
-      usageHint: '고객이 "어? 딱 내 얘기네!" 하며 고개를 끄덕이는 신청페이지 2단 공감 섹션에 들어가요.'
+      n: 2,
+      key: 'form_question',
+      courseLabel: '② 신청질문',
+      label: '② 신청질문',
+      tabRef: '탭 3 · 신청폼',
+      nextCta: '다음: ③ 첫 카톡 내용 정하기 →',
+      analogyBadge: '',
+      usageHint: '신청할 때 고객이 클릭해서 고를 객관식 질문(탭 3)을 정해요. 없으면 원터치로 건너뛸 수 있어요.'
     },
     {
-      n: 3, key: 'first_gift', label: '신청 직후 첫 무료 혜택',
-      usageHint: '카카오 1초 신청을 망설임 없이 누르게 만드는 첫 카톡 선물과 3단 솔루션 섹션에 반영돼요.'
+      n: 3,
+      key: 'first_kakao',
+      courseLabel: '③ 첫카톡',
+      label: '③ 첫카톡',
+      tabRef: '탭 4 · 즉시 확인 알림톡',
+      nextCta: '다음: ④ 며칠 뒤 자동 카톡 →',
+      analogyBadge: '',
+      usageHint: '신청 버튼을 누르자마자 1초 만에 도착할 환영·접수확인 첫 카톡(알림톡) 내용을 담아요.'
     },
     {
-      n: 4, key: 'trust_proof', label: '대표님만의 경력·강점·성과',
-      usageHint: '고객이 믿고 신청하게 만드는 4단 신뢰 증거 섹션에 실제 숫자·강점으로 멋지게 담겨요.'
+      n: 4,
+      key: 'interval_auto',
+      courseLabel: '④ 며칠뒤 자동',
+      label: '④ 며칠뒤 자동',
+      tabRef: '탭 4 · 간격발송',
+      nextCta: '다음: ⑤ 날짜·시간 지정 카톡 →',
+      analogyBadge: '🌱 오늘 신청한 분에겐 내일, 모레 신청한 분에겐 글피! 사람마다 신청한 날부터 순서대로 챙겨줘요.',
+      usageHint: '신청한 날을 기준으로 며칠 간격으로 보낼 자동 안부·정보 카톡(탭 4 간격발송)을 정해요.'
     },
     {
-      n: 5, key: 'form_and_tone', label: '신청 질문 & 후속 카톡 디테일',
-      usageHint: '고객을 분류할 신청폼 객관식 질문과 이후 카톡 발송 주기·말투·언어 설정에 직결돼요.'
+      n: 5,
+      key: 'date_reserve',
+      courseLabel: '⑤ 날짜지정',
+      label: '⑤ 날짜지정',
+      tabRef: '탭 5 · 날짜지정 예약',
+      nextCta: '완료 · 브랜드 스타일 입력하기 →',
+      analogyBadge: '🗓️ 언제 신청했든 상관없이, 지정하신 정확한 날짜와 시각에 다 같이 발송돼요.',
+      usageHint: '달력의 특정 날짜와 시각에 신청자 전원에게 동시 발송할 예약 카톡(탭 5)을 설정해요.'
     }
   ];
+
+  // ── V2.7 스마트 자동 토스(Auto-Toss) 날짜·시각·간격 파서 ──
+  CONSULT.formatTime24ToKo = function (time24) {
+    var m = String(time24 || '').trim().match(/^(\d{1,2}):(\d{2})$/);
+    if (!m) return '오전 9:00';
+    var h = parseInt(m[1], 10);
+    var min = m[2];
+    if (!isFinite(h) || h < 0 || h > 23) h = 9;
+    var isPm = h >= 12;
+    var h12 = h % 12;
+    if (h12 === 0) h12 = 12;
+    return (isPm ? '오후 ' : '오전 ') + h12 + ':' + min;
+  };
+
+  CONSULT.toTime24 = function (ampm, hour12, minute) {
+    var h = parseInt(hour12, 10);
+    var m = parseInt(minute, 10);
+    if (!isFinite(h) || h < 1 || h > 12) h = 9;
+    if (!isFinite(m) || m < 0 || m > 59) m = 0;
+    var isPm = String(ampm || 'AM').toUpperCase() === 'PM' || ampm === '오후';
+    var h24 = isPm ? (h === 12 ? 12 : h + 12) : (h === 12 ? 0 : h);
+    return String(h24).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+  };
+
+  CONSULT.splitTime24 = function (time24) {
+    var m = String(time24 || '09:00').match(/^(\d{1,2}):(\d{2})$/);
+    var h24 = m ? parseInt(m[1], 10) : 9;
+    var min = m ? parseInt(m[2], 10) : 0;
+    if (!isFinite(h24) || h24 < 0 || h24 > 23) h24 = 9;
+    if (!isFinite(min) || min < 0 || min > 59) min = 0;
+    var ampm = h24 >= 12 ? 'PM' : 'AM';
+    var h12 = h24 % 12;
+    if (h12 === 0) h12 = 12;
+    return {
+      ampm: ampm,
+      hour12: h12,
+      minute: min,
+      time24: String(h24).padStart(2, '0') + ':' + String(min).padStart(2, '0'),
+      timeKo: (ampm === 'PM' ? '오후 ' : '오전 ') + h12 + ':' + String(min).padStart(2, '0')
+    };
+  };
+
+  function parseKoreanTimeFromText(text, defaultTime24) {
+    var s = String(text || '');
+    var def = CONSULT.splitTime24(defaultTime24 || '09:00');
+    var m = s.match(/(오전|오후|아침|저녁|밤|새벽)?\s*(\d{1,2})\s*시(?:\s*(\d{1,2})\s*분|\s*(반))?/);
+    if (m) {
+      var mer = m[1] || '';
+      var h = parseInt(m[2], 10);
+      var min = m[3] ? parseInt(m[3], 10) : (m[4] ? 30 : 0);
+      if (isFinite(h) && h >= 0 && h <= 23 && isFinite(min) && min >= 0 && min <= 59) {
+        if (/오후|저녁|밤/.test(mer)) {
+          if (h < 12) h += 12;
+        } else if (/오전|아침|새벽/.test(mer)) {
+          if (h === 12) h = 0;
+        } else if (h >= 1 && h <= 6) {
+          h += 12;
+        }
+        return Object.assign(CONSULT.splitTime24(String(h).padStart(2, '0') + ':' + String(min).padStart(2, '0')), { matched: true, matchedText: m[0] });
+      }
+    }
+    var m2 = s.match(/(오전|오후)?\s*(\d{1,2}):(\d{2})/);
+    if (m2) {
+      var mer2 = m2[1] || '';
+      var h2 = parseInt(m2[2], 10);
+      var min2 = parseInt(m2[3], 10);
+      if (isFinite(h2) && h2 >= 0 && h2 <= 23 && isFinite(min2) && min2 >= 0 && min2 <= 59) {
+        if (mer2 === '오후' && h2 < 12) h2 += 12;
+        if (mer2 === '오전' && h2 === 12) h2 = 0;
+        return Object.assign(CONSULT.splitTime24(String(h2).padStart(2, '0') + ':' + String(min2).padStart(2, '0')), { matched: true, matchedText: m2[0] });
+      }
+    }
+    return Object.assign(def, { matched: false, matchedText: '' });
+  }
+
+  function cleanScheduleMessageHint(raw, matchedParts) {
+    var s = String(raw || '').trim();
+    (matchedParts || []).forEach(function (part) {
+      if (part) s = s.replace(part, ' ');
+    });
+    s = s
+      .replace(/^[\s,.\-·:에의로부터까지]+/, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return s || String(raw || '').trim();
+  }
+
+  // Q1~Q3 자유 답변에서 미래 발송 날짜·시각(Q5) 또는 간격 주기(Q4)를 감지해 자동 토스 데이터 생성
+  CONSULT.autoTossScheduleHints = function (text, opts) {
+    opts = opts || {};
+    var s = String(text || '').trim();
+    if (!s) return { hasAny: false, interval: null, dateReservation: null };
+
+    var refDate = opts.refDate instanceof Date ? opts.refDate : new Date();
+    var refYear = refDate.getFullYear();
+    var refMonth = refDate.getMonth() + 1;
+    var refDay = refDate.getDate();
+
+    var dateReservation = null;
+    var interval = null;
+
+    // 1) 특정 날짜 (YYYY-MM-DD / YYYY.MM.DD / YYYY년 M월 D일 / M월 D일) -> Q5 ONCE
+    var isoM = s.match(/(\d{4})[-./년]\s*(\d{1,2})[-./월]\s*(\d{1,2})\s*일?/);
+    var mdM = !isoM ? s.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/) : null;
+    if (isoM || mdM) {
+      var yr = isoM ? parseInt(isoM[1], 10) : refYear;
+      var mo = parseInt(isoM ? isoM[2] : mdM[1], 10);
+      var dy = parseInt(isoM ? isoM[3] : mdM[2], 10);
+      if (mo >= 1 && mo <= 12 && dy >= 1 && dy <= 31) {
+        if (!isoM && (mo < refMonth || (mo === refMonth && dy < refDay))) {
+          // 과거 월이면 다음 해로 보정 (단, 12월 24일처럼 현재 기준 미래 날짜는 올해 유지)
+          yr = refYear + 1;
+        }
+        var dateStr = yr + '-' + String(mo).padStart(2, '0') + '-' + String(dy).padStart(2, '0');
+        var tInfo = parseKoreanTimeFromText(s, '09:00');
+        var msgHint = cleanScheduleMessageHint(s, [isoM ? isoM[0] : mdM[0], tInfo.matchedText]);
+        var disp = mo + '월 ' + dy + '일 ' + tInfo.timeKo;
+        dateReservation = {
+          mode: 'ONCE',
+          date: dateStr,
+          time24: tInfo.time24,
+          timeKo: tInfo.timeKo,
+          ampm: tInfo.ampm,
+          hour12: tInfo.hour12,
+          minute: tInfo.minute,
+          recurringFreq: '',
+          recurringDay: '',
+          recurringLabel: '',
+          displayLabel: disp,
+          message_hint: msgHint,
+          draftText: msgHint,
+          autoTossed: true
+        };
+      }
+    }
+
+    // 2) 매월/매주 정해진 날 (매달 1일 / 매월 15일 / 매월 말일 / 매주 월요일) -> Q5 RECURRING
+    if (!dateReservation) {
+      var recMonthM = s.match(/(매달|매월)\s*(말일|마지막\s*날|(\d{1,2})\s*일)/);
+      var recWeekM = !recMonthM ? s.match(/(매주|주마다)\s*(월|화|수|목|금|토|일)(?:요일)?/) : null;
+      if (recMonthM) {
+        var rawDay = recMonthM[2].replace(/\s+/g, '');
+        var normDay = /말일|마지막날/.test(rawDay) ? '말일' : (parseInt(recMonthM[3], 10) + '일');
+        var tInfoM = parseKoreanTimeFromText(s, '10:00');
+        var recLabelM = '매월 ' + normDay + ' ' + tInfoM.timeKo;
+        var msgHintM = cleanScheduleMessageHint(s, [recMonthM[0], tInfoM.matchedText]);
+        dateReservation = {
+          mode: 'RECURRING',
+          date: '',
+          time24: tInfoM.time24,
+          timeKo: tInfoM.timeKo,
+          ampm: tInfoM.ampm,
+          hour12: tInfoM.hour12,
+          minute: tInfoM.minute,
+          recurringFreq: 'MONTHLY',
+          recurringDay: normDay,
+          recurringLabel: recLabelM,
+          displayLabel: recLabelM,
+          message_hint: msgHintM,
+          draftText: msgHintM,
+          autoTossed: true
+        };
+      } else if (recWeekM) {
+        var normDow = recWeekM[2] + '요일';
+        var tInfoW = parseKoreanTimeFromText(s, '09:00');
+        var recLabelW = '매주 ' + normDow + ' ' + tInfoW.timeKo;
+        var msgHintW = cleanScheduleMessageHint(s, [recWeekM[0], tInfoW.matchedText]);
+        dateReservation = {
+          mode: 'RECURRING',
+          date: '',
+          time24: tInfoW.time24,
+          timeKo: tInfoW.timeKo,
+          ampm: tInfoW.ampm,
+          hour12: tInfoW.hour12,
+          minute: tInfoW.minute,
+          recurringFreq: 'WEEKLY',
+          recurringDay: normDow,
+          recurringLabel: recLabelW,
+          displayLabel: recLabelW,
+          message_hint: msgHintW,
+          draftText: msgHintW,
+          autoTossed: true
+        };
+      }
+    }
+
+    // 3) 신청일 기준 에버그린 간격 (N일 뒤/간격/마다, 일주일마다, 한 달 간격, 매월(일자 미지정)) -> Q4 INTERVAL
+    var monthIntM = s.match(/(한\s*달\s*(마다|간격|뒤|후)|30일\s*(마다|간격|뒤|후)|월\s*1\s*회|달마다|(?:매월|매달)(?!\s*(?:말일|마지막\s*날|\d{1,2}\s*일)))/);
+    var weekIntM = !monthIntM ? s.match(/(일주일\s*(마다|간격|뒤|후)|7일\s*(마다|간격|뒤|후)|주\s*1\s*회|매주(?!\s*[월화수목금토일]))/) : null;
+    var dayIntM = (!monthIntM && !weekIntM) ? s.match(/(\d{1,2})\s*일\s*(뒤|후|간격|마다)|(?:이틀|사흘)\s*(뒤|후|간격|마다)|격일/) : null;
+
+    if (monthIntM) {
+      var mHint = cleanScheduleMessageHint(s, [monthIntM[0]]);
+      interval = {
+        enabled: true,
+        preset: 'MONTHLY_30D',
+        cadenceType: 'MONTHLY',
+        label: '한 달(30일)마다 정기 발송',
+        days: [30, 60],
+        displayLabel: '한 달(30일)마다 정기 발송',
+        message_hint: mHint,
+        draftText: '한 달(30일)마다 정기 발송 — ' + mHint,
+        autoTossed: true
+      };
+    } else if (weekIntM) {
+      var wHint = cleanScheduleMessageHint(s, [weekIntM[0]]);
+      interval = {
+        enabled: true,
+        preset: 'WEEKLY_7D',
+        cadenceType: 'WEEKLY',
+        label: '일주일(7일)마다 정기 발송',
+        days: [7, 14],
+        displayLabel: '일주일(7일)마다 정기 발송',
+        message_hint: wHint,
+        draftText: '일주일(7일)마다 정기 발송 — ' + wHint,
+        autoTossed: true
+      };
+    } else if (dayIntM) {
+      var nDays = dayIntM[1] ? parseInt(dayIntM[1], 10) : (/사흘/.test(dayIntM[0]) ? 3 : 2);
+      var dPreset = nDays >= 25 ? 'MONTHLY_30D' : (nDays >= 6 && nDays <= 8 ? 'WEEKLY_7D' : 'D1_D3');
+      var dCadence = dPreset === 'MONTHLY_30D' ? 'MONTHLY' : (dPreset === 'WEEKLY_7D' ? 'WEEKLY' : 'SHORT');
+      var dLabel = dPreset === 'MONTHLY_30D' ? '한 달(30일)마다 정기 발송' : (dPreset === 'WEEKLY_7D' ? '일주일(7일)마다 정기 발송' : '1일 · 3일 뒤 연속 챙기기');
+      var dHint = cleanScheduleMessageHint(s, [dayIntM[0]]);
+      var dispInt = dayIntM[0].trim();
+      interval = {
+        enabled: true,
+        preset: dPreset,
+        cadenceType: dCadence,
+        label: dLabel,
+        days: dPreset === 'D1_D3' ? [nDays, Math.max(nDays * 2, 3)] : (dPreset === 'WEEKLY_7D' ? [7, 14] : [30, 60]),
+        displayLabel: dispInt,
+        message_hint: dHint,
+        draftText: dispInt + '으로 ' + dHint,
+        autoTossed: true
+      };
+    }
+
+    return {
+      hasAny: !!(interval || dateReservation),
+      interval: interval,
+      dateReservation: dateReservation
+    };
+  };
 
   // 추가 내부 용어 필터링 (시트 정수 더하기 등 절대 미노출)
   var CONSULT_JARGON = [
@@ -2141,39 +2414,34 @@
         : ((sec && sec.examples && sec.examples[qNum]) ? sec.examples[qNum].slice(0, 3) : []));
 
     var qText = '';
-    var topicSnippet = tFirst(A[1] || sub, 28);
-    var giftSnippet = tFirst(A[3] || (isPolitics ? '핵심 정책 요약집' : '첫 안내 자료'), 24);
-    var labelText = (isPolitics && qNum === 3) ? '신청 직후 첫 카톡 안내 자료' : meta.label;
-    var hintText = (isPolitics && qNum === 3)
-      ? '유권자가 1초 등록 직후 첫 카톡으로 바로 받아볼 핵심 공약 요약집·행사 안내·의정 자료에 반영돼요.'
-      : meta.usageHint;
+    var labelText = meta.label;
+    var hintText = meta.usageHint;
 
     if (qNum === 1) {
       qText = (ctx.customQ1Text && String(ctx.customQ1Text).trim())
         ? String(ctx.customQ1Text).trim()
-        : ('**' + sub + '**에 딱 맞는 **' + flowTitle + '**을 골라주셨네요!\n' +
-          owner + '님, 이번 캠페인으로 **꼭 이루고 싶은 핵심 목표와 주요 메시지**를 편하게 들려주세요.');
+        : (isPolitics
+          ? '어떤 지역 유권자를 초대해서 어떤 핵심 공약·소식을 전하는 신청화면을 만들까요?'
+          : '누구를 초대해서 어떤 핵심 안내·혜택을 드리는 신청화면을 만들까요?');
     } else if (qNum === 2) {
       qText = isPolitics
-        ? ('방향이 아주 선명해요! **"' + topicSnippet + '"**에 가장 공감할 **핵심 지역 유권자·주민**은 어떤 분들이고, 그분들이 가장 관심을 두는 **생활 현안**은 무엇인가요?')
-        : ('목표가 아주 선명해요! **"' + topicSnippet + '"**에 반응할 **가장 모으고 싶은 핵심 고객**은 어떤 분이고, 그분들이 평소 겪는 **단골 현실 고민**은 무엇인가요?');
+        ? '신청할 때 유권자가 클릭해서 고르게 할 질문이 있나요?'
+        : '신청할 때 고객이 클릭해서 고르게 할 질문이 있나요?';
     } else if (qNum === 3) {
-      qText = isPolitics
-        ? ('공감이 확 되는 현안이네요! **' + sub + '** 소통 채널에 1초 등록하자마자 **첫 카톡으로 바로 보내드릴 핵심 공약 요약·의정 보고·행사 안내 자료**는 무엇으로 준비할까요?')
-        : ('공감이 확 되는 고민이네요! **' + sub + '** 고객이 카카오로 1초 신청하자마자 **첫 카톡으로 바로 선물받을 무료 혜택·자료·안내**는 무엇으로 준비하면 좋을까요?');
+      qText = '신청 버튼을 누르자마자 1초 만에 도착할 환영·접수확인 카톡에는 어떤 내용을 담을까요?';
     } else if (qNum === 4) {
-      qText = isPolitics
-        ? ('**"' + giftSnippet + '"** 구성이 탄탄해요! 이제 유권자가 "믿고 맡길 수 있는 일꾼이네!" 하고 신뢰할 수 있게 **실제 경력·지역 활동 성과·강점**을 들려주세요.')
-        : ('**"' + giftSnippet + '"** 구성이 매력적이에요! 이제 고객이 "여기 진짜 믿을 만하네!" 하고 바로 신청할 수 있게 **대표님만의 실제 경력·강점·성과 숫자**를 자랑해 주세요.');
+      qText = '신청한 날을 기준으로, 며칠 간격으로 자동 안부·정보 카톡을 챙겨드릴까요?';
     } else {
-      qText = isPolitics
-        ? ('마지막 질문이에요! **' + sub + '** 신청폼에서 유권자 관심사를 분류할 **객관식 질문(예: 거주 권역·관심 현안)**과, 이후 카톡을 보낼 **주기·원하시는 말투**를 알려주세요.')
-        : ('마지막 질문이에요! **' + sub + '** 신청폼에서 고객을 분류할 **객관식 질문(예: 유형·고민)**과, 이후 카톡을 보낼 **주기·원하시는 말투(또는 언어)**를 알려주세요.');
+      qText = '달력의 특정 날짜와 시간을 콕 찍어 신청자 전원에게 동시에 보낼 카톡이 있나요?';
     }
 
     return {
       qNum: qNum,
+      courseLabel: meta.courseLabel,
       label: labelText,
+      tabRef: meta.tabRef || '',
+      nextCta: meta.nextCta || '',
+      analogyBadge: meta.analogyBadge || '',
       usageHint: hintText,
       questionText: cleanFn(qText),
       exampleChips: rawChips.slice(0, 3).map(function (c) { return cleanFn(c); })
@@ -2236,13 +2504,17 @@
       '2) 내부 시스템 용어(뜰채, 시트 정수 더하기, 1회차 알림톡, 트랙 번호, ' + TOSS_BANNED_LIT + ') 절대 금지.',
       politicsRule,
       '3) 각 예시 문장은 실제 운영자/담당자가 그대로 터치해 약간만 고쳐 쓸 수 있는 현실적인 1인칭 존댓말 문장(35~80자)으로, 3개가 서로 다른 구체적 각도를 제시하도록 쓰세요.',
-      '4) 질문별 내용:',
-      '   - q1: 캠페인 목표 & 핵심 주제',
-      '   - q2: 핵심 타겟(유권자/고객) & 현실 고민·현안',
-      isPolitics ? '   - q3: 등록 직후 첫 카톡으로 바로 보내드릴 핵심 공약 요약·의정 보고·행사 안내 자료' : '   - q3: 신청 직후 첫 카톡으로 바로 선물할 무료 혜택·자료·안내',
-      '   - q4: 운영자/후보/단체/브랜드만의 경력·강점·성과',
-      '   - q5: 신청폼 객관식 분류 질문 + 후속 카톡 주기·말투/언어',
-      '5) q1QuestionText는 2문장 이내, 친근하고 전문적인 존댓말, 핵심 강조만 **굵게** 1~2곳.',
+      '4) 질문별 내용 (고마워톡 5대 탭 1:1 매칭):',
+      isPolitics
+        ? '   - q1 (① 신청화면): 어떤 지역 유권자를 초대해 어떤 핵심 공약·소식을 전할지'
+        : '   - q1 (① 신청화면): 누구를 초대해 어떤 핵심 안내·혜택을 드릴지',
+      '   - q2 (② 신청질문): 신청할 때 클릭해서 고르게 할 객관식 질문 1개와 보기 3~4개',
+      isPolitics
+        ? '   - q3 (③ 첫카톡): 등록 직후 1초 만에 도착할 환영·접수확인 카톡(핵심 공약 요약·행사 안내·의정 자료)'
+        : '   - q3 (③ 첫카톡): 신청 직후 1초 만에 도착할 환영·접수확인 카톡 내용',
+      '   - q4 (④ 며칠뒤 자동): 신청한 날 기준으로 며칠 간격(1일·3일 / 일주일 / 한 달) 자동 안부·정보 카톡 내용',
+      '   - q5 (⑤ 날짜지정): 달력의 특정 날짜·시각(예: 12월 24일 오전 9:30) 또는 매월·매주 정해진 날 전원 동시 예약 발송 내용',
+      '5) q1QuestionText는 1문장, 친근하고 직관적인 존댓말.',
       '6) 출력은 아래 JSON 객체만 출력하세요:',
       '{"q1QuestionText":"...","q1":["예시1","예시2","예시3"],"q2":["예시1","예시2","예시3"],"q3":["예시1","예시2","예시3"],"q4":["예시1","예시2","예시3"],"q5":["예시1","예시2","예시3"]}'
     ].filter(Boolean).join('\n');
@@ -2428,9 +2700,13 @@
         completedInterview: false,
         nextPack: {
           qNum: nextQNum,
+          courseLabel: localNext.courseLabel,
           label: localNext.label,
+          tabRef: localNext.tabRef,
+          nextCta: localNext.nextCta,
+          analogyBadge: localNext.analogyBadge,
           usageHint: localNext.usageHint,
-          questionText: cleanFn(obj.questionText || localNext.questionText),
+          questionText: localNext.questionText,
           exampleChips: chips
         }
       };
@@ -2494,21 +2770,33 @@
     });
   };
 
-  // ── 5) Step 5: 최종 요약 카드 생성 (5대 답변 + 분야 + 흐름)
+  // ── 5) Step 5: 최종 요약 카드 생성 (고마워톡 5대 탭 1:1 요약)
   CONSULT.localSummary = function (ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
     var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, ctx.subIndustry);
     var A = ctx.answers || {};
-    var flowTxt = String(A[5] || (flow ? flow.title : ''));
+    var intCfg = ctx.intervalConfig || null;
+    var dateRes = ctx.dateReservation || null;
+    var q2Txt = String(A[2] || '추가 질문 없이 이름·연락처만 간단히 받기');
+    var q4Txt = String(A[4] || (intCfg && intCfg.enabled === false ? '며칠 뒤 자동 카톡은 안 보냄 (건너뛰기)' : (intCfg && intCfg.label ? intCfg.label : '1일 · 3일 뒤 자동 후속 안부 카톡')));
+    var q5Txt = String(A[5] || (dateRes && dateRes.mode === 'ONCE' && dateRes.date
+      ? (dateRes.date + ' ' + (dateRes.timeKo || dateRes.time24 || '') + (dateRes.message_hint ? (' — ' + dateRes.message_hint) : ''))
+      : (dateRes && dateRes.mode === 'RECURRING' && dateRes.recurringLabel
+        ? (dateRes.recurringLabel + (dateRes.message_hint ? (' — ' + dateRes.message_hint) : ''))
+        : '정해진 날짜 카톡은 없어요 (건너뛰기)')));
+    var flowTxt = [q4Txt, q5Txt].filter(Boolean).join(' / ');
     return {
       sectorLine: (sec ? (sec.icon + ' ' + sec.title) : '') + (ctx.subIndustry ? (' · ' + ctx.subIndustry) : ''),
       flowTitle: flow ? flow.title : '맞춤 카카오 운영 흐름',
-      goalTopic: tFirst(A[1] || ctx.subIndustry || '맞춤 캠페인', 75),
-      targetPain: tFirst(A[2] || '핵심 타겟 고객 및 주요 고민', 80),
-      firstGift: tFirst(A[3] || '신청 즉시 발송되는 첫 무료 혜택', 75),
-      trustProof: tFirst(A[4] || '대표님만의 검증된 강점·성과', 75),
-      formAndFlow: tFirst(flowTxt || '신청폼 분류 질문 및 자동 후속 카톡', 80),
+      goalTopic: tFirst(A[1] || ctx.subIndustry || '맞춤 신청화면', 75),
+      formQ: tFirst(q2Txt, 80),
+      targetPain: tFirst(q2Txt, 80),
+      firstGift: tFirst(A[3] || '신청 즉시 발송되는 환영·접수확인 카톡', 75),
+      intervalAuto: tFirst(q4Txt, 80),
+      trustProof: tFirst(q4Txt, 80),
+      dateReserve: tFirst(q5Txt, 80),
+      formAndFlow: tFirst(flowTxt, 80),
       useWebzine: flow ? !!flow.useWebzine : /연재|칼럼|챌린지|웹진|주보/.test(flowTxt)
     };
   };
@@ -2523,14 +2811,14 @@
     }
 
     var sys = [
-      '당신은 고마워톡 마케팅 컨설턴트입니다. 대표님의 분야·선택 흐름·5가지 심층 답변을 모바일 최종 확인 카드용으로 깔끔히 요약하세요.',
+      '당신은 고마워톡 마케팅 컨설턴트입니다. 대표님의 분야·선택 흐름·5단계 답변(① 신청화면 ② 신청질문 ③ 첫카톡 ④ 며칠뒤 자동 ⑤ 날짜지정)을 모바일 최종 확인 카드용으로 깔끔히 요약하세요.',
       '내부 전문용어(뜰채, 시트 정수 더하기, ' + TOSS_BANNED_LIT + ')는 절대 쓰지 말고 쉬운 일상 언어로 각 항목을 50~80자 이내로 정리하세요.',
-      '출력 JSON만: {"goalTopic":"","targetPain":"","firstGift":"","trustProof":"","formAndFlow":"","useWebzine":true}'
+      '출력 JSON만: {"goalTopic":"① 신청화면 요약","formQ":"② 신청질문 요약","firstGift":"③ 첫카톡 요약","intervalAuto":"④ 며칠뒤 자동 요약","dateReserve":"⑤ 날짜지정 요약","useWebzine":true}'
     ].join('\n');
 
     var user = '[분야/세부업종] ' + local.sectorLine +
       '\n[선택 운영 흐름] ' + local.flowTitle +
-      '\n[5대 심층 답변]\n' + CONSULT.formatConsultAnswers(ctx.answers) +
+      '\n[5단계 답변]\n' + CONSULT.formatConsultAnswers(ctx.answers) +
       (ctx.notes && ctx.notes.length ? ('\n[수정 메모]\n' + ctx.notes.join('\n')) : '') +
       (revisionText ? ('\n[방금 요청한 수정 사항 — 반드시 반영]\n' + revisionText) : '') +
       '\n\nJSON만 출력하세요.';
@@ -2541,14 +2829,20 @@
     }).then(function (raw) {
       var o = extractJson(raw);
       if (!o || !o.goalTopic) return local;
+      var formQVal = CONSULT.cleanPartnerText(o.formQ || o.targetPain || local.formQ);
+      var intVal = CONSULT.cleanPartnerText(o.intervalAuto || o.trustProof || local.intervalAuto);
+      var dateVal = CONSULT.cleanPartnerText(o.dateReserve || o.formAndFlow || local.dateReserve);
       return {
         sectorLine: local.sectorLine,
         flowTitle: local.flowTitle,
         goalTopic: CONSULT.cleanPartnerText(o.goalTopic),
-        targetPain: CONSULT.cleanPartnerText(o.targetPain || local.targetPain),
+        formQ: formQVal,
+        targetPain: formQVal,
         firstGift: CONSULT.cleanPartnerText(o.firstGift || local.firstGift),
-        trustProof: CONSULT.cleanPartnerText(o.trustProof || local.trustProof),
-        formAndFlow: CONSULT.cleanPartnerText(o.formAndFlow || local.formAndFlow),
+        intervalAuto: intVal,
+        trustProof: intVal,
+        dateReserve: dateVal,
+        formAndFlow: dateVal,
         useWebzine: typeof o.useWebzine === 'boolean' ? o.useWebzine : local.useWebzine
       };
     }).catch(function () {
@@ -2556,7 +2850,7 @@
     });
   };
 
-  // ── 6) 100% 제로베이스 CampaignMaster.json V2.0 생성 + 브랜드 에셋(로고·컬러·실사 최대 3장) 우선 배치 연동
+  // ── 6) 100% 제로베이스 CampaignMaster.json V2.0 생성 + 5대 탭 스케줄(간격·날짜지정) & 브랜드 에셋 연동
   CONSULT.assembleCampaign = function (aiJson, ctx) {
     ctx = ctx || {};
     var A = ctx.answers || {};
@@ -2567,21 +2861,74 @@
     var photos = Array.isArray(brand.photos) ? brand.photos.filter(Boolean).slice(0, 3) : [];
     var photoMode = (brand.photoMode === 'ai_auto' || !photos.length) ? 'ai_auto' : 'uploaded';
 
-    // 기존 TOSS.assembleCampaign의 탄탄한 구조 조립기를 재활용하되 5단계 컨설턴트 답변으로 매핑
+    // Q4(간격발송) / Q5(날짜지정) 구조화 데이터 정규화 (미전달 시 답변 텍스트에서 스마트 추론)
+    var rawInt = ctx.intervalConfig || null;
+    var rawDate = ctx.dateReservation || null;
+    var q2Skipped = !!(ctx.skipFormQuestion || /추가\s*질문\s*없이|이름[·,\s]*연락처만/.test(String(A[2] || '')));
+
+    var q4SkipText = /안\s*보냄|건너뛰기|없어요|미사용/.test(String(A[4] || ''));
+    var intervalConfig = rawInt ? Object.assign({}, rawInt) : null;
+    if (!intervalConfig) {
+      var parsed4 = CONSULT.autoTossScheduleHints(String(A[4] || ''));
+      if (q4SkipText) {
+        intervalConfig = { enabled: false, preset: 'SKIP', label: '건너뛰기 (안 보냄)', days: [], message_hint: '' };
+      } else if (parsed4.interval) {
+        intervalConfig = {
+          enabled: true,
+          preset: parsed4.interval.preset,
+          label: parsed4.interval.label,
+          days: parsed4.interval.days,
+          message_hint: String(A[4] || parsed4.interval.message_hint || '')
+        };
+      } else {
+        intervalConfig = {
+          enabled: true,
+          preset: 'D1_D3',
+          label: '1일 · 3일 뒤 연속 챙기기',
+          days: [1, 3],
+          message_hint: String(A[4] || '')
+        };
+      }
+    }
+
+    var q5SkipText = /없어요|건너뛰기|안\s*보냄|미사용/.test(String(A[5] || ''));
+    var dateReservation = rawDate ? Object.assign({}, rawDate) : null;
+    if (!dateReservation) {
+      var parsed5 = CONSULT.autoTossScheduleHints(String(A[5] || ''));
+      if (q5SkipText) {
+        dateReservation = { mode: 'SKIP', date: '', time24: '', timeKo: '', recurringFreq: '', recurringDay: '', recurringLabel: '', message_hint: '' };
+      } else if (parsed5.dateReservation) {
+        dateReservation = Object.assign({}, parsed5.dateReservation);
+      } else {
+        dateReservation = { mode: 'SKIP', date: '', time24: '', timeKo: '', recurringFreq: '', recurringDay: '', recurringLabel: '', message_hint: '' };
+      }
+    }
+    if (dateReservation.mode === 'ONCE' && dateReservation.time24 && !dateReservation.timeKo) {
+      dateReservation.timeKo = CONSULT.formatTime24ToKo(dateReservation.time24);
+    }
+    if (dateReservation.mode === 'RECURRING' && dateReservation.time24 && !dateReservation.timeKo) {
+      dateReservation.timeKo = CONSULT.formatTime24ToKo(dateReservation.time24);
+    }
+
+    // 기존 TOSS.assembleCampaign의 탄탄한 구조 조립기를 재활용하되 5대 탭 답변으로 매핑
     var mappedAnswers = {
       1: A[1] || ctx.subIndustry || (sec ? sec.title : '맞춤 캠페인'),
-      2: A[2] || (ctx.subIndustry ? ctx.subIndustry + ' 핵심 고객' : '핵심 타겟 고객'),
-      3: A[5] || '신뢰감 있고 친근한 존댓말',
-      4: A[2] || '현실적인 핵심 고민',
-      5: A[3] || '신청 즉시 발송되는 첫 무료 혜택',
-      6: A[4] || '대표님만의 검증된 경력·성과',
-      7: A[5] || '현재 어떤 상황이 가장 고민이신가요?',
-      8: (flow ? flow.title + ' — ' : '') + (A[5] || '')
+      2: A[1] || (ctx.subIndustry ? ctx.subIndustry + ' 핵심 고객' : '핵심 타겟 고객'),
+      3: '신뢰감 있고 친근한 존댓말',
+      4: A[1] || '현실적인 핵심 고민',
+      5: A[3] || '신청 즉시 발송되는 환영·접수확인 카톡',
+      6: ctx.subIndustry || '검증된 전문성 및 신뢰 안내',
+      7: q2Skipped ? '' : (A[2] || '현재 어떤 항목이 가장 궁금하신가요?'),
+      8: [flow ? flow.title : '', A[4], A[5]].filter(Boolean).join(' — ')
     };
 
     var resolvedBrandName = String(ctx.brandName || brand.brandName || partner.businessName || partner.channel_name || '').trim();
     if (/대표님\s*$/.test(resolvedBrandName)) resolvedBrandName = '';
+    var presetCadenceHint = intervalConfig.preset === 'MONTHLY_30D'
+      ? 'AFTER_1_MONTH 매월 정기 발송'
+      : (intervalConfig.preset === 'WEEKLY_7D' ? 'AFTER_7_DAYS 매주 정기 발송' : '');
     var cadenceSeed = [
+      presetCadenceHint,
       ctx.subIndustry,
       flow ? flow.title : '',
       flow ? flow.summary : '',
@@ -2598,6 +2945,107 @@
     master.partner_info.channel_name = finalBrand;
     if (master.tab1_basic_settings) {
       master.tab1_basic_settings.channel_name = finalBrand;
+    }
+
+    // V2.7: Q2(신청질문 건너뛰기) & Q4(간격발송) & Q5(날짜지정) 구조화 데이터 저장
+    master.meta.schedule_config = {
+      skip_form_question: q2Skipped,
+      interval_config: {
+        enabled: intervalConfig.enabled !== false && intervalConfig.preset !== 'SKIP',
+        preset: intervalConfig.preset || 'D1_D3',
+        label: intervalConfig.label || '',
+        days: Array.isArray(intervalConfig.days) ? intervalConfig.days.slice() : [],
+        message_hint: String(intervalConfig.message_hint || '')
+      },
+      date_reservation: {
+        mode: dateReservation.mode || 'SKIP',
+        date: String(dateReservation.date || ''),
+        time24: String(dateReservation.time24 || ''),
+        timeKo: String(dateReservation.timeKo || ''),
+        recurringFreq: String(dateReservation.recurringFreq || ''),
+        recurringDay: String(dateReservation.recurringDay || ''),
+        recurringLabel: String(dateReservation.recurringLabel || ''),
+        message_hint: String(dateReservation.message_hint || '')
+      }
+    };
+
+    if (master.tab3_application_form) {
+      master.tab3_application_form.skip_custom_question = q2Skipped;
+    }
+
+    if (master.tab4_interval_messages) {
+      master.tab4_interval_messages.enabled = master.meta.schedule_config.interval_config.enabled;
+      master.tab4_interval_messages.interval_config = master.meta.schedule_config.interval_config;
+      if (intervalConfig.preset === 'MONTHLY_30D') {
+        master.tab4_interval_messages.cadence_type = 'MONTHLY';
+        master.tab4_interval_messages.cadence_label = '한 달(30일)마다 정기 발송';
+      } else if (intervalConfig.preset === 'WEEKLY_7D') {
+        master.tab4_interval_messages.cadence_type = 'WEEKLY';
+        master.tab4_interval_messages.cadence_label = '일주일(7일)마다 정기 발송';
+      }
+    }
+
+    var dr = master.meta.schedule_config.date_reservation;
+    if (dr.mode === 'ONCE' && dr.date) {
+      var onceTime24 = dr.time24 || '09:00';
+      var onceTimeKo = dr.timeKo || CONSULT.formatTime24ToKo(onceTime24);
+      var onceHint = dr.message_hint || (finalBrand + ' 지정 일정 안내');
+      var seqLastBranch = (master.tab4_interval_messages && master.tab4_interval_messages.sequence && master.tab4_interval_messages.sequence.length)
+        ? master.tab4_interval_messages.sequence[master.tab4_interval_messages.sequence.length - 1].branches[0]
+        : {};
+      var onceBranch = Object.assign({}, seqLastBranch, {
+        condition_desc: '전체 신청자 동시 발송',
+        body_text_400chars: '#{이름}님, 안내드린 일정이 다가왔습니다! ' + onceHint,
+        image_copy: {
+          badge: dr.date + ' ' + onceTimeKo + ' 정각 예약',
+          headline: tFirst(onceHint, 30),
+          subtext: finalBrand + ' 공식 안내'
+        }
+      });
+      master.tab5_date_messages = [{
+        quick_single_mode: false,
+        mode: 'ONCE',
+        send_date: dr.date,
+        send_time: onceTime24,
+        send_time_ko: onceTimeKo,
+        send_datetime: dr.date + ' ' + onceTime24,
+        title: tFirst(onceHint, 28),
+        message_hint: onceHint,
+        template_type: 'FREE_FRIENDTALK',
+        branches: [onceBranch]
+      }];
+    } else if (dr.mode === 'RECURRING' && dr.recurringLabel) {
+      var recTime24 = dr.time24 || '10:00';
+      var recTimeKo = dr.timeKo || CONSULT.formatTime24ToKo(recTime24);
+      var recHint = dr.message_hint || (finalBrand + ' 정기 소식 안내');
+      var seqLastBranchR = (master.tab4_interval_messages && master.tab4_interval_messages.sequence && master.tab4_interval_messages.sequence.length)
+        ? master.tab4_interval_messages.sequence[master.tab4_interval_messages.sequence.length - 1].branches[0]
+        : {};
+      var recBranch = Object.assign({}, seqLastBranchR, {
+        condition_desc: '전체 신청자 정기 동시 발송',
+        body_text_400chars: '#{이름}님, ' + dr.recurringLabel + ' 정기 소식이 도착했습니다! ' + recHint,
+        image_copy: {
+          badge: dr.recurringLabel + ' 정기 예약',
+          headline: tFirst(recHint, 30),
+          subtext: finalBrand + ' 정기 안내'
+        }
+      });
+      master.tab5_date_messages = [{
+        quick_single_mode: false,
+        mode: 'RECURRING',
+        recurring_freq: dr.recurringFreq,
+        recurring_day: dr.recurringDay,
+        recurring_label: dr.recurringLabel,
+        send_time: recTime24,
+        send_time_ko: recTimeKo,
+        send_datetime: dr.recurringLabel,
+        title: tFirst(recHint, 28),
+        message_hint: recHint,
+        template_type: 'FREE_FRIENDTALK',
+        branches: [recBranch]
+      }];
+    } else if (rawDate && rawDate.mode === 'SKIP') {
+      master.tab5_date_messages = [];
     }
 
     // Part 2: 모선(Mother-Hub) 외부 플랫폼 확장 소켓 3종 (기본 본체 NATIVE)
@@ -2688,13 +3136,13 @@
 
     var mappedAnswers = {
       1: '[' + (sec ? sec.shortTitle : '') + ' · ' + (ctx.subIndustry || '') + '] ' + (A[1] || ''),
-      2: A[2] || '',
-      3: A[5] || '',
-      4: A[2] || '',
+      2: A[1] || '',
+      3: '신뢰감 있고 친근한 존댓말',
+      4: A[1] || '',
       5: A[3] || '',
-      6: A[4] || '',
-      7: A[5] || '',
-      8: (flow ? (flow.title + ' (' + flow.summary + ') — ') : '') + (A[5] || '')
+      6: ctx.subIndustry || '',
+      7: ctx.skipFormQuestion ? '' : (A[2] || ''),
+      8: [flow ? (flow.title + ' (' + flow.summary + ')') : '', A[4], A[5]].filter(Boolean).join(' — ')
     };
 
     var pinnedList = Array.isArray(ctx.pinnedConsultNotes)
@@ -2738,6 +3186,7 @@
   RagInterviewEngine.detectSmartEditorialTheme = detectSmartEditorialTheme;
   RagInterviewEngine.detectCampaignCadence = detectCampaignCadence;
   RagInterviewEngine.detectVideoMedia = detectVideoMedia;
+  RagInterviewEngine.autoTossScheduleHints = CONSULT.autoTossScheduleHints;
   RagInterviewEngine.callGemini = callGemini;
   RagInterviewEngine.generateImage = generateImage;
   RagInterviewEngine.translateKoreanToImagePrompt = translateKoreanToImagePrompt;

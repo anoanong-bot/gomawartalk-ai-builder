@@ -587,7 +587,25 @@ Google Apps Script 웹앱으로 배포하며 백틱(`` ` ``) 없이 안전한 �
    - `InterviewBot.html`: STEP 1 자유 입력문 정제·목표 분리, STEP 2 클린 명사 라벨 배지·Q1~Q5 프리패치, STEP 3 Q1 상단 `🎯 방금 적어주신 목표 초안` 원클릭 채우기 칩 연동.
    - `data/GomawartalkManual.js`: `subDomainPacks`에 `politics_public`(선거·의정 맞춤 6대 흐름 + Q1~Q5 15예시, `전통시장`/`여성의원` 오탐 제외), `church_gathering`, `association_org`, `hobby_club` 4종 완전 분리 탑재.
    - `Backend_Proxy.gs` (`V2.4-1`): `fetchAvailableGeminiModels_()` 비텍스트 모델 제외 + `callGemini_()` 최대 4후보 순차 폴백 + `CacheService` 10분 활성 모델 캐시 + Flash `thinkingConfig: { thinkingBudget: 0 }` 기본 적용(400 시 자동 재시도) + thinking 파트(`!p.thought`) 필터링으로 모바일 실서버 빈 응답(`reply:""`) 근본 해결.
-5. **후속 최우선 점검 백로그 (다음 세션 & 12월 7일 최종 완결 목표):**
-   - ① 카카오 로그인 시 시트에 `phone_number`가 `01000000000` 폴백으로 기록되는 케이스 정밀 파싱 점검(`Backend_Proxy.gs`).
-   - ② GAS 호출 서버 유동 IP 대응 방안 점검.
-   - ③ **12월 7일** 구글 시트(`파트너캠페인관제탑`) 중심 전체 E2E 최종 완결 점검.
+5. **V2.5 본체 마감 고도화 — 채널톡형 플로팅 위젯 & 모선(Mother-Hub) 3대 외부 소켓 완료 (2026-11-26):**
+   - **우측 하단 채널톡형 플로팅 위젯 (`InterviewBot.html` & `Proposal.html`):**
+     - 모바일 하단 Sticky CTA와 절대 겹치지 않는 고정 위치(`right: 16px; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); z-index: 950;`)에 54px 원형 런처(`💬`) + 초기 캡슐 라벨(`질문·오류제보`) 탑재. `InterviewBot.html` STEP 3 본문의 기존 인라인 Q&A 버튼(`#btn-open-qa`)은 제거해 화면을 정돈.
+     - **탭 1 (`💬 무엇이든 물어보기`):** 4종 FAQ 퀵칩(`알림톡·친구톡 차이`, `구글폼 연동 되나요?`, `마케팅 수신동의·M형`, `Starter vs Pro 차이`) 탑재. `InterviewBot.html`은 AI 답변 하단 `[📌 이 내용을 이번 설계에 반영]` 토글로 `ST.pinnedConsultNotes`에 누적하여 STEP 5 추가 요청 칩·생성 프롬프트·`CampaignMaster.json`(`pinned_consult_notes`)에 자동 반영. `Proposal.html`은 `[✏️ 1회 수정 메모에 담기]` 버튼으로 하단 14개 확정 폼 DOM ID를 100% 보존한 채 `EDIT_ONCE` 모드 전환 및 `#confirm-memo-input` 자동 추가.
+     - **탭 2 (`🚨 1초 화면·문구 제보`):** 3종 원탭 사유 칩(`AI 문구 불일치`, `버튼·화면 오류`, `기능 요청`) + 선택 메모 입력 ➔ 현재 화면·단계·파트너·업종·흐름·뷰포트·카톡 인앱 여부(`isKakaoInApp`)가 자동 동봉된 `blackbox_snapshot`을 `Backend_Proxy.gs`(`action: "report_issue"`)로 전송.
+     - **`Backend_Proxy.gs` (`V2.5-0`):** `파트너제보함` 시트 탭 미존재 시 9컬럼(`접수일시 | 제보유형 | 화면·단계 | 파트너정보 | 업종·컨텍스트요약 | 한줄메모 | 카톡인앱여부 | 블랙박스JSON | 처리상태`) 자동 생성 후 기록, 유형 1·2(AI 불일치·화면 오류) 시 `GOOGLE_CHAT_WEBHOOK_URL`로 `[🚨파트너 현장 제보 도착]` 즉시 요약 푸시(`try-catch` + `muteHttpExceptions: true`).
+   - **모선(Mother-Hub) 3대 외부 플랫폼 확장 소켓 (11/30 이후 외부 앱스토어 종량제 트랙 대비):**
+     - **소켓 1 (`CampaignMaster.json` 최상위 슬롯 3종):** `source_platform: "NATIVE"`, `credit_balance: null`, `external_mapping: null` 기본값 직렬화(`engines/RagInterviewEngine.js`, `LandingBuilder.html`). 레거시 JSON(`source_platform` 미존재)은 자동 `"NATIVE"` 폴백.
+     - **소켓 2 (`파트너캠페인관제탑` 시트 우측 3컬럼 P~R):** 기존 A~O 15컬럼·수식·드롭다운 100% 무손실 보존 상태에서 우측 3컬럼(`연동플랫폼`, `잔여크레딧`, `외부매핑상태`) 안전 확장(`ensureControlExtraColumns_` 포함), 본체 유입 기본값 `"NATIVE"` / `"-"` / `"-"`.
+     - **소켓 3 (`LandingBuilder.html` 외부 플랫폼 연동 어댑터 가드):** 로드된 JSON의 `source_platform !== "NATIVE"`(예: `GOOGLE_FORMS`, `CAFE24`, `IMWEB`)일 때 상단 `[🔌 외부 플랫폼 연동 모드: {source_platform} — 앞단 외부 폼·몰 연결 / 탭 4·5 시나리오 집중 검수]` 배너 노출 + 탭 4(`tab4`) 자동 포커스. `"NATIVE"` 시 기존 5대 탭 UI 100% 동일 유지.
+   - **Part 4 — `InterviewBot.html` 50대+ 시니어 친화 빅폰트 · 텍스트 대청소 · 전면 블러 로딩 전환 개편:**
+     - **전면 블러 로딩 오버레이 (`#global-loading-overlay`):** `position: fixed; inset: 0; backdrop-filter: blur(8px); background: rgba(15, 23, 42, 0.52); z-index: 2000;` — ① 카카오 로그인·인증 확인, ② STEP 1→2 맞춤 흐름 생성, ③ STEP 2→3 Q1~Q5 질문·예시 준비, ④ STEP 5 제안서 생성 등 모든 대기 구간에서 뒷배경을 잠그고 대형 스피너 + `21px` 상태 제목 + `10px` 실시간 진행 게이지 바(`0%→92%→100%` 스냅) + `16px` 안심 문구를 표시. 질문·예시 3개가 완전히 준비된 뒤에만 오버레이를 해제해 반쯤 로딩된 화면 노출을 원천 차단.
+     - **상단 헤더 70% 대청소 & 첫 화면 인트로 압축:** 내부 용어(`텍스트 5대 탭 무료 설계`) 및 중복 배지·영어 `STEP N / 5` 표기 완전 제거. 상단을 `[← 이전]` | 중앙 정제 업종 배지(`16px` 굵게) | `[처음부터]` 1줄 슬림 바 + 한글 대형 위치 표시(`질문 1 / 5` / `1단계 · 업종 선택` 등) + `8px` 진행 바로 압축. 첫 화면 배지에서 `'AI'` 제거(`💬 고마워톡 맞춤 캠페인 설계`), `word-break: keep-all` 1줄 완결 요약 3항목 및 `60px`/`19.5px` 대형 카카오 로그인 버튼 적용.
+     - **50대+ 빅폰트 & 군더더기 해설 제거:** 질문 본문 `22px`, 흐름 카드 제목 `19.5px`(핵심 태그 2개 단순화), 터치형 예시 카드 `17.5px` + 고대비 `[이 내용 채우기]` 버튼(`15.5px`), 입력창 `18px`, 하단 CTA `60px`/`19px`로 대폭 확대하고 Q1~Q5 기획자용 해설(`#q-usage-hint`)을 비노출 처리.
+6. **일정 구분 & 투트랙(Two-Track) 사업 포지셔닝 확정:**
+   - **본체 프로젝트(`gomawartalk-ai-builder`) 완공 목표일:** **2026년 11월 30일(월)** *(개발 팀장님의 고마워톡 본체 어드민 내 구글 폼·시트 기본 연동 마감일인 **12월 7일**과 명확히 분리 관리)*.
+   - **Track A — 고마워톡 본체 정식 구독:** 연 24만 원(Starter) / 연 40만 원(Pro) + 알림톡 6.5~8.5원 도매 단가. 어드민 내 구글 폼·시트 기본 연동 포함 전 기능 제공.
+   - **Track B — 독자 외부 스토어 공식 앱 (선불 크레딧 종량제):** 가입비 0원 + 건당 50원 선불 크레딧, 비구독 체험·소량 수요층 전용. 11/30 본체 완공 직후 대표님 보유 소스로 **Wave 1 구글 폼·시트 공식 부가기능**부터 착수하며 본체 탭 4·5 시나리오 생성 모듈과 조종석 3대 소켓을 100% 재사용.
+7. **11/27~11/30 본체 최종 완공 백로그:**
+   - ① 카카오 로그인 시 시트에 `phone_number`가 `01000000000` 폴백으로 기록되는 케이스 정밀 파싱 해결(`Backend_Proxy.gs`).
+   - ② 모바일 접속 시 카카오 REST API 호출 서버 유동 IP(`-401`) 영구 해결.
+   - ③ 모바일 카톡 인앱 브라우저 기준 전 구간 E2E 최종 검수(11/30 본체 완공 마감).

@@ -14,6 +14,7 @@
  *      - action === "pinpoint_edit"      : 대표님 조종석(LandingBuilder.html) 탭별 핀셋 AI 수정 프록시
  *      - action === "submit_campaign"    : 서버단 횟수 검증 -> 드라이브 [파트너접수함] JSON 저장 -> 관제탑 시트 기록 & 횟수 차감 -> 제안서 고유 URL 생성 -> 구글 챗 알림
  *      - action === "confirm_proposal"   : Proposal.html 하단 무인 확정 폼 접수 (세팅확정상태="결제·세팅요청", 1회 수정메모 저장 + Google Chat HUMAN_QA_READY 즉시 알림)
+ *      - action === "report_issue"       : 우측 하단 플로팅 위젯 1초 제보 접수 ([파트너제보함] 9컬럼 자동 기록 + 유형 1·2 구글 챗 즉시 알림)
  *      - action === "lookup_partner"     : (V2.2 하위 호환) 파트너 시트 간편 조회
  *
  *   3) doGet(e)
@@ -40,6 +41,7 @@
 
 var FOLDER_NAME_DEFAULT = "파트너접수함";
 var SHEET_NAME_CONTROL = "파트너캠페인관제탑";
+var SHEET_NAME_REPORTS = "파트너제보함";
 var SHEET_NAME_APPROVED_PARTNERS = "승인파트너명단";
 var SHEET_NAME_PARTNERS = "파트너목록";
 var DEFAULT_GEMINI_MODEL = "models/gemini-3.8-flash";
@@ -73,7 +75,22 @@ var CONTROL_HEADERS_V23 = [
   "고객1회수정메모",
   "드라이브JSON링크",
   "파일ID",
-  "진행상태·회로차단로그"
+  "진행상태·회로차단로그",
+  "연동플랫폼",
+  "잔여크레딧",
+  "외부매핑상태"
+];
+
+var REPORT_HEADERS_V25 = [
+  "접수일시",
+  "제보유형",
+  "화면·단계",
+  "파트너정보",
+  "업종·컨텍스트요약",
+  "한줄메모",
+  "카톡인앱여부",
+  "블랙박스JSON",
+  "처리상태"
 ];
 
 // 0-based 컬럼 인덱스 상수
@@ -92,6 +109,9 @@ var COL_REVISION_MEMO = 11;   // L: 고객1회수정메모
 var COL_DRIVE_LINK = 12;      // M: 드라이브JSON링크
 var COL_FILE_ID = 13;         // N: 파일ID
 var COL_STATUS_LOG = 14;      // O: 진행상태·회로차단로그
+var COL_SOURCE_PLATFORM = 15; // P: 연동플랫폼 (NATIVE / GOOGLE_FORMS / CAFE24 / IMWEB 등)
+var COL_CREDIT_BALANCE = 16;  // Q: 잔여크레딧 (본체 구독자 "-", 외부 종량제 앱 잔여 크레딧)
+var COL_EXTERNAL_MAPPING = 17;// R: 외부매핑상태 (본체 구독자 "-", 외부 플랫폼 매핑 요약)
 
 /* =========================================================================
  * 공통 유틸리티
@@ -322,7 +342,10 @@ function setupV23ControlTowerSheet() {
       "세팅완료",
       "=COUNTIF(K5:K,\"세팅완료\")",
       "기준월",
-      "=TEXT(TODAY(),\"yyyy-mm\")"
+      "=TEXT(TODAY(),\"yyyy-mm\")",
+      "외부연동",
+      "=COUNTIFS(P5:P,\"<>\",P5:P,\"<>NATIVE\")",
+      ""
     ],
     [
       "모바일 리모컨 안내",
@@ -339,7 +362,10 @@ function setupV23ControlTowerSheet() {
       "한도 기준",
       "가망:누적2 / Starter:월2 / Pro:월10",
       "버전",
-      "V2.3-1"
+      "V2.5-0",
+      "외부소켓",
+      "본체:NATIVE / 외부앱:연동코드",
+      ""
     ],
     [
       "빠른 필터/메모 구역",
@@ -355,6 +381,9 @@ function setupV23ControlTowerSheet() {
       "",
       "",
       "",
+      "",
+      "",
+      "P~R열: 외부 플랫폼 확장 소켓",
       "",
       ""
     ]
@@ -418,8 +447,8 @@ function setupV23ControlTowerSheet() {
     .build();
   sheet.getRange(5, COL_CONFIRM_STATUS + 1, dataRowCount, 1).setDataValidation(confirmRule);
 
-  // 컬럼 폭 및 줄바꿈 정리
-  var colWidths = [155, 130, 95, 125, 130, 100, 95, 95, 120, 220, 125, 260, 220, 200, 280];
+  // 컬럼 폭 및 줄바꿈 정리 (A~O 기존 유지 + P~R 외부 플랫폼 확장 3컬럼)
+  var colWidths = [155, 130, 95, 125, 130, 100, 95, 95, 120, 220, 125, 260, 220, 200, 280, 120, 100, 140];
   for (var c = 0; c < colWidths.length; c++) {
     sheet.setColumnWidth(c + 1, colWidths[c]);
   }
@@ -444,6 +473,30 @@ function getControlSpreadsheet_() {
   return SpreadsheetApp.getActiveSpreadsheet();
 }
 
+function ensureControlExtraColumns_(sheet, headerRow) {
+  if (!sheet) return;
+  try {
+    var targetCols = CONTROL_HEADERS_V23.length; // 18 (A~O 기존 15컬럼 + P~R 외부 소켓 3컬럼)
+    if (sheet.getMaxColumns && sheet.getMaxColumns() < targetCols) {
+      sheet.insertColumnsAfter(sheet.getMaxColumns(), targetCols - sheet.getMaxColumns());
+    }
+    var hRow = headerRow || 4;
+    var pHeader = String(sheet.getRange(hRow, COL_SOURCE_PLATFORM + 1).getValue() || "").trim();
+    if (!pHeader) {
+      var extraHeaders = CONTROL_HEADERS_V23.slice(COL_SOURCE_PLATFORM, targetCols);
+      sheet.getRange(hRow, COL_SOURCE_PLATFORM + 1, 1, extraHeaders.length)
+        .setValues([extraHeaders])
+        .setBackground("#182232")
+        .setFontColor("#FFFFFF")
+        .setFontWeight("bold")
+        .setHorizontalAlignment("center")
+        .setVerticalAlignment("middle");
+    }
+  } catch (e) {
+    Logger.log("[ensureControlExtraColumns_ Warning] " + e);
+  }
+}
+
 function getOrInitControlSheet_() {
   var ss = getControlSpreadsheet_();
   if (!ss) return null;
@@ -451,6 +504,8 @@ function getOrInitControlSheet_() {
   if (!sheet) {
     setupV23ControlTowerSheet();
     sheet = ss.getSheetByName(SHEET_NAME_CONTROL);
+  } else {
+    ensureControlExtraColumns_(sheet, detectControlHeaderRow_(sheet));
   }
   return sheet;
 }
@@ -498,7 +553,7 @@ function doGet(e) {
       return jsonResponse_({
         ok: true,
         service: "Gomawartalk Backend_Proxy",
-        version: "V2.4-1",
+        version: "V2.5-0",
         defaultModel: DEFAULT_GEMINI_MODEL,
         currentMonth: getCurrentYearMonth_(),
         timestamp: new Date().toISOString()
@@ -577,6 +632,10 @@ function doPost(e) {
 
     if (action === "confirm_proposal") {
       return jsonResponse_(handleConfirmProposal_(body));
+    }
+
+    if (action === "report_issue") {
+      return jsonResponse_(handleReportIssue_(body));
     }
 
     if (action === "lookup_partner") {
@@ -957,7 +1016,10 @@ function verifyUserAndQuota(body) {
         "",
         "",
         "",
-        appendLogEntry_("", "카카오싱크 최초 인증 (" + tier + ")")
+        appendLogEntry_("", "카카오싱크 최초 인증 (" + tier + ")"),
+        String(req.source_platform || "NATIVE").trim() || "NATIVE",
+        "-",
+        "-"
       ];
       sheet.getRange(newRowNum, 1, 1, CONTROL_HEADERS_V23.length).setValues([initialRow]);
       ensureRowDropdowns_(sheet, newRowNum);
@@ -1401,6 +1463,14 @@ function handleSubmitCampaign_(body) {
           "캠페인 JSON 저장 완료 (" + userTier + " / 누적 " + nextTotalUsed + "회 · 당월 " + nextMonthlyUsed + "회)"
         );
 
+        var sourcePlatformVal = String(payload.source_platform || "NATIVE").trim() || "NATIVE";
+        var creditBalanceVal = (payload.credit_balance !== null && payload.credit_balance !== undefined && String(payload.credit_balance).trim() !== "")
+          ? payload.credit_balance
+          : "-";
+        var extMappingVal = (payload.external_mapping !== null && payload.external_mapping !== undefined && String(payload.external_mapping).trim() !== "")
+          ? (typeof payload.external_mapping === "string" ? payload.external_mapping : JSON.stringify(payload.external_mapping))
+          : "-";
+
         var rowData = [
           tsDisplay,
           kakaoUserId || ("LEGACY_" + (normPhone || tsFile)),
@@ -1416,7 +1486,10 @@ function handleSubmitCampaign_(body) {
           "",
           driveUrl,
           fileId,
-          logText
+          logText,
+          sourcePlatformVal,
+          creditBalanceVal,
+          extMappingVal
         ];
 
         var writeRowNum = -1;
@@ -1692,6 +1765,158 @@ function sendHumanQaReadyAlert_(info) {
     Logger.log("[sendHumanQaReadyAlert_ Circuit Breaker] " + err);
     return { ok: false };
   }
+}
+
+/* =========================================================================
+ * 7-B. 우측 하단 플로팅 위젯 1초 블랙박스 제보 수집 (doPost action="report_issue")
+ *      - [파트너제보함] 시트 탭 미존재 시 9컬럼 헤더 자동 생성 후 1행 기록
+ *      - 제보유형 1(AI 문구 불일치) / 2(버튼·화면 오류) 시 구글 챗 즉시 요약 푸시
+ * ========================================================================= */
+function getOrCreateReportSheet_() {
+  var ss = getControlSpreadsheet_();
+  if (!ss) return null;
+  var sheet = ss.getSheetByName(SHEET_NAME_REPORTS);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME_REPORTS);
+    var colCount = REPORT_HEADERS_V25.length; // 9
+    if (sheet.getMaxColumns && sheet.getMaxColumns() < colCount) {
+      sheet.insertColumnsAfter(sheet.getMaxColumns(), colCount - sheet.getMaxColumns());
+    }
+    sheet.getRange(1, 1, 1, colCount)
+      .setValues([REPORT_HEADERS_V25])
+      .setBackground("#182232")
+      .setFontColor("#FFFFFF")
+      .setFontWeight("bold")
+      .setHorizontalAlignment("center")
+      .setVerticalAlignment("middle");
+    if (sheet.setFrozenRows) sheet.setFrozenRows(1);
+    var widths = [155, 165, 130, 150, 240, 240, 100, 320, 95];
+    for (var i = 0; i < widths.length; i++) {
+      if (sheet.setColumnWidth) sheet.setColumnWidth(i + 1, widths[i]);
+    }
+  }
+  return sheet;
+}
+
+function handleReportIssue_(body) {
+  body = body || {};
+  var tsDisplay = getNowDisplay_();
+  var reasonType = String(body.reasonType || body.reason_type || "general").trim();
+  var reasonLabel = String(body.reasonLabel || body.reason_label || reasonType || "기타 제보").trim();
+  var memo = String(body.memo || "").trim();
+
+  var snapObj = body.blackbox_snapshot || body.blackboxSnapshot || {};
+  if (typeof snapObj === "string") {
+    try {
+      snapObj = JSON.parse(snapObj);
+    } catch (parseErr) {
+      snapObj = { raw: snapObj };
+    }
+  }
+  if (!snapObj || typeof snapObj !== "object") {
+    snapObj = {};
+  }
+
+  var pageName = String(snapObj.page || body.page || "Unknown").trim();
+  var stepVal = String(snapObj.step !== undefined && snapObj.step !== null ? snapObj.step : "").trim();
+  var pageAndStep = stepVal ? (pageName + " / " + stepVal) : pageName;
+
+  var pObj = snapObj.partner || {};
+  var partnerParts = [];
+  if (pObj.name) partnerParts.push(String(pObj.name));
+  if (pObj.tier) partnerParts.push("[" + String(pObj.tier) + "]");
+  if (pObj.kakao_user_id) partnerParts.push("id:" + String(pObj.kakao_user_id));
+  var partnerInfo = partnerParts.join(" ") || "-";
+
+  var ctxParts = [];
+  if (snapObj.sector) ctxParts.push("분야:" + String(snapObj.sector));
+  if (snapObj.rawSubIndustry) ctxParts.push("원문:" + String(snapObj.rawSubIndustry));
+  if (snapObj.cleanLabel) ctxParts.push("정제:" + String(snapObj.cleanLabel));
+  if (snapObj.selectedFlow) ctxParts.push("흐름:" + String(snapObj.selectedFlow));
+  if (snapObj.currentQuestion) ctxParts.push("질문:" + String(snapObj.currentQuestion));
+  if (snapObj.fileId) ctxParts.push("fileId:" + String(snapObj.fileId));
+  if (snapObj.channelName) ctxParts.push("채널:" + String(snapObj.channelName));
+  var contextSummary = ctxParts.join(" | ").slice(0, 500) || "-";
+
+  var isInAppBool = !!(snapObj.isKakaoInApp || snapObj.kakaoInApp);
+  var kakaoInAppLabel = isInAppBool ? "Y (카톡인앱)" : "N";
+  var blackboxJsonStr = "";
+  try {
+    blackboxJsonStr = JSON.stringify(snapObj);
+    if (blackboxJsonStr.length > 45000) {
+      blackboxJsonStr = blackboxJsonStr.slice(0, 45000) + "...(truncated)";
+    }
+  } catch (serErr) {
+    blackboxJsonStr = "{}";
+  }
+
+  var rowNumber = -1;
+  var sheetSaved = false;
+  var lock = LockService.getScriptLock();
+  var locked = lock.tryLock(8000);
+  try {
+    var rSheet = getOrCreateReportSheet_();
+    if (rSheet) {
+      rowNumber = Math.max(2, rSheet.getLastRow() + 1);
+      var rowValues = [
+        tsDisplay,
+        reasonLabel,
+        pageAndStep,
+        partnerInfo,
+        contextSummary,
+        memo || "(메모 없음)",
+        kakaoInAppLabel,
+        blackboxJsonStr,
+        "접수"
+      ];
+      rSheet.getRange(rowNumber, 1, 1, REPORT_HEADERS_V25.length).setValues([rowValues]);
+      sheetSaved = true;
+    }
+  } catch (sheetErr) {
+    Logger.log("[handleReportIssue_ Sheet Warning] " + sheetErr);
+  } finally {
+    if (locked) {
+      lock.releaseLock();
+    }
+  }
+
+  var isUrgentType = (
+    reasonType === "ai_mismatch" ||
+    reasonType === "ui_bug" ||
+    reasonType === "1" ||
+    reasonType === "2" ||
+    reasonLabel.indexOf("안 맞") !== -1 ||
+    reasonLabel.indexOf("이상해") !== -1
+  );
+  var notified = false;
+  if (isUrgentType) {
+    try {
+      var chatMsg =
+        "[🚨파트너 현장 제보 도착]\n" +
+        "- 제보유형: " + reasonLabel + "\n" +
+        "- 화면·단계: " + pageAndStep + "\n" +
+        "- 파트너: " + partnerInfo + "\n" +
+        "- 업종·컨텍스트: " + contextSummary + "\n" +
+        "- 한줄메모: " + (memo || "(미입력)") + "\n" +
+        "- 카톡인앱: " + kakaoInAppLabel + "\n" +
+        "- 시트기록: " + SHEET_NAME_REPORTS + (rowNumber > 0 ? (" " + rowNumber + "행") : " (시트 미연결)");
+      var hookRes = postGoogleChatWebhook_(chatMsg, -1);
+      notified = !!(hookRes && hookRes.ok);
+    } catch (notifyErr) {
+      Logger.log("[handleReportIssue_ Notify Warning] " + notifyErr);
+      notified = false;
+    }
+  }
+
+  return {
+    ok: true,
+    sheetName: SHEET_NAME_REPORTS,
+    sheetSaved: sheetSaved,
+    rowNumber: rowNumber,
+    notified: notified,
+    reasonType: reasonType,
+    createdAt: tsDisplay
+  };
 }
 
 /* =========================================================================

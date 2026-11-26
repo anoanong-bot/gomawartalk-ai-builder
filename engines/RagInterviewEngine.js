@@ -1019,6 +1019,13 @@
     });
   };
 
+  TOSS.reportIssue = function (proxyUrl, payload) {
+    return TOSS.postProxy(proxyUrl, Object.assign({ action: 'report_issue' }, payload || {}), {
+      allowErrorPayload: true,
+      timeoutMs: 15000
+    });
+  };
+
   // AI 호출 라우터: admin → 로컬 Gemini 키 직결(없으면 Proxy 자동 폴백) / partner → Backend_Proxy 경유
   TOSS.callAI = function (o) {
     o = o || {};
@@ -1325,6 +1332,9 @@
     var smartTheme = detectSmartEditorialTheme(themeSeed);
 
     return sanitizeObject({
+      source_platform: 'NATIVE',
+      credit_balance: null,
+      external_mapping: null,
       meta: { schema_version: '2.0', campaign_id: ymd + '_' + String(channel).replace(/\s+/g, '') + '_01', created_at: now.toISOString(), mode: 'FULL_SET', use_webzine: !!useWebzine, webzine_base_url: baseUrl, source: 'partner_bot_toss8', auto_generate_visuals: true },
       partner_info: { owner_name: partner.ownerName || '', phone: partner.phone || '', email: partner.email || '', channel_name: channel, channel_id_num: '', current_plan: 'STARTER', pro_upgrade_requested: false, industry_code: 'custom_ai', track_id: '' },
       brand_assets: { primary_color: gBa.primary_color || smartTheme.primary, secondary_color: gBa.secondary_color || smartTheme.secondary, font_theme: gBa.font_theme || 'modern', logo_base64: null, block_images_base64: { block_1: null, block_2: null, block_3: null, block_4: null, block_5: null } },
@@ -2377,6 +2387,18 @@
 
     var master = TOSS.assembleCampaign(aiJson, mappedAnswers, partner);
 
+    // Part 2: 모선(Mother-Hub) 외부 플랫폼 확장 소켓 3종 (기본 본체 NATIVE)
+    master.source_platform = (ctx.sourcePlatform && String(ctx.sourcePlatform).trim()) || 'NATIVE';
+    master.credit_balance = (ctx.creditBalance !== undefined) ? ctx.creditBalance : null;
+    master.external_mapping = (ctx.externalMapping !== undefined) ? ctx.externalMapping : null;
+
+    // Part 1: Q&A 대화 중 파트너가 [📌 이번 설계에 반영]으로 고정한 요청 기록
+    master.pinned_consult_notes = Array.isArray(ctx.pinnedConsultNotes)
+      ? ctx.pinnedConsultNotes.map(function (item) {
+          return typeof item === 'string' ? item.trim() : (item && item.text ? String(item.text).trim() : '');
+        }).filter(Boolean)
+      : [];
+
     // 메타 & 파트너 정보 강화 (V2.3: 텍스트 5대 탭 JSON 전용 생성 — 인터뷰 단계 이미지 생성 보류)
     var skipImageGen = ctx.skipImageGen !== false;
     master.meta.source = 'partner_bot_consult5';
@@ -2462,12 +2484,23 @@
       8: (flow ? (flow.title + ' (' + flow.summary + ') — ') : '') + (A[5] || '')
     };
 
+    var pinnedList = Array.isArray(ctx.pinnedConsultNotes)
+      ? ctx.pinnedConsultNotes.map(function (item) {
+          return typeof item === 'string' ? item.trim() : (item && item.text ? String(item.text).trim() : '');
+        }).filter(Boolean)
+      : [];
+
+    var genNotes = (ctx.notes || []).concat([
+      '선택 분야: ' + (sec ? sec.title : '') + ' / 세부 업종: ' + (ctx.subIndustry || ''),
+      '선택 운영 흐름: ' + (flow ? flow.title : '')
+    ]);
+    if (pinnedList.length) {
+      genNotes.push('📌 파트너가 Q&A에서 이번 설계에 반영해 달라고 고정한 요청: ' + pinnedList.join(' / '));
+    }
+
     var p = TOSS.buildGenerationPrompt({
       answers: mappedAnswers,
-      notes: (ctx.notes || []).concat([
-        '선택 분야: ' + (sec ? sec.title : '') + ' / 세부 업종: ' + (ctx.subIndustry || ''),
-        '선택 운영 흐름: ' + (flow ? flow.title : '')
-      ]),
+      notes: genNotes,
       summary: ctx.summary
     });
 

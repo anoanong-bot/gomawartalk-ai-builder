@@ -485,6 +485,38 @@ body.capturing .li-text:hover,body.capturing .li-text:focus{background:none;box-
 .toast button{color:#FDE68A;font-weight:800;text-decoration:underline;white-space:nowrap}
 body.wz-on .wz-off-only{display:none}
 body:not(.wz-on) .wz-only{display:none}
+
+/* Part 2: 외부 플랫폼 연동 모드 어댑터 가드 배너 (source_platform !== 'NATIVE'일 때만 노출) */
+#ext-platform-banner{
+  margin-bottom:14px;
+  padding:14px 18px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#0F172A 0%,#1E1B4B 100%);
+  color:#FFFFFF;
+  border:1.5px solid #6366F1;
+  box-shadow:0 10px 26px rgba(30,27,75,0.22);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+}
+#ext-platform-banner[hidden]{display:none}
+.ext-banner-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ext-banner-title{font-size:14px;font-weight:900;letter-spacing:-0.02em;color:#FFFFFF}
+.ext-banner-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:99px;
+  background:rgba(129,140,248,0.24);border:1px solid rgba(165,180,252,0.5);
+  color:#E0E7FF;font-size:11.5px;font-weight:800;
+}
+.ext-banner-actions{display:flex;align-items:center;gap:6px}
+.ext-banner-btn{
+  padding:6px 11px;border-radius:8px;
+  background:#4F46E5;color:#FFFFFF;
+  font-size:12px;font-weight:800;border:1px solid rgba(255,255,255,0.2);
+}
+.ext-banner-btn:hover{background:#4338CA}
 </style>
 </head>
 <body>
@@ -583,6 +615,9 @@ body:not(.wz-on) .wz-only{display:none}
 
 <!-- ########## 대메뉴 1: 어드민 세팅 ########## -->
 <section id="ws-admin">
+
+  <!-- ───── Part 2 모선 소켓: 외부 플랫폼 연동 모드 어댑터 가드 배너 (NATIVE 시 숨김) ───── -->
+  <div id="ext-platform-banner" hidden></div>
 
   <!-- ───── V2.3-4 상단 [🚩 95:5 검수 요약 & 고객 1회 수정메모 포스트잇] 배너 ───── -->
   <div id="qa-postit-banner" hidden></div>
@@ -1208,6 +1243,8 @@ function newDateMsg(tplType, datetime) {
 }
 function blankState() {
   return {
+    platform: { source_platform: 'NATIVE', credit_balance: null, external_mapping: null },
+    pinned_consult_notes: [],
     meta: { use_webzine: false, webzine_base_url: 'https://gomawartalk.com/webzine/sample.html', industry_code: '' },
     partner: { owner_name: '', channel_name: '장희지 수학학원', channel_id_num: '15', current_plan: 'STARTER', pro_upgrade_requested: false },
     brand: { primary: '#4F46E5', secondary: '#EEF2FF', logo: null, font_theme: 'modern' },
@@ -1364,6 +1401,13 @@ function stateFromData(d, keep) {
   s.meta.skip_image_gen = !!m.skip_image_gen;
   s.meta.generation_mode = m.generation_mode || '';
   s.meta.auto_generate_visuals = !!m.auto_generate_visuals;
+  // Part 2 모선 소켓: source_platform 누락 레거시 JSON은 자동으로 'NATIVE' 폴백
+  s.platform = {
+    source_platform: (d.source_platform && String(d.source_platform).trim()) || 'NATIVE',
+    credit_balance: (d.credit_balance !== undefined) ? d.credit_balance : null,
+    external_mapping: (d.external_mapping !== undefined) ? d.external_mapping : null
+  };
+  s.pinned_consult_notes = Array.isArray(d.pinned_consult_notes) ? d.pinned_consult_notes.slice() : [];
   if (keep) { s.partner = clone(keep.partner); s.brand.primary = keep.brand.primary; s.brand.secondary = keep.brand.secondary; s.brand.logo = keep.brand.logo; s.brand.font_theme = keep.brand.font_theme || 'modern'; s.meta.use_webzine = keep.meta.use_webzine; s.meta.webzine_base_url = keep.meta.webzine_base_url; s.passthrough = clone(keep.passthrough); s.t2.bg_color = keep.t2.bg_color; }
   if (d.partner_info) {
     s.partner.owner_name = pi.owner_name || ''; s.partner.channel_name = pi.channel_name || ''; s.partner.channel_id_num = pi.channel_id_num || '';
@@ -1517,6 +1561,9 @@ function toCampaignMaster() {
   const ymd = ts.getFullYear() + p2(ts.getMonth() + 1) + p2(ts.getDate());
   const images = {}; S.t2.blocks.forEach(b => { images['block_' + b.step] = b.image || null; });
   const out = {
+    source_platform: (S.platform && S.platform.source_platform) || 'NATIVE',
+    credit_balance: (S.platform && S.platform.credit_balance !== undefined) ? S.platform.credit_balance : null,
+    external_mapping: (S.platform && S.platform.external_mapping !== undefined) ? S.platform.external_mapping : null,
     meta: { schema_version: '2.0', campaign_id: ymd + '_' + (S.partner.channel_name || 'draft').replace(/\s+/g, '') + '_01',
             created_at: ts.toISOString(), mode: 'FULL_SET', use_webzine: !!S.meta.use_webzine, webzine_base_url: S.meta.webzine_base_url || '' },
     partner_info: { owner_name: S.partner.owner_name, phone: '', channel_name: S.partner.channel_name, channel_id_num: S.partner.channel_id_num,
@@ -1561,6 +1608,9 @@ function toCampaignMaster() {
     },
     tab5_date_messages: S.t5.items.map(m => ({ quick_single_mode: S.t5.quick_single_mode, send_datetime: m.send_datetime, title: m.title, template_type: m.template_type, branches: m.branches.map(serializeBranch) }))
   };
+  if (Array.isArray(S.pinned_consult_notes) && S.pinned_consult_notes.length) {
+    out.pinned_consult_notes = S.pinned_consult_notes.slice();
+  }
   Object.keys(S.passthrough || {}).forEach(k => { out[k] = S.passthrough[k]; });
   return out;
 }
@@ -2312,7 +2362,46 @@ function renderWebzine() {
   $('#wz-base-url').value = S.meta.webzine_base_url; $('#wz-base-url2').value = S.meta.webzine_base_url;
 }
 function renderAI() { $('#ai-log').innerHTML = (AI_LOG[currentTab] || []).map(x => '<div class="ai-item">⏳ ' + esc(x) + '</div>').join(''); }
-function renderAll() { renderBrand(); renderSidebar(); renderT1(); renderT2(); renderT3(); renderT4(); renderT5(); renderWebzine(); renderAI(); renderQaPostItBanner(); syncWebzineIframe(); }
+function renderExternalPlatformGuard(autoSwitchTab) {
+  const el = $('#ext-platform-banner');
+  if (!el || !S) return false;
+  const plat = String((S.platform && S.platform.source_platform) || 'NATIVE').trim() || 'NATIVE';
+  const isExternal = plat.toUpperCase() !== 'NATIVE';
+  if (!isExternal) {
+    el.hidden = true;
+    el.innerHTML = '';
+    return false;
+  }
+  const credit = (S.platform && S.platform.credit_balance !== null && S.platform.credit_balance !== undefined)
+    ? ('잔여 크레딧: ' + S.platform.credit_balance + '건')
+    : '선불 크레딧 종량제(50원/건)';
+  const mappingSummary = (S.platform && S.platform.external_mapping)
+    ? (typeof S.platform.external_mapping === 'string'
+      ? S.platform.external_mapping
+      : (S.platform.external_mapping.summary || S.platform.external_mapping.form_id || '외부 매핑 연결됨'))
+    : '외부 폼·몰 필드 매핑 대기';
+  el.hidden = false;
+  el.innerHTML =
+    '<div class="ext-banner-left">' +
+      '<span class="ext-banner-title">🔌 외부 플랫폼 연동 모드: ' + esc(plat) + ' — 앞단 외부 폼·몰 연결 / 탭 4·5 시나리오 집중 검수</span>' +
+      '<span class="ext-banner-pill">💳 ' + esc(credit) + '</span>' +
+      '<span class="ext-banner-pill">🔗 ' + esc(mappingSummary) + '</span>' +
+    '</div>' +
+    '<div class="ext-banner-actions">' +
+      '<button type="button" class="ext-banner-btn" id="btn-ext-go-t4">탭 4 간격발송</button>' +
+      '<button type="button" class="ext-banner-btn" id="btn-ext-go-t5">탭 5 날짜발송</button>' +
+    '</div>';
+  const b4 = $('#btn-ext-go-t4');
+  const b5 = $('#btn-ext-go-t5');
+  if (b4) b4.onclick = () => switchTab('tab4');
+  if (b5) b5.onclick = () => switchTab('tab5');
+  if (autoSwitchTab) {
+    switchTab('tab4');
+  }
+  return true;
+}
+
+function renderAll() { renderBrand(); renderSidebar(); renderT1(); renderT2(); renderT3(); renderT4(); renderT5(); renderWebzine(); renderAI(); renderExternalPlatformGuard(false); renderQaPostItBanner(); syncWebzineIframe(); }
 
 /* ═══════════════ V2.3-4 유료 등급 검수 요약 & 고객 1회 수정메모 포스트잇 ═══════════════ */
 function normalizePaidTier(raw) {
@@ -2675,6 +2764,7 @@ function openJson(file) {
     try {
       S = stateFromData(JSON.parse(String(e.target.result).replace(/^\uFEFF/, '')), null);
       renderAll();
+      renderExternalPlatformGuard(true);
       toast('✅ 불러오기 완료: ' + file.name, { type: 'ok' });
       if (S.meta.auto_generate_visuals || S.meta.industry_code === 'custom_ai') autoGenerateCampaignVisuals(false);
     }
@@ -2837,6 +2927,7 @@ function loadLocalBridgeToCockpit(metaOverride) {
     industry: (bridged.partner_info && (bridged.partner_info.sub_industry || bridged.partner_info.sector_label)) || ''
   }, metaOverride || {});
   renderAll();
+  renderExternalPlatformGuard(true);
   renderPaidIntakeList(PAID_INTAKE_LIST);
   toast('✅ 로컬 E2E 브릿지 캠페인 및 고객 수정메모 포스트잇을 불러왔습니다.', { type: 'ok' });
 }
@@ -2951,6 +3042,7 @@ async function loadIntake(id) {
       industry: (rowMeta && rowMeta.industry) || ''
     };
     renderAll();
+    renderExternalPlatformGuard(true);
     renderPaidIntakeList(PAID_INTAKE_LIST);
     if (S.meta.skip_image_gen) {
       toast('✅ 유료 접수 건 로드 완료 (이미지 보류 상태) — 상단 [🎨 AI 실사 이미지 자동 채우기]로 빈 슬롯을 바로 채울 수 있습니다.', { type: 'ok', ms: 6000 });
@@ -3706,10 +3798,11 @@ function init() {
 
   const h = location.hash.replace('#', '');
   if (h === 'webzine') switchMenu('webzine'); else if (/^tab[1-5]$/.test(h)) switchTab(h);
+  renderExternalPlatformGuard(true);
 
   window.LB = { state: () => { syncFromDom(); return S; }, qaMeta: () => ACTIVE_QA_META, paidList: () => PAID_INTAKE_LIST, toCampaignMaster, fixUrlSpacing, fixSheetVars, findBannedWords, loadPreset,
-                openState: d => { S = stateFromData(d, null); renderAll(); if (!S.meta.skip_image_gen && (S.meta.auto_generate_visuals || S.meta.industry_code === 'custom_ai')) autoGenerateCampaignVisuals(false); },
-                refreshIntake, loadIntake, loadDemoIntakeList, loadLocalBridgeToCockpit, renderQaPostItBanner, fillDeferredAiVisuals, classifyQaMemo,
+                openState: d => { S = stateFromData(d, null); renderAll(); renderExternalPlatformGuard(true); if (!S.meta.skip_image_gen && (S.meta.auto_generate_visuals || S.meta.industry_code === 'custom_ai')) autoGenerateCampaignVisuals(false); },
+                refreshIntake, loadIntake, loadDemoIntakeList, loadLocalBridgeToCockpit, renderQaPostItBanner, renderExternalPlatformGuard, fillDeferredAiVisuals, classifyQaMemo,
                 doThumbPng, doLandingPng, doFriendtalkJpg, doCarouselPng, doZip, switchTab, switchMenu, setWebzine, setZoom, runPinpointAi, toggleSlotVisual, cycleSlotStock, openAiImgModal, translateAiImgPrompt, generateSlotAiImage, runBatchVisualAi, autoGenerateCampaignVisuals, withCapture, compressFile, updateAiKeyBadge };
   console.log('✅ 고마워톡 조종석 초기화 완료');
   if (/[?&]selftest\b/.test(location.search)) { const s = document.createElement('script'); s.src = 'tests/phase1_selftest.js'; document.body.appendChild(s); }

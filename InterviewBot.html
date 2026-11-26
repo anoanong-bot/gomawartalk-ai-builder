@@ -47,9 +47,10 @@ html, body {
   background: var(--bg-page);
   color: var(--g900);
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  font-size: 15px;
-  line-height: 1.52;
+  font-size: 16px;
+  line-height: 1.55;
   letter-spacing: -0.02em;
+  word-break: keep-all;
   overflow: hidden;
 }
 button, input, textarea, select { font: inherit; color: inherit; }
@@ -81,47 +82,49 @@ button { cursor: pointer; border: none; background: none; }
   background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
   overflow-y: auto;
 }
-.auth-hero { margin-top: 12px; }
+.auth-hero { margin-top: 8px; }
 .auth-badge {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 12px; border-radius: 99px;
+  padding: 7px 14px; border-radius: 99px;
   background: var(--blue-lt); color: var(--blue-dk);
-  font-size: 12.5px; font-weight: 800; margin-bottom: 16px;
+  font-size: 14px; font-weight: 800; margin-bottom: 16px;
+  word-break: keep-all;
 }
 .auth-title {
-  font-size: 25px; font-weight: 800; line-height: 1.32;
+  font-size: 29px; font-weight: 900; line-height: 1.3;
   color: var(--g900); word-break: keep-all;
 }
 .auth-desc {
-  margin-top: 11px; font-size: 14.5px; color: var(--g700);
-  line-height: 1.55; word-break: keep-all;
+  margin-top: 13px; font-size: 17.5px; font-weight: 600; color: var(--g700);
+  line-height: 1.52; word-break: keep-all;
 }
 .auth-steps-card {
-  margin-top: 22px; padding: 16px 18px; border-radius: 18px;
-  background: var(--g100); display: flex; flex-direction: column; gap: 11px;
+  margin-top: 22px; padding: 18px 18px; border-radius: 18px;
+  background: var(--g100); display: flex; flex-direction: column; gap: 13px;
 }
 .auth-step-row {
-  display: flex; align-items: center; gap: 11px;
-  font-size: 13.5px; font-weight: 600; color: var(--g700);
+  display: flex; align-items: center; gap: 12px;
+  font-size: 17px; font-weight: 700; color: var(--g900);
+  line-height: 1.4; word-break: keep-all;
 }
 .auth-step-num {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: #FFFFFF; color: var(--blue); font-weight: 800; font-size: 12.5px;
-  display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #FFFFFF; color: var(--blue); font-weight: 900; font-size: 14.5px;
+  display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.08); flex-shrink: 0;
 }
-.auth-actions { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+.auth-actions { margin-top: 26px; display: flex; flex-direction: column; gap: 12px; }
 .btn-kakao-auth {
-  width: 100%; height: 56px; border-radius: 14px;
+  width: 100%; height: 60px; border-radius: 16px;
   background: var(--kakao-yellow); color: var(--kakao-text);
-  font-size: 16px; font-weight: 800;
+  font-size: 19.5px; font-weight: 900;
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  box-shadow: 0 6px 18px rgba(254, 229, 0, 0.35);
+  box-shadow: 0 8px 20px rgba(254, 229, 0, 0.4);
   transition: transform 0.12s ease;
 }
 .btn-kakao-auth:active { transform: scale(0.98); }
 .btn-kakao-auth:disabled { opacity: 0.6; cursor: not-allowed; }
 .auth-msg-box {
-  padding: 13px 15px; border-radius: 14px; font-size: 13.5px; font-weight: 700;
+  padding: 14px 16px; border-radius: 14px; font-size: 15.5px; font-weight: 700;
   line-height: 1.5; word-break: keep-all;
 }
 .auth-msg-box.err { background: var(--red-lt); color: var(--red); border: 1px solid var(--red-bd); }
@@ -158,27 +161,61 @@ button { cursor: pointer; border: none; background: none; }
 }
 .app-header {
   background: #FFFFFF;
-  padding: 12px 16px 11px;
+  padding: 10px 14px 12px;
   border-bottom: 1px solid var(--g200);
   flex-shrink: 0;
   z-index: 10;
 }
 .app-header-top {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
 }
-.app-title-wrap { display: flex; align-items: center; gap: 7px; min-width: 0; }
-.app-title { font-size: 15.5px; font-weight: 800; color: var(--g900); white-space: nowrap; }
+.btn-header-back {
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: var(--g100);
+  color: var(--g900);
+  font-size: 15px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+.btn-header-back:active { background: var(--g200); }
+.btn-header-back.is-placeholder { visibility: hidden; pointer-events: none; }
+.app-title-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
 .partner-pill {
-  padding: 3px 9px; border-radius: 99px;
-  background: var(--blue-lt); color: var(--blue-dk);
-  font-size: 11.5px; font-weight: 800;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 135px;
+  padding: 6px 13px;
+  border-radius: 99px;
+  background: var(--blue-lt);
+  color: var(--blue-dk);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 210px;
 }
 .header-btns { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .hbtn {
-  padding: 6px 10px; border-radius: 8px;
-  background: var(--g100); color: var(--g700);
-  font-size: 12px; font-weight: 700; white-space: nowrap;
+  min-height: 40px;
+  padding: 6px 11px;
+  border-radius: 10px;
+  background: var(--g100);
+  color: var(--g700);
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 .hbtn:active { background: var(--g200); }
 
@@ -390,15 +427,15 @@ button { cursor: pointer; border: none; background: none; }
   text-align: center;
 }
 
-/* 5단계 진행률 바 */
-.stage-progress-wrap { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-.stage-progress-top { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 800; }
-.stage-progress-label { color: var(--blue); }
-.stage-progress-sub { color: var(--g500); font-weight: 700; }
-.stage-bar-track { height: 6px; border-radius: 99px; background: var(--g200); overflow: hidden; }
+/* 5단계 진행률 바 (시니어 고시인성 대형 한글 표기 + 8px 굵은 바) */
+.stage-progress-wrap { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
+.stage-progress-top { display: flex; align-items: center; justify-content: space-between; font-size: 16px; font-weight: 900; }
+.stage-progress-label { color: var(--g900); font-size: 16.5px; font-weight: 900; letter-spacing: -0.02em; }
+.stage-progress-sub { color: var(--blue-dk); font-size: 14.5px; font-weight: 800; }
+.stage-bar-track { height: 8px; border-radius: 99px; background: var(--g200); overflow: hidden; }
 .stage-bar-fill {
   height: 100%; width: 20%; border-radius: 99px;
-  background: linear-gradient(90deg, var(--blue), #60A5FA);
+  background: linear-gradient(90deg, #1B64DA 0%, #3182F6 60%, #60A5FA 100%);
   transition: width 0.28s ease;
 }
 
@@ -456,29 +493,29 @@ button { cursor: pointer; border: none; background: none; }
 }
 
 .stage-heading {
-  font-size: 20px; font-weight: 800; line-height: 1.35;
+  font-size: 23px; font-weight: 900; line-height: 1.35;
   color: var(--g900); word-break: keep-all;
 }
 .stage-sub {
-  font-size: 13.5px; color: var(--g700); line-height: 1.5;
-  margin-top: 4px; word-break: keep-all;
+  font-size: 16px; color: var(--g700); line-height: 1.5;
+  margin-top: 6px; word-break: keep-all;
 }
 .back-row {
   display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
 }
 .btn-back {
   display: inline-flex; align-items: center; gap: 4px;
-  font-size: 13px; font-weight: 700; color: var(--g700);
-  padding: 5px 9px; border-radius: 8px; background: #FFFFFF; border: 1px solid var(--g200);
+  font-size: 14px; font-weight: 800; color: var(--g700);
+  padding: 6px 11px; border-radius: 9px; background: #FFFFFF; border: 1px solid var(--g200);
 }
 .btn-back:active { background: var(--g100); }
 .context-tag {
-  font-size: 12px; font-weight: 800; color: var(--blue-dk);
-  background: var(--blue-lt); padding: 4px 10px; border-radius: 99px;
+  font-size: 13.5px; font-weight: 800; color: var(--blue-dk);
+  background: var(--blue-lt); padding: 5px 11px; border-radius: 99px;
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
-/* 공통 카드 & 메인 CTA */
+/* 공통 카드 & 메인 CTA (50대+ 시니어 친화 60px / 19px 굵게) */
 .card {
   background: #FFFFFF;
   border-radius: 18px;
@@ -491,15 +528,15 @@ button { cursor: pointer; border: none; background: none; }
 }
 .btn-primary {
   width: 100%;
-  min-height: 52px;
-  padding: 14px 18px;
-  border-radius: 14px;
+  min-height: 60px;
+  padding: 15px 18px;
+  border-radius: 16px;
   background: var(--blue);
   color: #FFFFFF;
-  font-size: 15.5px;
+  font-size: 19px;
   font-weight: 800;
   text-align: center;
-  box-shadow: 0 6px 16px rgba(49, 130, 246, 0.25);
+  box-shadow: 0 6px 18px rgba(49, 130, 246, 0.28);
   transition: transform 0.12s ease, opacity 0.15s ease;
 }
 .btn-primary:active { transform: scale(0.985); }
@@ -612,43 +649,44 @@ button { cursor: pointer; border: none; background: none; }
   font-size: 12.5px;
   font-weight: 800;
 }
-.sector-icon { font-size: 24px; line-height: 1; }
+.sector-icon { font-size: 26px; line-height: 1; }
 .sector-num {
-  font-size: 11px; font-weight: 800; color: var(--g500);
+  font-size: 12.5px; font-weight: 800; color: var(--g500);
 }
 .sector-card.selected .sector-num { color: var(--blue-dk); }
 .sector-title {
-  font-size: 14px; font-weight: 800; color: var(--g900);
+  font-size: 17px; font-weight: 800; color: var(--g900);
   line-height: 1.35; word-break: keep-all;
 }
 .sector-card.selected .sector-title { color: var(--blue-dk); }
 
 .sub-input-box {
   background: #FFFFFF;
-  border: 1.5px solid var(--blue);
-  border-radius: 16px;
-  padding: 16px;
+  border: 2px solid var(--blue);
+  border-radius: 18px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   box-shadow: 0 6px 20px rgba(49, 130, 246, 0.1);
 }
-.sub-label { font-size: 13.5px; font-weight: 800; color: var(--g900); }
+.sub-label { font-size: 17px; font-weight: 800; color: var(--g900); word-break: keep-all; }
 .field-input {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 14px 15px;
+  border-radius: 13px;
   border: 1.5px solid var(--g200);
   background: var(--g50);
-  font-size: 16px; /* 모바일 iOS 자동 줌 방지 */
+  font-size: 18px; /* 50대+ 가독성 & 모바일 자동 줌 방지 */
+  line-height: 1.5;
   outline: none;
 }
 .field-input:focus { border-color: var(--blue); background: #FFFFFF; }
-.quick-sub-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.quick-sub-chips { display: flex; flex-wrap: wrap; gap: 7px; }
 .quick-sub-chip {
-  padding: 6px 10px; border-radius: 99px;
-  background: var(--g100); color: var(--g700);
-  font-size: 12px; font-weight: 700;
+  padding: 8px 13px; border-radius: 99px;
+  background: var(--g100); color: var(--g900);
+  font-size: 14.5px; font-weight: 700;
   border: 1px solid var(--g200);
 }
 .quick-sub-chip:active, .quick-sub-chip:hover { background: var(--blue-lt); color: var(--blue-dk); border-color: #93C5FD; }
@@ -679,52 +717,52 @@ button { cursor: pointer; border: none; background: none; }
   background: #F4F9FF;
   box-shadow: 0 6px 18px rgba(49, 130, 246, 0.18);
 }
-.flow-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-.flow-title-wrap { display: flex; align-items: center; gap: 7px; min-width: 0; flex: 1; }
-.flow-icon { font-size: 18px; flex-shrink: 0; }
-.flow-title { font-size: 14.5px; font-weight: 800; color: var(--g900); line-height: 1.32; word-break: keep-all; }
+.flow-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.flow-title-wrap { display: flex; align-items: flex-start; gap: 8px; min-width: 0; flex: 1; }
+.flow-icon { font-size: 21px; flex-shrink: 0; margin-top: 2px; }
+.flow-title { font-size: 19.5px; font-weight: 800; color: var(--g900); line-height: 1.36; word-break: keep-all; }
 .flow-card.selected .flow-title { color: var(--blue-dk); }
 .flow-badge {
-  flex-shrink: 0; padding: 3px 8px; border-radius: 99px;
-  font-size: 10.5px; font-weight: 800; background: var(--g100); color: var(--g700);
+  flex-shrink: 0; padding: 4px 10px; border-radius: 99px;
+  font-size: 12.5px; font-weight: 800; background: var(--g100); color: var(--g700);
   white-space: nowrap;
 }
 .flow-badge.best { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
 .flow-card.selected .flow-badge, .flow-badge.rec { background: var(--blue); color: #FFFFFF; border-color: transparent; }
 
-/* 1줄 화살표 키워드 흐름도 (Flow Pill) */
+/* 1줄 화살표 키워드 흐름도 (핵심 2개 태그 단순화 + 시니어 빅폰트) */
 .flow-pills-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 6px;
 }
 .flow-pill {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 4px 8px;
-  border-radius: 8px;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 9px;
   background: var(--g100);
-  color: var(--g700);
-  font-size: 11.5px;
+  color: var(--g900);
+  font-size: 14px;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.3;
 }
 .flow-pill.p2 { background: #FEF9C3; color: #713F12; }
 .flow-pill.p3 { background: var(--blue-lt); color: var(--blue-dk); }
-.flow-arrow { font-size: 10.5px; font-weight: 800; color: var(--g400); }
+.flow-arrow { font-size: 13px; font-weight: 900; color: var(--g500); }
 
 /* 아코디언 상세 본문 (선택 시에만 펼침) */
 .flow-detail-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-top: 8px;
+  gap: 10px;
+  padding-top: 10px;
   border-top: 1px solid #DBEAFE;
   animation: fadeSlide 0.16s ease;
 }
-.flow-summary { font-size: 12.5px; color: var(--g700); line-height: 1.45; word-break: keep-all; }
+.flow-summary { font-size: 15.5px; color: var(--g700); line-height: 1.5; word-break: keep-all; }
 
 /* 3단계 카톡 발송 파이프라인 미리보기 */
 .flow-pipeline {
@@ -986,31 +1024,30 @@ button { cursor: pointer; border: none; background: none; }
   padding: 3px 7px; border-radius: 6px; background: var(--blue-lt);
 }
 
-/* AI 컨설턴트 질문 카드 */
+/* AI 컨설턴트 질문 카드 (50대+ 시니어 빅폰트 22px 굵게 · 해설 군더더기 제거) */
 .question-card {
   background: #FFFFFF;
-  border-radius: 18px;
-  padding: 18px;
-  border: 1px solid var(--g200);
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  border-radius: 20px;
+  padding: 20px 18px;
+  border: 1.5px solid var(--g200);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
-.q-meta-row { display: flex; align-items: center; gap: 7px; }
+.q-meta-row { display: none; }
 .q-badge {
   padding: 4px 10px; border-radius: 99px;
   background: var(--blue-lt); color: var(--blue-dk);
-  font-size: 12px; font-weight: 800;
+  font-size: 13px; font-weight: 800;
 }
 .q-text {
-  font-size: 17px; font-weight: 700; line-height: 1.5;
+  font-size: 22px; font-weight: 800; line-height: 1.42;
   color: var(--g900); word-break: keep-all;
 }
-.q-text strong { color: var(--blue-dk); font-weight: 800; }
+.q-text strong { color: var(--blue-dk); font-weight: 900; }
 .q-usage-hint {
-  font-size: 12.5px; color: var(--g500);
-  background: var(--g50); padding: 8px 11px; border-radius: 10px; line-height: 1.45;
+  display: none !important;
 }
 
 /* 실시간 매뉴얼 검문소 경고 & 대안 역제안 카드 */
@@ -1057,56 +1094,60 @@ button { cursor: pointer; border: none; background: none; }
   font-weight: 800;
 }
 
-/* Tap-to-Edit 예시 칩 영역 (주관식 입력칸 바로 위) */
+/* Tap-to-Edit 예시 칩 영역 (50대+ 빅폰트 17.5px + 굵은 고대비 [이 내용 채우기] 버튼) */
 .examples-wrap {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .examples-caption {
-  font-size: 12.5px; font-weight: 800; color: var(--g700);
-  display: flex; align-items: center; gap: 5px; line-height: 1.4;
+  font-size: 16.5px; font-weight: 800; color: var(--g900);
+  display: flex; align-items: center; gap: 6px; line-height: 1.4;
+  word-break: keep-all;
 }
 .example-chip {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 13px;
+  padding: 16px 16px;
+  border-radius: 16px;
   background: #FFFFFF;
-  border: 1.5px solid #DBEAFE;
+  border: 1.5px solid #BFDBFE;
   text-align: left;
-  font-size: 13.5px;
+  font-size: 17.5px;
   font-weight: 600;
-  color: var(--g700);
-  line-height: 1.48;
+  color: var(--g900);
+  line-height: 1.55;
   word-break: keep-all;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 11px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
   transition: all 0.14s ease;
 }
 .example-chip:hover, .example-chip:active {
   border-color: var(--blue);
-  background: var(--blue-lt);
-  color: var(--blue-dk);
+  background: #F4F9FF;
 }
 .example-chip-tag {
-  flex-shrink: 0;
-  padding: 3px 7px;
-  border-radius: 7px;
-  background: var(--blue-lt);
-  color: var(--blue-dk);
-  font-size: 11px;
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 15px;
+  border-radius: 10px;
+  background: var(--blue);
+  color: #FFFFFF;
+  font-size: 15.5px;
   font-weight: 800;
-  margin-top: 1px;
+  line-height: 1.2;
 }
 
-/* 중앙 주인공 멀티라인 주관식 입력창 (font-size 16px 이상 — 모바일 줌 방지) */
+/* 중앙 주인공 멀티라인 주관식 입력창 (18px 50대+ 빅폰트 · 모바일 자동 줌 방지) */
 .answer-composer-card {
   background: #FFFFFF;
   border: 2px solid var(--g200);
   border-radius: 18px;
-  padding: 14px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1122,31 +1163,32 @@ button { cursor: pointer; border: none; background: none; }
 }
 #interview-textarea {
   width: 100%;
-  min-height: 126px;
-  max-height: 260px;
+  min-height: 132px;
+  max-height: 280px;
   border: none;
   outline: none;
   resize: none;
-  font-size: 16px; /* 모바일 iOS 자동 줌 방지 필수 16px */
-  line-height: 1.55;
+  font-size: 18px; /* 50대+ 빅폰트 & 모바일 자동 줌 방지 */
+  line-height: 1.5;
   color: var(--g900);
   background: transparent;
 }
-#interview-textarea::placeholder { color: var(--g400); font-size: 14.5px; }
+#interview-textarea::placeholder { color: var(--g400); font-size: 17px; }
 .composer-meta-row {
   display: flex; align-items: center; justify-content: space-between;
-  font-size: 12px; color: var(--g500);
+  font-size: 13.5px; color: var(--g500);
 }
 .tap-edit-toast {
-  font-size: 12px; font-weight: 800; color: var(--green);
+  font-size: 14px; font-weight: 800; color: var(--green);
 }
 .interview-action-row {
   display: flex; gap: 8px; align-items: center;
 }
 .btn-prev-q {
-  padding: 14px 15px; border-radius: 14px;
+  min-height: 60px;
+  padding: 14px 16px; border-radius: 16px;
   background: #FFFFFF; border: 1.5px solid var(--g200);
-  color: var(--g700); font-size: 14px; font-weight: 800; flex-shrink: 0;
+  color: var(--g900); font-size: 17px; font-weight: 800; flex-shrink: 0;
 }
 
 /* ═════════ Step 4: 브랜드 디자인 재료 수집 (로고 · 컬러 · 실사 최대 3장) ═════════ */
@@ -1402,23 +1444,324 @@ button { cursor: pointer; border: none; background: none; }
   padding: 0 14px; border-radius: 11px; background: var(--blue); color: #FFFFFF;
   font-size: 13.5px; font-weight: 800; flex-shrink: 0;
 }
+.qa-pin-btn {
+  margin-top: 8px;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 10px; border-radius: 9px;
+  background: #F1F5F9; border: 1px solid #CBD5E1;
+  color: #334155; font-size: 11.5px; font-weight: 800;
+  transition: all 0.15s ease;
+}
+.qa-pin-btn:hover { background: var(--blue-lt); border-color: #93C5FD; color: var(--blue-dk); }
+.qa-pin-btn.pinned {
+  background: var(--green-lt); border-color: #6EE7B7; color: #065F46;
+}
+
+/* STEP 5 추가 반영된 대화 요청 카드 */
+.sum-pinned-box {
+  background: #F0FDF4;
+  border: 1.5px solid #BBF7D0;
+  border-radius: 16px;
+  padding: 13px 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.sum-pinned-head {
+  font-size: 12px; font-weight: 800; color: #065F46;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sum-pinned-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.sum-pinned-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: 99px;
+  background: #FFFFFF; border: 1px solid #86EFAC;
+  font-size: 12px; font-weight: 700; color: #14532D; line-height: 1.35;
+}
+.sum-pinned-chip button {
+  font-size: 11px; font-weight: 900; color: #64748B;
+  padding: 0 2px; line-height: 1;
+}
+.sum-pinned-chip button:hover { color: #DC2626; }
+
+/* 우측 하단 채널톡형 플로팅 런처 (하단 Sticky CTA 겹침 원천 차단) */
+.flt-launcher {
+  position: fixed;
+  right: 16px;
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.flt-pill-label {
+  padding: 7px 12px;
+  border-radius: 99px;
+  background: #FFFFFF;
+  color: #1E293B;
+  border: 1px solid #E2E8F0;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.14);
+  white-space: nowrap;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.flt-pill-label.is-hidden { opacity: 0; pointer-events: none; transform: translateX(8px); }
+.flt-fab {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3182F6 0%, #4F46E5 100%);
+  color: #FFFFFF;
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 26px rgba(49, 130, 246, 0.36);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.flt-fab:active { transform: scale(0.94); }
+
+/* 2-Tab 바텀시트 팝업 */
+.flt-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 980;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+}
+.flt-sheet-backdrop[hidden] { display: none; }
+.flt-sheet {
+  width: 100%;
+  max-width: 460px;
+  max-height: 82vh;
+  background: #FFFFFF;
+  border-radius: 22px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.32);
+  animation: fadeSlide 0.18s ease;
+}
+.flt-sheet-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.flt-tabs {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: var(--g100);
+  padding: 4px;
+  border-radius: 12px;
+}
+.flt-tab-btn {
+  padding: 8px 6px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--g600);
+  text-align: center;
+  transition: all 0.15s ease;
+}
+.flt-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--g900);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+.flt-panel { display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; }
+.flt-panel[hidden] { display: none; }
+.flt-reason-list { display: flex; flex-direction: column; gap: 7px; }
+.flt-reason-btn {
+  width: 100%;
+  text-align: left;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: var(--g50);
+  border: 1.5px solid var(--g200);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--g800);
+  transition: all 0.15s ease;
+}
+.flt-reason-btn.selected {
+  background: var(--blue-lt);
+  border-color: var(--blue);
+  color: var(--blue-dk);
+}
+.flt-memo-in {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 11px;
+  border: 1.5px solid var(--g200);
+  font-size: 15px;
+  outline: none;
+}
+.flt-memo-in:focus { border-color: var(--blue); }
+.flt-submit-btn {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.25);
+}
+.flt-submit-btn:disabled { opacity: 0.6; }
+.flt-report-status {
+  padding: 10px 12px;
+  border-radius: 11px;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.45;
+  background: var(--green-lt);
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+.flt-report-status.err {
+  background: #FEF2F2; color: #991B1B; border-color: #FECACA;
+}
+.bot-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(154px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 995;
+  padding: 10px 16px;
+  border-radius: 99px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.28);
+  white-space: nowrap;
+  max-width: calc(100vw - 32px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bot-toast[hidden] { display: none; }
+
+/* ═════════ Part 4: 전면 블러 로딩 오버레이 + 실시간 진행 게이지 바 ═════════ */
+.global-loading-overlay {
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.52);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.global-loading-overlay[hidden] { display: none !important; }
+.loading-card {
+  width: 100%;
+  max-width: 380px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 30px 24px 26px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.34);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  word-break: keep-all;
+  animation: fadeSlide 0.18s ease;
+}
+.loading-spinner-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+}
+.loading-spinner-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 5px solid #E2E8F0;
+  border-top-color: #3182F6;
+  border-right-color: #FEE500;
+  animation: spinRing 0.9s linear infinite;
+}
+.loading-spinner-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+@keyframes spinRing {
+  to { transform: rotate(360deg); }
+}
+.loading-title {
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.38;
+  color: #0F172A;
+  word-break: keep-all;
+}
+.loading-gauge-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.loading-gauge-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 99px;
+  background: #E2E8F0;
+  overflow: hidden;
+}
+.loading-gauge-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #1B64DA 0%, #3182F6 55%, #FEE500 100%);
+  transition: width 0.25s ease;
+}
+.loading-gauge-pct {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #3182F6;
+  text-align: right;
+}
+.loading-sub {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.48;
+  color: #475569;
+  word-break: keep-all;
+}
+
+/* STEP 5 간결한 잔여 횟수 요약 바 */
+.stage5-quota-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 </style>
 </head>
 <body>
 
 <div id="mobile-shell">
 
-  <!-- ═════════ 1. 카카오싱크 선인증 게이트 (등급 확인 & 서버단 횟수 통제) ═════════ -->
+  <!-- ═════════ 1. 카카오싱크 선인증 게이트 (50대+ 시니어 친화 초간결 인트로) ═════════ -->
   <section id="auth-gate">
     <div class="auth-hero">
-      <div class="auth-badge">💬 고마워톡 AI 캠페인 컨설턴트</div>
-      <h1 class="auth-title">우리 업종에 딱 맞춘<br>카카오 캠페인 5단계 컨설팅</h1>
-      <p class="auth-desc">카카오 1초 로그인으로 내 업종 맞춤 캠페인 기획안과 카톡 자동화 시뮬레이션을 무료로 체험(2회)해 보세요. 유료 파트너 대표님은 월간 제작 한도로 바로 접수됩니다.</p>
+      <div class="auth-badge">💬 고마워톡 맞춤 캠페인 설계</div>
+      <h1 class="auth-title">우리 업종에 딱 맞춘<br>카카오톡 자동 홍보 설계</h1>
+      <p class="auth-desc">카카오 1초 로그인으로 내 업종 맞춤 카톡 시나리오를 무료(2회)로 체험해 보세요.</p>
 
       <div class="auth-steps-card">
-        <div class="auth-step-row"><span class="auth-step-num">1</span><span>6대 분야 선택 & 내 업종 맞춤 카톡 흐름 미리보기</span></div>
-        <div class="auth-step-row"><span class="auth-step-num">2</span><span>예시 터치로 쉽게 고치는 5단계 심층 컨설팅 + 가능 여부 즉시 검증</span></div>
-        <div class="auth-step-row"><span class="auth-step-num">3</span><span>로고·브랜드 컬러·실제 사진 담아 맞춤 제안서 생성 또는 즉시 세팅 접수!</span></div>
+        <div class="auth-step-row"><span class="auth-step-num">1</span><span>내 업종 선택 &amp; 카톡 흐름 미리보기</span></div>
+        <div class="auth-step-row"><span class="auth-step-num">2</span><span>예시 터치로 끝내는 5가지 질문</span></div>
+        <div class="auth-step-row"><span class="auth-step-num">3</span><span>모바일 시연 제안서 즉시 생성</span></div>
       </div>
 
       <div class="auth-actions">
@@ -1485,12 +1828,12 @@ button { cursor: pointer; border: none; background: none; }
     </div>
   </section>
 
-  <!-- ═════════ 2. 5단계 컨설턴트 인터뷰 앱 (하단 채팅창 폐기 ➔ 중앙 집중형 카드 UI) ═════════ -->
+  <!-- ═════════ 2. 5단계 컨설턴트 인터뷰 앱 (슬림 1줄 헤더 + 8px 진행 바) ═════════ -->
   <section id="consult-app" hidden>
     <header class="app-header">
       <div class="app-header-top">
+        <button type="button" class="btn-header-back is-placeholder" id="btn-header-back">← 이전</button>
         <div class="app-title-wrap">
-          <span class="app-title">고마워톡 캠페인 컨설턴트</span>
           <span class="partner-pill" id="partner-badge">파트너</span>
         </div>
         <div class="header-btns">
@@ -1498,14 +1841,15 @@ button { cursor: pointer; border: none; background: none; }
           <button type="button" class="hbtn" id="btn-reset">처음부터</button>
         </div>
       </div>
+      <!-- 호환성 유지용 숨김 컨테이너 (잔여 횟수는 첫 화면 및 STEP 5에만 간결 노출) -->
       <div class="quota-bar-row" id="quota-bar-row" hidden>
         <span class="quota-pill tier-lead" id="quota-badge">🎯 무료 체험 잔여: 2/2회</span>
-        <span class="quota-sub-hint" id="quota-sub-hint">텍스트 5대 탭 무료 설계</span>
+        <span class="quota-sub-hint" id="quota-sub-hint" hidden></span>
       </div>
       <div class="stage-progress-wrap">
         <div class="stage-progress-top">
-          <span class="stage-progress-label" id="stage-progress-label">STEP 1 / 5 · 비즈니스 분야 선택</span>
-          <span class="stage-progress-sub" id="stage-progress-sub">20%</span>
+          <span class="stage-progress-label" id="stage-progress-label">1단계 · 업종 선택</span>
+          <span class="stage-progress-sub" id="stage-progress-sub" hidden></span>
         </div>
         <div class="stage-bar-track">
           <div class="stage-bar-fill" id="stage-progress-fill"></div>
@@ -1518,14 +1862,14 @@ button { cursor: pointer; border: none; background: none; }
       <!-- ── STEP 1: 6대 비즈니스 분야 선택 + 7번째 기타 업종 + 1줄 세부 업종 ── -->
       <section class="stage-pane" id="stage-1">
         <div>
-          <h2 class="stage-heading" id="s1-heading">대표님, 어떤 분야의 비즈니스를 운영하고 계신가요?</h2>
-          <p class="stage-sub">분야를 고르시면 해당 업종 언어로 번역된 6가지 카톡 운영 흐름을 바로 보여드릴게요.</p>
+          <h2 class="stage-heading" id="s1-heading">어떤 분야의 일을 하고 계신가요?</h2>
+          <p class="stage-sub">분야를 고르시면 맞춤 카톡 흐름 6가지를 바로 보여드려요.</p>
         </div>
 
         <div class="sector-grid" id="sector-grid"></div>
 
         <div class="sub-input-box" id="sub-industry-box" hidden>
-          <label class="sub-label" for="sub-industry-input">✏️ 대표님의 구체적인 세부 업종을 한 줄로 적어주세요</label>
+          <label class="sub-label" for="sub-industry-input">✏️ 구체적인 업종을 한 줄로 적어주세요</label>
           <input type="text" class="field-input" id="sub-industry-input" placeholder="예) 병의원·기장 전문 세무사" autocomplete="off">
           <div class="quick-sub-chips" id="sub-quick-chips"></div>
         </div>
@@ -1533,42 +1877,42 @@ button { cursor: pointer; border: none; background: none; }
 
       <!-- ── STEP 2: 내 분야 맞춤 6대 카톡 운영 플로우 미리보기 & 선택 ── -->
       <section class="stage-pane" id="stage-2" hidden>
-        <div class="back-row">
+        <div class="back-row" hidden>
           <button type="button" class="btn-back" id="btn-back-to-s1">← 분야 다시 고르기</button>
           <span class="context-tag" id="s2-context-tag"></span>
         </div>
 
         <div>
-          <h2 class="stage-heading">내 분야에 딱 맞춘<br>6가지 카톡 운영 흐름이에요</h2>
-          <p class="stage-sub">신청페이지부터 즉시 첫 카톡·후속 자동 카톡까지 미리 보시고 가장 원하는 흐름을 골라주세요. (선택된 카드를 한 번 더 누르면 바로 시작돼요!)</p>
+          <h2 class="stage-heading">원하는 카톡 홍보 흐름을<br>골라주세요</h2>
+          <p class="stage-sub">카드를 한 번 누르면 미리보기, 한 번 더 누르면 바로 시작돼요.</p>
         </div>
 
         <!-- ★ 상단 컴팩트 AI 흐름 추천 배너 (1번 카드 위 배치) -->
         <button type="button" class="btn-ai-banner" id="btn-toggle-flow-ai">
-          <span>🤔 어떤 흐름이 좋을지 고민돼요 — 제 목표를 적고 AI 추천받기</span>
+          <span>🤔 어떤 흐름이 좋을지 모르겠어요 (AI 추천받기)</span>
           <span id="flow-ai-toggle-icon">▾</span>
         </button>
 
         <div class="ai-rec-card" id="flow-ai-panel" hidden>
-          <div style="font-size:13.5px;font-weight:800;color:var(--g900)">✨ 이번 캠페인으로 이루고 싶은 목표를 한 줄로 적어주세요</div>
-          <textarea class="field-input" id="flow-goal-input" rows="2" placeholder="예) 신규 예약·상담 문의를 늘리고, 유익한 안내를 카톡으로 보내 단골을 만들고 싶어요"></textarea>
-          <button type="button" class="btn-primary" id="btn-run-flow-ai" style="min-height:46px;padding:11px">✨ AI 맞춤 흐름 추천받기</button>
+          <div style="font-size:16px;font-weight:800;color:var(--g900)">✨ 이루고 싶은 목표를 한 줄로 적어주세요</div>
+          <textarea class="field-input" id="flow-goal-input" rows="2" placeholder="예) 신규 상담 문의를 늘리고 단골을 만들고 싶어요"></textarea>
+          <button type="button" class="btn-primary" id="btn-run-flow-ai" style="min-height:52px;font-size:17px;padding:12px">✨ AI 맞춤 흐름 추천받기</button>
           <div class="ai-rec-result" id="flow-ai-result" hidden></div>
         </div>
 
-        <div class="flow-loading-banner" id="flow-loading-banner" hidden>⏳ 입력하신 세부 업종 전용 6가지 카톡 운영 흐름을 맞춤 생성하고 있어요…</div>
+        <div class="flow-loading-banner" id="flow-loading-banner" hidden></div>
 
         <div class="flow-list" id="flow-list"></div>
       </section>
 
       <!-- ── STEP 3: Tap-to-Edit 주관식 5단계 심층 인터뷰 + 매뉴얼 검문소 ── -->
       <section class="stage-pane" id="stage-3" hidden>
-        <div class="interview-top-bar">
+        <div class="interview-top-bar" hidden>
           <button type="button" class="btn-back" id="btn-back-to-s2">← 흐름 변경</button>
-          <button type="button" class="btn-qa-toggle" id="btn-open-qa">💬 고마워톡 기능 가능 여부 물어보기</button>
+          <span class="context-tag">맞춤 질문</span>
         </div>
 
-        <div class="q-dots" id="q-dots"></div>
+        <div class="q-dots" id="q-dots" hidden></div>
 
         <!-- 완료된 이전 답변 확인 & 바로 수정 트레이 -->
         <div class="prev-answers-box" id="prev-answers-box" hidden>
@@ -1579,32 +1923,32 @@ button { cursor: pointer; border: none; background: none; }
           <div class="prev-answers-body" id="prev-answers-body" hidden></div>
         </div>
 
-        <!-- AI 컨설턴트 맥락 맞춤 질문 카드 -->
+        <!-- AI 컨설턴트 맥락 맞춤 질문 카드 (빅폰트 22px · 군더더기 해설 제거) -->
         <div class="question-card">
-          <div class="q-meta-row">
-            <span class="q-badge" id="q-step-badge">질문 1 / 5 · 캠페인 목표 & 핵심 주제</span>
+          <div class="q-meta-row" hidden>
+            <span class="q-badge" id="q-step-badge">질문 1 / 5</span>
           </div>
-          <div class="q-text" id="q-question-text">질문을 불러오고 있어요…</div>
-          <div class="q-usage-hint" id="q-usage-hint"></div>
+          <div class="q-text" id="q-question-text"></div>
+          <div class="q-usage-hint" id="q-usage-hint" hidden></div>
         </div>
 
         <!-- 실시간 고마워톡 매뉴얼 검문소(Feasibility Guardrail) 경고 카드 -->
         <div class="guardrail-card" id="guardrail-box" hidden>
           <div class="guardrail-head">⚠️ 잠깐만요! 고마워톡 기능 지원 여부를 확인해 주세요</div>
           <div class="guardrail-reason" id="guardrail-reason"></div>
-          <div class="guardrail-sub">💡 대신 고마워톡이 가장 잘하는 방식으로 이렇게 구현해 보세요! (터치하면 아래 입력칸에 초안이 채워져요)</div>
+          <div class="guardrail-sub">💡 아래 대안을 누르면 입력칸에 바로 채워져요</div>
           <div id="guardrail-alts" style="display:flex;flex-direction:column;gap:8px"></div>
         </div>
 
         <!-- Tap-to-Edit 업종·맥락 맞춤 예시 칩 3개 (터치 시 전송 X, 아래 textarea 초안 복사!) -->
         <div class="examples-wrap">
-          <div class="examples-caption">💡 막막하신가요? 예시를 터치하면 아래 칸에 채워져 내 내용으로 쉽게 고칠 수 있어요!</div>
-          <div id="example-chips-list" style="display:flex;flex-direction:column;gap:7px"></div>
+          <div class="examples-caption">👇 아래 예시를 누르면 입력칸에 바로 채워져요</div>
+          <div id="example-chips-list" style="display:flex;flex-direction:column;gap:10px"></div>
         </div>
 
-        <!-- 주인공: 큼직한 멀티라인 주관식 입력창 (16px+, 자동 높이 조절) -->
+        <!-- 주인공: 큼직한 멀티라인 주관식 입력창 (18px 50대+ 빅폰트) -->
         <div class="answer-composer-card" id="answer-composer-card">
-          <textarea id="interview-textarea" placeholder="대표님의 실제 이야기를 편하게 적어주세요. 위 예시를 터치해 숫자·경력·상품명만 고쳐 쓰셔도 좋아요!"></textarea>
+          <textarea id="interview-textarea" placeholder="위 예시를 눌러 채우거나 편하게 적어주세요"></textarea>
           <div class="composer-meta-row">
             <span class="tap-edit-toast" id="tap-edit-toast"></span>
             <span id="textarea-char-count">0자</span>
@@ -1614,14 +1958,14 @@ button { cursor: pointer; border: none; background: none; }
 
       <!-- ── STEP 4: 우리 브랜드 스타일 담기 (로고 · 컬러 · 실사 최대 3장) ── -->
       <section class="stage-pane" id="stage-4" hidden>
-        <div class="back-row">
+        <div class="back-row" hidden>
           <button type="button" class="btn-back" id="btn-back-to-s3">← 인터뷰 답변 수정</button>
-          <span class="context-tag">STEP 4 · 브랜드 디자인 재료</span>
+          <span class="context-tag">4단계 · 브랜드 스타일</span>
         </div>
 
         <div>
-          <h2 class="stage-heading">우리 브랜드 스타일을<br>미리 담아주세요 🎨</h2>
-          <p class="stage-sub">로고·컬러·사진을 첨부하시면 대표님 브랜드 톤 그대로 신청페이지와 카톡 배너를 세팅해 드려요.</p>
+          <h2 class="stage-heading">브랜드 스타일을<br>미리 담아주세요 🎨</h2>
+          <p class="stage-sub">로고나 사진이 없으셔도 자동으로 깔끔하게 만들어 드려요.</p>
         </div>
 
         <!-- 4-1. 브랜드 로고 이미지 (선택) -->
@@ -1692,12 +2036,17 @@ button { cursor: pointer; border: none; background: none; }
 
       <!-- ── STEP 5: 최종 요약 컨펌 ➔ 제출 ── -->
       <section class="stage-pane" id="stage-5" hidden>
-        <div class="back-row">
+        <div class="back-row" hidden>
           <button type="button" class="btn-back" id="btn-back-to-s4">← 브랜드 스타일 수정</button>
-          <span class="context-tag">STEP 5 · 최종 확인 및 제출</span>
+          <span class="context-tag">5단계 · 최종 확인</span>
         </div>
 
         <div id="summary-confirm-card" style="display:flex;flex-direction:column;gap:12px">
+          <!-- 0. 간결한 잔여 횟수 표시 (STEP 5 제출 직전 확인용) -->
+          <div class="stage5-quota-row" id="stage5-quota-row" hidden>
+            <span class="quota-pill tier-lead" id="stage5-quota-badge">🎯 무료 체험 잔여: 2/2회</span>
+          </div>
+
           <!-- ① 상단 '내 캠페인 한눈에 보기' 히어로 카드 -->
           <div class="sum-hero-card" id="summary-hero-card"></div>
 
@@ -1706,6 +2055,9 @@ button { cursor: pointer; border: none; background: none; }
 
           <!-- ③ 세련된 브랜드 디자인 재료 요약 바 -->
           <div class="sum-brand-bar" id="summary-brand-bar"></div>
+
+          <!-- ④ Q&A에서 [📌 이번 설계에 반영]으로 고정한 추가 요청 -->
+          <div class="sum-pinned-box" id="summary-pinned-notes" hidden></div>
 
           <div class="card" style="padding:13px 14px;gap:8px">
             <div class="jump-edit-row">
@@ -1730,28 +2082,28 @@ button { cursor: pointer; border: none; background: none; }
 
         <!-- Step 1 CTA -->
         <div class="sticky-cta-row" id="cta-row-1" hidden>
-          <button type="button" class="btn-primary" id="btn-to-stage2">다음: 내 분야 맞춤 카톡 흐름 6가지 보기 →</button>
+          <button type="button" class="btn-primary" id="btn-to-stage2">다음: 맞춤 카톡 흐름 보기 →</button>
         </div>
 
         <!-- Step 2 CTA -->
         <div class="sticky-cta-row" id="cta-row-2" hidden>
-          <button type="button" class="btn-primary" id="btn-to-stage3" disabled>선택한 흐름으로 심층 인터뷰 시작 →</button>
+          <button type="button" class="btn-primary" id="btn-to-stage3" disabled>이 흐름으로 질문 시작하기 →</button>
         </div>
 
         <!-- Step 3 CTA -->
         <div class="sticky-cta-row" id="cta-row-3" hidden>
           <button type="button" class="btn-prev-q" id="btn-prev-q" hidden>← 이전</button>
-          <button type="button" class="btn-primary" id="btn-submit-q" style="flex:1">답변 완료 · 다음 질문 →</button>
+          <button type="button" class="btn-primary" id="btn-submit-q" style="flex:1">다음 질문 →</button>
         </div>
 
         <!-- Step 4 CTA -->
         <div class="sticky-cta-row" id="cta-row-4" hidden>
-          <button type="button" class="btn-primary" id="btn-to-stage5">최종 기획안 요약 확인하기 →</button>
+          <button type="button" class="btn-primary" id="btn-to-stage5">최종 요약 확인하기 →</button>
         </div>
 
         <!-- Step 5 CTA -->
         <div class="sticky-cta-row" id="cta-row-5" hidden>
-          <button type="button" class="btn-primary" id="btn-submit-campaign">✅ 이대로 제작 요청 제출하기</button>
+          <button type="button" class="btn-primary" id="btn-submit-campaign">✅ 이대로 제안서 만들기</button>
         </div>
       </div>
 
@@ -1760,30 +2112,78 @@ button { cursor: pointer; border: none; background: none; }
 
 </div>
 
-<!-- ═════════ 분리된 [💬 고마워톡 기능 가능 여부 물어보기] Q&A 모달 ═════════ -->
-<div class="modal-backdrop" id="qa-modal" hidden>
-  <div class="modal-card">
-    <div class="modal-head">
-      <h3>💬 고마워톡 기능 가능 여부 물어보기</h3>
-      <button type="button" class="hbtn" id="btn-close-qa">닫기 ✕</button>
+<!-- ═════════ Part 4: 전면 블러 로딩 오버레이 + 실시간 진행 게이지 바 ═════════ -->
+<div class="global-loading-overlay" id="global-loading-overlay" role="dialog" aria-modal="true" aria-live="polite" hidden>
+  <div class="loading-card">
+    <div class="loading-spinner-wrap" aria-hidden="true">
+      <div class="loading-spinner-ring"></div>
+      <span class="loading-spinner-icon" id="loading-icon">✨</span>
     </div>
-    <div style="font-size:12.5px;color:var(--g700);line-height:1.45">
-      인터뷰 답변과 섞이지 않고 고마워톡 기능·요금·카카오 규정만 따로 물어보실 수 있어요.
+    <div class="loading-title" id="loading-title">잠시만 기다려 주세요</div>
+    <div class="loading-gauge-wrap">
+      <div class="loading-gauge-track">
+        <div class="loading-gauge-fill" id="loading-gauge-fill"></div>
+      </div>
+      <div class="loading-gauge-pct" id="loading-gauge-pct">12%</div>
     </div>
-    <div class="qa-faq-chips" id="qa-faq-chips">
-      <button type="button" class="qa-faq-chip">알림톡과 친구톡 차이가 뭔가요?</button>
-      <button type="button" class="qa-faq-chip">Starter vs Pro 요금제 비교</button>
-      <button type="button" class="qa-faq-chip">신청폼에서 사진 파일 받을 수 있나요?</button>
-      <button type="button" class="qa-faq-chip">신청페이지에 카드결제창 넣을 수 있나요?</button>
-      <button type="button" class="qa-faq-chip">맞춤 분기는 몇 개 유형까지 되나요?</button>
+    <div class="loading-sub" id="loading-sub">잠시만 기다려 주시면 바로 다음 화면이 열립니다</div>
+  </div>
+</div>
+
+<!-- ═════════ 플로팅 토스트 ═════════ -->
+<div class="bot-toast" id="bot-toast" role="status" aria-live="polite" hidden></div>
+
+<!-- ═════════ 우측 하단 채널톡형 플로팅 런처 (💬 물어보기 + 📌 설계 핀 / 🚨 1초 제보) ═════════ -->
+<div class="flt-launcher" id="flt-launcher">
+  <button type="button" class="flt-pill-label" id="flt-pill-label">질문·오류제보</button>
+  <button type="button" class="flt-fab" id="flt-fab" aria-label="질문 및 1초 제보 열기">💬</button>
+</div>
+
+<!-- ═════════ 2-Tab 플로팅 바텀시트 팝업 ═════════ -->
+<div class="flt-sheet-backdrop" id="flt-sheet-backdrop" hidden>
+  <div class="flt-sheet" id="flt-sheet" role="dialog" aria-label="고마워톡 도우미 및 1초 제보">
+    <div class="flt-sheet-top">
+      <div class="flt-tabs" role="tablist">
+        <button type="button" class="flt-tab-btn active" id="flt-tab-qa" data-flt-tab="qa" role="tab" aria-selected="true">💬 무엇이든 물어보기</button>
+        <button type="button" class="flt-tab-btn" id="flt-tab-report" data-flt-tab="report" role="tab" aria-selected="false">🚨 1초 화면·문구 제보</button>
+      </div>
+      <button type="button" class="hbtn" id="btn-close-flt" aria-label="닫기">✕</button>
     </div>
-    <div class="qa-stream" id="qa-stream">
-      <div class="qa-msg bot">안녕하세요 대표님! 고마워톡에서 어떤 기능이 되는지, 카카오 규정이나 요금제가 궁금하시면 편하게 물어보세요.</div>
+
+    <!-- 탭 1: 매뉴얼 기반 Q&A + 원클릭 [📌 설계 핀] -->
+    <div class="flt-panel" id="flt-panel-qa">
+      <div style="font-size:12px;color:var(--g600);line-height:1.45">
+        기능·요금·카카오 규정을 편하게 물어보세요. 마음에 드는 답변은 <strong>[📌 이번 설계에 반영]</strong>으로 바로 담을 수 있어요.
+      </div>
+      <div class="qa-faq-chips" id="qa-faq-chips">
+        <button type="button" class="qa-faq-chip">알림톡·친구톡 차이</button>
+        <button type="button" class="qa-faq-chip">구글폼 연동 되나요?</button>
+        <button type="button" class="qa-faq-chip">마케팅 수신동의·M형</button>
+        <button type="button" class="qa-faq-chip">Starter vs Pro 차이</button>
+      </div>
+      <div class="qa-stream" id="qa-stream">
+        <div class="qa-msg bot">안녕하세요 대표님! 고마워톡 기능·요금·카카오 규정이 궁금하시면 편하게 물어보세요.</div>
+      </div>
+      <form class="qa-input-row" id="qa-form">
+        <input type="text" id="qa-input" placeholder="궁금한 기능을 적어주세요" autocomplete="off">
+        <button type="submit" id="qa-send-btn">질문</button>
+      </form>
     </div>
-    <form class="qa-input-row" id="qa-form">
-      <input type="text" id="qa-input" placeholder="궁금한 기능을 적어주세요" autocomplete="off">
-      <button type="submit" id="qa-send-btn">질문</button>
-    </form>
+
+    <!-- 탭 2: 원클릭 1초 블랙박스 제보 -->
+    <div class="flt-panel" id="flt-panel-report" hidden>
+      <div style="font-size:12px;color:var(--g600);line-height:1.45">
+        불편하거나 이상한 화면을 1초 만에 알려주세요. <strong>현재 단계·업종·기기 정보가 자동으로 첨부</strong>되어 바로 개선해 드립니다.
+      </div>
+      <div class="flt-reason-list" id="flt-reason-list">
+        <button type="button" class="flt-reason-btn selected" data-report-reason="ai_mismatch">🤔 AI 문구가 내 업종과 안 맞아요</button>
+        <button type="button" class="flt-reason-btn" data-report-reason="ui_bug">📱 버튼·화면 작동이 이상해요</button>
+        <button type="button" class="flt-reason-btn" data-report-reason="feature_wish">💡 이런 기능도 원해요</button>
+      </div>
+      <input type="text" class="flt-memo-in" id="flt-report-memo" placeholder="한 줄 메모(선택) — 비워두셔도 현재 화면 정보가 자동 첨부됩니다" autocomplete="off">
+      <button type="button" class="flt-submit-btn" id="btn-flt-report-submit">🚀 1초 제보 보내기</button>
+      <div class="flt-report-status" id="flt-report-status" hidden></div>
+    </div>
   </div>
 </div>
 
@@ -1884,6 +2284,9 @@ const ST = {
   currentQPack: null,
   guardrail: null,
   notes: [],
+  pinnedConsultNotes: [],
+  fltActiveTab: 'qa',
+  reportReason: 'ai_mismatch',
 
   brandAssets: {
     logoBase64: null,
@@ -1957,22 +2360,94 @@ function renderQuotaBadge() {
   const row = $('#quota-bar-row');
   const pill = $('#quota-badge');
   const hint = $('#quota-sub-hint');
-  if (!row || !pill) return;
+  const s5Row = $('#stage5-quota-row');
+  const s5Pill = $('#stage5-quota-badge');
 
   const q = ST.quota || {};
   const tier = normalizeTier(q.tier);
   const remaining = Math.max(0, Number(q.remaining) || 0);
-  row.hidden = false;
-  pill.textContent = formatQuotaBadgeText(q);
-  pill.className = 'quota-pill ' + (remaining <= 0
+  const badgeText = formatQuotaBadgeText(q);
+  const cls = 'quota-pill ' + (remaining <= 0
     ? 'tier-empty'
     : (tier === 'Pro' ? 'tier-pro' : (tier === 'Starter' ? 'tier-starter' : 'tier-lead')));
 
-  if (hint) {
-    if (tier === 'Pro') hint.textContent = '영업일 1일 패스트트랙';
-    else if (tier === 'Starter') hint.textContent = '영업일 3일 이내 세팅';
-    else hint.textContent = '텍스트 5대 탭 무료 설계';
+  // 상단 헤더에서는 숨김 유지 (본문 상단 대청소) — DOM 값은 테스트 호환용으로 최신화
+  if (row) row.hidden = true;
+  if (pill) {
+    pill.textContent = badgeText;
+    pill.className = cls;
   }
+  if (hint) {
+    hint.textContent = '';
+    hint.hidden = true;
+  }
+  // STEP 5 최종 확인 화면에만 간결하게 노출
+  if (s5Row && s5Pill) {
+    s5Row.hidden = false;
+    s5Pill.textContent = badgeText;
+    s5Pill.className = cls;
+  }
+}
+
+/* ═══════════════ Part 4: 전면 블러 로딩 오버레이 + 실시간 진행 게이지 바 제어기 ═══════════════ */
+const LOADING_CTRL = { timer: null, hideTimer: null, pct: 0, active: false };
+
+function setLoadingProgress(pct) {
+  const clamped = Math.max(0, Math.min(100, Math.round(pct)));
+  LOADING_CTRL.pct = clamped;
+  const fill = $('#loading-gauge-fill');
+  const pctEl = $('#loading-gauge-pct');
+  if (fill) fill.style.width = clamped + '%';
+  if (pctEl) pctEl.textContent = clamped + '%';
+}
+
+function showLoadingOverlay(title, opts) {
+  opts = opts || {};
+  const overlay = $('#global-loading-overlay');
+  if (!overlay) return;
+  if (LOADING_CTRL.timer) { clearInterval(LOADING_CTRL.timer); LOADING_CTRL.timer = null; }
+  if (LOADING_CTRL.hideTimer) { clearTimeout(LOADING_CTRL.hideTimer); LOADING_CTRL.hideTimer = null; }
+
+  const titleEl = $('#loading-title');
+  const subEl = $('#loading-sub');
+  const iconEl = $('#loading-icon');
+  if (titleEl) titleEl.textContent = String(title || '잠시만 기다려 주세요');
+  if (subEl) subEl.textContent = String(opts.sub || '잠시만 기다려 주시면 바로 다음 화면이 열립니다');
+  if (iconEl) iconEl.textContent = String(opts.icon || '✨');
+
+  LOADING_CTRL.active = true;
+  setLoadingProgress(Number(opts.startPct) || 12);
+  overlay.hidden = false;
+
+  // 0% -> 92%까지 부드럽게 차오르는 실시간 진행 게이지
+  LOADING_CTRL.timer = setInterval(() => {
+    if (!LOADING_CTRL.active) return;
+    const cur = LOADING_CTRL.pct;
+    if (cur >= 92) return;
+    const step = cur < 45 ? 7 : (cur < 75 ? 4 : 1.8);
+    setLoadingProgress(Math.min(92, cur + step));
+  }, 240);
+}
+
+function hideLoadingOverlay(snapComplete) {
+  const overlay = $('#global-loading-overlay');
+  if (LOADING_CTRL.timer) { clearInterval(LOADING_CTRL.timer); LOADING_CTRL.timer = null; }
+  if (LOADING_CTRL.hideTimer) { clearTimeout(LOADING_CTRL.hideTimer); LOADING_CTRL.hideTimer = null; }
+  LOADING_CTRL.active = false;
+  if (!overlay || overlay.hidden) return;
+
+  if (snapComplete === false) {
+    overlay.hidden = true;
+    setLoadingProgress(0);
+    return;
+  }
+  setLoadingProgress(100);
+  LOADING_CTRL.hideTimer = setTimeout(() => {
+    if (!LOADING_CTRL.active) {
+      overlay.hidden = true;
+      setLoadingProgress(0);
+    }
+  }, 160);
 }
 
 function showAuthMessage(text, isErr) {
@@ -2030,10 +2505,15 @@ async function verifyUserAndQuotaWithBackend(authPayload) {
     return false;
   }
 
-  showAuthMessage('⏳ 카카오싱크 인증 및 이용 가능 횟수를 확인하고 있어요…', false);
+  const loginBtn = $('#btn-kakao-login');
+  if (loginBtn) loginBtn.disabled = true;
+  if ($('#auth-status-box')) $('#auth-status-box').hidden = true;
+  showLoadingOverlay('카카오 인증을 확인하고 있어요', { icon: '💬' });
   try {
     const res = await Toss.verifyUserAndQuota(proxyUrl, authPayload || {});
     if (!res || !res.ok || !res.verified) {
+      hideLoadingOverlay(false);
+      if (loginBtn) loginBtn.disabled = false;
       showAuthMessage((res && (res.error || res.message)) || '카카오싱크 인증에 실패했습니다. 다시 시도해 주세요.', true);
       return false;
     }
@@ -2062,6 +2542,8 @@ async function verifyUserAndQuotaWithBackend(authPayload) {
     // 서버 응답 기준 잔여 횟수 0회(한도 초과) 시 Step 1 진입 즉시 차단!
     if (res.allowed === false || quotaObj.allowed === false || Number(quotaObj.remaining) <= 0) {
       showQuotaBlockedGate(ST.quota);
+      hideLoadingOverlay(true);
+      if (loginBtn) loginBtn.disabled = false;
       return false;
     }
 
@@ -2075,8 +2557,12 @@ async function verifyUserAndQuotaWithBackend(authPayload) {
     };
 
     unlockPartnerApp(partnerInfo, ST.userToken || 'VERIFIED_KAKAO_SYNC', !!res.isAdminBypass, ST.quota);
+    hideLoadingOverlay(true);
+    if (loginBtn) loginBtn.disabled = false;
     return true;
   } catch (err) {
+    hideLoadingOverlay(false);
+    if (loginBtn) loginBtn.disabled = false;
     showAuthMessage('카카오싱크 인증 확인 중 오류가 발생했습니다. (' + err.message + ')', true);
     return false;
   }
@@ -2093,7 +2579,7 @@ async function verifyPartnerWithBackend(kakaoProfile) {
     showAuthMessage('인증 서버 주소(BACKEND_PROXY_URL)가 설정되지 않았습니다.', true);
     return false;
   }
-  showAuthMessage('⏳ 파트너 정보를 확인하고 있어요…', false);
+  showLoadingOverlay('파트너 정보를 확인하고 있어요', { icon: '💬' });
   try {
     const res = await Toss.verifyPartner(proxyUrl, {
       phone: normalizeKakaoPhone(p.phone || ''),
@@ -2104,11 +2590,14 @@ async function verifyPartnerWithBackend(kakaoProfile) {
       unlockPartnerApp(res.partnerInfo, res.partnerToken || 'VERIFIED_PARTNER', false, {
         tier: 'Starter', quotaType: 'MONTHLY', limit: 2, used: 0, remaining: 2, allowed: true
       });
+      hideLoadingOverlay(true);
       return true;
     }
+    hideLoadingOverlay(false);
     showAuthMessage((res && res.message) || '카카오로 다시 로그인해 주세요.', true);
     return false;
   } catch (err) {
+    hideLoadingOverlay(false);
     showAuthMessage('인증 확인 중 오류가 발생했습니다. (' + err.message + ')', true);
     return false;
   }
@@ -2119,6 +2608,8 @@ function getKakaoRedirectUri() {
 }
 
 function handleKakaoLoginClick() {
+  const loginBtn = $('#btn-kakao-login');
+  if (loginBtn && loginBtn.disabled) return;
   const jsKey = (PARTNER_BOT_CONFIG.KAKAO_JS_KEY || '').trim();
   if (!window.Kakao) {
     showAuthMessage('카카오 SDK를 불러오지 못했습니다. 네트워크 연결을 확인해 주세요.', true);
@@ -2134,6 +2625,10 @@ function handleKakaoLoginClick() {
     showAuthMessage('카카오싱크 앱 키(KAKAO_JS_KEY)가 아직 등록되지 않았습니다. 관리자에게 설정을 요청해 주세요.', true);
     return;
   }
+
+  // 클릭 즉시 중복 터치 차단 + 전면 블러 로딩 오버레이 표시
+  if (loginBtn) loginBtn.disabled = true;
+  showLoadingOverlay('카카오 로그인으로 이동하고 있어요', { icon: '💬' });
 
   // 카카오 JS SDK v2 표준 인가 코드(Kakao Sync OAuth) 리다이렉트 우선
   // (현재 앱 활성 필수 동의 항목 5종만 요청 — 이메일 및 미사용 항목 미요청)
@@ -2156,13 +2651,20 @@ function handleKakaoLoginClick() {
         if (accessToken) {
           verifyUserAndQuotaWithBackend({ accessToken: accessToken });
         } else {
+          hideLoadingOverlay(false);
+          if (loginBtn) loginBtn.disabled = false;
           showAuthMessage('카카오 액세스 토큰을 확인하지 못했습니다. 다시 시도해 주세요.', true);
         }
       },
       fail: function (err) {
+        hideLoadingOverlay(false);
+        if (loginBtn) loginBtn.disabled = false;
         showAuthMessage('카카오 로그인이 취소되었거나 실패했습니다: ' + JSON.stringify(err), true);
       }
     });
+  } else {
+    hideLoadingOverlay(false);
+    if (loginBtn) loginBtn.disabled = false;
   }
 }
 
@@ -2273,14 +2775,29 @@ function bypassAuthForAdmin(customBiz, customOwner, customTierMode) {
   }, 'ADMIN_LOCAL_BYPASS', true, mockQuota);
 }
 
-/* ═══════════════ 공통 네비게이션 & 진행률 바 ═══════════════ */
+/* ═══════════════ 공통 네비게이션 & 진행률 바 (한글 큼직한 위치 표기 + 통합 뒤로가기) ═══════════════ */
 const STAGE_LABELS = {
-  1: 'STEP 1 / 5 · 비즈니스 분야 선택',
-  2: 'STEP 2 / 5 · 맞춤 카톡 흐름 선택',
-  3: 'STEP 3 / 5 · 5단계 심층 컨설팅',
-  4: 'STEP 4 / 5 · 브랜드 스타일 담기',
-  5: 'STEP 5 / 5 · 최종 요약 확인'
+  1: '1단계 · 업종 선택',
+  2: '2단계 · 카톡 흐름 선택',
+  3: '3단계 · 맞춤 질문',
+  4: '4단계 · 브랜드 스타일',
+  5: '5단계 · 최종 확인'
 };
+
+function handleHeaderBackClick() {
+  if (ST.stage === 2) { goStage(1); return; }
+  if (ST.stage === 3) {
+    if (ST.qNum > 1) { jumpToInterviewQuestion(ST.qNum - 1); return; }
+    goStage(2);
+    return;
+  }
+  if (ST.stage === 4) { jumpToInterviewQuestion(Consult.TOTAL_Q); return; }
+  if (ST.stage === 5) {
+    if (ST.submitted) { resetConsultFlow(); return; }
+    renderStage4BrandAssets();
+    goStage(4);
+  }
+}
 
 function updateStickyCtaBar() {
   const bar = $('#sticky-cta-bar');
@@ -2298,7 +2815,7 @@ function updateStickyCtaBar() {
     $('#btn-to-stage2').disabled = isOtherNeedInput;
     $('#btn-to-stage2').textContent = isOtherNeedInput
       ? '세부 업종을 먼저 한 줄 적어주세요'
-      : '다음: 내 분야 맞춤 카톡 흐름 6가지 보기 →';
+      : '다음: 맞춤 카톡 흐름 보기 →';
     return;
   }
 
@@ -2311,7 +2828,7 @@ function updateStickyCtaBar() {
     cap.textContent = '✅ 선택됨: ' + (flow ? flow.title : '운영 흐름');
     const cta = $('#btn-to-stage3');
     cta.disabled = false;
-    cta.textContent = '이 흐름으로 심층 인터뷰 시작 →';
+    cta.textContent = '이 흐름으로 질문 시작하기 →';
     return;
   }
 
@@ -2338,14 +2855,21 @@ function goStage(n) {
   ST.stage = n;
   [1, 2, 3, 4, 5].forEach(i => { $('#stage-' + i).hidden = (i !== n); });
   let pct = n * 20;
-  let sub = pct + '%';
+  let labelText = STAGE_LABELS[n] || '';
   if (n === 3) {
     pct = 40 + Math.round((ST.qNum / Consult.TOTAL_Q) * 20);
-    sub = '질문 ' + ST.qNum + ' / ' + Consult.TOTAL_Q;
+    labelText = '질문 ' + ST.qNum + ' / ' + Consult.TOTAL_Q;
   }
-  $('#stage-progress-label').textContent = STAGE_LABELS[n] || '';
-  $('#stage-progress-sub').textContent = sub;
+  $('#stage-progress-label').textContent = labelText;
+  const subEl = $('#stage-progress-sub');
+  if (subEl) { subEl.textContent = ''; subEl.hidden = true; }
   $('#stage-progress-fill').style.width = pct + '%';
+
+  const hdrBack = $('#btn-header-back');
+  if (hdrBack) {
+    hdrBack.classList.toggle('is-placeholder', n <= 1);
+  }
+
   $('#stage-viewport').scrollTop = 0;
   updateStickyCtaBar();
 }
@@ -2363,6 +2887,7 @@ function resetConsultFlow() {
   ST.examplesPrefetchPromise = null;
   ST.submitted = false;
   ST.qNum = 1;
+  ST.pinnedConsultNotes = [];
   ST.answers = {};
   ST.currentQPack = null;
   ST.guardrail = null;
@@ -2486,16 +3011,13 @@ async function proceedToStage2() {
     applyBrandColorTheme(defCol.id, defCol.label, defCol.primary, defCol.secondary, false);
   }
 
-  // 1차로 구어체 정제 + 도메인 격리된 깔끔한 로컬 6대 플로우를 즉시 렌더링 (절대 원문 접두사 결합 금지)
+  // 1차로 구어체 정제 + 도메인 격리된 깔끔한 로컬 6대 플로우 준비
   ST.customFlows = Consult.getFlowsForContext(ST.sectorId, ST.rawSubIndustry || ST.subIndustry);
-  renderStage2Flows();
-  goStage(2);
 
-  // AI가 연결돼 있으면 입력문 정제({cleanIndustryLabel, extractedGoal}) + 도메인 100% 전용 6대 플로우 실시간 생성
+  // AI가 연결돼 있으면 전면 블러 로딩 오버레이 상태에서 맞춤 6대 플로우를 완성한 뒤 STEP 2로 전환
   const hasAi = Consult.hasAiAvailable({ mode: getAiMode(), proxyUrl: getProxyUrl() });
   if (hasAi && rawSub.length >= 2) {
-    const loadBanner = $('#flow-loading-banner');
-    loadBanner.hidden = false;
+    showLoadingOverlay((ST.subIndustry || '맞춤 업종') + ' 카톡 흐름을 준비 중이에요', { icon: '✨' });
     try {
       const res = await Consult.generateSubIndustryFlows({
         mode: getAiMode(),
@@ -2505,7 +3027,7 @@ async function proceedToStage2() {
         rawSubIndustry: ST.rawSubIndustry,
         subIndustry: ST.subIndustry
       });
-      if (ST.stage === 2 && res) {
+      if (res) {
         if (res.cleanIndustryLabel) {
           ST.subIndustry = res.cleanIndustryLabel;
           syncHeaderBadge();
@@ -2516,12 +3038,17 @@ async function proceedToStage2() {
         if (Array.isArray(res.flows) && res.flows.length === 6) {
           ST.customFlows = res.flows;
         }
-        renderStage2Flows();
       }
     } finally {
-      loadBanner.hidden = true;
+      renderStage2Flows();
+      goStage(2);
+      hideLoadingOverlay(true);
     }
+    return;
   }
+
+  renderStage2Flows();
+  goStage(2);
 }
 
 /* ═══════════════ STEP 2: 3초 스캔 조합형 아코디언 + 1줄 화살표 Flow Pill + BEST 하이라이트 ═══════════════ */
@@ -2552,12 +3079,12 @@ function renderStage2Flows(recommendedId) {
       badgeHtml = '<span class="flow-badge">' + esc(f.badge) + '</span>';
     }
 
-    // 1줄 화살표 키워드 흐름도 (기본 접힘 상태에서도 항상 노출 ➔ 1초 스캔)
-    const pills = Consult.buildFlowPills(f);
+    // 핵심 2개 태그로 단순화한 화살표 키워드 흐름도 (50대+ 한눈에 스캔)
+    const pills = Consult.buildFlowPills(f).slice(0, 2);
     const pillsHtml = '<div class="flow-pills-row">' +
       pills.map((p, pi) =>
         '<span class="flow-pill p' + (pi + 1) + '">' + p.icon + ' ' + esc(p.text) + '</span>' +
-        (pi < 2 ? '<span class="flow-arrow">➔</span>' : '')
+        (pi < pills.length - 1 ? '<span class="flow-arrow">➔</span>' : '')
       ).join('') +
     '</div>';
 
@@ -2654,7 +3181,7 @@ async function runFlowAiRecommend() {
   ST.isBusy = true;
   const btn = $('#btn-run-flow-ai');
   btn.disabled = true;
-  btn.textContent = '⏳ 대표님 목표에 딱 맞는 흐름을 분석하고 있어요…';
+  showLoadingOverlay('목표에 맞는 카톡 흐름을 찾고 있어요', { icon: '✨' });
   try {
     const res = await Consult.recommendFlow({
       mode: getAiMode(),
@@ -2680,6 +3207,7 @@ async function runFlowAiRecommend() {
     ST.isBusy = false;
     btn.disabled = false;
     btn.textContent = '✨ AI 맞춤 흐름 추천받기';
+    hideLoadingOverlay(true);
   }
 }
 
@@ -2775,9 +3303,11 @@ function renderCurrentQuestionPack(pack) {
   renderQDots();
   renderPrevAnswersTray();
 
-  $('#q-step-badge').textContent = '질문 ' + pack.qNum + ' / ' + Consult.TOTAL_Q + ' · ' + pack.label;
+  $('#q-step-badge').textContent = '질문 ' + pack.qNum + ' / ' + Consult.TOTAL_Q;
   $('#q-question-text').innerHTML = Toss.toHtml(pack.questionText);
-  $('#q-usage-hint').textContent = '💡 ' + pack.usageHint;
+  // 기획자용 부연 해설 전면 제거 (DOM ID는 유지하되 빈 텍스트·숨김 처리)
+  const hintEl = $('#q-usage-hint');
+  if (hintEl) { hintEl.textContent = ''; hintEl.hidden = true; }
 
   // Tap-to-Edit 예시 칩 렌더링 (Q1이고 STEP 1 입력문에서 목표가 추출됐으면 상단 초안 힌트 칩 함께 제공!)
   const chipsWrap = $('#example-chips-list');
@@ -2785,28 +3315,28 @@ function renderCurrentQuestionPack(pack) {
   if (pack.qNum === 1 && ST.extractedGoal && !ST.answers[1]) {
     goalHintHtml =
       '<button type="button" class="example-chip" id="btn-fill-extracted-goal" style="border-color:#93C5FD;background:#EFF6FF">' +
-        '<span><strong style="color:var(--blue-dk)">🎯 방금 적어주신 목표 초안:</strong> ' + esc(ST.extractedGoal) + '</span>' +
-        '<span class="example-chip-tag">바로 채우기</span>' +
+        '<span><strong style="color:var(--blue-dk)">🎯 방금 적어주신 목표:</strong> ' + esc(ST.extractedGoal) + '</span>' +
+        '<span class="example-chip-tag">이 내용 채우기</span>' +
       '</button>';
   }
   chipsWrap.innerHTML = goalHintHtml + (pack.exampleChips || []).slice(0, 3).map((chip, idx) =>
     '<button type="button" class="example-chip" data-ex-idx="' + idx + '">' +
       '<span>' + esc(chip) + '</span>' +
-      '<span class="example-chip-tag">채우기</span>' +
+      '<span class="example-chip-tag">이 내용 채우기</span>' +
     '</button>'
   ).join('');
 
   const goalHintBtn = $('#btn-fill-extracted-goal');
   if (goalHintBtn) {
     goalHintBtn.onclick = () => {
-      fillTextareaWithDraft(ST.extractedGoal, '✅ STEP 1에서 적어주신 목표 초안이 채워졌어요! 구체적인 내용을 덧붙여 제출해 주세요.');
+      fillTextareaWithDraft(ST.extractedGoal, '✅ 적어주신 목표가 입력칸에 채워졌어요!');
     };
   }
 
   $$('[data-ex-idx]', chipsWrap).forEach(btn => {
     btn.onclick = () => {
       const txt = pack.exampleChips[Number(btn.dataset.exIdx)];
-      fillTextareaWithDraft(txt, '✏️ 예시가 아래 칸에 채워졌어요! 내 상황에 맞게 고쳐서 제출해 주세요.');
+      fillTextareaWithDraft(txt, '✏️ 예시가 입력칸에 채워졌어요! 필요하면 고쳐서 눌러주세요.');
     };
   });
 
@@ -2817,8 +3347,8 @@ function renderCurrentQuestionPack(pack) {
 
   $('#btn-prev-q').hidden = pack.qNum <= 1;
   $('#btn-submit-q').textContent = pack.qNum >= Consult.TOTAL_Q
-    ? '답변 완료 · 브랜드 스타일 담기 →'
-    : '답변 완료 · 다음 질문 →';
+    ? '브랜드 스타일 담기 →'
+    : '다음 질문 →';
 
   goStage(3);
 }
@@ -2827,43 +3357,47 @@ async function startStage3Interview() {
   if (!ST.sectorId || !ST.flowId) return;
   ST.qNum = 1;
   ST.guardrail = null;
-  goStage(3);
-  const subLabel = ST.subIndustry || '대표님 업종';
-  $('#q-question-text').textContent = '⏳ "' + subLabel + '" 전용 Q1~Q5 맞춤 질문과 예시 3가지를 준비하고 있어요…';
-  $('#example-chips-list').innerHTML =
-    '<div class="example-chip" style="justify-content:center;color:var(--g500);cursor:default">⏳ ' + esc(subLabel) + ' 맞춤 예시를 불러오는 중…</div>';
+  const subLabel = ST.subIndustry || '맞춤 업종';
+
+  // 반쯤 로딩된 빈 입력창 노출 원천 차단: 전면 블러 로딩 오버레이에서 질문+예시 3종 모두 준비 후 전환!
   $('#btn-submit-q').disabled = true;
+  showLoadingOverlay(subLabel + ' 맞춤 질문을 준비 중이에요', { icon: '✨' });
 
-  const key = buildExamplesPrefetchKey(ST.sectorId, ST.subIndustry, ST.flowId);
-  if (ST.examplesPrefetchKey !== key || !ST.examplesPrefetchPromise) {
-    prefetchConsultExamplesForFlow(ST.flowId);
-  }
-  if (ST.examplesPrefetchPromise) {
-    await ST.examplesPrefetchPromise;
-  }
+  try {
+    const key = buildExamplesPrefetchKey(ST.sectorId, ST.subIndustry, ST.flowId);
+    if (ST.examplesPrefetchKey !== key || !ST.examplesPrefetchPromise) {
+      prefetchConsultExamplesForFlow(ST.flowId);
+    }
+    if (ST.examplesPrefetchPromise) {
+      await ST.examplesPrefetchPromise;
+    }
 
-  const pack = await Consult.getInitialQ1({
-    mode: getAiMode(),
-    proxyUrl: getProxyUrl(),
-    token: ST.partnerToken,
-    ownerName: ST.partnerInfo.ownerName,
-    sectorId: ST.sectorId,
-    rawSubIndustry: ST.rawSubIndustry,
-    subIndustry: ST.subIndustry,
-    extractedGoal: ST.extractedGoal,
-    flowId: ST.flowId,
-    customFlows: ST.customFlows,
-    customExamplesMap: ST.customExamplesMap,
-    customQ1Text: ST.customQ1Text
-  });
-  if (pack && pack.examplesMap) {
-    ST.customExamplesMap = pack.examplesMap;
+    const pack = await Consult.getInitialQ1({
+      mode: getAiMode(),
+      proxyUrl: getProxyUrl(),
+      token: ST.partnerToken,
+      ownerName: ST.partnerInfo.ownerName,
+      sectorId: ST.sectorId,
+      rawSubIndustry: ST.rawSubIndustry,
+      subIndustry: ST.subIndustry,
+      extractedGoal: ST.extractedGoal,
+      flowId: ST.flowId,
+      customFlows: ST.customFlows,
+      customExamplesMap: ST.customExamplesMap,
+      customQ1Text: ST.customQ1Text
+    });
+    if (pack && pack.examplesMap) {
+      ST.customExamplesMap = pack.examplesMap;
+    }
+    if (pack && pack.q1QuestionText) {
+      ST.customQ1Text = pack.q1QuestionText;
+    }
+    $('#btn-submit-q').disabled = false;
+    renderCurrentQuestionPack(pack);
+  } finally {
+    $('#btn-submit-q').disabled = false;
+    hideLoadingOverlay(true);
   }
-  if (pack && pack.q1QuestionText) {
-    ST.customQ1Text = pack.q1QuestionText;
-  }
-  $('#btn-submit-q').disabled = false;
-  renderCurrentQuestionPack(pack);
 }
 
 function jumpToInterviewQuestion(targetQ) {
@@ -2897,7 +3431,10 @@ async function submitCurrentInterviewAnswer() {
   const btn = $('#btn-submit-q');
   const origLabel = btn.textContent;
   btn.disabled = true;
-  btn.textContent = '⏳ 고마워톡 가능 여부 확인 및 다음 질문 준비 중…';
+  showLoadingOverlay(
+    ST.qNum >= Consult.TOTAL_Q ? '브랜드 스타일 화면을 준비 중이에요' : '다음 맞춤 질문을 준비 중이에요',
+    { icon: '✨' }
+  );
 
   try {
     const res = await Consult.evaluateAndAdvance({
@@ -2944,6 +3481,7 @@ async function submitCurrentInterviewAnswer() {
     if (ST.stage === 3 && ST.guardrail) {
       btn.textContent = origLabel;
     }
+    hideLoadingOverlay(true);
   }
 }
 
@@ -2968,8 +3506,202 @@ async function askFeatureQA(questionText) {
     proxyUrl: getProxyUrl(),
     token: ST.partnerToken
   });
-  waitEl.innerHTML = Toss.toHtml(ans);
+  const plainAns = String(ans || '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+  const pinSummary = shortLine(q + ' → ' + plainAns, 72);
+  const pinId = 'pin_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+  waitEl.innerHTML = '<div>' + Toss.toHtml(ans) + '</div>' +
+    '<button type="button" class="qa-pin-btn" data-pin-id="' + esc(pinId) + '">📌 이 내용을 이번 설계에 반영</button>';
+  const pinBtn = waitEl.querySelector('.qa-pin-btn');
+  if (pinBtn) {
+    pinBtn.onclick = () => togglePinnedConsultNote(pinId, pinSummary, pinBtn);
+  }
   stream.scrollTop = stream.scrollHeight;
+  return ans;
+}
+
+let botToastTimer = null;
+function showBotToast(msg) {
+  const el = $('#bot-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.hidden = false;
+  if (botToastTimer) clearTimeout(botToastTimer);
+  botToastTimer = setTimeout(() => { el.hidden = true; }, 2600);
+}
+
+function togglePinnedConsultNote(pinId, summaryText, btnEl) {
+  const text = String(summaryText || '').trim();
+  if (!text) return false;
+  const idx = ST.pinnedConsultNotes.findIndex(item => item.id === pinId || item.text === text);
+  let isNowPinned = false;
+  if (idx >= 0) {
+    ST.pinnedConsultNotes.splice(idx, 1);
+    isNowPinned = false;
+    showBotToast('설계 반영에서 제외했어요.');
+  } else {
+    ST.pinnedConsultNotes.push({ id: pinId || ('pin_' + Date.now()), text });
+    isNowPinned = true;
+    showBotToast('✅ 이번 캠페인 설계에 반영되었어요!');
+  }
+  if (btnEl) {
+    btnEl.classList.toggle('pinned', isNowPinned);
+    btnEl.textContent = isNowPinned ? '📌 설계에 반영됨 (다시 누르면 해제)' : '📌 이 내용을 이번 설계에 반영';
+  }
+  if (ST.stage === 5) renderStage5PinnedNotes();
+  return isNowPinned;
+}
+
+function renderStage5PinnedNotes() {
+  const box = $('#summary-pinned-notes');
+  if (!box) return;
+  if (!ST.pinnedConsultNotes || ST.pinnedConsultNotes.length === 0) {
+    box.hidden = true;
+    box.innerHTML = '';
+    return;
+  }
+  box.hidden = false;
+  box.innerHTML =
+    '<div class="sum-pinned-head"><span>📌 추가 반영된 대화 요청 (' + ST.pinnedConsultNotes.length + '건)</span><span>최종 설계안에 자동 반영</span></div>' +
+    '<div class="sum-pinned-chips">' +
+      ST.pinnedConsultNotes.map((item, idx) =>
+        '<span class="sum-pinned-chip"><span>' + esc(item.text) + '</span>' +
+        '<button type="button" data-unpin-idx="' + idx + '" aria-label="제외">✕</button></span>'
+      ).join('') +
+    '</div>';
+  $$('[data-unpin-idx]', box).forEach(btn => {
+    btn.onclick = () => {
+      const i = Number(btn.dataset.unpinIdx);
+      const removed = ST.pinnedConsultNotes.splice(i, 1)[0];
+      if (removed) {
+        const qaBtn = document.querySelector('.qa-pin-btn[data-pin-id="' + removed.id + '"]');
+        if (qaBtn) {
+          qaBtn.classList.remove('pinned');
+          qaBtn.textContent = '📌 이 내용을 이번 설계에 반영';
+        }
+      }
+      renderStage5PinnedNotes();
+      showBotToast('추가 요청을 제외했어요.');
+    };
+  });
+}
+
+function openFloatingWidget(tabName) {
+  const pill = $('#flt-pill-label');
+  if (pill) pill.classList.add('is-hidden');
+  $('#flt-sheet-backdrop').hidden = false;
+  switchFloatingTab(tabName || ST.fltActiveTab || 'qa');
+}
+
+function closeFloatingWidget() {
+  $('#flt-sheet-backdrop').hidden = true;
+}
+
+function switchFloatingTab(tabName) {
+  ST.fltActiveTab = (tabName === 'report') ? 'report' : 'qa';
+  const isQa = ST.fltActiveTab === 'qa';
+  $('#flt-tab-qa').classList.toggle('active', isQa);
+  $('#flt-tab-qa').setAttribute('aria-selected', isQa ? 'true' : 'false');
+  $('#flt-tab-report').classList.toggle('active', !isQa);
+  $('#flt-tab-report').setAttribute('aria-selected', !isQa ? 'true' : 'false');
+  $('#flt-panel-qa').hidden = !isQa;
+  $('#flt-panel-report').hidden = isQa;
+  if (isQa) {
+    const inp = $('#qa-input');
+    if (inp) inp.focus();
+  }
+}
+
+const REPORT_REASON_LABELS = {
+  ai_mismatch: '🤔 AI 문구가 내 업종과 안 맞아요',
+  ui_bug: '📱 버튼·화면 작동이 이상해요',
+  feature_wish: '💡 이런 기능도 원해요'
+};
+
+function buildBlackboxSnapshot() {
+  const ua = String((typeof navigator !== 'undefined' && navigator.userAgent) || '');
+  const curQ = (ST.currentQPack && ST.currentQPack.question)
+    ? String(ST.currentQPack.question).replace(/<[^>]+>/g, '').trim().slice(0, 140)
+    : '';
+  const curEx = (ST.currentQPack && Array.isArray(ST.currentQPack.examples))
+    ? ST.currentQPack.examples.slice(0, 3).map(s => String(s || '').slice(0, 70))
+    : [];
+  const sec = Consult.getSector(ST.sectorId);
+  const flow = Consult.getFlow(ST.sectorId, ST.flowId, ST.customFlows, ST.subIndustry);
+  return {
+    page: 'InterviewBot',
+    step: 'STEP ' + ST.stage + (ST.stage === 3 ? (' / Q' + ST.qNum) : ''),
+    stage: ST.stage,
+    qNum: ST.qNum,
+    partner: {
+      kakao_user_id: ST.partnerInfo.kakao_user_id || '',
+      name: ST.partnerInfo.ownerName || '',
+      businessName: ST.partnerInfo.businessName || '',
+      tier: (ST.quota && ST.quota.tier) || ST.partnerInfo.tier || '가망고객'
+    },
+    sector: sec ? (sec.id + ' (' + sec.shortTitle + ')') : (ST.sectorId || ''),
+    rawSubIndustry: ST.rawSubIndustry || '',
+    cleanLabel: ST.subIndustry || '',
+    extractedGoal: ST.extractedGoal || '',
+    selectedFlow: flow ? (flow.id + ' (' + flow.title + ')') : (ST.flowId || ''),
+    currentQuestion: curQ,
+    currentExamples: curEx,
+    pinnedNotesCount: ST.pinnedConsultNotes.length,
+    viewport: {
+      width: (typeof window !== 'undefined' && window.innerWidth) || 0,
+      height: (typeof window !== 'undefined' && window.innerHeight) || 0
+    },
+    isKakaoInApp: /KAKAOTALK/i.test(ua),
+    userAgent: ua.slice(0, 180),
+    timestamp: new Date().toISOString()
+  };
+}
+
+async function submitBlackboxReport() {
+  const btn = $('#btn-flt-report-submit');
+  const statusEl = $('#flt-report-status');
+  const memo = ($('#flt-report-memo') && $('#flt-report-memo').value || '').trim();
+  const reasonType = ST.reportReason || 'ai_mismatch';
+  const reasonLabel = REPORT_REASON_LABELS[reasonType] || reasonType;
+  const snapshot = buildBlackboxSnapshot();
+  const payload = {
+    action: 'report_issue',
+    reasonType,
+    reasonLabel,
+    memo,
+    blackbox_snapshot: snapshot
+  };
+
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ 1초 제보를 전송하고 있어요…'; }
+  if (statusEl) { statusEl.hidden = true; statusEl.classList.remove('err'); }
+
+  const proxyUrl = getProxyUrl();
+  let res = null;
+  try {
+    if (proxyUrl) {
+      res = await Toss.reportIssue(proxyUrl, payload);
+    } else {
+      res = { ok: true, simulated: true, sheetName: '파트너제보함' };
+    }
+    if (res && res.ok === false) {
+      throw new Error(res.error || '전송 실패');
+    }
+    if ($('#flt-report-memo')) $('#flt-report-memo').value = '';
+    if (statusEl) {
+      statusEl.hidden = false;
+      statusEl.textContent = '✅ 제보가 접수되었습니다! 현재 화면·업종 정보가 자동 전달되어 빠르게 개선할게요.';
+    }
+    showBotToast('✅ 1초 제보가 접수되었어요! 감사합니다.');
+    return { ok: true, payload, response: res };
+  } catch (err) {
+    if (statusEl) {
+      statusEl.hidden = false;
+      statusEl.classList.add('err');
+      statusEl.textContent = '⚠️ 전송 중 일시적 오류가 발생했어요: ' + (err.message || err);
+    }
+    return { ok: false, payload, error: err.message || String(err) };
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 1초 제보 보내기'; }
+  }
 }
 
 /* ═══════════════ STEP 4: 브랜드 디자인 재료 수집 (로고 · 컬러 · 실사 최대 3장) ═══════════════ */
@@ -3340,6 +4072,9 @@ function renderStage5SummaryCard() {
       '<div style="font-size:11.5px;font-weight:800;color:var(--g500)">🎨 브랜드 디자인 재료</div>' +
       '<div class="sum-brand-row">' + logoBadge + colorBadge + photoBadge + '</div>';
   }
+
+  // ④ Q&A [📌 이번 설계에 반영] 추가 요청 칩 렌더링
+  renderStage5PinnedNotes();
 }
 
 function resolveAbsoluteProposalUrl(rawUrl) {
@@ -3382,7 +4117,7 @@ async function generateAndSubmitCampaign() {
   ST.isBusy = true;
   const btn = $('#btn-submit-campaign');
   btn.disabled = true;
-  btn.textContent = '⏳ 텍스트 5대 탭 맞춤 기획안을 생성하고 있어요…';
+  showLoadingOverlay((ST.subIndustry || '대표님') + ' 맞춤 제안서를 만들고 있어요', { icon: '🚀' });
 
   // V2.3 원가 방어: 인터뷰 제출 단계에서는 텍스트 5대 탭 JSON만 생성 (이미지 생성 보류)
   const ctx = {
@@ -3396,6 +4131,7 @@ async function generateAndSubmitCampaign() {
     customFlows: ST.customFlows,
     answers: ST.answers,
     notes: ST.notes,
+    pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
     summary: ST.summary,
     partner: Object.assign({}, ST.partnerInfo, {
       kakao_user_id: ST.user.kakao_user_id || ST.partnerInfo.kakao_user_id || '',
@@ -3449,7 +4185,8 @@ async function generateAndSubmitCampaign() {
 
   ST.isBusy = false;
   btn.disabled = false;
-  btn.textContent = '✅ 이대로 제작 요청 제출하기';
+  btn.textContent = '✅ 이대로 제안서 만들기';
+  hideLoadingOverlay(true);
 
   // 서버단 한도 초과 차단 응답 처리
   if (cloudResult && cloudResult.quotaExceeded) {
@@ -3587,6 +4324,7 @@ async function generateAndSubmitCampaign() {
 /* ═══════════════ 이벤트 바인딩 ═══════════════ */
 $('#btn-kakao-login').onclick = handleKakaoLoginClick;
 $('#btn-admin-freepass').onclick = () => bypassAuthForAdmin();
+$('#btn-header-back').onclick = handleHeaderBackClick;
 $('#btn-reset').onclick = () => {
   if (!ST.verified) return;
   if (ST.quota && Number(ST.quota.remaining) <= 0) {
@@ -3645,9 +4383,23 @@ $('#btn-toggle-prev').onclick = () => {
   $('#prev-answers-arrow').textContent = b.hidden ? '▾' : '▴';
 };
 
-// 분리된 Q&A 모달
-$('#btn-open-qa').onclick = () => { $('#qa-modal').hidden = false; $('#qa-input').focus(); };
-$('#btn-close-qa').onclick = () => { $('#qa-modal').hidden = true; };
+// 우측 하단 채널톡형 플로팅 위젯 (💬 물어보기 + 📌 설계 핀 / 🚨 1초 제보)
+$('#flt-fab').onclick = () => openFloatingWidget();
+$('#flt-pill-label').onclick = () => openFloatingWidget();
+$('#btn-close-flt').onclick = closeFloatingWidget;
+$('#flt-sheet-backdrop').addEventListener('click', e => {
+  if (e.target === $('#flt-sheet-backdrop')) closeFloatingWidget();
+});
+$$('[data-flt-tab]').forEach(btn => {
+  btn.onclick = () => switchFloatingTab(btn.dataset.fltTab);
+});
+$$('[data-report-reason]').forEach(btn => {
+  btn.onclick = () => {
+    ST.reportReason = btn.dataset.reportReason || 'ai_mismatch';
+    $$('[data-report-reason]').forEach(b => b.classList.toggle('selected', b === btn));
+  };
+});
+$('#btn-flt-report-submit').onclick = submitBlackboxReport;
 $$('.qa-faq-chip').forEach(ch => {
   ch.onclick = () => askFeatureQA(ch.textContent);
 });
@@ -3795,12 +4547,22 @@ window.BOT = {
   startStage3Interview,
   submitCurrentInterviewAnswer,
   askFeatureQA,
+  showLoadingOverlay,
+  hideLoadingOverlay,
+  handleHeaderBackClick,
+  openFloatingWidget,
+  closeFloatingWidget,
+  switchFloatingTab,
+  togglePinnedConsultNote,
+  buildBlackboxSnapshot,
+  submitBlackboxReport,
   enterStage5Summary,
   generateAndSubmitCampaign,
   buildCampaignMasterJson: () => ST.lastGeneratedCampaign || Consult.assembleCampaign(null, {
     skipImageGen: true,
     sectorId: ST.sectorId, subIndustry: ST.subIndustry, flowId: ST.flowId,
-    answers: ST.answers, partner: ST.partnerInfo, brandAssets: {
+    answers: ST.answers, pinnedConsultNotes: ST.pinnedConsultNotes.map(x => x.text),
+    partner: ST.partnerInfo, brandAssets: {
       logoBase64: ST.brandAssets.logoBase64, primaryColor: ST.brandAssets.primaryColor,
       secondaryColor: ST.brandAssets.secondaryColor, photos: ST.brandAssets.photos.filter(Boolean),
       photoMode: ST.brandAssets.photos.some(Boolean) ? 'uploaded' : 'ai_auto'

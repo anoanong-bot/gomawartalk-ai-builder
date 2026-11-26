@@ -582,9 +582,10 @@ function doGet(e) {
       return jsonResponse_({
         ok: true,
         service: "Gomawartalk Backend_Proxy",
-        version: "V2.5-0",
+        version: "V2.6-0",
         defaultModel: DEFAULT_GEMINI_MODEL,
         currentMonth: getCurrentYearMonth_(),
+        webhookConfigured: !!getGoogleChatWebhookUrl_(),
         timestamp: new Date().toISOString()
       });
     }
@@ -1742,6 +1743,7 @@ function handleSubmitCampaign_(body) {
       partner.sub_industry || partner.industry_label || partner.industry_code || ""
     ).trim();
 
+    var writeRowNum = -1;
     if (sheet) {
       try {
         var logText = appendLogEntry_(
@@ -1783,7 +1785,6 @@ function handleSubmitCampaign_(body) {
         ];
 
         // 1인 1행 Strict Upsert: 기존 동일인 행이 있으면 무조건 제자리 업데이트 (등급 보존 + 이전 이력 로그 누적)
-        var writeRowNum = -1;
         if (lookup && lookup.matchedIndices.length > 0) {
           writeRowNum = lookup.matchedIndices[0];
           var prevRow = sheet.getRange(writeRowNum, 1, 1, CONTROL_HEADERS_V23.length).getValues()[0];
@@ -1853,11 +1854,8 @@ function handleSubmitCampaign_(body) {
     }
   }
 
-  // (4) 구글 챗 알림 — 유료 파트너(Starter/Pro)는 즉시 알림, 가망고객은 침묵 원칙(ALERT_ON_LEAD_SUBMIT="true"일 때만 발송)
-  var alertOnLead = (getProp_("ALERT_ON_LEAD_SUBMIT", "false").toLowerCase() === "true");
-  if (isPaidTier_(userTier) || alertOnLead) {
-    sendGoogleChatAlert_(partner, meta, fileName, savedFile.getId(), userTier, proposalUrl);
-  }
+  // (4) 구글 챗 즉시 알림 — 가망고객·Starter·Pro 등급 구분 없이 신규 인터뷰 접수 시 무조건 즉시 발송
+  sendGoogleChatAlert_(partner, meta, fileName, savedFile.getId(), userTier, proposalUrl, writeRowNum);
 
   return {
     ok: true,
@@ -2022,12 +2020,34 @@ function handleConfirmProposal_(body) {
  * 7. Google Chat 웹훅 & 3회 연속 에러 회로 차단기 (Silent Circuit Breaker)
  *    웹훅 오류가 발생해도 시트/드라이브 저장은 100% 성공 처리
  * ========================================================================= */
+function getGoogleChatWebhookUrl_() {
+  var primary = String(getProp_("GOOGLE_CHAT_WEBHOOK_URL", "") || "").trim();
+  if (primary) return primary;
+  var alias1 = String(getProp_("GCHAT_WEBHOOK_URL", "") || "").trim();
+  if (alias1) return alias1;
+  var alias2 = String(getProp_("CHAT_WEBHOOK_URL", "") || "").trim();
+  if (alias2) return alias2;
+  return "";
+}
+
 function postGoogleChatWebhook_(textMessage, sheetRowForLog) {
   try {
-    var webhookUrl = getProp_("GOOGLE_CHAT_WEBHOOK_URL", "");
+    var webhookUrl = getGoogleChatWebhookUrl_();
     if (!webhookUrl) {
-      Logger.log("[GoogleChat] GOOGLE_CHAT_WEBHOOK_URL 미설정 — 알림 생략");
-      return { ok: false, skipped: true };
+      var missingMsg = "[⚠️구글챗미발송: 스크립트속성 GOOGLE_CHAT_WEBHOOK_URL 미등록]";
+      Logger.log("[GoogleChat] " + missingMsg);
+      if (sheetRowForLog && sheetRowForLog > 0) {
+        try {
+          var sheet = getOrInitControlSheet_();
+          if (sheet) {
+            var prevCell = String(sheet.getRange(sheetRowForLog, COL_STATUS_LOG + 1).getValue() || "");
+            sheet.getRange(sheetRowForLog, COL_STATUS_LOG + 1).setValue(appendLogEntry_(prevCell, missingMsg));
+          }
+        } catch (logErr) {
+          Logger.log("[GoogleChat Missing Log Warning] " + logErr);
+        }
+      }
+      return { ok: false, skipped: true, reason: "WEBHOOK_URL_MISSING" };
     }
 
     var res = UrlFetchApp.fetch(webhookUrl, {
@@ -2080,27 +2100,30 @@ function recordCircuitBreakerError_(channelName, errSummary, sheetRowForLog) {
   }
 }
 
-function sendGoogleChatAlert_(partner, meta, fileName, fileId, tier, proposalUrl) {
+function sendGoogleChatAlert_(partner, meta, fileName, fileId, tier, proposalUrl, sheetRowForLog) {
   try {
     var builderUrl = getProp_("BUILDER_URL", "LandingBuilder.html");
-    var tierLabel = tier ? ("[" + tier + "] ") : "";
-    var planBadge = partner.pro_upgrade_requested
-      ? (String(partner.current_plan || tier || "Starter") + " -> Pro 업그레이드 신청!")
-      : String(partner.current_plan || tier || "Starter");
+    var ss = getControlSpreadsheet_();
+    var sheetUrl = ss ? ss.getUrl() : "";
+    var brandName = String((meta && meta.brand_name) || (partner && partner.channel_name) || "상호 미입력").trim();
+    var industryText = String((partner && (partner.sub_industry || partner.sector_label || partner.industry_code)) || "-").trim();
+    var flowText = String((partner && (partner.flow_title || partner.track_id)) || "").trim();
+    var industryFlow = flowText ? (industryText + " / " + flowText) : industryText;
 
     var text =
-      "[신규 캠페인 접수] " + tierLabel + (partner.channel_name || "채널명 미입력") + "\n" +
-      "- 대표자: " + (partner.owner_name || "-") + " (" + (partner.phone || "-") + ")\n" +
-      "- 등급 / 플랜: " + (tier || TIER_LEAD) + " / " + planBadge + "\n" +
-      "- 업종 / 트랙: " + (partner.sub_industry || partner.industry_code || "-") + " / " + (partner.track_id || "-") + "\n" +
-      "- 모바일 웹진: " + (meta.use_webzine ? "함께 제작 (ON)" : "미사용 (OFF)") + "\n" +
-      "- 저장 파일: " + fileName + " (ID: " + fileId + ")\n" +
-      "- 제안서 URL: " + (proposalUrl || buildProposalUrl_(fileId)) + "\n" +
-      "- 조종석 바로가기: " + builderUrl;
+      "🔔 [신규 인터뷰 접수 — 24시간 내 제안서 검토·발송 대기]\n" +
+      "- 상호·브랜드명: " + brandName + "\n" +
+      "- 파트너: " + ((partner && partner.owner_name) || "-") + " (" + ((partner && partner.phone) || "-") + ") · 등급: [" + (tier || TIER_LEAD) + "]\n" +
+      "- 업종·선택 흐름: " + industryFlow + "\n" +
+      "- 제안서 검수 링크: " + (proposalUrl || buildProposalUrl_(fileId)) + "\n" +
+      "- 관제탑 시트 바로가기: " + (sheetUrl || "스프레드시트 직접 열기") + "\n" +
+      "- 대표님 조종석: " + builderUrl + "\n" +
+      "- 저장 파일: " + fileName + " (ID: " + fileId + ")";
 
-    postGoogleChatWebhook_(text, -1);
+    return postGoogleChatWebhook_(text, sheetRowForLog || -1);
   } catch (chatErr) {
     Logger.log("[sendGoogleChatAlert_ Circuit Breaker] " + chatErr);
+    return { ok: false };
   }
 }
 
@@ -2111,7 +2134,7 @@ function sendHumanQaReadyAlert_(info) {
     var sheetUrl = ss ? ss.getUrl() : "";
 
     var text =
-      "[HUMAN_QA_READY] 가망고객 결제·세팅 요청 도착!\n" +
+      "🚀 [세팅 확정 신청 도착] [HUMAN_QA_READY]\n" +
       "- 고객명: " + (info.customerName || "-") + " (" + (info.customerPhone || "-") + ")\n" +
       "- 업종: " + (info.industry || "-") + "\n" +
       "- 현재 시트 등급: " + (info.currentTier || TIER_LEAD) + " -> 희망 요금제: " + (info.selectedPlan || TIER_STARTER) + "\n" +
@@ -2255,7 +2278,7 @@ function handleReportIssue_(body) {
   if (isUrgentType) {
     try {
       var chatMsg =
-        "[🚨파트너 현장 제보 도착]\n" +
+        "🚨 [파트너 현장 제보] 파트너 현장 제보 도착\n" +
         "- 제보유형: " + reasonLabel + "\n" +
         "- 화면·단계: " + pageAndStep + "\n" +
         "- 파트너: " + partnerInfo + "\n" +
@@ -2486,7 +2509,7 @@ function callGemini_(promptText, systemPrompt, temperature, maxTokens, responseM
   var cb = recordCircuitBreakerError_("GEMINI", "HTTP " + lastCode + " " + String(lastText || "").slice(0, 120), -1);
   if (cb && cb.tripped) {
     postGoogleChatWebhook_(
-      "[CIRCUIT_BREAKER] Gemini API 3회 연속 오류 감지!\n- HTTP " + lastCode + ": " + String(lastText || "").slice(0, 160),
+      "🚨 [회로차단] [CIRCUIT_BREAKER] Gemini API 3회 연속 오류 감지!\n- HTTP " + lastCode + ": " + String(lastText || "").slice(0, 160),
       -1
     );
   }
@@ -2557,4 +2580,30 @@ function handlePinpointEdit_(body) {
     return { ok: false, error: "AI 응답에서 JSON을 추출하지 못했습니다.", raw: raw };
   }
   return { ok: true, updatedData: updated };
+}
+
+/* =========================================================================
+ * 9. 대표님 구글 챗 웹훅 1초 진단 함수 (Apps Script 에디터에서 직접 실행)
+ * ========================================================================= */
+function testGoogleChatWebhook() {
+  var webhookUrl = getGoogleChatWebhookUrl_();
+  if (!webhookUrl) {
+    var msg = "[testGoogleChatWebhook] 스크립트 속성에 GOOGLE_CHAT_WEBHOOK_URL(또는 GCHAT_WEBHOOK_URL / CHAT_WEBHOOK_URL)이 등록되어 있지 않습니다.";
+    Logger.log(msg);
+    return { ok: false, webhookConfigured: false, message: msg };
+  }
+  var nowStr = getNowDisplay_();
+  var text =
+    "🔔 [고마워톡 웹훅 진단 성공]\n" +
+    "- 시각: " + nowStr + "\n" +
+    "- 상태: GOOGLE_CHAT_WEBHOOK_URL 정상 연결 확인 완료\n" +
+    "- 안내: 이제 인터뷰봇 신규 접수·세팅 확정·현장 제보 알림이 즉시 도착합니다.";
+  var result = postGoogleChatWebhook_(text, -1);
+  Logger.log("[testGoogleChatWebhook] 결과: " + JSON.stringify(result));
+  return {
+    ok: !!(result && result.ok),
+    webhookConfigured: true,
+    code: result && result.code ? result.code : 0,
+    result: result
+  };
 }

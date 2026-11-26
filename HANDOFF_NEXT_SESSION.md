@@ -1,7 +1,7 @@
 # 🤝 다음 세션 인수인계서 (`HANDOFF_NEXT_SESSION.md`)
 
-- **최종 갱신일시:** 2026-11-26 (KST · V2.5-2 모바일 실서버 UI 깨짐 보정 — 2단계 카드 Eyebrow 배지 분리 + 4단계 상호명 필수 입력·'OOO 대표님' 폴백 제거 + 단계 상단 잘림 & 플로팅 런처 124px·3.5초 자동접힘 완료)
-- **기준 버전:** Master PRD V2.5 / `Proposal.html` V2.5 / `Backend_Proxy.gs` V2.5-0 (V2.2~V2.4 As-Built 100% 무손실 보존)
+- **최종 갱신일시:** 2026-11-26 (KST · V2.6-0 인터뷰봇 신규 접수 구글챗 즉시 알림 복구 + Proposal 플래그십 332px 슬림 목업·순정 카톡 100% 복원·외부 리모컨/2카드 부가기능 분리 + 동적 발송 주기(월간/주간/행사/단기)·16:9 유튜브 영상 카드 시뮬레이션 완료)
+- **기준 버전:** Master PRD V2.6 / `Proposal.html` V2.6 / `Backend_Proxy.gs` V2.6-0 (V2.2~V2.5 As-Built 100% 무손실 보존)
 - **본체 프로젝트 완공 목표일:** **2026년 11월 30일(월)** *(개발 팀장님 본체 어드민 내 구글 폼·시트 연동 마감일 **12월 7일**과 별도 구분)*
 - **핵심 워크스페이스:** `c:\gomawartalk-ai-builder`
 - **실서버 배포 URL:** `https://anoanong-bot.github.io/gomawartalk-ai-builder/`
@@ -60,6 +60,11 @@
    - **2단계 흐름 카드 제목 세로 꺾임 해결 (`InterviewBot.html`):** 배지 문구를 `🔥 인기 1순위 · 가장 많이 선택`으로 간결화하고 `.flow-eyebrow` 상단 줄로 분리해 아래 카드 제목(`19.5px`)이 가로 폭 100% 사용.
    - **4단계 상호명·브랜드명 직접 입력칸 신설 & `'OOO 대표님'` 폴백 제거 (`InterviewBot.html`, `RagInterviewEngine.js`, `Proposal.html`, `LandingBuilder.html`):** 4단계 최상단 1번 항목(`#brand-name-input`, `18px`, 필수 가드·텍스트 로고 실시간 미리보기, 기존 1~3번 ➔ 2~4번) 신설 및 `meta.brand_name`·`partner_info.channel_name`·`tab1_basic_settings.channel_name`·`Proposal.html` 채널명 최우선 바인딩.
    - **단계 전환 상단 잘림 & 플로팅 런처 간섭 보정 (`InterviewBot.html`):** `goStage()` 즉시 `window.scrollTo(0, 0)` + `padding-top: 26px`, 플로팅 런처 `bottom: calc(124px + env(safe-area-inset-bottom, 0px))` 및 `질문·오류제보` 캡슐 3.5초 후·스크롤 시 자동 접힘.
+11. **V2.6 구글 챗 즉시 알림 복구 · 플래그십 슬림 목업 · 순정 카톡 100% 복원 · 동적 발송 주기 & 월간 인터뷰 영상 시뮬레이터 *(2026-11-26 완료)*:**
+   - **`Backend_Proxy.gs` (`V2.6-0`):** `handleSubmitCampaign_`(`save_intake` / `submit_campaign`) 시 등급 필터 없이 **전 등급(가망고객 포함) 즉시 `🔔 [신규 인터뷰 접수 — 24시간 내 제안서 검토·발송 대기]` 구글 챗 발송** 복구. 4종 알림 헤더 명확 구분, `getGoogleChatWebhookUrl_()` 다중 속성명(`GOOGLE_CHAT_WEBHOOK_URL` / `GCHAT_WEBHOOK_URL` / `CHAT_WEBHOOK_URL`) 지원, 미등록 시 시트 `O열 로그` 경고 기록, `doGet(action=ping)` `webhookConfigured` 불리언 진단 및 Apps Script 에디터 원클릭 `testGoogleChatWebhook()` 진단 함수 추가(백틱 0건).
+   - **`Proposal.html` 플래그십 슬림 목업 & 100% 순정 카카오톡 복원:** 외곽 `332px` 슬림 고정폭(`border-radius: 44px`, 다크 티타늄 메탈릭 더블 베젤 · Dynamic Island · SVG 상태바 · Home Indicator, 내부 `598px` 세로 비율) 적용. 폰 화면 내부에서 상단 고객 태그 바·플라잉 태그·`맞춤 반영` 하이라이트·채팅방 내 조작 버튼 100% 제거, 순정 카톡 헤더·한국어 전체 날짜 캡슐·순정 말풍선·하단 `메시지 입력` 바(`.kk-input-bar`) 100% 복원.
+   - **`Proposal.html` 외부 리모컨 · 외부 내비 · 독립 부가 기능 섹션 분리:** 폰 위 `[🎛️ 시뮬레이터 체험 리모컨]`(Step 1 방문자 전환 / Steps 3~5 고객 설문 자연어 버튼 `#ext-branch-pills`, `#태그` 코드 제거), 폰 아래 `[◀ 이전 장면]` / `[다음 발송 장면 보기 ▶]`(손가락 코치마크는 폰 내부 신청/설문 또는 외부 다음 버튼만 지목), 독립 섹션 `#sec-extra-features`(① 미친추 2회 자동 구제 다이어그램 ② 공용 vs Pro 내 로고 알림톡 좌우 비교 + Pro 확정 이동) 분리. 기존 14개 확정 폼 DOM ID 100% 보존.
+   - **동적 발송 주기 & 16:9 유튜브 영상 카드 (`engines/RagInterviewEngine.js` & `Proposal.html`):** `+1일/+3일` 하드코딩 폐지, `MONTHLY`(`+1개월 뒤`/`+2개월 뒤`)·`WEEKLY`·`EVENT`·`SHORT` 4대 주기를 스텝 바·타임워프·카톡 날짜 캡슐·타임라인 카드에 동적 반영. 영상·유튜브·월간 인터뷰 캠페인 감지 시 Step 1 16:9 영상 프리뷰 및 Steps 4·5 16:9 유튜브 썸네일 카드 + `[▶ 유튜브에서 영상 바로 보기]` 버튼 자동 렌더링.
 
 ---
 
@@ -77,9 +82,9 @@
    - [ ] `Backend_Proxy.gs`에서 카카오 사용자 정보 응답(`kakao_account.phone_number` 국제번호/하이픈 포맷 및 권한 미반환 케이스) 파싱 로직과 시트 기록 과정을 정밀 진단해 `01000000000` 폴백 발생 원인 완전 해소
 2. **[P0 · 인프라 영구 해결] 모바일 접속 시 카카오 REST API 호출 서버 유동 IP(`-401`) 영구 해결:**
    - [ ] Google Apps Script(`UrlFetchApp`) 아웃바운드 유동 IP 특성으로 인해 모바일 접속 시 카카오 REST API `-401` 차단이 발생하는 이슈의 영구 해결책 적용(허용 IP 정책 정리 또는 고정 프록시/인증 흐름 확정)
-3. **[P1 · 배포 반영] 로컬 커밋 원격 Push & GAS 웹 앱 V2.5-0 재배포:**
-   - [ ] GitHub Desktop에서 로컬 커밋을 `origin/master`로 Push (`InterviewBot.html`, `Proposal.html`, `LandingBuilder.html`, `engines/RagInterviewEngine.js`, `PRD.md`, `HANDOFF_NEXT_SESSION.md` 실서버 반영)
-   - [ ] Google Apps Script 편집기에 갱신된 `Backend_Proxy.gs` (`V2.5-0`) 반영 후 `[배포 > 배포 관리 > 새 버전]` 배포 (`report_issue` `파트너제보함` + `파트너캠페인관제탑` P~R 3컬럼 소켓 실서버 적용)
+3. **[P1 · 배포 반영] 로컬 커밋 원격 Push & GAS 웹 앱 V2.6-0 재배포:**
+   - [ ] GitHub Desktop에서 로컬 커밋을 `origin/master`로 Push (`Proposal.html`, `engines/RagInterviewEngine.js`, `Backend_Proxy.gs`, `PRD.md`, `HANDOFF_NEXT_SESSION.md` 실서버 반영)
+   - [ ] Google Apps Script 편집기에 갱신된 `Backend_Proxy.gs` (`V2.6-0`) 반영 후 `[배포 > 배포 관리 > 새 버전]` 배포 + 에디터에서 `testGoogleChatWebhook()` 1회 실행해 구글 챗 수신 확인 (`GOOGLE_CHAT_WEBHOOK_URL` 스크립트 속성 등록 여부 점검)
 4. **[P1 · 11/30 본체 완공 마감] 모바일 카톡 인앱 E2E 최종 검수:**
    - [ ] **11월 30일(월) 완공 목표:** 실전 스마트폰 카톡 인앱 브라우저에서 `카카오싱크 로그인(실제 전화번호 정상 기록)` ➔ `인터뷰봇 무료 체험 + 플로팅 위젯 Q&A 설계 핀·1초 제보` ➔ `파트너캠페인관제탑(18컬럼)·파트너제보함(9컬럼) 기록` ➔ `Proposal.html V2.5 시뮬레이터 & 1회 수정메모 연동·확정 제출` ➔ `Google Chat 알림 수신` ➔ `LandingBuilder.html 유료 조종석 포스트잇·AI 이미지 채우기`까지 전 구간 E2E 최종 검수 완료
 5. **[Post 11/30 · Wave 1 착수] 독자 외부 스토어 공식 앱 (Track B):**

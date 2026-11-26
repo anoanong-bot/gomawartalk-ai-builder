@@ -1248,6 +1248,133 @@
     return buildEnglishImagePrompt({ customInstruction: text, slotRole: 'slot1' });
   }
 
+  // ★ V2.6 동적 발송 주기 판별기 (+1일/+3일 하드코딩 폐지: 월간/주간/행사 D-Day/단기 자동 분기)
+  function detectCampaignCadence(seedText) {
+    var s = String(seedText || '');
+    if (/매월|월간|한\s*달|달마다|정기\s*인터뷰|월간지|매달|AFTER_1_MONTH/i.test(s)) {
+      return {
+        type: 'MONTHLY',
+        label: '월간 정기 연재',
+        step1: {
+          timing: 'IMMEDIATE',
+          shortLabel: '신청 즉시',
+          chatDateOffsetDays: 0,
+          sendTimeLabel: '방금 전'
+        },
+        step2: {
+          timing: 'AFTER_1_MONTH_1000',
+          shortLabel: '+1개월 뒤',
+          badge: '🗓️ 한 달이 지났습니다 · 월간 1호 정기 발송',
+          sub: '약속한 다음 달 정기 소식이 자동으로 도착합니다',
+          chatDateOffsetDays: 30,
+          sendTimeLabel: '오전 10:00'
+        },
+        step3: {
+          timing: 'AFTER_2_MONTHS_1000',
+          shortLabel: '+2개월 뒤',
+          badge: '🗓️ 두 달째 · 월간 2호 정기 연재',
+          sub: '매월 거르지 않고 관계가 깊어지는 정기 발송',
+          chatDateOffsetDays: 60,
+          sendTimeLabel: '오전 10:00'
+        }
+      };
+    }
+    if (/매주|주간|주보|챌린지|일주일|주\s*1회|AFTER_7_DAYS/i.test(s)) {
+      return {
+        type: 'WEEKLY',
+        label: '주간 정기 소통',
+        step1: {
+          timing: 'IMMEDIATE',
+          shortLabel: '신청 즉시',
+          chatDateOffsetDays: 0,
+          sendTimeLabel: '방금 전'
+        },
+        step2: {
+          timing: 'AFTER_7_DAYS_0900',
+          shortLabel: '다음 주(2회)',
+          badge: '📅 일주일이 지났습니다 · 주간 2회차 발송',
+          sub: '매주 정해진 시간에 다음 편 소식이 도착합니다',
+          chatDateOffsetDays: 7,
+          sendTimeLabel: '오전 09:00'
+        },
+        step3: {
+          timing: 'AFTER_14_DAYS_0900',
+          shortLabel: '2주 뒤(3회)',
+          badge: '📅 2주째 · 주간 3회차 정기 발송',
+          sub: '꾸준한 주간 소통으로 신뢰가 자연스럽게 쌓입니다',
+          chatDateOffsetDays: 14,
+          sendTimeLabel: '오전 09:00'
+        }
+      };
+    }
+    if (/개소식|세미나|설명회|집회|부흥회|행사|출판기념회|강연|포럼|콘서트|D-3|당일\s*안내|EVENT_D_MINUS/i.test(s)) {
+      return {
+        type: 'EVENT',
+        label: '행사 D-Day 리마인드',
+        step1: {
+          timing: 'IMMEDIATE',
+          shortLabel: '접수 확인',
+          chatDateOffsetDays: 0,
+          sendTimeLabel: '방금 전'
+        },
+        step2: {
+          timing: 'EVENT_D_MINUS_3_0900',
+          shortLabel: '행사 3일 전',
+          badge: '⏰ 행사 3일 전입니다 · 사전 리마인드',
+          sub: '참석 일정과 오시는 길 안내가 자동 발송됩니다',
+          chatDateOffsetDays: 4,
+          sendTimeLabel: '오전 09:00'
+        },
+        step3: {
+          timing: 'EVENT_DAY_MORNING_0830',
+          shortLabel: '행사 당일',
+          badge: '🔔 행사 당일 오전 · 현장 입장 안내',
+          sub: '놓치지 않도록 당일 최종 안내가 도착합니다',
+          chatDateOffsetDays: 7,
+          sendTimeLabel: '오전 08:30'
+        }
+      };
+    }
+    return {
+      type: 'SHORT',
+      label: '단기 집중 안내',
+      step1: {
+        timing: 'IMMEDIATE',
+        shortLabel: '즉시 알림톡',
+        chatDateOffsetDays: 0,
+        sendTimeLabel: '방금 전'
+      },
+      step2: {
+        timing: 'AFTER_1_DAY_0900',
+        shortLabel: '+1일 뒤',
+        badge: '🌙 하루가 지났습니다 · D+1 오전 09:00',
+        sub: '선택하신 답변에 맞춘 안내 메시지가 자동 발송됩니다',
+        chatDateOffsetDays: 1,
+        sendTimeLabel: '오전 09:00'
+      },
+      step3: {
+        timing: 'AFTER_3_DAYS_0900',
+        shortLabel: '+3일 전환',
+        badge: '🌅 3일이 지났습니다 · D+3 오전 10:00',
+        sub: '전환 유도 맞춤 안내가 자동 도착합니다',
+        chatDateOffsetDays: 3,
+        sendTimeLabel: '오전 10:00'
+      }
+    };
+  }
+
+  // ★ V2.6 영상·유튜브 콘텐츠 감지 (인터뷰 영상 / 유튜브 / 쇼츠 캠페인 시 16:9 유튜브 카드 & 앱 연결 버튼 자동 주입)
+  function detectVideoMedia(seedText) {
+    var s = String(seedText || '');
+    var isVideo = /영상|유튜브|youtube|쇼츠|shorts|인터뷰\s*영상|강의\s*영상|동영상|비디오/i.test(s);
+    return {
+      isVideo: isVideo,
+      badge: '▶ YOUTUBE',
+      buttonLabel: '▶ 유튜브에서 영상 바로 보기',
+      defaultUrl: 'https://www.youtube.com/watch?v=gomawartalk'
+    };
+  }
+
   TOSS.assembleCampaign = function (g, A, partner, extra) {
     g = (g && typeof g === 'object') ? g : {};
     extra = extra || {};
@@ -1303,7 +1430,18 @@
     var baseUrl = 'https://gomawartalk.com/webzine/' + ymd + '.html';
     var gSeq = g.tab4_sequence;
     var rawSeq = (Array.isArray(gSeq) && gSeq.length >= 2) ? gSeq.slice(0, 5) : fb.tab4_sequence;
+
+    var cadenceSeed = [
+      extra.cadenceSeed,
+      A && A[1], A && A[2], A && A[5], A && A[8],
+      channel, th.headline,
+      rawSeq.map(function (s) { return (s && (s.timing || '') + ' ' + (s.body_text || '') + ' ' + (s.content_intro || '') + ' ' + (s.headline || '')) || ''; }).join(' ')
+    ].filter(Boolean).join(' ');
+    var cadence = detectCampaignCadence(cadenceSeed);
+    var videoInfo = detectVideoMedia(cadenceSeed);
+
     var sequence = rawSeq.map(function (s, idx) {
+      var cadStep = idx === 0 ? cadence.step1 : (idx === 1 ? cadence.step2 : cadence.step3);
       var tt = s.template_type || (idx === 0 ? 'ALIMTALK' : idx === 1 ? 'FREE_FRIENDTALK' : 'BRAND_CAROUSEL');
       var cards = (Array.isArray(s.cards) && s.cards.length >= 2 ? s.cards : fb.tab4_sequence[2].cards).slice(0, 6).map(function (c, ci) {
         return {
@@ -1312,16 +1450,61 @@
         };
       });
       var anchor = '#sec-' + Math.min(idx + 1, 3);
+      var rawTiming = String(s.timing || '').trim();
+      var resolvedTiming = cadStep.timing;
+      if (cadence.type === 'SHORT' && rawTiming) resolvedTiming = rawTiming;
+
+      var mediaPreview = null;
+      var stepButtons = [{ name: tFirst(s.btn_name || '자세히 보기', 14), link_type: 'WL', webzine_anchor: anchor, url: baseUrl + anchor }];
+      var bodyText = s.body_text || ('#{이름}님! #{@' + firstSheet + '} 맞춤 안내를 보내드려요.');
+
+      if (videoInfo.isVideo && idx >= 1) {
+        var epTitle = idx === 1
+          ? (cadence.type === 'MONTHLY' ? ('[월간 1호 인터뷰] ' + tFirst(th.headline, 22)) : ('[핵심 인터뷰 영상] ' + tFirst(th.headline, 22)))
+          : (cadence.type === 'MONTHLY' ? ('[월간 2호 인터뷰] ' + tFirst(th.headline, 22)) : ('[후속 인터뷰 영상] ' + tFirst(th.headline, 22)));
+        mediaPreview = {
+          type: 'YOUTUBE',
+          badge: videoInfo.badge,
+          duration: idx === 1 ? '04:32' : '06:18',
+          title: tFirst(epTitle, 38),
+          url: videoInfo.defaultUrl
+        };
+        stepButtons = [{
+          name: videoInfo.buttonLabel,
+          link_type: 'WL',
+          youtube_app: true,
+          webzine_anchor: anchor,
+          url: videoInfo.defaultUrl
+        }];
+        if (cadence.type === 'MONTHLY' && (!s.body_text || /어제 받아보신/.test(s.body_text))) {
+          bodyText = idx === 1
+            ? ('#{이름}님, 이번 달 정기 인터뷰 영상이 도착했습니다. #{@' + firstSheet + '}에 맞춰 꼭 필요한 핵심 이야기만 담았어요.')
+            : ('#{이름}님, 두 번째 월간 인터뷰 영상이 공개되었습니다. 아래 버튼을 눌러 유튜브에서 바로 시청해 보세요.');
+        }
+      } else if (cadence.type === 'MONTHLY' && idx >= 1 && (!s.body_text || /어제 받아보신/.test(s.body_text))) {
+        bodyText = idx === 1
+          ? ('#{이름}님, 이번 달 첫 번째 정기 소식이 도착했습니다. #{@' + firstSheet + '} 맞춤 핵심 내용을 확인해 보세요.')
+          : ('#{이름}님, 두 번째 달 정기 소식이 도착했습니다. 매월 꾸준히 유익한 소식으로 찾아뵙겠습니다.');
+      }
+
       return {
-        step: idx + 1, timing: s.timing || (idx === 0 ? 'IMMEDIATE' : idx === 1 ? 'AFTER_1_DAY_0900' : 'AFTER_3_DAYS_0900'),
+        step: idx + 1,
+        timing: resolvedTiming,
+        step_short_label: cadStep.shortLabel,
+        timewarp_badge: cadStep.badge || '',
+        timewarp_sub: cadStep.sub || '',
+        chat_date_offset_days: cadStep.chatDateOffsetDays,
+        send_time_label: cadStep.sendTimeLabel,
+        media_preview: mediaPreview,
         template_type: tt, template_id: TOSS_TEMPLATE_ID,
         branches: [{
           priority: 1, condition_desc: s.condition_desc || '모두 (전체 신청자)', template_id: TOSS_TEMPLATE_ID,
           variables: { '콘텐츠 제목': tFirst(s.content_title || (th.headline + ' 신청 접수 확인'), 40), '콘텐츠 소개': s.content_intro || '신청하신 첫 자료 안내가 준비되었어요. (다음 소식 수신을 위해 상단 노란색 [채널 추가]를 꼭 눌러 주세요!)' },
           sheet_fallback_strings: fbSheet, image_ratio: '800x400',
           image_copy: { badge: s.badge || th.badge, headline: s.headline || th.headline, subtext: s.subtext || th.subtext },
-          body_text_400chars: s.body_text || ('#{이름}님! #{@' + firstSheet + '} 맞춤 안내를 보내드려요.'),
-          buttons: [{ name: tFirst(s.btn_name || '자세히 보기', 14), link_type: 'WL', webzine_anchor: anchor, url: baseUrl + anchor }],
+          media_preview: mediaPreview,
+          body_text_400chars: bodyText,
+          buttons: stepButtons,
           cards_800x600: cards
         }]
       };
@@ -1344,16 +1527,24 @@
         channel_name: channel,
         thumbnail_500x280: th, title_30chars: tFirst(gT1.title_30chars || fT1.title_30chars, 30), description: gT1.description || fT1.description,
         apply_btn_text: gT1.apply_btn_text || fT1.apply_btn_text, cancel_btn_text: gT1.cancel_btn_text || fT1.cancel_btn_text,
+        video_preview: videoInfo.isVideo ? { enabled: true, badge: videoInfo.badge, title: tFirst(th.headline + ' 소개 영상', 34), duration: '03:20', url: videoInfo.defaultUrl } : null,
         show_apply_btn: true, show_top_bar: true, form_only_mode: false, failure_notice_alimtalk: true, friendtalk_rescue_2times: true, marketing_consent_popup: true
       },
-      tab2_landing_content: { output_mode: 'FULL', bg_color: smartTheme.secondary, use_shorts_landing: false, shorts_youtube_url: '', blocks_1000px: blocks, branch_links: ['', '', '', '', ''] },
+      tab2_landing_content: { output_mode: 'FULL', bg_color: smartTheme.secondary, use_shorts_landing: !!videoInfo.isVideo, shorts_youtube_url: videoInfo.isVideo ? videoInfo.defaultUrl : '', blocks_1000px: blocks, branch_links: ['', '', '', '', ''] },
       tab3_application_form: {
         is_active: true,
         form_title: (g.tab3_application_form && g.tab3_application_form.form_title) || fb.tab3_application_form.form_title,
         form_guide_text: (g.tab3_application_form && g.tab3_application_form.form_guide_text) || fb.tab3_application_form.form_guide_text,
         questions: questions
       },
-      tab4_interval_messages: { quick_single_mode: false, exclude_days: ['SAT', 'SUN'], sequence: sequence },
+      tab4_interval_messages: {
+        quick_single_mode: false,
+        exclude_days: ['SAT', 'SUN'],
+        cadence_type: cadence.type,
+        cadence_label: cadence.label,
+        has_video_media: !!videoInfo.isVideo,
+        sequence: sequence
+      },
       tab5_date_messages: [{ quick_single_mode: false, send_datetime: ymd.slice(0, 4) + '-' + ymd.slice(4, 6) + '-' + ymd.slice(6, 8) + ' 10:00', title: tFirst(th.headline, 24) + ' — 일정 안내', template_type: 'BRAND_CAROUSEL', branches: [sequence[sequence.length - 1].branches[0]] }],
       webzine_studio: wz
     });
@@ -2390,7 +2581,16 @@
 
     var resolvedBrandName = String(ctx.brandName || brand.brandName || partner.businessName || partner.channel_name || '').trim();
     if (/대표님\s*$/.test(resolvedBrandName)) resolvedBrandName = '';
-    var master = TOSS.assembleCampaign(aiJson, mappedAnswers, partner, { brandName: resolvedBrandName || ctx.subIndustry || '' });
+    var cadenceSeed = [
+      ctx.subIndustry,
+      flow ? flow.title : '',
+      flow ? flow.summary : '',
+      A[1], A[2], A[3], A[4], A[5]
+    ].filter(Boolean).join(' ');
+    var master = TOSS.assembleCampaign(aiJson, mappedAnswers, partner, {
+      brandName: resolvedBrandName || ctx.subIndustry || '',
+      cadenceSeed: cadenceSeed
+    });
 
     // 입력된 상호명·브랜드명 최우선 바인딩 (meta.brand_name, partner_info.channel_name, tab1_basic_settings.channel_name)
     var finalBrand = resolvedBrandName || ctx.subIndustry || master.partner_info.channel_name || '맞춤 브랜드';
@@ -2536,6 +2736,8 @@
   RagInterviewEngine.getBridgeCampaign = getBridgeCampaign;
   RagInterviewEngine.discoverActiveModels = discoverActiveModels;
   RagInterviewEngine.detectSmartEditorialTheme = detectSmartEditorialTheme;
+  RagInterviewEngine.detectCampaignCadence = detectCampaignCadence;
+  RagInterviewEngine.detectVideoMedia = detectVideoMedia;
   RagInterviewEngine.callGemini = callGemini;
   RagInterviewEngine.generateImage = generateImage;
   RagInterviewEngine.translateKoreanToImagePrompt = translateKoreanToImagePrompt;

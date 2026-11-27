@@ -2239,7 +2239,7 @@ function handleReportIssue_(body) {
   var reasonLabel = String(
     body.reasonLabel ||
     body.reason_label ||
-    (isVipQuote ? "💎 VIP 맞춤구축·견적프로그램 문의 (300만 원+)" : (reasonType || "기타 제보"))
+    (isVipQuote ? "🛠️ 맞춤 제작·연동 문의 (100만 원+ · 전화인터뷰 요청)" : (reasonType || "기타 제보"))
   ).trim();
   var memo = String(body.memo || "").trim();
 
@@ -2296,8 +2296,8 @@ function handleReportIssue_(body) {
     var vipMemoParts = [];
     if (vipItemsText) vipMemoParts.push("[희망항목: " + vipItemsText + "]");
     if (memo) vipMemoParts.push(memo);
-    if (body.confirmedBudget300 !== false) vipMemoParts.push("[300만 원 이상 기준 확인]");
-    sheetMemo = vipMemoParts.join(" ") || "[300만 원 이상 맞춤구축 문의]";
+    vipMemoParts.push("[100만 원+ · 전화인터뷰 요청]");
+    sheetMemo = vipMemoParts.join(" ") || "[100만 원+ · 전화인터뷰 요청]";
   }
 
   var isInAppBool = !!(snapObj.isKakaoInApp || snapObj.kakaoInApp);
@@ -2310,7 +2310,7 @@ function handleReportIssue_(body) {
         selectedItems: vipItemsList,
         contactName: contactName,
         contactPhone: contactPhone,
-        confirmedBudget300: body.confirmedBudget300 !== false
+        minEstimateLabel: "100만 원+ · 전화인터뷰 요청"
       };
     }
     blackboxJsonStr = JSON.stringify(snapObj);
@@ -2363,11 +2363,11 @@ function handleReportIssue_(body) {
   if (isVipQuote) {
     try {
       var vipMsg =
-        "💎 [VIP 고액 맞춤구축·견적프로그램 문의 도착! (300만 원+)]\n" +
+        "🛠️ [맞춤 제작·연동 문의 도착! (100만 원+ · 전화인터뷰 요청)]\n" +
         "- 성함·연락처: " + (contactName || "-") + " (" + (contactPhone || "-") + ")\n" +
         "- 희망 구축 항목: " + (vipItemsText || "맞춤 상담 요청") + "\n" +
-        "- 요청 내용: " + (memo || "(상세 내용 상담 요청)") + "\n" +
-        "- 300만 원 이상 기준 확인: " + (body.confirmedBudget300 !== false ? "확인 완료" : "미확인") + "\n" +
+        "- 요청 내용: " + (memo || "(상세 내용 전화인터뷰 요청)") + "\n" +
+        "- 최소 견적 기준: 100만 원+ · 전화인터뷰 요청\n" +
         "- 유입 화면·업종: " + pageAndStep + " | " + contextSummary + "\n" +
         "- 시트기록: " + SHEET_NAME_REPORTS + (rowNumber > 0 ? (" " + rowNumber + "행") : " (시트 미연결)");
       var vipHookRes = postGoogleChatWebhook_(vipMsg, -1);

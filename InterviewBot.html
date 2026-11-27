@@ -495,7 +495,7 @@ button { cursor: pointer; border: none; background: none; }
 }
 .stage-pane {
   flex: 1 0 auto;
-  padding: 28px 18px 156px;
+  padding: 28px 18px 44px;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -2162,7 +2162,7 @@ button { cursor: pointer; border: none; background: none; }
   background: #FEF2F2; color: #991B1B; border-color: #FECACA;
 }
 
-/* VIP 맞춤구축 견적(300만 원+) 전용 폼 스타일 */
+/* 맞춤구축 상담 전용 폼 스타일 */
 .vip-intro-banner {
   padding: 14px 16px;
   border-radius: 15px;
@@ -2662,6 +2662,113 @@ button { cursor: pointer; border: none; background: none; }
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
 }
 .btn-thankyou-home:active { transform: scale(0.985); }
+
+/* ═════════ V3.3 고마워톡 공식 웹페이지 접이식 푸터 (Footer) ═════════ */
+.gmt-official-footer {
+  width: 100%;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  padding: 18px 18px calc(22px + env(safe-area-inset-bottom, 0px));
+  color: #64748B;
+  font-size: 13.5px;
+  line-height: 1.62;
+  word-break: keep-all;
+  flex-shrink: 0;
+}
+.gmt-official-footer.in-app-footer {
+  margin-top: 12px;
+  padding: 20px 18px calc(132px + env(safe-area-inset-bottom, 0px));
+}
+.gmt-footer-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 13.5px;
+  color: #64748B;
+}
+.gmt-footer-host {
+  font-weight: 600;
+  color: #475569;
+  margin-right: 4px;
+}
+.gmt-footer-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.gmt-footer-links a {
+  color: #475569;
+  text-decoration: none;
+  font-weight: 600;
+}
+.gmt-footer-links a:hover {
+  color: #0F172A;
+  text-decoration: underline;
+}
+.gmt-footer-sep {
+  color: #CBD5E1;
+  user-select: none;
+}
+.gmt-footer-biz-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #334155;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+.gmt-footer-biz-btn:hover { color: #0F172A; background: #E2E8F0; }
+.gmt-footer-arrow {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 1;
+}
+.gmt-footer-detail {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748B;
+  line-height: 1.65;
+  animation: fadeSlide 0.18s ease;
+}
+.gmt-footer-detail[hidden] { display: none !important; }
+.gmt-footer-detail a {
+  color: #334155;
+  font-weight: 700;
+  text-decoration: underline;
+}
+.gmt-footer-bottom-row {
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+}
+.gmt-footer-kakao-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #334155;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none !important;
+  transition: background 0.14s ease, border-color 0.14s ease;
+}
+.gmt-footer-kakao-btn:hover {
+  background: #F1F5F9;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
 </style>
 </head>
 <body>
@@ -2708,6 +2815,28 @@ button { cursor: pointer; border: none; background: none; }
       </select>
       <button type="button" class="btn-admin-pass" id="btn-admin-freepass">🛠️ 관리자 로컬 테스트 프리패스 (즉시 입장)</button>
     </div>
+
+    <!-- 고마워톡 공식 웹페이지 접이식 푸터 (첫 로그인 화면 하단) -->
+    <footer class="gmt-official-footer" style="margin:24px -24px -28px;width:calc(100% + 48px)">
+      <div class="gmt-footer-bar">
+        <span class="gmt-footer-host">호스팅서비스 제공 : 고마워브라더(주)</span>
+        <span class="gmt-footer-links">
+          <a href="https://iridescent-dracopelta-bed.notion.site/14a8aa329812801c9171f6eacd7f91a2" target="_blank" rel="noopener noreferrer">서비스 약관</a>
+          <span class="gmt-footer-sep" aria-hidden="true">|</span>
+          <a href="https://iridescent-dracopelta-bed.notion.site/14a8aa32981280d3899cd12b82764828" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>
+          <span class="gmt-footer-sep" aria-hidden="true">|</span>
+          <button type="button" class="gmt-footer-biz-btn" data-footer-biz-toggle="1" aria-expanded="false">사업자정보 <span class="gmt-footer-arrow" aria-hidden="true">⌄</span></button>
+        </span>
+      </div>
+      <div class="gmt-footer-detail" data-footer-detail="1" hidden>
+        <p>고마워브라더(주)는 메시지 발송 중개자이며, 발송의 당사자가 아닙니다. 콘텐츠 및 발송 관련 의무와 책임은 파트너에게 있습니다.</p>
+        <p>고객센터 : <a href="http://pf.kakao.com/_xhcxilxj/chat" target="_blank" rel="noopener noreferrer">1:1 채팅문의</a> | 운영시간 : 평일 10:00 ~ 17:00 (점심시간 12:00 ~ 13:00) (토요일, 공휴일은 휴무) | 이메일 : bob@gomawar.kr</p>
+        <p>주소 : 경상남도 양산시 주남로 288 3207호 | 회사명 : 고마워브라더(주) | 대표 : 최성민 | 사업자등록번호 : 175-81-02316 | 통신판매업신고 : 제 2024-웅상출장소-0175호 | 개인정보 책임자 : 여재혁</p>
+        <div class="gmt-footer-bottom-row">
+          <a class="gmt-footer-kakao-btn" href="http://pf.kakao.com/_xhcxilxj/chat" target="_blank" rel="noopener noreferrer">카카오톡 1:1 상담</a>
+        </div>
+      </div>
+    </footer>
   </section>
 
   <!-- ═════════ 1-B. V2.3 잔여 횟수 0회 한도 초과 차단 화면 ═════════ -->
@@ -3021,6 +3150,28 @@ button { cursor: pointer; border: none; background: none; }
         <div class="thankyou-card" id="submit-done-card" hidden></div>
       </section>
 
+      <!-- 고마워톡 공식 웹페이지 접이식 푸터 (하단 고정 CTA·3D 플로팅 아이콘 비간섭 여백 확보) -->
+      <footer class="gmt-official-footer in-app-footer" id="gmt-official-footer">
+        <div class="gmt-footer-bar">
+          <span class="gmt-footer-host">호스팅서비스 제공 : 고마워브라더(주)</span>
+          <span class="gmt-footer-links">
+            <a href="https://iridescent-dracopelta-bed.notion.site/14a8aa329812801c9171f6eacd7f91a2" target="_blank" rel="noopener noreferrer">서비스 약관</a>
+            <span class="gmt-footer-sep" aria-hidden="true">|</span>
+            <a href="https://iridescent-dracopelta-bed.notion.site/14a8aa32981280d3899cd12b82764828" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>
+            <span class="gmt-footer-sep" aria-hidden="true">|</span>
+            <button type="button" class="gmt-footer-biz-btn" id="btn-footer-biz-toggle" data-footer-biz-toggle="1" aria-expanded="false" aria-controls="gmt-footer-detail">사업자정보 <span class="gmt-footer-arrow" aria-hidden="true">⌄</span></button>
+          </span>
+        </div>
+        <div class="gmt-footer-detail" id="gmt-footer-detail" data-footer-detail="1" hidden>
+          <p>고마워브라더(주)는 메시지 발송 중개자이며, 발송의 당사자가 아닙니다. 콘텐츠 및 발송 관련 의무와 책임은 파트너에게 있습니다.</p>
+          <p>고객센터 : <a href="http://pf.kakao.com/_xhcxilxj/chat" target="_blank" rel="noopener noreferrer">1:1 채팅문의</a> | 운영시간 : 평일 10:00 ~ 17:00 (점심시간 12:00 ~ 13:00) (토요일, 공휴일은 휴무) | 이메일 : bob@gomawar.kr</p>
+          <p>주소 : 경상남도 양산시 주남로 288 3207호 | 회사명 : 고마워브라더(주) | 대표 : 최성민 | 사업자등록번호 : 175-81-02316 | 통신판매업신고 : 제 2024-웅상출장소-0175호 | 개인정보 책임자 : 여재혁</p>
+          <div class="gmt-footer-bottom-row">
+            <a class="gmt-footer-kakao-btn" href="http://pf.kakao.com/_xhcxilxj/chat" target="_blank" rel="noopener noreferrer">카카오톡 1:1 상담</a>
+          </div>
+        </div>
+      </footer>
+
       <!-- ═════════ 토스식 모바일 하단 고정 액션 바 (Step 1 ~ Step 5 무조건 1줄 고정 56px) ═════════ -->
       <div class="sticky-cta-bar" id="sticky-cta-bar" hidden>
         <div class="sticky-cta-caption" id="sticky-cta-caption" hidden></div>
@@ -3160,7 +3311,7 @@ button { cursor: pointer; border: none; background: none; }
 
     <!-- [견적·오류접수] 뷰 진입 시에만 노출되는 컴팩트 2단 전환 바 -->
     <div class="flt-service-subtabs" id="flt-service-subtabs" role="tablist" hidden>
-      <button type="button" class="flt-tab-btn" id="flt-tab-vip" data-flt-tab="vip" role="tab" aria-selected="false">맞춤구축 견적</button>
+      <button type="button" class="flt-tab-btn" id="flt-tab-vip" data-flt-tab="vip" role="tab" aria-selected="false">맞춤구축 상담</button>
       <button type="button" class="flt-tab-btn" id="flt-tab-report" data-flt-tab="report" role="tab" aria-selected="false">화면 오류제보</button>
     </div>
 
@@ -3171,7 +3322,7 @@ button { cursor: pointer; border: none; background: none; }
       </div>
       <div class="flt-chat-composer-dock">
         <div class="qa-faq-chips" id="qa-faq-chips">
-          <button type="button" class="qa-faq-chip">💎 견적 프로그램 제작 · API 연동 · 풀파워 분기 의뢰</button>
+          <button type="button" class="qa-faq-chip">🛠️ 맞춤 견적 프로그램 · 스탬프 · 외부 연동 상담</button>
           <button type="button" class="qa-faq-chip">설문 답변별로 모든 카톡을 다 다르게 보낼 수 있나요?</button>
           <button type="button" class="qa-faq-chip">알림톡 · 광고 차이</button>
           <button type="button" class="qa-faq-chip">구글폼 연동 되나요?</button>
@@ -3185,24 +3336,23 @@ button { cursor: pointer; border: none; background: none; }
       </div>
     </div>
 
-    <!-- 탭 2: 맞춤구축 견적(300만 원+) VIP 상담 신청 -->
+    <!-- 탭 2: 맞춤구축 상담 (신뢰 우선 · 1:1 전화 인터뷰 · 최종 버튼에만 최소 견적 100만 원+ 1회 표기) -->
     <div class="flt-panel" id="flt-panel-vip" hidden>
       <div class="vip-intro-banner">
-        💎 <strong>전문가 별도 견적 프로젝트 (300만 원 이상)</strong><br>
-        전 구간 풀파워 다중 분기, 자동 견적·진단 프로그램 제작, 자사몰·CRM·외부 API 연동 등 고전환 맞춤 개발을 전담 설계해 드립니다.
+        맞춤 견적 프로그램, 우리 가게 스탬프 적립, 외부 DB·API 연동 등 원하시는 내용을 편하게 남겨주세요. 전문가가 전화 인터뷰 후 꼭 필요한 범위만 알맞은 견적으로 제안해 드립니다.
       </div>
       <div>
         <span class="vip-field-lbl">1. 희망하시는 구축 항목 (복수 선택 가능)</span>
         <div class="vip-chip-grid" id="flt-vip-chips">
-          <button type="button" class="vip-chip-btn selected" data-vip-item="전 구간 풀파워 다중 분기"><span>전 구간 풀파워 다중 분기</span><span>✓</span></button>
-          <button type="button" class="vip-chip-btn" data-vip-item="맞춤 자동 견적·진단 프로그램 제작"><span>맞춤 자동 견적·진단 프로그램 제작</span><span>+</span></button>
-          <button type="button" class="vip-chip-btn" data-vip-item="외부 API·DB 연동"><span>외부 API·DB 연동</span><span>+</span></button>
-          <button type="button" class="vip-chip-btn" data-vip-item="고전환 전담 기획·카피"><span>고전환 전담 기획·카피</span><span>+</span></button>
+          <button type="button" class="vip-chip-btn selected" data-vip-item="맞춤 견적 프로그램 제작·연동"><span>🧮 맞춤 견적 프로그램 제작·연동</span><span>✓</span></button>
+          <button type="button" class="vip-chip-btn" data-vip-item="우리 매장 스탬프·적립 프로그램"><span>🎟️ 우리 매장 스탬프·적립 프로그램</span><span>+</span></button>
+          <button type="button" class="vip-chip-btn" data-vip-item="외부 결제·DB·API 연동"><span>🔗 외부 결제·DB·API 연동</span><span>+</span></button>
+          <button type="button" class="vip-chip-btn" data-vip-item="정밀 다중 분기 설계"><span>⚡ 정밀 다중 분기 설계</span><span>+</span></button>
         </div>
       </div>
       <div>
         <label class="vip-field-lbl" for="flt-vip-desc">2. 원하시는 구축 내용</label>
-        <textarea class="vip-ta" id="flt-vip-desc" placeholder="예) 고객이 평수·옵션을 고르면 자동 견적이 계산되고, 결과에 따라 카톡이 분기 발송되게 만들고 싶어요."></textarea>
+        <textarea class="vip-ta" id="flt-vip-desc" placeholder="예) 고객이 평수·옵션을 고르면 자동 견적이 계산되고, 결과에 따라 카톡이 연결되게 만들고 싶어요."></textarea>
       </div>
       <div>
         <span class="vip-field-lbl">3. 담당자 성함 · 연락처</span>
@@ -3211,11 +3361,7 @@ button { cursor: pointer; border: none; background: none; }
           <input type="tel" class="vip-in" id="flt-vip-phone" placeholder="010-0000-0000" autocomplete="tel">
         </div>
       </div>
-      <label class="vip-agree-label" for="flt-vip-agree">
-        <input type="checkbox" id="flt-vip-agree">
-        <span>네, 별도 구축 프로젝트(300만 원 이상) 기준을 확인했습니다</span>
-      </label>
-      <button type="button" class="vip-submit-btn" id="btn-flt-vip-submit">💎 맞춤 구축(300만 원+) 상담 신청하기</button>
+      <button type="button" class="vip-submit-btn" id="btn-flt-vip-submit">전문가 전화 인터뷰 신청 (최소 견적 100만 원+)</button>
       <div class="flt-report-status" id="flt-vip-status" hidden></div>
     </div>
 
@@ -3554,7 +3700,7 @@ function buildLoadingEchoSteps(opts) {
     }
     if (ans[3]) {
       const k3 = extractLoadingEchoKeyword(ans[3], 12, false);
-      if (k3) items.push("즉시 알림톡 · '" + k3 + "' 24시간 세팅");
+      if (k3) items.push("첫 알림톡 · '" + k3 + "' 24시간 세팅");
     }
     const skipQ4 = ic.enabled === false || ic.preset === 'SKIP' || /안\s*보냄|건너뛰기/.test(String(ans[4] || ''));
     if (!skipQ4 && (ans[4] || ic.label)) {
@@ -4637,7 +4783,7 @@ const Q4_INTERVAL_PRESETS = [
 
 const Q_PREVIEW_CTAS = {
   1: '다음: ② 신청질문 →',
-  2: '다음: ③ 첫카톡 →',
+  2: '다음: ③ 첫 알림톡 →',
   3: '다음: ④ 며칠뒤 자동 →',
   4: '다음: ⑤ 날짜지정 →',
   5: '다음: 브랜드 스타일 →'
@@ -5232,7 +5378,7 @@ function renderSmartControlsForQ(qNum) {
   if (ta) {
     ta.placeholder = qNum === 1
       ? '예) 누구를 초대해서 어떤 안내·혜택을 드릴지 편하게 적어주세요'
-      : '예) 신청 직후 첫 카톡에 담을 환영 인사·자료·안내를 적어주세요';
+      : '예) 신청 직후 첫 알림톡에 담을 환영 인사·자료·안내를 적어주세요';
   }
   updateMsgTypeBadgeForQ(qNum);
 }
@@ -5504,7 +5650,7 @@ async function submitCurrentInterviewAnswer() {
   let txt = (ta.value || '').trim();
   let q5TimeList = [];
 
-  // Q3 첫 카톡 알림톡: 카카오 심사 규정상 본문 내 채널 추가 유도 문구 자동 정제
+  // Q3 첫 알림톡: 카카오 심사 규정상 본문 내 채널 추가 유도 문구 자동 정제
   if (ST.qNum === 3 && txt && typeof Consult.stripAlimtalkChannelAddSolicitation === 'function') {
     txt = Consult.stripAlimtalkChannelAddSolicitation(txt);
     if (ta) ta.value = txt;
@@ -5661,9 +5807,9 @@ async function askFeatureQA(questionText) {
   const plainAns = String(ans || '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
   const pinSummary = shortLine(q + ' → ' + plainAns, 72);
   const pinId = 'pin_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-  const isVipQ = (Consult.isVipCustomQuoteQuestion && Consult.isVipCustomQuoteQuestion(q)) || /300만\s*원/.test(plainAns);
+  const isVipQ = (Consult.isVipCustomQuoteQuestion && Consult.isVipCustomQuoteQuestion(q)) || /1:1\s*전화\s*인터뷰|맞춤\s*견적\s*계산기|전담\s*개발팀/.test(plainAns);
   const vipBtnHtml = isVipQ
-    ? '<button type="button" class="qa-vip-go-btn">💎 맞춤 구축(300만 원+) 상담 신청하기 →</button>'
+    ? '<button type="button" class="qa-vip-go-btn">🛠️ 전문가 맞춤 제작 · 연동 상담 신청 →</button>'
     : '';
   waitEl.innerHTML = '<div>' + Toss.toHtml(ans) + '</div>' +
     '<div class="qa-action-stack">' +
@@ -5813,7 +5959,6 @@ async function submitVipCustomQuote() {
   const desc = (($('#flt-vip-desc') && $('#flt-vip-desc').value) || '').trim();
   const contactName = (($('#flt-vip-name') && $('#flt-vip-name').value) || '').trim();
   const contactPhone = (($('#flt-vip-phone') && $('#flt-vip-phone').value) || '').trim();
-  const agreed = !!($('#flt-vip-agree') && $('#flt-vip-agree').checked);
 
   const showVipErr = msg => {
     if (statusEl) {
@@ -5831,26 +5976,22 @@ async function submitVipCustomQuote() {
     showVipErr('⚠️ 상담받으실 성함과 연락처를 입력해 주세요.');
     return { ok: false, error: 'missing_contact' };
   }
-  if (!agreed) {
-    showVipErr('⚠️ 별도 구축 프로젝트(300만 원 이상) 기준 확인에 체크해 주세요.');
-    return { ok: false, error: 'missing_agree' };
-  }
 
   const snapshot = buildBlackboxSnapshot();
   const payload = {
     action: 'report_issue',
     issueType: 'VIP_CUSTOM_QUOTE',
     reasonType: 'VIP_CUSTOM_QUOTE',
-    reasonLabel: '💎 VIP 맞춤구축·견적프로그램 문의 (300만 원+)',
+    reasonLabel: '🛠️ 맞춤 제작·연동 문의 (100만 원+ · 전화인터뷰 요청)',
     selectedItems,
     memo: desc,
     contactName,
     contactPhone,
-    confirmedBudget300: true,
+    minEstimateLabel: '100만 원+ · 전화인터뷰 요청',
     blackbox_snapshot: snapshot
   };
 
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ VIP 맞춤 구축 상담을 접수 중이에요…'; }
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ 전화 인터뷰 신청을 접수 중이에요…'; }
   const proxyUrl = getProxyUrl();
   let res = null;
   try {
@@ -5865,15 +6006,15 @@ async function submitVipCustomQuote() {
     if ($('#flt-vip-desc')) $('#flt-vip-desc').value = '';
     if (statusEl) {
       statusEl.hidden = false;
-      statusEl.textContent = '✅ 맞춤 구축(300만 원+) 상담 신청이 접수되었습니다! 전담 담당자가 빠르게 연락드리겠습니다.';
+      statusEl.textContent = '✅ 전문가 1:1 전화 인터뷰 신청이 접수되었습니다! 담당 전문가가 빠르게 연락드리겠습니다.';
     }
-    showBotToast('💎 VIP 맞춤 구축 상담이 접수되었어요!');
+    showBotToast('🛠️ 전문가 전화 인터뷰 신청이 접수되었어요!');
     return { ok: true, payload, response: res };
   } catch (err) {
     showVipErr('⚠️ 전송 중 일시적 오류가 발생했어요: ' + (err.message || err));
     return { ok: false, payload, error: err.message || String(err) };
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '💎 맞춤 구축(300만 원+) 상담 신청하기'; }
+    if (btn) { btn.disabled = false; btn.textContent = '전문가 전화 인터뷰 신청 (최소 견적 100만 원+)'; }
   }
 }
 
@@ -6298,7 +6439,7 @@ async function enterStage5Summary(revisionText) {
 const SUM_ROWS_META = [
   { n: 1, key: 'goalTopic',    iconLabel: '① 신청화면' },
   { n: 2, key: 'formQ',        iconLabel: '② 신청질문' },
-  { n: 3, key: 'firstGift',    iconLabel: '③ 첫카톡' },
+  { n: 3, key: 'firstGift',    iconLabel: '③ 첫 알림톡' },
   { n: 4, key: 'intervalAuto', iconLabel: '④ 며칠뒤 자동' },
   { n: 5, key: 'dateReserve',  iconLabel: '⑤ 날짜지정' }
 ];
@@ -6776,7 +6917,7 @@ $('#btn-toggle-prev').onclick = () => {
   $('#prev-answers-arrow').textContent = b.hidden ? '▾' : '▴';
 };
 
-// 우측 하단 순수 챗봇·물음표 원형 아이콘 위젯 (자주 묻는 질문 / 맞춤구축 견적 300만+ / 화면 오류제보)
+// 우측 하단 3D 입체 챗봇 아이콘 위젯 (자주 묻는 질문 / 맞춤구축 상담 / 화면 오류제보)
 $('#flt-fab').onclick = () => openFloatingWidget();
 $('#btn-close-flt').onclick = closeFloatingWidget;
 $('#flt-sheet-backdrop').addEventListener('click', e => {
@@ -6929,6 +7070,20 @@ $('#cfg-save').onclick = () => {
   });
   $('#ai-modal').hidden = true;
 };
+
+// 공식 접이식 푸터 사업자정보 토글
+$$('[data-footer-biz-toggle]').forEach(btn => {
+  btn.onclick = () => {
+    const footer = btn.closest ? btn.closest('.gmt-official-footer') : null;
+    const detail = footer ? footer.querySelector('[data-footer-detail]') : $('#gmt-footer-detail');
+    if (!detail) return;
+    const isNowOpen = detail.hidden;
+    detail.hidden = !isNowOpen;
+    btn.setAttribute('aria-expanded', isNowOpen ? 'true' : 'false');
+    const arrow = btn.querySelector('.gmt-footer-arrow');
+    if (arrow) arrow.textContent = isNowOpen ? '⌃' : '⌄';
+  };
+});
 
 // 로컬(file://, localhost) 또는 ?admin=1 환경에서만 관리자 프리패스 박스 표시
 if (IS_ADMIN_ENV) {

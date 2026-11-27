@@ -2495,12 +2495,13 @@
     {
       n: 1,
       key: 'landing_screen',
-      courseLabel: '① 신청화면',
-      label: '① 신청화면',
+      courseLabel: '① 신청페이지',
+      label: '① 신청페이지',
       tabRef: '탭 2 · 신청페이지',
       nextCta: '다음: ② 신청 질문 고르기 →',
       analogyBadge: '',
-      usageHint: '신청페이지 첫 화면(탭 2)에 들어갈 초대 대상과 핵심 안내·혜택을 정하는 단계예요.'
+      guideLine: '파트너님의 랜딩페이지(신청페이지) 메인 주제가 됩니다.',
+      usageHint: '파트너님의 랜딩페이지(신청페이지) 메인 주제가 됩니다.'
     },
     {
       n: 2,
@@ -2510,7 +2511,8 @@
       tabRef: '탭 3 · 신청폼',
       nextCta: '다음: ③ 첫 알림톡 내용 정하기 →',
       analogyBadge: '',
-      usageHint: '신청할 때 고객이 클릭해서 고를 객관식 질문(탭 3)을 정해요. 없으면 원터치로 건너뛸 수 있어요.'
+      guideLine: '선택한 답변에 따라 고객에게 꼬리표(태그)가 붙어 맞춤 광고 메시지가 달라집니다.',
+      usageHint: '선택한 답변에 따라 고객에게 꼬리표(태그)가 붙어 맞춤 광고 메시지가 달라집니다.'
     },
     {
       n: 3,
@@ -2520,6 +2522,7 @@
       tabRef: '탭 4 · 즉시 확인 알림톡',
       nextCta: '다음: ④ 며칠 뒤 자동 카톡 →',
       analogyBadge: '',
+      guideLine: '신청 버튼을 누르자마자 24시간 즉시 도착하는 접수 확인 알림톡입니다.',
       usageHint: '신청 버튼을 누르자마자 1초 만에 도착할 환영·접수확인 첫 알림톡 내용을 담아요.'
     },
     {
@@ -2530,6 +2533,7 @@
       tabRef: '탭 4 · 간격발송',
       nextCta: '다음: ⑤ 날짜·시간 지정 카톡 →',
       analogyBadge: '🌱 오늘 신청한 분에겐 내일, 모레 신청한 분에겐 글피! 사람마다 신청한 날부터 순서대로 챙겨줘요.',
+      guideLine: '신청한 날부터 며칠 간격으로 자동 발송할 후속 광고 메시지입니다.',
       usageHint: '신청한 날을 기준으로 며칠 간격으로 보낼 자동 안부·정보 카톡(탭 4 간격발송)을 정해요.'
     },
     {
@@ -2540,6 +2544,7 @@
       tabRef: '탭 5 · 날짜지정 예약',
       nextCta: '완료 · 브랜드 스타일 입력하기 →',
       analogyBadge: '🗓️ 언제 신청했든 상관없이, 지정하신 정확한 날짜와 시각에 다 같이 발송돼요.',
+      guideLine: '달력의 특정 날짜·시각에 신청자 전원에게 동시 발송할 예약 메시지입니다.',
       usageHint: '달력의 특정 날짜와 시각에 신청자 전원에게 동시 발송할 예약 카톡(탭 5)을 설정해요.'
     }
   ];
@@ -3248,7 +3253,10 @@
     });
   };
 
-  CONSULT.getFlow = function (sectorId, flowId, customFlows, subIndustry) {
+  CONSULT.getFlow = function (sectorId, flowId, customFlows, subIndustry, customScenarioData) {
+    if (customScenarioData && (flowId === 'CUSTOM_AI_FLOW' || customScenarioData.id === flowId || customScenarioData.flowId === flowId)) {
+      return customScenarioData;
+    }
     var flows = (Array.isArray(customFlows) && customFlows.length)
       ? customFlows
       : CONSULT.getFlowsForContext(sectorId, subIndustry);
@@ -3323,7 +3331,81 @@
     return { feasible: true };
   };
 
-  // ── 2) Step 2: AI 최적 운영 플로우 추천 (목표 입력 ➔ 6개 중 1개 + 이유)
+  // ── 2) Step 2: 파트너 주관식 목표 100% 보존 AI 맞춤 운영 흐름 생성 (정형 객관식으로 덮어쓰기 금지!)
+  CONSULT.buildCustomScenarioExamples = function (goalText, subLabel, isPolitics) {
+    var rawGoal = String(goalText || '').replace(/\s+/g, ' ').trim();
+    var sub = String(subLabel || '우리 브랜드').trim();
+    var topic = rawGoal
+      .replace(/(?:을|를)?\s*(?:하고\s*싶어요|만들고\s*싶어요|늘리고\s*싶어요|알리고\s*싶어요|진행하고\s*싶어요|목표예요|목표입니다)\.?$/g, '')
+      .trim() || rawGoal || sub;
+    var shortTopic = tFirst(topic, 26);
+
+    var q1List = isPolitics
+      ? [
+          "'" + shortTopic + "'에 관심 있는 지역 유권자를 위해 핵심 공약 요약집과 1초 소통 등록을 받는 신청페이지",
+          "'" + shortTopic + "' 현안 간담회·행사 일정과 오시는 길을 안내하고 참석자를 모집하는 신청페이지",
+          "'" + shortTopic + "' 진행 경과와 현장 활동 소식을 카톡으로 정기 전달하는 소통 신청페이지"
+        ]
+      : [
+          "혼자 시작하면 작심삼일로 끝나는 고객을 위해 '" + shortTopic + "' 핵심 과정과 신청 혜택을 안내하는 신청페이지",
+          "'" + shortTopic + "'에 관심 있지만 시작이 망설여지는 고객을 위한 무료 사전 진단·상담 모집 신청페이지",
+          "'" + shortTopic + "' 실제 성공 사례와 단계별 로드맵을 보여주고 1초 간편 신청을 받는 모집 신청페이지"
+        ];
+
+    var q2List;
+    if (/복근|바디프로필|헬스|피트니스|다이어트|운동|요가|필라테스|\bPT\b|식단/i.test(rawGoal + ' ' + sub)) {
+      q2List = [
+        "현재 운동 경험을 선택해 주세요 — '운동이 처음인 입문자' / '헬스장 유경험자' / '바디프로필·대회 준비'",
+        "가장 집중하고 싶은 목표를 선택해 주세요 — '6주 복근·체지방 감량' / '탄탄한 바디라인·근력' / '식단·루틴 밀착 관리'",
+        "희망하시는 참여 시간대를 선택해 주세요 — '출근 전 오전반' / '퇴근 후 저녁반' / '주말 집중반'"
+      ];
+    } else if (/학원|강의|클래스|특강|교육|수학|영어|한국어|입시|코딩|세미나|수강생/i.test(rawGoal + ' ' + sub)) {
+      q2List = [
+        "현재 실력·경험 단계를 선택해 주세요 — '완전 처음 입문자' / '기초 경험 있음' / '실전 심화 목표'",
+        "가장 해결하고 싶은 고민을 선택해 주세요 — '기초 개념 정리' / '실전 적용·피드백' / '단기 성과 달성'",
+        "희망하시는 수강 방식을 선택해 주세요 — '현장 오프라인 참여' / '온라인 라이브 참여' / '상담 먼저 받기'"
+      ];
+    } else if (/사과|과일|농원|식품|쇼핑몰|브랜드|상품|공구|구매|매장|카페/i.test(rawGoal + ' ' + sub)) {
+      q2List = [
+        "가장 관심 있는 구성을 선택해 주세요 — '가성비 실속 구성' / '프리미엄 선물 구성' / '정기 배송 체험'",
+        "주로 이용하시는 목적을 선택해 주세요 — '본인·가족용' / '지인·거래처 선물용' / '첫 체험 먼저'",
+        "선호하시는 혜택 안내 방식을 선택해 주세요 — '오픈 정각 알림' / '첫 구매 할인 쿠폰' / '신상 소식 받기'"
+      ];
+    } else if (isPolitics) {
+      q2List = [
+        "가장 관심 있는 지역 현안을 선택해 주세요 — '교통·주차 개선' / '교육·보육 지원' / '주거·생활 안전'",
+        "거주하시는 권역을 선택해 주세요 — '중심 권역' / '북부 권역' / '남부·외곽 권역'",
+        "희망하시는 소통 방식을 선택해 주세요 — '정책 소식 수신' / '간담회 참석' / '현안 의견 제안'"
+      ];
+    } else {
+      q2List = [
+        "'" + tFirst(shortTopic, 14) + "' 현재 준비 단계를 선택해 주세요 — '처음 알아보는 중' / '비교·검토 단계' / '바로 시작 희망'",
+        "가장 먼저 해결하고 싶은 고민을 선택해 주세요 — '핵심 방법·과정 궁금' / '비용·혜택 비교' / '1:1 맞춤 상담 희망'",
+        "희망하시는 안내 방식을 선택해 주세요 — '자료·사례 먼저 받기' / '무료 체험·진단 예약' / '빠른 전화·카톡 상담'"
+      ];
+    }
+
+    var q3List = [
+      "신청 접수 확인과 함께 '" + shortTopic + "' 핵심 요약 가이드 및 일정 안내 링크를 첫 알림톡으로 바로 보내드릴게요.",
+      "신청 완료 확인과 함께 '" + shortTopic + "' 사전 준비 체크리스트와 신청 내역 확인 링크를 1초 만에 발송할게요.",
+      "접수 확정 안내와 함께 '" + shortTopic + "' 담당자 안내 및 자주 묻는 질문 정리본을 첫 알림톡으로 드릴게요."
+    ];
+
+    var q4List = [
+      "1일 뒤 '" + shortTopic + "' 실전 핵심 팁을 보내고, 3일 뒤 실제 성공 후기와 맞춤 신청 혜택을 자동 발송하고 싶어요.",
+      "일주일(7일)마다 '" + shortTopic + "' 관련 실전 노하우와 참여자 후기를 순서대로 챙겨드리고 싶어요.",
+      "한 달(30일)마다 '" + shortTopic + "' 신규 기수 소식과 핵심 리포트를 자동으로 보내드리고 싶어요."
+    ];
+
+    var q5List = [
+      "12월 15일 오전 9시 30분에 '" + shortTopic + "' 마감 임박 안내와 우선 신청 링크를 전원에게 동시 발송하고 싶어요.",
+      "12월 20일 오전 10시에 '" + shortTopic + "' 시작 전 최종 일정과 준비물 안내를 한 번에 보내고 싶어요.",
+      "12월 28일 오전 9시에 '" + shortTopic + "' 얼리버드 특별 혜택 마감 안내를 신청자 전원에게 예약 발송하고 싶어요."
+    ];
+
+    return { 1: q1List, 2: q2List, 3: q3List, 4: q4List, 5: q5List };
+  };
+
   CONSULT.recommendFlow = function (ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
@@ -3332,29 +3414,66 @@
       ? ctx.customFlows
       : CONSULT.getFlowsForContext(ctx.sectorId, sub);
     var goal = String(ctx.goalText || '').trim();
+    var shortGoal = tFirst(goal || sub || '맞춤 캠페인', 24);
+
+    function buildCustomFlowObject(baseFlow, customTitle, customSummary, customReason) {
+      var base = baseFlow || flows[0] || { id: 'FLOW_4', trackId: 'TRACK_4', useWebzine: true };
+      var finalTitle = CONSULT.cleanPartnerText(customTitle || (shortGoal + ' 맞춤 자동화 흐름'));
+      var finalSummary = CONSULT.cleanPartnerText(customSummary || ("'" + shortGoal + "' 목표에 맞춰 신청페이지부터 맞춤 카톡까지 자동으로 연결하는 전용 흐름입니다."));
+      var finalReason = CONSULT.cleanPartnerText(customReason || ("적어주신 '" + shortGoal + "' 목표를 중심으로 신청페이지·맞춤 질문·자동 후속 카톡을 일관되게 연결해 전환율을 높여드려요."));
+      return {
+        id: 'CUSTOM_AI_FLOW',
+        flowId: 'CUSTOM_AI_FLOW',
+        baseFlowId: base.id || 'FLOW_4',
+        trackId: base.trackId || 'TRACK_4',
+        icon: '✨',
+        badge: 'AI 맞춤 추천',
+        isCustomScenario: true,
+        goalText: goal,
+        title: finalTitle,
+        flowTitle: finalTitle,
+        summary: finalSummary,
+        reason: finalReason,
+        useWebzine: !!base.useWebzine,
+        pipeline: [
+          { step: '신청페이지', text: "'" + tFirst(shortGoal, 18) + "' 핵심 소개 및 1초 간편 신청" },
+          { step: '즉시 첫 카톡', text: '신청 접수 확인 알림톡 및 핵심 가이드 즉시 발송' },
+          { step: '후속 자동 카톡', text: '선택한 고객 유형별 맞춤 광고·후기·마감 안내 자동 발송' }
+        ],
+        pills: [
+          tFirst(shortGoal, 12) + ' 신청',
+          '즉시 접수 알림톡',
+          '유형별 맞춤 광고'
+        ]
+      };
+    }
 
     function localPick() {
       var g = goal.toLowerCase();
-      var pickId = 'FLOW_2';
-      var reason = '신규 고객이 가장 부담 없이 1초 만에 신청하고 바로 혜택을 받아볼 수 있어 첫 캠페인으로 전환율이 가장 높아요.';
+      var pickId = 'FLOW_4';
+      var reason = "적어주신 '" + shortGoal + "' 목표에 맞춰 고객 성향별 맞춤 카톡을 자동 분기 발송하면 상담·등록 전환율이 가장 높아져요.";
       if (/설명회|세미나|웨비나|특강|일정|마감|신고|예약|리마인드|노쇼|행사|오픈런|공구|프리오더|진료|검진/.test(g)) {
         pickId = 'FLOW_1';
-        reason = '일정·예약·방문 시점에 맞춰 D-3·D-1 자동 리마인드를 보내면 노쇼를 크게 줄이고 참석·내원율을 끌어올릴 수 있어요.';
-      } else if (/진단|유형|분기|맞춤|학년|성향|스타일|취향|증상|사업자|소그룹|분과|체크/.test(g)) {
-        pickId = 'FLOW_4';
-        reason = '신청할 때 고객의 상황·유형을 객관식으로 먼저 분류해 각자에게 딱 맞는 맞춤 안내를 보내면 상담·예약 전환율이 훨씬 높아져요.';
+        reason = "적어주신 '" + shortGoal + "' 일정에 맞춰 D-3·D-1 자동 리마인드를 보내면 노쇼를 크게 줄이고 참여율을 끌어올릴 수 있어요.";
       } else if (/연재|칼럼|매주|정기|주보|챌린지|팬덤|구독|레시피|소식/.test(g)) {
         pickId = 'FLOW_3';
-        reason = '단발성 안내에 그치지 않고 주기적으로 유익한 칼럼·소식을 카톡으로 보내며 신뢰와 단골 팬덤을 차곡차곡 쌓는 데 최적이에요.';
+        reason = "적어주신 '" + shortGoal + "' 목표에 맞춰 주기적인 콘텐츠와 안내를 자동 발송하며 신뢰와 신청 전환을 차곡차곡 쌓아드려요.";
       } else if (/스탬프|적립|포인트|vip|단골|출석|완주|개근|재방문/.test(g)) {
         pickId = 'FLOW_5';
-        reason = '열람·방문·참여 횟수를 자동으로 쌓아 열성 고객(VIP)을 선별하고 특별 보상을 주면 재방문과 고가 전환이 자연스럽게 일어나요.';
+        reason = "적어주신 '" + shortGoal + "' 목표에 맞춰 참여 횟수와 관심을 자동 누적해 핵심 고객을 단골로 전환해 드려요.";
       } else if (/qr|현장|테이블|로비|택배|박스|체크인|오프라인|대기실/.test(g)) {
         pickId = 'FLOW_6';
-        reason = '현장이나 대기실·택배 상자의 QR을 찍는 순간 3초 만에 DB로 모으고 안내서·후속 혜택까지 자동 발송할 수 있어 현장 효율이 가장 좋아요.';
+        reason = "적어주신 '" + shortGoal + "' 현장에서 QR 스캔 3초 만에 고객을 모으고 안내와 후속 카톡까지 자동으로 이어드려요.";
+      } else if (/무료|쿠폰|체험|가이드|자료|워크북|모집/.test(g) && !/진단|유형|분기|맞춤/.test(g)) {
+        pickId = 'FLOW_2';
+        reason = "적어주신 '" + shortGoal + "' 목표에 맞춰 신규 고객이 부담 없이 1초 신청하고 핵심 안내와 후속 카톡을 받아보게 설계해 드려요.";
       }
       var found = CONSULT.getFlow(ctx.sectorId, pickId, flows, sub) || flows[0];
-      return { flowId: found.id, flowTitle: found.title, reason: reason };
+      return buildCustomFlowObject(found, shortGoal + ' 맞춤 자동화 흐름', null, reason);
+    }
+
+    if (!CONSULT.hasAiAvailable(ctx)) {
+      return Promise.resolve(localPick());
     }
 
     var flowSummaryList = flows.map(function (f, idx) {
@@ -3363,35 +3482,37 @@
 
     var sys = [
       '당신은 고마워톡 수석 마케팅 컨설턴트입니다.',
-      '파트너의 분야·세부업종과 목표를 보고 아래 6가지 카톡 운영 흐름 중 가장 잘 맞는 1개를 추천하세요.',
-      '내부 전문용어(뜰채, 시트 정수 더하기, 트랙 번호, ' + TOSS_BANNED_LIT + ')는 절대 쓰지 말고 쉬운 일상 언어로 2문장 이내 이유를 쓰세요.',
-      '출력 JSON만: {"flowId":"FLOW_1~FLOW_6 중 하나","reason":"친절한 추천 이유 1~2문장"}'
+      '파트너가 직접 적은 [파트너 주관식 목표]를 최우선으로 반영하여, 기존 정형화된 타 업종/타 주제 흐름으로 덮어쓰지 말고 파트너 목표 전용 카톡 자동화 흐름을 설계해 주세요.',
+      '내부 전문용어(뜰채, 시트 정수 더하기, 트랙 번호, ' + TOSS_BANNED_LIT + ')는 절대 쓰지 말고 쉬운 일상 언어로 작성하세요.',
+      '출력 JSON만: {"baseFlowId":"FLOW_1~FLOW_6 중 구조 기반 1개","flowTitle":"파트너 주관식 목표가 담긴 자연스러운 흐름 제목(24자 이내)","summary":"파트너 목표 중심 1줄 요약(55자 이내)","reason":"파트너 목표에 이 흐름이 효과적인 이유 1~2문장"}'
     ].join('\n');
 
     var user = '[분야] ' + (sec ? sec.title : '') + ' / [세부 업종] ' + sub +
-      '\n[파트너 목표] ' + goal +
-      '\n\n[6가지 운영 흐름 목록]\n' + flowSummaryList +
+      '\n[★ 최우선 파트너 주관식 목표] ' + goal +
+      '\n\n[구조 참고용 6가지 기본 틀]\n' + flowSummaryList +
       '\n\nJSON만 출력하세요.';
 
     return TOSS.callAI({
       mode: ctx.mode, proxyUrl: ctx.proxyUrl, token: ctx.token,
-      system: sys, user: user, temperature: 0.3, maxOutputTokens: 512
+      system: sys, user: user, responseMimeType: 'application/json',
+      temperature: 0.3, maxOutputTokens: 600
     }).then(function (raw) {
       var obj = extractJson(raw);
-      if (!obj || !obj.flowId) return localPick();
-      var matched = flows.find(function (f) { return f.id === obj.flowId; });
-      if (!matched) return localPick();
-      return {
-        flowId: matched.id,
-        flowTitle: matched.title,
-        reason: CONSULT.cleanPartnerText(obj.reason || localPick().reason)
-      };
+      if (!obj || (!obj.flowTitle && !obj.baseFlowId && !obj.flowId)) return localPick();
+      var baseId = obj.baseFlowId || obj.flowId || 'FLOW_4';
+      var matched = flows.find(function (f) { return f.id === baseId; }) || flows[0];
+      return buildCustomFlowObject(
+        matched,
+        obj.flowTitle || (shortGoal + ' 맞춤 자동화 흐름'),
+        obj.summary || '',
+        obj.reason || localPick().reason
+      );
     }).catch(function () {
       return localPick();
     });
   };
 
-  // ── 3) Step 3: 업종·플로우·이전 답변 맥락에 100% 맞춘 살아있는 질문 & Tap-to-Edit 예시 칩 3개 생성
+  // ── 3) Step 3: 업종·플로우·주관식 목표 맥락에 100% 맞춘 살아있는 질문 & Tap-to-Edit 예시 칩 3개 생성
   CONSULT.buildLocalQuestionPack = function (qNum, ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
@@ -3401,7 +3522,8 @@
     var isPolitics = parsed.isPolitics || CONSULT.isPoliticsDomain(sub);
     var cleanFn = isPolitics ? CONSULT.cleanPoliticsText : CONSULT.cleanPartnerText;
 
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub);
+    var customGoal = String(ctx.customScenarioInput || (ctx.customScenarioData && ctx.customScenarioData.goalText) || '').trim();
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub, ctx.customScenarioData);
     var flowTitle = flow ? flow.title : '카카오 자동 운영 흐름';
     var A = ctx.answers || {};
     var owner = String(ctx.ownerName || '파트너님').trim();
@@ -3409,28 +3531,32 @@
     var subPack = CONSULT.matchSubDomainPack(ctx.sectorId, rawSub) || CONSULT.matchSubDomainPack(ctx.sectorId, sub);
     var batchMap = ctx.customExamplesMap || null;
     var batchChips = (batchMap && Array.isArray(batchMap[qNum]) && batchMap[qNum].length >= 2) ? batchMap[qNum] : null;
+    var customScenarioMap = customGoal ? CONSULT.buildCustomScenarioExamples(customGoal, sub, isPolitics) : null;
     var rawChips = batchChips
       ? batchChips.slice(0, 3)
-      : ((subPack && subPack.pack && subPack.pack.examples && subPack.pack.examples[qNum])
-        ? subPack.pack.examples[qNum].map(function (x) { return interpolateSub(x, sub); })
-        : ((sec && sec.examples && sec.examples[qNum]) ? sec.examples[qNum].slice(0, 3) : []));
+      : (customScenarioMap && Array.isArray(customScenarioMap[qNum])
+        ? customScenarioMap[qNum].slice(0, 3)
+        : ((subPack && subPack.pack && subPack.pack.examples && subPack.pack.examples[qNum])
+          ? subPack.pack.examples[qNum].map(function (x) { return interpolateSub(x, sub); })
+          : ((sec && sec.examples && sec.examples[qNum]) ? sec.examples[qNum].slice(0, 3) : [])));
 
     var qText = '';
     var labelText = meta.label;
     var hintText = meta.usageHint;
+    var guideLine = meta.guideLine || '';
 
     if (qNum === 1) {
       qText = (ctx.customQ1Text && String(ctx.customQ1Text).trim())
         ? String(ctx.customQ1Text).trim()
         : (isPolitics
-          ? '어떤 지역 유권자를 초대해서 어떤 핵심 공약·소식을 전하는 신청화면을 만들까요?'
-          : '누구를 초대해서 어떤 핵심 안내·혜택을 드리는 신청화면을 만들까요?');
+          ? '어떤 지역 현안이나 관심사를 가진 유권자가 이 신청페이지에서 신청하게 만들까요?'
+          : '어떤 고민이나 목표를 가진 고객이 이 신청페이지에서 신청하게 만들까요?');
     } else if (qNum === 2) {
       qText = isPolitics
-        ? '신청할 때 유권자가 클릭해서 고르게 할 질문이 있나요?'
-        : '신청할 때 고객이 클릭해서 고르게 할 질문이 있나요?';
+        ? '유권자마다 맞춤 카톡을 다르게 보내기 위해, 신청할 때 어떤 객관식 질문을 물어볼까요?'
+        : '고객마다 맞춤 카톡을 다르게 보내기 위해, 신청할 때 어떤 객관식 질문을 물어볼까요?';
     } else if (qNum === 3) {
-      qText = '신청 버튼을 누르자마자 1초 만에 도착할 환영·접수확인 카톡에는 어떤 내용을 담을까요?';
+      qText = '신청 버튼을 누르자마자 1초 만에 도착할 환영·접수확인 첫 알림톡에는 어떤 내용을 담을까요?';
     } else if (qNum === 4) {
       qText = '신청한 날을 기준으로, 며칠 간격으로 자동 안부·정보 카톡을 챙겨드릴까요?';
     } else {
@@ -3444,6 +3570,7 @@
       tabRef: meta.tabRef || '',
       nextCta: meta.nextCta || '',
       analogyBadge: meta.analogyBadge || '',
+      guideLine: guideLine,
       usageHint: hintText,
       questionText: cleanFn(qText),
       exampleChips: rawChips.slice(0, 3).map(function (c) {
@@ -3476,8 +3603,9 @@
     var sub = String(ctx.subIndustry ? CONSULT.sanitizeSubIndustryLabel(ctx.subIndustry, ctx.sectorId).cleanLabel : parsed.cleanLabel).trim();
     var isPolitics = parsed.isPolitics || CONSULT.isPoliticsDomain(sub);
     var cleanFn = isPolitics ? CONSULT.cleanPoliticsText : CONSULT.cleanPartnerText;
-    var extractedGoal = String(ctx.extractedGoal || parsed.extractedGoal || '').trim();
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub);
+    var customGoal = String(ctx.customScenarioInput || (ctx.customScenarioData && ctx.customScenarioData.goalText) || '').trim();
+    var extractedGoal = String(customGoal || ctx.extractedGoal || parsed.extractedGoal || '').trim();
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub, ctx.customScenarioData);
     var localMap = {};
     for (var n = 1; n <= CONSULT.TOTAL_Q; n++) {
       localMap[n] = CONSULT.buildLocalQuestionPack(n, ctx).exampleChips;
@@ -3502,18 +3630,18 @@
 
     var sys = [
       '당신은 고마워톡 수석 마케팅·소통 컨설턴트입니다.',
-      '사용자가 입력한 [세부 업종]과 [선택 운영 흐름]에 100% 전용으로 맞춘 Q1~Q5 심층 인터뷰 예시 문장 세트(각 질문당 정확히 3개, 총 15개)와 Q1 맞춤 질문 문장을 JSON 하나로 작성하세요.',
+      '사용자가 입력한 [세부 업종]과 [선택 운영 흐름](및 [최우선 파트너 주관식 목표])에 100% 전용으로 맞춘 Q1~Q5 심층 인터뷰 예시 문장 세트(각 질문당 정확히 3개, 총 15개)와 Q1 맞춤 질문 문장을 JSON 하나로 작성하세요.',
       '',
       '[절대 규칙]',
-      '1) 타 업종 혼입 100% 절대 금지! 오직 사용자가 입력한 [세부 업종] 현장 용어와 실제 상황만 사용하세요.',
+      '1) 타 업종·타 주제 혼입 100% 절대 금지! [최우선 파트너 주관식 목표]가 있으면 15개 예시 전부 오직 그 목표에만 100% 집중해 작성하세요.',
       '2) 내부 시스템 용어(뜰채, 시트 정수 더하기, 1회차 알림톡, 트랙 번호, ' + TOSS_BANNED_LIT + ') 절대 금지.',
       politicsRule,
-      '3) 각 예시 문장은 실제 운영자/담당자가 그대로 터치해 약간만 고쳐 쓸 수 있는 현실적인 1인칭 존댓말 문장(35~80자)으로, 3개가 서로 다른 구체적 각도를 제시하도록 쓰세요.',
-      '4) 질문별 내용 (고마워톡 5대 탭 1:1 매칭):',
+      '3) 각 예시 문장은 실제 운영자/담당자가 그대로 터치해 약간만 고쳐 쓸 수 있는 현실적인 문장(35~80자)으로, 3개가 서로 다른 구체적 각도를 제시하도록 쓰세요.',
+      '4) 질문별 내용 (① 신청페이지 vs ② 신청질문 목적 철저 분리!):',
       isPolitics
-        ? '   - q1 (① 신청화면): 어떤 지역 유권자를 초대해 어떤 핵심 공약·소식을 전할지'
-        : '   - q1 (① 신청화면): 누구를 초대해 어떤 핵심 안내·혜택을 드릴지',
-      '   - q2 (② 신청질문): 신청할 때 클릭해서 고르게 할 객관식 질문 1개와 보기 3~4개',
+        ? '   - q1 (① 신청페이지): 어떤 지역 현안·관심사를 가진 유권자가 이 신청페이지에서 신청하게 만들지 (랜딩 메인 주제)'
+        : '   - q1 (① 신청페이지): 어떤 고민이나 목표를 가진 고객이 이 신청페이지에서 신청하게 만들지 (랜딩 메인 주제·모집 오퍼)',
+      "   - q2 (② 신청질문): 고객마다 맞춤 광고 카톡을 다르게 보내기 위해 신청할 때 물어볼 객관식 질문 1개와 구체적 선택지 2~3개. 반드시 \"질문 — '선택지1' / '선택지2' / '선택지3'\" 형식으로만 작성!",
       isPolitics
         ? '   - q3 (③ 첫 알림톡): 등록 직후 1초 만에 도착할 환영·접수확인 알림톡(핵심 공약 요약·행사 안내·의정 자료, 광고성 단어 및 채널 추가 유도 문구 절대 금지)'
         : '   - q3 (③ 첫 알림톡): 신청 직후 1초 만에 도착할 순수 정보성 접수확인 알림톡(신청 접수 확인, 일정·장소 안내, 신청 내역 확인 링크 등). 카카오 규정상 "쿠폰", "할인권", "무료 증정권", "할인", "특가", "이벤트" 등 광고성 단어 및 "채널 추가 유도 문구"를 100% 절대 금지! 쿠폰·할인 혜택 예시는 반드시 q4 또는 q5에만 작성하세요.',
@@ -3527,7 +3655,8 @@
     var user = '[파트너/담당자] ' + (ctx.ownerName || '파트너님') +
       '\n[대분류 분야] ' + (sec ? sec.title : '기타 업종') +
       '\n[정제된 세부 업종 — 15개 예시 전부 오직 이 도메인에만 맞춰 작성] ' + sub +
-      (extractedGoal ? ('\n[사용자가 STEP 1에서 밝힌 목표] ' + extractedGoal) : '') +
+      (customGoal ? ('\n[★ 최우선 파트너 주관식 목표 — 반드시 이 주제를 중심으로 Q1~Q5 생성] ' + customGoal) : '') +
+      (extractedGoal && extractedGoal !== customGoal ? ('\n[사용자가 STEP 1에서 밝힌 목표] ' + extractedGoal) : '') +
       '\n[선택 운영 흐름] ' + (flow ? (flow.title + ' — ' + flow.summary) : '') +
       '\n\nJSON만 출력하세요.';
 
@@ -3600,7 +3729,7 @@
     var sub = String(ctx.subIndustry ? CONSULT.sanitizeSubIndustryLabel(ctx.subIndustry, ctx.sectorId).cleanLabel : parsed.cleanLabel).trim();
     var isPolitics = parsed.isPolitics || CONSULT.isPoliticsDomain(sub);
     var cleanFn = isPolitics ? CONSULT.cleanPoliticsText : CONSULT.cleanPartnerText;
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, rawSub, ctx.customScenarioData);
 
     // ① 1차 하드 가드레일 (로컬 매뉴얼 정규식 + 카카오 야간 20:00~08:00 정밀 검문 — 온라인/오프라인 무관 100% 차단)
     var localCheck = CONSULT.checkFeasibilityLocal(userText, { qNum: qNum, time24List: ctx.time24List });
@@ -3718,6 +3847,7 @@
           tabRef: localNext.tabRef,
           nextCta: localNext.nextCta,
           analogyBadge: localNext.analogyBadge,
+          guideLine: localNext.guideLine,
           usageHint: localNext.usageHint,
           questionText: localNext.questionText,
           exampleChips: chips
@@ -3801,7 +3931,8 @@
   CONSULT.localSummary = function (ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, ctx.subIndustry);
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, ctx.subIndustry, ctx.customScenarioData);
+    var customGoal = String(ctx.customScenarioInput || (ctx.customScenarioData && ctx.customScenarioData.goalText) || '').trim();
     var A = ctx.answers || {};
     var intCfg = ctx.intervalConfig || null;
     var dateRes = ctx.dateReservation || null;
@@ -3823,8 +3954,8 @@
     var flowTxt = [q4Txt, q5Txt].filter(Boolean).join(' / ');
     return {
       sectorLine: (sec ? (sec.icon + ' ' + sec.title) : '') + (ctx.subIndustry ? (' · ' + ctx.subIndustry) : ''),
-      flowTitle: flow ? flow.title : '맞춤 카카오 운영 흐름',
-      goalTopic: tFirst(A[1] || ctx.subIndustry || '맞춤 신청화면', 75),
+      flowTitle: flow ? flow.title : (customGoal ? (tFirst(customGoal, 22) + ' 맞춤 자동화 흐름') : '맞춤 카카오 운영 흐름'),
+      goalTopic: tFirst(A[1] || customGoal || ctx.subIndustry || '맞춤 신청페이지', 75),
       formQ: tFirst(q2Txt, 80),
       targetPain: tFirst(q2Txt, 80),
       firstGift: tFirst(A[3] || '신청 즉시 발송되는 환영·접수확인 첫 알림톡', 75),
@@ -3846,9 +3977,9 @@
     }
 
     var sys = [
-      '당신은 고마워톡 마케팅 컨설턴트입니다. 파트너님의 분야·선택 흐름·5단계 답변(① 신청화면 ② 신청질문 ③ 첫 알림톡 ④ 며칠뒤 자동 ⑤ 날짜지정)을 모바일 최종 확인 카드용으로 깔끔히 요약하세요.',
+      '당신은 고마워톡 마케팅 컨설턴트입니다. 파트너님의 분야·선택 흐름·5단계 답변(① 신청페이지 ② 신청질문 ③ 첫 알림톡 ④ 며칠뒤 자동 ⑤ 날짜지정)을 모바일 최종 확인 카드용으로 깔끔히 요약하세요.',
       '내부 전문용어(뜰채, 시트 정수 더하기, ' + TOSS_BANNED_LIT + ')는 절대 쓰지 말고 쉬운 일상 언어로 각 항목을 50~80자 이내로 정리하세요.',
-      '출력 JSON만: {"goalTopic":"① 신청화면 요약","formQ":"② 신청질문 요약","firstGift":"③ 첫 알림톡 요약","intervalAuto":"④ 며칠뒤 자동 요약","dateReserve":"⑤ 날짜지정 요약","useWebzine":true}'
+      '출력 JSON만: {"goalTopic":"① 신청페이지 요약","formQ":"② 신청질문 요약","firstGift":"③ 첫 알림톡 요약","intervalAuto":"④ 며칠뒤 자동 요약","dateReserve":"⑤ 날짜지정 요약","useWebzine":true}'
     ].join('\n');
 
     var user = '[분야/세부업종] ' + local.sectorLine +
@@ -3891,7 +4022,8 @@
     var A = ctx.answers || {};
     var partner = ctx.partner || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, ctx.subIndustry);
+    var customGoal = String(ctx.customScenarioInput || (ctx.customScenarioData && ctx.customScenarioData.goalText) || '').trim();
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, ctx.subIndustry, ctx.customScenarioData);
     var brand = ctx.brandAssets || {};
     var photos = Array.isArray(brand.photos) ? brand.photos.filter(Boolean).slice(0, 3) : [];
     var photoMode = (brand.photoMode === 'ai_auto' || !photos.length) ? 'ai_auto' : 'uploaded';
@@ -3981,16 +4113,16 @@
       dateReservation.slots = [];
     }
 
-    // 기존 TOSS.assembleCampaign의 탄탄한 구조 조립기를 재활용하되 5대 탭 답변으로 매핑
+    // 기존 TOSS.assembleCampaign의 탄탄한 구조 조립기를 재활용하되 5대 탭 답변 + 주관식 목표 최우선 매핑
     var mappedAnswers = {
-      1: A[1] || ctx.subIndustry || (sec ? sec.title : '맞춤 캠페인'),
-      2: A[1] || (ctx.subIndustry ? ctx.subIndustry + ' 핵심 고객' : '핵심 타겟 고객'),
+      1: A[1] || customGoal || ctx.subIndustry || (sec ? sec.title : '맞춤 캠페인'),
+      2: A[1] || customGoal || (ctx.subIndustry ? ctx.subIndustry + ' 핵심 고객' : '핵심 타겟 고객'),
       3: '신뢰감 있고 친근한 존댓말',
-      4: A[1] || '현실적인 핵심 고민',
+      4: A[1] || customGoal || '현실적인 핵심 고민',
       5: A[3] || '신청 즉시 발송되는 환영·접수확인 카톡',
-      6: ctx.subIndustry || '검증된 전문성 및 신뢰 안내',
+      6: ctx.subIndustry || customGoal || '검증된 전문성 및 신뢰 안내',
       7: q2Skipped ? '' : (A[2] || '현재 어떤 항목이 가장 궁금하신가요?'),
-      8: [flow ? flow.title : '', A[4], A[5]].filter(Boolean).join(' — ')
+      8: [flow ? flow.title : '', customGoal, A[4], A[5]].filter(Boolean).join(' — ')
     };
 
     var resolvedBrandName = String(ctx.brandName || brand.brandName || partner.businessName || partner.channel_name || '').trim();
@@ -4185,6 +4317,7 @@
     master.partner_info.flow_id = flow ? flow.id : '';
     master.partner_info.flow_title = flow ? flow.title : '';
     master.partner_info.track_id = flow ? flow.trackId : '';
+    master.partner_info.custom_scenario_input = customGoal || '';
     master.partner_info.industry_code = 'custom_ai';
 
     // Step 4 브랜드 컬러 / 로고 / 실사 사진 정확히 주입
@@ -4242,18 +4375,19 @@
   CONSULT.generateCampaign = function (ctx) {
     ctx = ctx || {};
     var sec = CONSULT.getSector(ctx.sectorId);
-    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, ctx.subIndustry);
+    var customGoal = String(ctx.customScenarioInput || (ctx.customScenarioData && ctx.customScenarioData.goalText) || '').trim();
+    var flow = CONSULT.getFlow(ctx.sectorId, ctx.flowId, ctx.customFlows, ctx.subIndustry, ctx.customScenarioData);
     var A = ctx.answers || {};
 
     var mappedAnswers = {
-      1: '[' + (sec ? sec.shortTitle : '') + ' · ' + (ctx.subIndustry || '') + '] ' + (A[1] || ''),
-      2: A[1] || '',
+      1: '[' + (sec ? sec.shortTitle : '') + ' · ' + (ctx.subIndustry || '') + '] ' + (A[1] || customGoal || ''),
+      2: A[1] || customGoal || '',
       3: '신뢰감 있고 친근한 존댓말',
-      4: A[1] || '',
+      4: A[1] || customGoal || '',
       5: A[3] || '',
-      6: ctx.subIndustry || '',
+      6: ctx.subIndustry || customGoal || '',
       7: ctx.skipFormQuestion ? '' : (A[2] || ''),
-      8: [flow ? (flow.title + ' (' + flow.summary + ')') : '', A[4], A[5]].filter(Boolean).join(' — ')
+      8: [flow ? (flow.title + ' (' + flow.summary + ')') : '', customGoal, A[4], A[5]].filter(Boolean).join(' — ')
     };
 
     var pinnedList = Array.isArray(ctx.pinnedConsultNotes)
@@ -4266,6 +4400,9 @@
       '선택 분야: ' + (sec ? sec.title : '') + ' / 세부 업종: ' + (ctx.subIndustry || ''),
       '선택 운영 흐름: ' + (flow ? flow.title : '')
     ]);
+    if (customGoal) {
+      genNotes.push('★ 파트너가 STEP 2에서 직접 입력한 최우선 주관식 목표: ' + customGoal);
+    }
     if (pinnedList.length) {
       genNotes.push('📌 파트너가 Q&A에서 이번 설계에 반영해 달라고 고정한 요청: ' + pinnedList.join(' / '));
     }

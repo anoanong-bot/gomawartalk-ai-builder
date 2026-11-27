@@ -298,7 +298,7 @@ button { cursor: pointer; border: none; background: none; }
   line-height: 1.48;
 }
 
-/* ═════════ [핵심] V3.3 GPTers 벤치마킹: 핸드폰 상단 중앙 배치 + 하단 컬러 게이지 차오름 단계 카드 ═════════ */
+/* ═════════ [핵심] V3.4 핸드폰 최상단 고정 + 5.0초 컬러 게이지 단계 카드 + 하단 통합 컨트롤 도크 ═════════ */
 .sim-section {
   padding: 14px 16px 34px;
   scroll-margin-top: 68px;
@@ -309,25 +309,7 @@ button { cursor: pointer; border: none; background: none; }
   gap: 12px;
 }
 
-/* ★ V3.3 핸드폰 목업 상단 프레임 직결 1줄 장면 캡션 바 (GPTers 레퍼런스) */
-.sim-scene-caption {
-  width: 100%;
-  max-width: 360px;
-  padding: 9px 14px;
-  border-radius: 14px;
-  background: #FFFFFF;
-  border: 1.5px solid #E2E8F0;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
-  color: #0F172A;
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.35;
-  text-align: center;
-  letter-spacing: -0.02em;
-  word-break: keep-all;
-}
-
-/* ★ V3.3 핸드폰 하단 GPTers 스타일 「컬러 게이지 차오름(Progress Fill)」 단계 카드 바 */
+/* ★ V3.4 핸드폰 하단 5.0초 컬러 게이지 차오름(Progress Fill + 하단 4px 진행선) 단계 카드 바 */
 .sim-steps-row {
   width: 100%;
   display: flex;
@@ -347,8 +329,8 @@ button { cursor: pointer; border: none; background: none; }
   position: relative;
   overflow: hidden;
   flex: 0 0 auto;
-  min-width: 112px;
-  padding: 11px 13px;
+  min-width: 118px;
+  padding: 11px 13px 14px;
   border-radius: 16px;
   background: #FFFFFF;
   border: 1.5px solid #CBD5E1;
@@ -367,15 +349,30 @@ button { cursor: pointer; border: none; background: none; }
   bottom: 0;
   width: 0%;
   z-index: 0;
-  background: linear-gradient(90deg, rgba(124, 58, 237, 0.15) 0%, rgba(124, 58, 237, 0.28) 100%);
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.22) 0%, rgba(124, 58, 237, 0.38) 100%);
   pointer-events: none;
 }
-.sim-step-pill.active.gauge-running .step-gauge-fill {
-  animation: stepGaugeFill 5.5s linear forwards;
+.step-gauge-line {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 0%;
+  z-index: 2;
+  background: linear-gradient(90deg, #7C3AED 0%, #4F46E5 65%, #2563EB 100%);
+  border-radius: 0 4px 4px 0;
+  pointer-events: none;
+}
+.sim-step-pill.active.gauge-running .step-gauge-fill,
+.sim-step-pill.active.gauge-running .step-gauge-line {
+  animation: stepGaugeFill 5s linear forwards;
 }
 .sim-step-pill.active:not(.gauge-running) .step-gauge-fill {
   width: 100%;
-  background: linear-gradient(90deg, rgba(124, 58, 237, 0.12) 0%, rgba(124, 58, 237, 0.20) 100%);
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.16) 0%, rgba(124, 58, 237, 0.26) 100%);
+}
+.sim-step-pill.active:not(.gauge-running) .step-gauge-line {
+  width: 100%;
 }
 @keyframes stepGaugeFill {
   0% { width: 0%; }
@@ -449,12 +446,29 @@ button { cursor: pointer; border: none; background: none; }
 }
 .sim-step-pill.active {
   background: #FFFFFF;
-  border-color: #7C3AED;
-  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.22);
+  border-color: #6D28D9;
+  box-shadow: 0 6px 18px rgba(109, 40, 217, 0.28);
   transform: translateY(-1px);
 }
 .sim-step-pill.active .sp-title { color: #4C1D95; }
-.sim-step-pill.active .sp-lbl { color: #334155; font-weight: 700; }
+.sim-step-pill.active .sp-lbl { color: #1E293B; font-weight: 700; }
+.btn-sim-resume-auto {
+  flex: 0 0 auto;
+  padding: 0 13px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.28);
+  transition: transform 0.14s ease;
+}
+.btn-sim-resume-auto:active { transform: scale(0.96); }
 .btn-sim-restart-icon {
   flex: 0 0 48px;
   min-width: 48px;
@@ -471,7 +485,7 @@ button { cursor: pointer; border: none; background: none; }
 .btn-sim-restart-icon:hover { background: var(--g100); color: var(--g900); }
 .btn-sim-restart-icon:active { transform: rotate(-35deg) scale(0.94); }
 
-/* 시뮬레이터 외부 스테이지 (초슬림 세그먼트 + 플래그십 폰 + 외부 내비) */
+/* 시뮬레이터 외부 스테이지 (1층 핸드폰 목업 -> 2층 5.0초 게이지 바 -> 3층 통합 컨트롤 도크) */
 .sim-stage-outer {
   position: relative;
   display: flex;
@@ -481,12 +495,28 @@ button { cursor: pointer; border: none; background: none; }
   width: 100%;
 }
 
-/* ★ V3.1 스크롤 0mm · 토스식 1줄 세그먼트 스위치 (분기 단계 1곳에서만 폰 바로 위 10px 간격으로 초슬림 배치) */
+/* ★ V3.4 프로세스 카드 바로 아래 통합 컨트롤 도크 (3D 플로팅 챗봇 아이콘 비간섭 여백 확보) */
+.sim-action-dock {
+  width: 100%;
+  max-width: 392px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+  margin-bottom: 76px;
+}
+@media (max-width: 520px) {
+  .sim-action-dock {
+    padding-right: 58px;
+  }
+}
+
+/* ★ V3.4 분기 스위치 (핸드폰 위에서 제거 -> 3층 통합 컨트롤 도크 내부로 통합) */
 .sim-remote-panel {
   width: 100%;
-  max-width: 380px;
   padding: 0;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -518,6 +548,7 @@ button { cursor: pointer; border: none; background: none; }
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 .remote-branch-btn {
+  position: relative;
   min-height: 42px;
   padding: 6px 10px;
   border-radius: 11px;
@@ -549,6 +580,32 @@ button { cursor: pointer; border: none; background: none; }
 }
 .remote-branch-btn.on .seg-dot { color: #7C3AED; }
 .remote-branch-btn:active { transform: scale(0.98); }
+
+/* 채널 추가 전 고객 2회 자동 안내 체험 토글 버튼 */
+.btn-sim-rescue-toggle {
+  width: 100%;
+  min-height: 54px;
+  padding: 12px 15px;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  color: #1E293B;
+  font-size: 16.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
+  transition: all 0.16s ease;
+}
+.btn-sim-rescue-toggle:hover { border-color: #7C3AED; background: #FAF5FF; color: #5B21B6; }
+.btn-sim-rescue-toggle.active {
+  background: linear-gradient(135deg, #FEF9C3 0%, #FDE68A 100%);
+  border-color: #D97706;
+  color: #78350F;
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.18);
+}
 
 /* 밝은 실버·플래티넘 메탈릭 슬림 스마트폰 프레임 (332px 슬림 비율 유지) */
 .sim-phone-shell {
@@ -636,77 +693,7 @@ button { cursor: pointer; border: none; background: none; }
   background: rgba(15, 23, 42, 0.24);
 }
 
-/* 폰 프레임 아래: 외부 장면 이동 버튼 ([◀ 이전 장면] | [다음 장면 보기 ▶]) — 하단 안전 여백(72px) 확보로 플로팅 아이콘·코치마크 겹침 0% */
-.sim-ext-nav-wrap {
-  width: 100%;
-  max-width: 380px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 11px;
-  margin-top: 6px;
-  margin-bottom: 72px;
-}
-.sim-ext-nav {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 122px 1fr;
-  gap: 9px;
-}
-.btn-ext-prev {
-  min-height: 58px;
-  padding: 12px 10px;
-  border-radius: 15px;
-  background: #FFFFFF;
-  border: 1.5px solid var(--g200);
-  color: var(--g900);
-  font-size: 17px;
-  font-weight: 800;
-  transition: all 0.15s ease;
-}
-.btn-ext-prev:disabled { opacity: 0.42; cursor: not-allowed; }
-.btn-ext-prev:not(:disabled):active { transform: scale(0.97); }
-.btn-ext-next {
-  position: relative;
-  min-height: 58px;
-  padding: 12px 14px;
-  border-radius: 15px;
-  background: linear-gradient(135deg, #111827 0%, #1E293B 100%);
-  color: #FFFFFF;
-  font-size: 18.5px;
-  font-weight: 800;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
-  transition: all 0.15s ease;
-}
-.btn-ext-next:active { transform: scale(0.98); }
-
-/* 채널 추가 전 고객 2회 자동 안내 체험 토글 버튼 */
-.btn-sim-rescue-toggle {
-  width: 100%;
-  min-height: 54px;
-  padding: 12px 15px;
-  border-radius: 14px;
-  background: #FFFFFF;
-  border: 1.5px solid #CBD5E1;
-  color: #1E293B;
-  font-size: 17px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
-  transition: all 0.16s ease;
-}
-.btn-sim-rescue-toggle:hover { border-color: #7C3AED; background: #FAF5FF; color: #5B21B6; }
-.btn-sim-rescue-toggle.active {
-  background: linear-gradient(135deg, #FEF9C3 0%, #FDE68A 100%);
-  border-color: #D97706;
-  color: #78350F;
-  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.18);
-}
-
-/* ★ V3.1 클릭 유도 포인터 — 대상 버튼 내부 position: absolute 마운트 (스크롤 침범 0% · z-index 25 < 고정바 45 · 48px 화이트 글러브 커서) */
+/* ★ V3.4 클릭 유도 포인터 — 대상 버튼 내부 position: absolute 마운트 (스크롤 침범 0% · z-index 25 < 고정바 45 · 48px 화이트 글러브 커서) */
 .sim-coachmark {
   position: absolute;
   z-index: 25;
@@ -785,7 +772,7 @@ button { cursor: pointer; border: none; background: none; }
   100% { transform: scale(2.15); opacity: 0; }
 }
 
-/* 타임워프 연출 오버레이 (D+1 / D+3) */
+/* 타임워프 연출 오버레이 (D+1 / D+3 및 채널 미추가 고객 풀스크린 '하루가 지났습니다' 전환) */
 .timewarp-overlay {
   position: absolute;
   inset: 28px 0 0 0;
@@ -794,17 +781,27 @@ button { cursor: pointer; border: none; background: none; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   padding: 24px;
   text-align: center;
   color: #FFFFFF;
-  background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.94) 100%);
+  background: linear-gradient(160deg, rgba(15, 23, 42, 0.96) 0%, rgba(30, 41, 59, 0.95) 100%);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.26s ease;
+  transition: opacity 0.28s ease;
 }
 .timewarp-overlay.sunrise {
-  background: linear-gradient(160deg, rgba(124, 45, 18, 0.93) 0%, rgba(30, 41, 59, 0.95) 100%);
+  background: linear-gradient(160deg, rgba(124, 45, 18, 0.94) 0%, rgba(30, 41, 59, 0.95) 100%);
+}
+.timewarp-overlay.rescue-sunrise {
+  background: linear-gradient(180deg, #0F172A 0%, #312E81 36%, #B45309 78%, #F59E0B 100%);
+  background-size: 100% 220%;
+  animation: rescueNightToMorning 1.35s ease-in-out forwards;
+}
+@keyframes rescueNightToMorning {
+  0% { background-position: 50% 0%; }
+  45% { background-position: 50% 42%; }
+  100% { background-position: 50% 100%; }
 }
 .timewarp-overlay.show {
   opacity: 1;
@@ -815,8 +812,8 @@ button { cursor: pointer; border: none; background: none; }
   from { transform: translateY(12px) scale(0.86); opacity: 0; }
   to { transform: translateY(0) scale(1); opacity: 1; }
 }
-.tw-title { font-size: 18.5px; font-weight: 900; color: #FEF08A; letter-spacing: -0.02em; }
-.tw-sub { font-size: 12.5px; font-weight: 700; color: rgba(255, 255, 255, 0.86); }
+.tw-title { font-size: 19px; font-weight: 900; color: #FEF08A; letter-spacing: -0.02em; line-height: 1.38; word-break: keep-all; }
+.tw-sub { font-size: 13px; font-weight: 700; color: rgba(255, 255, 255, 0.92); line-height: 1.48; word-break: keep-all; }
 
 /* 5단계 스크린 컨테이너 */
 .sim-stage-host {
@@ -898,108 +895,106 @@ button { cursor: pointer; border: none; background: none; }
   overflow: hidden;
   background: #F8FAFC;
 }
-/* ★ V3.2 무대 뒤편 레이어: 100% 풀스크린(Full-Bleed) 블러 모바일 랜딩 포스터 (흰 여백 0px · scale(1.08) 가장자리 번짐 방지) */
+/* ★ V3.4 무대 뒤편 레이어: 업종·키워드 맞춤 100% 풀스크린 실사 포스터 블러 랜딩 (흰 여백 0% · object-fit: cover · blur(6px)) */
 .s1-bg-preview {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  padding: 0;
-  filter: blur(8px) saturate(1.15);
-  transform: scale(1.08);
-  transform-origin: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   user-select: none;
   pointer-events: none;
-  background: linear-gradient(180deg, var(--brand) 0%, var(--brand-soft) 56%, #E2E8F0 100%);
+  background: #0F172A;
 }
-.s1-poster-hero {
+.s1-poster-fallback-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, var(--brand) 0%, #1E293B 55%, #0F172A 100%);
+}
+.s1-poster-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(6px) brightness(0.92) saturate(1.1);
+  transform: scale(1.08);
+  transform-origin: center;
+  display: block;
+}
+.s1-poster-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.62) 0%, rgba(15, 23, 42, 0.34) 44%, rgba(15, 23, 42, 0.78) 100%);
+}
+.s1-poster-editorial {
   position: relative;
-  padding: 18px 16px 16px;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  padding: 20px 16px 18px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 10px;
-  background:
-    radial-gradient(circle at 86% 16%, rgba(254, 229, 0, 0.45), transparent 46%),
-    radial-gradient(circle at 14% 78%, rgba(255, 255, 255, 0.24), transparent 48%),
-    linear-gradient(145deg, var(--brand) 0%, #1E293B 100%);
   color: #FFFFFF;
+  filter: blur(1.4px);
+}
+.s1-poster-top-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .s1-poster-badge-row {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
 }
 .s1-poster-pill {
   height: 22px;
   border-radius: 99px;
   background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.36);
   padding: 0 11px;
   color: #FFFFFF;
   font-size: 9.5px;
   font-weight: 800;
   display: inline-flex;
   align-items: center;
+  backdrop-filter: blur(4px);
 }
 .s1-poster-pill.soft {
   background: #FEE500;
   border-color: #FDE047;
   color: #191919;
 }
-.s1-poster-hero .s1-headline {
-  font-size: 20px;
+.s1-poster-editorial .s1-headline {
+  font-size: 21px;
   font-weight: 900;
-  line-height: 1.24;
+  line-height: 1.26;
   color: #FFFFFF;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+  text-shadow: 0 3px 14px rgba(15, 23, 42, 0.45);
 }
-.s1-poster-body {
-  flex: 1;
-  padding: 14px 14px 18px;
+.s1-poster-bottom-banner {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background:
-    radial-gradient(circle at 12% 18%, rgba(124, 58, 237, 0.14), transparent 50%),
-    linear-gradient(180deg, var(--brand-soft) 0%, #F1F5F9 100%);
-}
-.s1-poster-card-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 9px;
-}
-.s1-poster-mini-box {
-  height: 78px;
-  border-radius: 14px;
-  padding: 10px;
-  background: linear-gradient(145deg, #FFFFFF 0%, #DBEAFE 100%);
-  border: 1px solid rgba(59, 130, 246, 0.22);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.s1-poster-mini-box.warm {
-  background: linear-gradient(145deg, #FFFBEB 0%, #FDE68A 100%);
-  border-color: rgba(245, 158, 11, 0.28);
-}
-.s1-poster-bar {
-  height: 8px;
-  border-radius: 99px;
-  background: rgba(15, 23, 42, 0.18);
-  width: 78%;
-}
-.s1-poster-bar.short { width: 52%; background: var(--brand); opacity: 0.48; }
-.s1-poster-footer-strip {
-  flex: 1;
-  min-height: 54px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, var(--brand-soft) 100%);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  padding: 11px 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   gap: 7px;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.46);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+}
+.s1-poster-bottom-banner .s1-check-item {
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 6px 9px;
+}
+.s1-poster-bottom-banner .s1-check-icon {
+  color: #FEF08A;
 }
 
 /* ★ V3.2 무대 뒤편 중앙 화이트 글래스 카드 (핵심 1문장 + ② 신청폼 보기 + 우상단 커튼 닫기만 집중) */
@@ -3445,13 +3440,13 @@ button { cursor: pointer; border: none; background: none; }
       </p>
     </section>
 
-    <!-- ═════════ 2. V3.3 GPTers 벤치마킹 시뮬레이터 (핸드폰 목업 상단 중앙 ➔ 하단 컬러 게이지 단계 카드) ═════════ -->
+    <!-- ═════════ 2. V3.4 최상단 핸드폰 고정 ➔ 5.0초 게이지 단계 카드 ➔ 하단 통합 컨트롤 도크 ═════════ -->
     <section class="sim-section" id="sec-sim">
 
-      <!-- 시뮬레이터 외부 스테이지 (1줄 비교 스위치 + 장면 캡션 바 + 플래그십 슬림 스마트폰 + 하단 게이지 단계 카드 + 외부 내비) -->
+      <!-- 시뮬레이터 외부 스테이지 (1층 핸드폰 목업 -> 2층 5.0초 게이지 바 -> 3층 통합 컨트롤 도크) -->
       <div class="sim-stage-outer" id="sim-stage-outer">
 
-        <!-- ★ V3.1 클릭 유도 포인터 (48px 화이트 글러브 커서 SVG — 대상 버튼 내부 position: absolute로 동적 마운트) -->
+        <!-- ★ V3.4 전자동 고객 커서 시연 & 클릭 포인터 (48px 화이트 글러브 커서 SVG + 클릭 파동 링) -->
         <div class="sim-coachmark" id="sim-coachmark" aria-hidden="true">
           <span class="coach-ring"></span>
           <span class="coach-ring r2"></span>
@@ -3464,18 +3459,7 @@ button { cursor: pointer; border: none; background: none; }
           </span>
         </div>
 
-        <!-- ★ V3.1 스크롤 0mm · 토스식 1줄 세그먼트 스위치 (분기 단계 1곳에서만 폰 바로 위에 슬림 배치, 나머지 단계 display:none) -->
-        <div class="sim-remote-panel" id="sim-remote-panel" hidden style="display:none">
-          <div id="remote-branch-bar" hidden>
-            <div class="remote-caption" id="remote-spotlight-caption">⚡ 신청폼 선택에 따라 카톡 내용이 달라집니다 (눌러서 비교)</div>
-            <div class="remote-pill-row" id="ext-branch-pills"></div>
-          </div>
-        </div>
-
-        <!-- ★ V3.3 핸드폰 목업 상단 프레임 직결 1줄 장면 캡션 바 -->
-        <div class="sim-scene-caption" id="sim-scene-caption">📋 고객이 처음 만나는 맞춤 신청페이지입니다</div>
-
-        <!-- 플래그십 슬림 스마트폰 프레임 (332px 고정폭 · 순정 고객 화면 100%) -->
+        <!-- 1층: 플래그십 슬림 스마트폰 프레임 (332px 고정폭 · 상단 위치 1px도 흔들리지 않음) -->
         <div class="sim-phone-shell" id="sim-phone-shell">
           <div class="sim-phone-screen" id="sim-phone-screen">
             <div class="sim-status-bar" id="sim-status-bar">
@@ -3488,7 +3472,7 @@ button { cursor: pointer; border: none; background: none; }
               </span>
             </div>
 
-            <!-- 시간 경과 타임워프 오버레이 (캠페인 실제 발송 주기 동적 연동) -->
+            <!-- 시간 경과 타임워프 오버레이 (캠페인 실제 발송 주기 및 채널 미추가 익일 09:00 풀스크린 전환) -->
             <div class="timewarp-overlay" id="timewarp-overlay" aria-hidden="true">
               <div class="tw-emoji" id="tw-emoji">🌙</div>
               <div class="tw-title" id="tw-title">하루가 지났습니다 · D+1 오전 09:00</div>
@@ -3498,7 +3482,7 @@ button { cursor: pointer; border: none; background: none; }
             <!-- 6단계 연속 스크린 호스트 (폰 내부 100% 고객 순정 화면) -->
             <div class="sim-stage-host">
 
-              <!-- ── STEP 1: 실제 고마워톡 랜딩 프레임 + 빨간 무대 커튼 오픈 ➔ 블러 랜딩 위 전문가 세팅 안내 ── -->
+              <!-- ── STEP 1: 실제 고마워톡 랜딩 프레임 + 빨간 무대 커튼 오픈 ➔ 업종 맞춤 풀스크린 실사 포스터 블러 랜딩 ── -->
               <div class="sim-screen active" data-screen="1">
                 <div class="s1-topbar">
                   <div class="s1-top-brand">
@@ -3514,41 +3498,27 @@ button { cursor: pointer; border: none; background: none; }
                 </div>
 
                 <div class="s1-teaser-stage" id="s1-teaser-stage">
-                  <!-- ★ V3.2 무대 뒤편 레이어 1: 100% 풀스크린 블러 모바일 랜딩 포스터 (흰 여백 0px · scale(1.08)) -->
-                  <div class="s1-bg-preview" aria-hidden="true">
-                    <div class="s1-poster-hero">
-                      <div class="s1-poster-badge-row">
-                        <span class="s1-poster-pill">맞춤 신청페이지</span>
-                        <span class="s1-poster-pill soft">카카오 1초 접수</span>
-                      </div>
-                      <h3 class="s1-headline" id="lp-hero-title">핵심 헤드카피</h3>
-                      <div class="blur-hero-slot" id="s1-hero-slot" style="border-radius:14px">
-                        <div class="blur-visual-art"></div>
-                        <div class="blur-hero-pill" id="blur-hero-badge">맞춤 신청페이지 비주얼</div>
-                      </div>
-                    </div>
-                    <div class="s1-poster-body">
-                      <div class="s1-checks" id="lp-points-list"></div>
-                      <div class="s1-poster-card-grid">
-                        <div class="s1-poster-mini-box">
-                          <span class="s1-poster-bar short"></span>
-                          <span class="s1-poster-bar"></span>
-                          <span class="s1-poster-bar short"></span>
+                  <!-- ★ V3.4 무대 뒤편 레이어 1: 업종·키워드 맞춤 풀스크린 실사 포스터 블러 랜딩 (흰 여백 0%) -->
+                  <div class="s1-bg-preview" id="s1-bg-preview" data-poster-theme="default_business" aria-hidden="true">
+                    <div class="s1-poster-fallback-bg" id="s1-poster-fallback-bg"></div>
+                    <img class="s1-poster-photo" id="s1-poster-photo" alt="" loading="eager" decoding="async">
+                    <div class="s1-poster-scrim"></div>
+                    <div class="s1-poster-editorial">
+                      <div class="s1-poster-top-copy">
+                        <div class="s1-poster-badge-row">
+                          <span class="s1-poster-pill" id="s1-poster-theme-pill">맞춤 신청페이지</span>
+                          <span class="s1-poster-pill soft">카카오 1초 접수</span>
                         </div>
-                        <div class="s1-poster-mini-box warm">
-                          <span class="s1-poster-bar short"></span>
-                          <span class="s1-poster-bar"></span>
-                          <span class="s1-poster-bar short"></span>
-                        </div>
+                        <h3 class="s1-headline" id="lp-hero-title">핵심 헤드카피</h3>
                       </div>
-                      <div class="s1-poster-footer-strip">
-                        <span class="s1-poster-bar"></span>
-                        <span class="s1-poster-bar short"></span>
+                      <div id="s1-hero-slot"></div>
+                      <div class="s1-poster-bottom-banner">
+                        <div class="s1-checks" id="lp-points-list"></div>
                       </div>
                     </div>
                   </div>
 
-                  <!-- ★ V3.2 무대 뒤편 레이어 2: 블러 포스터 중앙 화이트 글래스 카드 (핵심 1문장 집중 · 불필요 배지/보조문구 제거) -->
+                  <!-- ★ V3.4 무대 뒤편 레이어 2: 중앙 화이트 글래스 카드 (핵심 1문장 + ② 신청폼 보기 + 커튼 닫기) -->
                   <div class="s1-teaser-revealed" id="s1-teaser-revealed">
                     <div class="s1-expert-glass-card">
                       <div class="s1-glass-top-row">
@@ -3721,46 +3691,55 @@ button { cursor: pointer; border: none; background: none; }
           </div>
         </div>
 
-        <!-- ★ V3.3 핸드폰 바로 아래 GPTers 스타일 「게이지 차오름(Progress Fill) 단계 카드」 (숫자 기호 제거 · 5.5초 자동 게이지 · 조작 시 즉시 일시정지) -->
+        <!-- 2층: ★ V3.4 핸드폰 바로 아래 5.0초 컬러 게이지(Progress Fill + 4px 라인) 단계 카드 바 -->
         <div class="sim-steps-row" id="sim-steps-bar" role="tablist" aria-label="시뮬레이터 단계 선택">
           <button type="button" class="sim-step-pill active" data-sim-step="1">
             <span class="step-gauge-fill" aria-hidden="true"></span>
+            <span class="step-gauge-line" aria-hidden="true"></span>
             <span class="sp-head-inline"><span class="sp-title">신청페이지</span></span>
             <span class="sp-lbl">랜딩 첫 화면</span>
           </button>
           <button type="button" class="sim-step-pill" data-sim-step="2">
             <span class="step-gauge-fill" aria-hidden="true"></span>
+            <span class="step-gauge-line" aria-hidden="true"></span>
             <span class="sp-head-inline"><span class="sp-title">신청폼 설문</span></span>
             <span class="sp-lbl">취향 자동 분류</span>
           </button>
           <button type="button" class="sim-step-pill" data-sim-step="3">
             <span class="step-gauge-fill" aria-hidden="true"></span>
+            <span class="step-gauge-line" aria-hidden="true"></span>
             <span class="sp-head-inline"><span class="sp-title">첫 알림톡</span><span class="sp-type-pill alim">알림톡</span><span class="sp-spotlight-badge" id="sp-spot-3" hidden>⚡맞춤</span></span>
             <span class="sp-lbl" id="sp-lbl-3">신청 즉시</span>
           </button>
           <button type="button" class="sim-step-pill" data-sim-step="4">
             <span class="step-gauge-fill" aria-hidden="true"></span>
+            <span class="step-gauge-line" aria-hidden="true"></span>
             <span class="sp-head-inline"><span class="sp-title" id="sp-title-4">맞춤 광고</span><span class="sp-type-pill ad" id="sp-type-4">광고</span><span class="sp-spotlight-badge" id="sp-spot-4" hidden>⚡맞춤</span></span>
             <span class="sp-lbl" id="sp-lbl-4">+1일 뒤</span>
           </button>
           <button type="button" class="sim-step-pill" data-sim-step="5">
             <span class="step-gauge-fill" aria-hidden="true"></span>
+            <span class="step-gauge-line" aria-hidden="true"></span>
             <span class="sp-head-inline"><span class="sp-title" id="sp-title-5">캐로셀 광고</span><span class="sp-type-pill carousel" id="sp-type-5">캐로셀</span><span class="sp-spotlight-badge" id="sp-spot-5" hidden>⚡맞춤</span></span>
             <span class="sp-lbl" id="sp-lbl-5">+3일 뒤</span>
           </button>
           <button type="button" class="sim-step-pill" data-sim-step="6">
             <span class="step-gauge-fill" aria-hidden="true"></span>
+            <span class="step-gauge-line" aria-hidden="true"></span>
             <span class="sp-head-inline"><span class="sp-title" id="sp-title-6">마무리 광고</span><span class="sp-type-pill ad" id="sp-type-6">광고</span><span class="sp-spotlight-badge" id="sp-spot-6" hidden>⚡맞춤</span></span>
             <span class="sp-lbl" id="sp-lbl-6">+7일 뒤</span>
           </button>
+          <button type="button" class="btn-sim-resume-auto" id="btn-sim-resume-auto" hidden>▶ 자동시연</button>
           <button type="button" class="btn-sim-restart-icon" id="btn-sim-restart" title="처음부터 다시 보기" aria-label="처음부터 다시 보기">↻</button>
         </div>
 
-        <!-- 폰 프레임 아래: 외부 장면 전환 버튼 + 채널 추가 안 한 고객 체험 토글 (광고 단계 4~6에서만 노출!) -->
-        <div class="sim-ext-nav-wrap">
-          <div class="sim-ext-nav">
-            <button type="button" class="btn-ext-prev" id="btn-sim-prev" disabled>◀ 이전 장면</button>
-            <button type="button" class="btn-ext-next" id="btn-sim-next">다음 장면 보기 ▶</button>
+        <!-- 3층: ★ V3.4 프로세스 카드 바로 아래 통합 컨트롤 도크 (중복 이전/다음 버튼 삭제 · 분기 스위치 & 미수신 체험 통합) -->
+        <div class="sim-action-dock" id="sim-action-dock">
+          <div class="sim-remote-panel" id="sim-remote-panel" hidden style="display:none">
+            <div id="remote-branch-bar" hidden>
+              <div class="remote-caption" id="remote-spotlight-caption">⚡ 신청폼 선택에 따라 카톡 내용이 달라집니다 (눌러서 비교)</div>
+              <div class="remote-pill-row" id="ext-branch-pills"></div>
+            </div>
           </div>
           <button type="button" class="btn-sim-rescue-toggle" id="btn-sim-rescue-toggle" hidden>🛡️ 채널 추가 안 한 고객은 어떻게 받나요?</button>
         </div>
@@ -4447,11 +4426,15 @@ const STATE = {
   simAutoPlay: true,
   simManualMode: false,
   simCompleted: false,
-  autoAdvanceMs: 5500,
+  autoAdvanceMs: 5000,
+  isAutoCarouselScrolling: false,
   rescueSimMode: false,
   rescueClicked: false,
   rescueStage: 'idle',
   rescuePrevStep: 4,
+  rescueAdCardHtml: '',
+  rescueStepNum: 4,
+  rescueLastTimeSlip: null,
   starterUpgradeToPro: false,
   s2Picked: false,
   s2AgreeChecked: true,
@@ -5200,11 +5183,158 @@ function setStep1CurtainOpen(isOpen) {
   return STATE.s1CurtainOpen;
 }
 
+/* ★ V3.4 업종·키워드 맞춤 풀스크린 실사 포스터 13종 테마 (고해상도 실사 + 오프라인 리치 SVG/그라데이션 백업) */
+const LANDING_POSTER_THEMES = {
+  fitness: {
+    id: 'fitness',
+    label: '피트니스 · 운동 맞춤',
+    re: /복근|헬스|피트니스|요가|필라테스|운동|바디프로필|다이어트|크로스핏|체육관|트레이닝|수영|러닝|\bPT\b/i,
+    photoUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 22% 24%, rgba(249,115,22,0.78), transparent 55%), radial-gradient(circle at 80% 72%, rgba(234,88,12,0.55), transparent 58%), linear-gradient(155deg, #1E1B4B 0%, #312E81 48%, #0F172A 100%)'
+  },
+  farm_food: {
+    id: 'farm_food',
+    label: '산지직송 · 푸드 맞춤',
+    re: /사과|과수원|농원|농장|식품|정육|한우|과일|딸기|귤|감귤|복숭아|포도|수산|산지|직송|반찬|밀키트|김치|유기농|특산물|떡/i,
+    photoUrl: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 24% 26%, rgba(239,68,68,0.82), transparent 56%), radial-gradient(circle at 78% 74%, rgba(34,197,94,0.62), transparent 58%), linear-gradient(155deg, #450A0A 0%, #7C2D12 50%, #14532D 100%)'
+  },
+  cafe_bakery: {
+    id: 'cafe_bakery',
+    label: '카페 · 외식 맞춤',
+    re: /카페|커피|베이커리|빵|식당|맛집|레스토랑|디저트|브런치|케이크|와인|요리|음식점|외식|분식/i,
+    photoUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 28% 22%, rgba(245,158,11,0.75), transparent 56%), radial-gradient(circle at 76% 74%, rgba(180,83,9,0.6), transparent 58%), linear-gradient(155deg, #451A03 0%, #78350F 52%, #292524 100%)'
+  },
+  medical: {
+    id: 'medical',
+    label: '병원 · 클리닉 맞춤',
+    re: /병원|치과|한의원|피부과|클리닉|의원|성형|안과|정형외과|내과|소아과|검진|임플란트|진료|의료|약국|재활/i,
+    photoUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 22% 24%, rgba(56,189,248,0.78), transparent 55%), radial-gradient(circle at 78% 74%, rgba(20,184,166,0.62), transparent 58%), linear-gradient(155deg, #0C4A6E 0%, #0F766E 52%, #1E293B 100%)'
+  },
+  education: {
+    id: 'education',
+    label: '교육 · 클래스 맞춤',
+    re: /학원|교육|특강|세미나|강의|수학|영어|한국어|입시|내신|수능|과외|공부|코딩|스터디|스쿨|클래스|코칭|독서/i,
+    photoUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 22% 24%, rgba(99,102,241,0.82), transparent 55%), radial-gradient(circle at 78% 72%, rgba(14,165,233,0.58), transparent 58%), linear-gradient(155deg, #1E1B4B 0%, #1D4ED8 52%, #0F172A 100%)'
+  },
+  legal_tax: {
+    id: 'legal_tax',
+    label: '법률 · 세무 · 상담 맞춤',
+    re: /법률|세무|회계|변호사|법무사|노무|특허|재무|보험|금융|자산|투자|세금|창업|컨설팅/i,
+    photoUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 25% 24%, rgba(59,130,246,0.7), transparent 55%), radial-gradient(circle at 76% 74%, rgba(217,119,6,0.5), transparent 58%), linear-gradient(155deg, #0F172A 0%, #1E3A8A 52%, #1E293B 100%)'
+  },
+  beauty: {
+    id: 'beauty',
+    label: '뷰티 · 살롱 맞춤',
+    re: /뷰티|헤어|미용실|네일|에스테틱|피부관리|스파|마사지|속눈썹|왁싱|메이크업|화장품|살롱|두피/i,
+    photoUrl: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 26% 24%, rgba(244,114,182,0.82), transparent 55%), radial-gradient(circle at 78% 74%, rgba(192,132,252,0.68), transparent 58%), linear-gradient(155deg, #831843 0%, #7E22CE 52%, #3B0764 100%)'
+  },
+  church_religion: {
+    id: 'church_religion',
+    label: '교회 · 공동체 맞춤',
+    re: /교회|종교|성당|사찰|목사|선교|예배|청년부|수련회|부흥회|찬양|기도|신앙|성경/i,
+    photoUrl: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 28% 22%, rgba(251,191,36,0.78), transparent 55%), radial-gradient(circle at 78% 74%, rgba(96,165,250,0.58), transparent 58%), linear-gradient(155deg, #1E3A8A 0%, #4338CA 52%, #1E293B 100%)'
+  },
+  realestate_interior: {
+    id: 'realestate_interior',
+    label: '부동산 · 인테리어 맞춤',
+    re: /부동산|인테리어|리모델링|건축|분양|아파트|중개|시공|가구|조명|청소|입주|이사|홈스타일링/i,
+    photoUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 24% 24%, rgba(234,179,8,0.68), transparent 56%), radial-gradient(circle at 78% 72%, rgba(56,189,248,0.52), transparent 58%), linear-gradient(155deg, #1C1917 0%, #44403C 52%, #0F172A 100%)'
+  },
+  fashion_commerce: {
+    id: 'fashion_commerce',
+    label: '브랜드 · 스토어 맞춤',
+    re: /패션|의류|쇼핑몰|쥬얼리|액세서리|잡화|가방|신발|꽃집|플라워|공방|소품|기프트|스토어|커머스/i,
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 24% 24%, rgba(251,113,133,0.78), transparent 55%), radial-gradient(circle at 78% 74%, rgba(129,140,248,0.62), transparent 58%), linear-gradient(155deg, #4C0519 0%, #6D28D9 52%, #1E1B4B 100%)'
+  },
+  pet_studio: {
+    id: 'pet_studio',
+    label: '반려동물 · 스튜디오 맞춤',
+    re: /반려견|반려묘|강아지|고양이|애견|펫|동물병원|스튜디오|사진관|웨딩|촬영|프로필|돌잔치/i,
+    photoUrl: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 25% 24%, rgba(251,146,60,0.8), transparent 55%), radial-gradient(circle at 78% 74%, rgba(52,211,153,0.62), transparent 58%), linear-gradient(155deg, #431407 0%, #0F766E 52%, #1E293B 100%)'
+  },
+  politics_public: {
+    id: 'politics_public',
+    label: '지역 소통 · 공익 맞춤',
+    re: /의정|국회의원|시의원|구청장|출판기념회|공공|협회|단체|봉사|포럼|지역|복지|후원|인터뷰|사람들/i,
+    photoUrl: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 24% 24%, rgba(37,99,235,0.82), transparent 55%), radial-gradient(circle at 78% 74%, rgba(16,185,129,0.58), transparent 58%), linear-gradient(155deg, #172554 0%, #1E40AF 52%, #0F172A 100%)'
+  },
+  default_business: {
+    id: 'default_business',
+    label: '맞춤 신청페이지',
+    re: null,
+    photoUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80',
+    fallbackBg: 'radial-gradient(circle at 22% 24%, rgba(124,58,237,0.78), transparent 55%), radial-gradient(circle at 78% 74%, rgba(37,99,235,0.65), transparent 58%), linear-gradient(155deg, #1E1B4B 0%, #312E81 52%, #0F172A 100%)'
+  }
+};
+
+function resolveLandingPosterTheme(camp) {
+  camp = camp || STATE.campaign || DEMO_CAMPAIGN;
+  const p = camp.partner_info || {};
+  const t1 = camp.tab1_basic_settings || {};
+  const t2 = camp.tab2_landing_content || {};
+  const blocks = Array.isArray(t2.blocks_1000px) ? t2.blocks_1000px : [];
+  const hero = blocks[0] || {};
+  const hay = [
+    p.sub_industry, p.sector_label, p.channel_name, p.flow_title,
+    t1.title_30chars, t1.description,
+    t1.thumbnail_500x280 && t1.thumbnail_500x280.headline,
+    hero.title, hero.subtitle, hero.tag
+  ].filter(Boolean).join(' ');
+
+  const keys = Object.keys(LANDING_POSTER_THEMES);
+  for (let i = 0; i < keys.length; i++) {
+    const t = LANDING_POSTER_THEMES[keys[i]];
+    if (t && t.re && t.re.test(hay)) return t;
+  }
+  return LANDING_POSTER_THEMES.default_business;
+}
+
 function renderStep1Hero() {
   const { camp, channelName } = getChannelMeta();
   const sched = STATE.schedule || resolveCampaignSchedule(camp);
   const t1 = camp.tab1_basic_settings || {};
+  const t2 = camp.tab2_landing_content || {};
+  const ba = camp.brand_assets || {};
+  const blocks = Array.isArray(t2.blocks_1000px) ? t2.blocks_1000px : [];
+  const heroBlock = blocks[0] || {};
+  const theme = resolveLandingPosterTheme(camp);
+
+  const bgPreview = $('#s1-bg-preview');
+  const fallbackBg = $('#s1-poster-fallback-bg');
+  const photoEl = $('#s1-poster-photo');
+  const themePill = $('#s1-poster-theme-pill');
   const heroSlot = $('#s1-hero-slot');
+
+  if (bgPreview) bgPreview.dataset.posterTheme = theme.id;
+  if (fallbackBg && fallbackBg.style) {
+    fallbackBg.style.background = theme.fallbackBg;
+  }
+  if (themePill) {
+    themePill.textContent = theme.label || (channelName + ' 신청페이지');
+  }
+  if (photoEl) {
+    const partnerPhoto = (Array.isArray(ba.partner_photos) && ba.partner_photos[0]) || heroBlock.visual_image || '';
+    const finalSrc = partnerPhoto || theme.photoUrl;
+    photoEl.dataset.themeId = theme.id;
+    photoEl.onerror = () => {
+      if (photoEl.style) photoEl.style.opacity = '0';
+    };
+    if (photoEl.style) photoEl.style.opacity = '1';
+    photoEl.src = finalSrc;
+    photoEl.alt = cleanText((channelName || '브랜드') + ' ' + theme.label);
+  }
+
   if (!heroSlot) return;
 
   if (sched.hasVideo) {
@@ -5212,16 +5342,18 @@ function renderStep1Hero() {
     const vTitle = cleanText(vp.title || ((t1.thumbnail_500x280 && t1.thumbnail_500x280.headline) || (channelName + ' 소개 영상')));
     const vDur = cleanText(vp.duration || '03:20');
     heroSlot.innerHTML =
-      '<div class="blur-visual-art"></div>' +
       '<div class="s1-video-card">' +
         '<div class="yt-top-row"><span class="yt-badge">▶ YOUTUBE</span><span class="yt-dur">' + esc(vDur) + '</span></div>' +
         '<div class="yt-play-center">▶</div>' +
         '<div class="yt-caption">' + esc(shortText(vTitle, 30)) + '</div>' +
       '</div>';
   } else {
+    const subText = shortText(heroBlock.subtitle || t1.description || (channelName + ' 핵심 안내와 혜택을 지금 확인해 보세요.'), 42);
     heroSlot.innerHTML =
-      '<div class="blur-visual-art"></div>' +
-      '<div class="blur-hero-pill" id="blur-hero-badge">' + esc(channelName) + ' 신청페이지</div>';
+      '<div class="s1-poster-highlight">' +
+        '<div class="s1-poster-hl-kicker">' + esc(shortText(channelName, 16)) + '</div>' +
+        '<div class="s1-poster-hl-sub">' + esc(subText) + '</div>' +
+      '</div>';
   }
 }
 
@@ -5753,12 +5885,17 @@ function renderRescueSimulationInBody(bodyEl, stepNum) {
       '</div>';
   }
 
+  STATE.rescueAdCardHtml = adCardHtml;
+  STATE.rescueStepNum = stepNum;
+  STATE.rescueLastTimeSlip = null;
+
   bodyEl.classList.remove('morph-in');
   try { void bodyEl.offsetWidth; } catch (e) {}
   bodyEl.classList.add('morph-in');
 
-  // ★ V3.3 Before-Click 초기 상태: 미수신 안내 알림톡 + 펄스 [Ch+ 채널 추가] 버튼만 표시 (익일 09:00 광고는 hidden 대기!)
+  // ★ V3.4 Before-Click 초기 상태: 오직 [미수신 안내 알림톡] + 펄스 [Ch+ 채널 추가] 버튼만 깨끗하게 표시 (구겨 넣기 0%)
   bodyEl.innerHTML =
+    '<div class="kk-rescue-sub-pop" id="kk-rescue-sub-badge" hidden>🎉 +1 구독(채널 친구)이 발생했습니다!</div>' +
     '<div class="kk-rescue-sys-pill">광고 미도달 ➔ 미수신 안내 알림톡 자동 대체 발송</div>' +
     '<div class="kk-msg-row">' +
       avatarHtml +
@@ -5769,35 +5906,11 @@ function renderRescueSimulationInBody(bodyEl, stepNum) {
           '<span class="kk-time">오전 9:00</span>' +
         '</div>' +
       '</div>' +
-    '</div>' +
-    '<div class="kk-rescue-after-wrap" id="kk-rescue-after-wrap" hidden>' +
-      '<div class="kk-rescue-sub-pop" id="kk-rescue-sub-badge" hidden>🎉 +1 구독(채널 친구)이 발생했습니다!</div>' +
-      '<div class="kk-rescue-timeslip" id="kk-rescue-timeslip" hidden><span>🌙 하루가 지나고...</span><span>➔</span><span>☀️ 다음 날 오전 09:00</span></div>' +
-      '<div class="kk-rescue-ad-delivery" id="kk-rescue-ad-delivery" hidden>' +
-        '<div class="kk-msg-row">' +
-          avatarHtml +
-          '<div class="kk-msg-col">' +
-            buildAdSenderRowHtml(channelName) +
-            '<div class="kk-bubble-wrap">' +
-              adCardHtml +
-              '<span class="kk-time">오전 9:00</span>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="kk-rescue-done-row">' +
-          '<div class="kk-rescue-done-badge">✨ 발송 실패했던 광고 메시지 자동 발송 성공!</div>' +
-          '<button type="button" class="btn-rescue-replay" id="btn-rescue-replay">↻ 다시 체험하기</button>' +
-        '</div>' +
-      '</div>' +
     '</div>';
 
   const chBtn = bodyEl.querySelector ? bodyEl.querySelector('#btn-rescue-ch-add') : $('#btn-rescue-ch-add');
   if (chBtn) {
     chBtn.onclick = () => triggerRescueChannelAddClick();
-  }
-  const replayBtn = bodyEl.querySelector ? bodyEl.querySelector('#btn-rescue-replay') : $('#btn-rescue-replay');
-  if (replayBtn) {
-    replayBtn.onclick = () => resetRescueInteractiveDemo();
   }
 }
 
@@ -5811,37 +5924,71 @@ function triggerRescueChannelAddClick(instantForTest) {
   const bodyEl = getActiveRescueBodyEl();
   const qIn = (sel) => (bodyEl && bodyEl.querySelector && bodyEl.querySelector(sel)) || $(sel);
   const chBtn = qIn('#btn-rescue-ch-add');
-  const afterWrap = qIn('#kk-rescue-after-wrap');
   const subBadge = qIn('#kk-rescue-sub-badge');
-  const timeSlip = qIn('#kk-rescue-timeslip');
-  const adDelivery = qIn('#kk-rescue-ad-delivery');
+  const { channelName, avatarHtml } = getChannelMeta();
 
-  // ① 구독 발생 피드백: 버튼 완료 상태 전환 + 🎉 +1 구독(채널 친구)이 발생했습니다! 팝업 등장
+  // Step A (0.7s): 버튼 완료 상태 전환 + 상단 🎉 +1 구독(채널 친구)이 발생했습니다! 토스트 배지 팝업
   if (chBtn) {
     chBtn.disabled = true;
     chBtn.classList.remove('click-highlight');
     chBtn.classList.add('added');
     chBtn.innerHTML = '✓ 채널 추가 완료';
   }
-  if (afterWrap) afterWrap.hidden = false;
   if (subBadge) subBadge.hidden = false;
-  if (bodyEl) { try { bodyEl.scrollTop = bodyEl.scrollHeight || 9999; } catch (e) {} }
+  if (bodyEl) { try { bodyEl.scrollTop = 0; } catch (e) {} }
 
+  // Step B (1.35s): 핸드폰 액정 전체를 덮는 풀스크린 "하루가 지났습니다" 타임슬립 오버레이
   const runTimeSlip = () => {
     if (!STATE.rescueSimMode || !STATE.rescueClicked) return;
     STATE.rescueStage = 'timeslip';
-    if (timeSlip) timeSlip.hidden = false;
-    if (bodyEl) { try { bodyEl.scrollTop = bodyEl.scrollHeight || 9999; } catch (e) {} }
+    const ov = $('#timewarp-overlay');
+    const twTitle = '🌙 하루가 지났습니다\n☀️ 다음 날 오전 09:00';
+    const twSub = '채널 추가 고객에게 어제 미발송된 광고 자동 발송';
+    STATE.rescueLastTimeSlip = { emoji: '🌙 ➔ ☀️', title: twTitle, sub: twSub, fullscreen: true };
+    if (ov) {
+      ov.classList.remove('sunrise');
+      ov.classList.add('rescue-sunrise');
+      if ($('#tw-emoji')) $('#tw-emoji').textContent = '🌙 ➔ ☀️';
+      if ($('#tw-title')) $('#tw-title').textContent = twTitle;
+      if ($('#tw-sub')) $('#tw-sub').textContent = twSub;
+      ov.classList.add('show');
+    }
   };
 
+  // Step C (전환 완료 후 새 화면): 오버레이가 걷히며 깨끗하게 갱신된 다음 날 오전 09:00 카톡 화면 상단 정중앙에 (광고) 전체 표시
   const runAdDelivery = () => {
     if (!STATE.rescueSimMode || !STATE.rescueClicked) return;
+    const ov = $('#timewarp-overlay');
+    if (ov) ov.classList.remove('show', 'rescue-sunrise', 'sunrise');
     STATE.rescueStage = 'delivered';
-    if (adDelivery) {
-      adDelivery.hidden = false;
-      adDelivery.classList.add('slide-up-in');
+    if (bodyEl) {
+      bodyEl.classList.remove('morph-in');
+      try { void bodyEl.offsetWidth; } catch (e) {}
+      bodyEl.classList.add('morph-in');
+      bodyEl.innerHTML =
+        '<div class="kk-date-divider">☀️ 다음 날 오전 09:00 · 자동 재발송</div>' +
+        '<div class="kk-rescue-ad-delivery slide-up-in" id="kk-rescue-ad-delivery">' +
+          '<div class="kk-msg-row">' +
+            avatarHtml +
+            '<div class="kk-msg-col">' +
+              buildAdSenderRowHtml(channelName) +
+              '<div class="kk-bubble-wrap">' +
+                (STATE.rescueAdCardHtml || '') +
+                '<span class="kk-time">오전 9:00</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="kk-rescue-done-row">' +
+            '<div class="kk-rescue-done-badge">✨ 어제 미발송된 광고가 익일 09:00 자동 발송되었어요!</div>' +
+            '<button type="button" class="btn-rescue-replay" id="btn-rescue-replay">↻ 미수신 알림톡부터 다시 체험</button>' +
+          '</div>' +
+        '</div>';
+      const replayBtn = bodyEl.querySelector ? bodyEl.querySelector('#btn-rescue-replay') : $('#btn-rescue-replay');
+      if (replayBtn) {
+        replayBtn.onclick = () => resetRescueInteractiveDemo();
+      }
+      try { bodyEl.scrollTop = 0; } catch (e) {}
     }
-    if (bodyEl) { try { bodyEl.scrollTop = bodyEl.scrollHeight || 9999; } catch (e) {} }
   };
 
   if (instantForTest === true) {
@@ -5850,14 +5997,15 @@ function triggerRescueChannelAddClick(instantForTest) {
     return true;
   }
 
-  // ② 하루 경과(Time-Slip) 배지 등장 -> 약 1.0초 뒤 ③ 익일 오전 09:00 광고 메시지 슬라이드 업 도착
-  addRescueTimer(runTimeSlip, 260);
-  addRescueTimer(runAdDelivery, 1220);
+  addRescueTimer(runTimeSlip, 700);
+  addRescueTimer(runAdDelivery, 2050);
   return true;
 }
 
 function resetRescueInteractiveDemo() {
   clearRescueTimers();
+  const ov = $('#timewarp-overlay');
+  if (ov) ov.classList.remove('show', 'rescue-sunrise', 'sunrise');
   STATE.rescueClicked = false;
   STATE.rescueStage = 'before_click';
   if (!STATE.rescueSimMode) return false;
@@ -5879,6 +6027,8 @@ function syncRescueButtonUI() {
 function toggleRescueSimMode(forceState) {
   switchToManualMode();
   clearRescueTimers();
+  const ov = $('#timewarp-overlay');
+  if (ov) ov.classList.remove('show', 'rescue-sunrise', 'sunrise');
   const sched = STATE.schedule || resolveCampaignSchedule(STATE.campaign);
   const next = (typeof forceState === 'boolean') ? forceState : !STATE.rescueSimMode;
   STATE.rescueSimMode = next;
@@ -6208,10 +6358,45 @@ function renderKakaoStep5(withMorph) {
 
   const carouselTrack = bodyEl.querySelector ? bodyEl.querySelector('.kk-carousel-track') : null;
   if (carouselTrack && typeof carouselTrack.addEventListener === 'function') {
-    const pauseOnCarousel = () => { if (STATE.simAutoPlay) switchToManualMode(); };
-    carouselTrack.addEventListener('pointerdown', pauseOnCarousel, { passive: true });
-    carouselTrack.addEventListener('touchstart', pauseOnCarousel, { passive: true });
-    carouselTrack.addEventListener('scroll', pauseOnCarousel, { passive: true });
+    let startX = 0, startY = 0, tracking = false;
+    carouselTrack.addEventListener('touchstart', e => {
+      const t = e && e.touches && e.touches[0];
+      if (!t) return;
+      startX = t.clientX;
+      startY = t.clientY;
+      tracking = true;
+    }, { passive: true });
+    carouselTrack.addEventListener('touchmove', e => {
+      if (!tracking || !STATE.simAutoPlay) return;
+      const t = e && e.touches && e.touches[0];
+      if (!t) return;
+      const dx = Math.abs(t.clientX - startX);
+      const dy = Math.abs(t.clientY - startY);
+      if (dx > 16 && dx > dy * 1.5) {
+        tracking = false;
+        switchToManualMode();
+      }
+    }, { passive: true });
+    carouselTrack.addEventListener('pointerdown', e => {
+      if (!e || e.pointerType === 'touch') return;
+      startX = Number(e.clientX) || 0;
+      startY = Number(e.clientY) || 0;
+      tracking = true;
+    }, { passive: true });
+    carouselTrack.addEventListener('pointermove', e => {
+      if (!tracking || !STATE.simAutoPlay || !e || e.pointerType === 'touch') return;
+      const dx = Math.abs((Number(e.clientX) || 0) - startX);
+      const dy = Math.abs((Number(e.clientY) || 0) - startY);
+      if (dx > 16 && dx > dy * 1.5) {
+        tracking = false;
+        switchToManualMode();
+      }
+    }, { passive: true });
+    carouselTrack.addEventListener('scroll', () => {
+      if (STATE.simAutoPlay && !STATE.isAutoCarouselScrolling && (carouselTrack.scrollLeft || 0) > 12) {
+        switchToManualMode();
+      }
+    }, { passive: true });
   }
 }
 
@@ -6293,17 +6478,20 @@ function dismissCoachmarkForStep(stepNum) {
 
 function getCoachmarkTargetForCurrentStep() {
   const step = STATE.simStep;
+  if (STATE.rescueSimMode) return null;
   if (STATE.coachDismissedSteps && STATE.coachDismissedSteps[step]) return null;
   if (step === 1) {
-    return STATE.s1CurtainOpen ? $('#btn-s1-apply') : $('#btn-s1-open-curtain');
+    return STATE.s1CurtainOpen ? $('#btn-s1-go-step2') : $('#btn-s1-open-curtain');
   }
   if (step === 2) {
-    if (!STATE.s2Picked) return $('[data-s2-opt="0"]', $('#s2-options'));
+    if (!STATE.s2Picked) {
+      return $('[data-s2-opt="1"]', $('#s2-options')) || $('[data-s2-opt="0"]', $('#s2-options'));
+    }
     return $('#btn-s2-next');
   }
-  if (step === 3 || step === 4 || step === 5) {
-    // 순정 카카오톡 채팅방 내부를 가리지 않고 폰 프레임 아래 외부 [다음 장면 보기 ▶] 버튼 내부에 직접 마운트
-    return $('#btn-sim-next');
+  if (isSpotlightStep(step)) {
+    const nextSlot = STATE.spotlightSlotIdx === 0 ? 1 : 0;
+    return $('[data-spot-slot="' + nextSlot + '"]', $('#ext-branch-pills'));
   }
   return null;
 }
@@ -6314,14 +6502,13 @@ function positionCoachmarkOn(targetEl) {
     hideCoachmark();
     return false;
   }
-  // ★ 뷰포트 fixed·외부 스테이지 절대 픽셀 좌표 전면 폐기: 대상 버튼 내부 position: absolute 자식으로 직접 마운트!
+  // ★ 대상 버튼 내부 position: absolute 자식으로 직접 마운트 (스크롤 침범 0%)
   if (typeof targetEl.appendChild === 'function' && cm.parentNode !== targetEl) {
     try { targetEl.appendChild(cm); } catch (e) {}
   }
   cm.style.left = '';
   cm.style.top = '';
-  cm.classList.toggle('pos-left-safe', targetEl.id === 'btn-sim-next');
-  cm.classList.remove('pressing');
+  cm.classList.remove('pos-left-safe', 'pressing');
   cm.classList.add('show');
   return true;
 }
@@ -6405,13 +6592,13 @@ function updateSimChrome() {
     sc.classList.toggle('active', Number(sc.dataset.screen) === step);
   });
 
-  // V3.3 핸드폰 상단 직결 1줄 장면 캡션 바 업데이트
-  const captionEl = $('#sim-scene-caption');
-  if (captionEl) {
-    captionEl.textContent = getSceneCaptionForStep(step);
+  // 수동 체험 모드 진입 시 단계 바 우측에 작은 [▶ 자동시연] 재개 토글 표시
+  const resumeBtn = $('#btn-sim-resume-auto');
+  if (resumeBtn) {
+    resumeBtn.hidden = !!STATE.simAutoPlay;
   }
 
-  // 현재 활성 단계 카드를 가로 바 중앙으로 자연스럽게 스크롤
+  // 현재 활성 단계 카드를 가로 바 중앙으로 자동 스크롤 정렬
   const activePill = $('[data-sim-step="' + step + '"]');
   if (activePill && typeof activePill.scrollIntoView === 'function') {
     try { activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); } catch (e) {}
@@ -6426,18 +6613,7 @@ function updateSimChrome() {
     clockEl.textContent = step >= 3 && sched.steps[step] ? sched.steps[step].clockLabel : '9:41';
   }
 
-  // 외부 이전/다음 장면 버튼 동기화
-  const prevBtn = $('#btn-sim-prev');
-  const nextBtn = $('#btn-sim-next');
-  if (prevBtn) prevBtn.disabled = (step <= 1);
-  if (nextBtn) {
-    if (step === 1) nextBtn.textContent = '신청폼 체험하기 ▶';
-    else if (step === 2) nextBtn.textContent = '제출 후 첫 알림톡 보기 ▶';
-    else if (sched.steps[step]) nextBtn.textContent = sched.steps[step].nextBtnLabel;
-    else nextBtn.textContent = '다음 발송 장면 보기 ▶';
-  }
-
-  // ★ V3.0 발송실패 대체 알림톡 체험 버튼은 오직 '광고' 단계(4, 5, 6)에서만 노출! (알림톡 Step 3에서는 숨김)
+  // ★ V3.4 미수신 체험 버튼은 오직 '광고' 단계(4, 5, 6)에서만 하단 도크(#sim-action-dock)에 노출!
   const rescueBtn = $('#btn-sim-rescue-toggle');
   if (rescueBtn) {
     rescueBtn.hidden = (step < 4);
@@ -6456,6 +6632,7 @@ function playTimeWarp(stepNum, onDone) {
   const sched = STATE.schedule || resolveCampaignSchedule(STATE.campaign);
   const st = sched.steps[stepNum] || {};
   const isWarm = stepNum >= 5;
+  ov.classList.remove('rescue-sunrise');
   ov.classList.toggle('sunrise', isWarm);
   $('#tw-emoji').textContent = st.twEmoji || (stepNum === 6 ? '✨' : (stepNum === 5 ? '🌅' : '🌙'));
   $('#tw-title').textContent = st.twTitle || (stepNum === 6 ? '7일이 지났습니다 · D+7 최종 광고 발송' : (stepNum === 5 ? '3일이 지났습니다 · D+3 오전 10:00' : '하루가 지났습니다 · D+1 오전 09:00'));
@@ -6481,6 +6658,10 @@ function goSimStep(nextStep, withTimeWarp) {
     const prevStep = STATE.simStep;
     STATE.simStep = step;
     if (step >= 3) STATE.s2Picked = true;
+    if (STATE.simAutoPlay && isSpotlightStep(step) && prevStep !== step) {
+      STATE.spotlightSlotIdx = 0;
+      syncSelectedOptionState(0);
+    }
     if (step === 2) renderStep2Survey();
     if (step === 3) renderKakaoStep3(false);
     if (step === 4) renderKakaoStep4(false);
@@ -6489,17 +6670,6 @@ function goSimStep(nextStep, withTimeWarp) {
     updateSimChrome();
     if (isSpotlightStep(step) && prevStep !== step) {
       renderRemotePanel(true);
-      // 해당 분기 단계 첫 진입 시 1.2초 뒤 자동으로 옆 고객 탭으로 1회 부드럽게 전환 시연
-      if (!STATE.spotlightDemoPlayed && !STATE.spotlightUserTouched) {
-        STATE.spotlightDemoPlayed = true;
-        spotlightDemoTimer = setTimeout(() => {
-          spotlightDemoTimer = null;
-          if (isSpotlightStep(STATE.simStep) && !STATE.spotlightUserTouched && !STATE.rescueSimMode) {
-            const nextSlot = STATE.spotlightSlotIdx === 0 ? 1 : 0;
-            switchSpotlightSlot(nextSlot, true);
-          }
-        }, 1200);
-      }
     }
     refreshCoachmark();
     if (STATE.simAutoPlay) {
@@ -6519,61 +6689,151 @@ function scheduleAutoAdvance() {
   if (!STATE.simAutoPlay) return;
 
   const step = STATE.simStep;
-  const stepMs = Number(STATE.autoAdvanceMs) || 5500;
+  const stepMs = Number(STATE.autoAdvanceMs) || 5000;
   const sched = STATE.schedule || resolveCampaignSchedule(STATE.campaign);
 
-  if (step >= 6) {
-    addSimTimer(() => {
-      if (!STATE.simAutoPlay) return;
-      goSimStep(1, false);
-    }, stepMs);
-    return;
-  }
-
+  // ★ V3.4 전자동 고객 커서(👆) 시연 모드: 각 5.0초 장면마다 핵심 동작을 실제 커서 클릭 파동으로 자동 시연!
   if (step === 1) {
+    setStep1CurtainOpen(false);
     positionCoachmarkOn($('#btn-s1-open-curtain'));
+    addSimTimer(() => {
+      if (!STATE.simAutoPlay || STATE.simStep !== 1) return;
+      pressCoachmarkOn($('#btn-s1-open-curtain'), () => {
+        if (!STATE.simAutoPlay || STATE.simStep !== 1) return;
+        setStep1CurtainOpen(true);
+        positionCoachmarkOn($('#btn-s1-go-step2'));
+      });
+    }, 1100);
     addSimTimer(() => {
       if (!STATE.simAutoPlay) return;
       goSimStep(2, false);
     }, stepMs);
-  } else if (step === 2) {
-    const targetOpt = $('[data-s2-opt="0"]', $('#s2-options'));
+    return;
+  }
+
+  if (step === 2) {
+    const targetIdx = STATE.mappedOpts.length >= 2 ? 1 : 0;
+    const targetOpt = $('[data-s2-opt="' + targetIdx + '"]', $('#s2-options')) || $('[data-s2-opt="0"]', $('#s2-options'));
     positionCoachmarkOn(targetOpt);
     addSimTimer(() => {
-      if (!STATE.simAutoPlay) return;
-      selectStep2Option(0);
-      positionCoachmarkOn($('#btn-s2-next'));
-    }, Math.round(stepMs * 0.45));
+      if (!STATE.simAutoPlay || STATE.simStep !== 2) return;
+      pressCoachmarkOn(targetOpt, () => {
+        if (!STATE.simAutoPlay || STATE.simStep !== 2) return;
+        selectStep2Option(targetIdx, true);
+        positionCoachmarkOn($('#btn-s2-next'));
+      });
+    }, 1100);
     addSimTimer(() => {
       if (!STATE.simAutoPlay) return;
       goSimStep(3, false);
     }, stepMs);
-  } else if (step === 3) {
+    return;
+  }
+
+  if (step === 3) {
     const nextFrom3 = sched.skipStep4 ? 6 : 4;
-    positionCoachmarkOn($('#btn-sim-next'));
+    addSimTimer(() => {
+      if (!STATE.simAutoPlay || STATE.simStep !== 3) return;
+      const body3 = $('#kakao-chat-body');
+      const focusTarget = (body3 && body3.querySelector && (body3.querySelector('.kk-btn-mock') || body3.querySelector('.kk-alimtalk-card'))) || body3;
+      if (focusTarget) positionCoachmarkOn(focusTarget);
+    }, 1100);
     addSimTimer(() => {
       if (!STATE.simAutoPlay) return;
       goSimStep(nextFrom3, true);
     }, stepMs);
-  } else if (step === 4) {
-    positionCoachmarkOn($('#btn-sim-next'));
+    return;
+  }
+
+  if (step === 4) {
+    if (isSpotlightStep(4)) {
+      addSimTimer(() => {
+        if (!STATE.simAutoPlay || STATE.simStep !== 4 || STATE.rescueSimMode) return;
+        const btnB = $('[data-spot-slot="1"]', $('#ext-branch-pills')) || $('#ext-branch-pills');
+        pressCoachmarkOn(btnB, () => {
+          if (!STATE.simAutoPlay || STATE.simStep !== 4 || STATE.rescueSimMode) return;
+          switchSpotlightSlot(1, true);
+        });
+      }, 1800);
+    } else {
+      addSimTimer(() => {
+        if (!STATE.simAutoPlay || STATE.simStep !== 4) return;
+        const body4 = $('#s4-chat-body');
+        const btn4 = (body4 && body4.querySelector && body4.querySelector('.kk-btn-mock')) || body4;
+        if (btn4) positionCoachmarkOn(btn4);
+      }, 1400);
+    }
     addSimTimer(() => {
       if (!STATE.simAutoPlay) return;
       goSimStep(5, true);
     }, stepMs);
-  } else if (step === 5) {
-    positionCoachmarkOn($('#btn-sim-next'));
+    return;
+  }
+
+  if (step === 5) {
+    if (isSpotlightStep(5)) {
+      addSimTimer(() => {
+        if (!STATE.simAutoPlay || STATE.simStep !== 5 || STATE.rescueSimMode) return;
+        const btnB = $('[data-spot-slot="1"]', $('#ext-branch-pills')) || $('#ext-branch-pills');
+        pressCoachmarkOn(btnB, () => {
+          if (!STATE.simAutoPlay || STATE.simStep !== 5 || STATE.rescueSimMode) return;
+          switchSpotlightSlot(1, true);
+        });
+      }, 1800);
+    } else {
+      addSimTimer(() => {
+        if (!STATE.simAutoPlay || STATE.simStep !== 5 || STATE.rescueSimMode) return;
+        const body5 = $('#s5-chat-body');
+        const track = body5 && body5.querySelector ? body5.querySelector('.kk-carousel-track') : null;
+        if (track) {
+          STATE.isAutoCarouselScrolling = true;
+          track.dataset.autoSlid = 'true';
+          if (typeof track.scrollTo === 'function') {
+            try { track.scrollTo({ left: 196, behavior: 'smooth' }); } catch (e) { track.scrollLeft = 196; }
+          } else {
+            track.scrollLeft = 196;
+          }
+          const cards = track.querySelectorAll ? track.querySelectorAll('.kk-carousel-card') : [];
+          if (cards && cards[1]) positionCoachmarkOn(cards[1]);
+          addSimTimer(() => { STATE.isAutoCarouselScrolling = false; }, 550);
+        }
+      }, 1600);
+    }
     addSimTimer(() => {
       if (!STATE.simAutoPlay) return;
       goSimStep(6, true);
     }, stepMs);
+    return;
   }
+
+  // Step 6 (마지막 단계 ➔ 5.0초 후 Step 1부터 자연스럽게 순환)
+  if (isSpotlightStep(6)) {
+    addSimTimer(() => {
+      if (!STATE.simAutoPlay || STATE.simStep !== 6 || STATE.rescueSimMode) return;
+      const btnB = $('[data-spot-slot="1"]', $('#ext-branch-pills')) || $('#ext-branch-pills');
+      pressCoachmarkOn(btnB, () => {
+        if (!STATE.simAutoPlay || STATE.simStep !== 6 || STATE.rescueSimMode) return;
+        switchSpotlightSlot(1, true);
+      });
+    }, 1800);
+  } else {
+    addSimTimer(() => {
+      if (!STATE.simAutoPlay || STATE.simStep !== 6) return;
+      const body6 = $('#s6-chat-body');
+      const btn6 = (body6 && body6.querySelector && body6.querySelector('.kk-btn-mock')) || body6;
+      if (btn6) positionCoachmarkOn(btn6);
+    }, 1400);
+  }
+  addSimTimer(() => {
+    if (!STATE.simAutoPlay) return;
+    goSimStep(1, false);
+  }, stepMs);
 }
 
 function switchToManualMode() {
   clearSimTimers();
   const ov = $('#timewarp-overlay');
-  if (ov) ov.classList.remove('show');
+  if (ov) ov.classList.remove('show', 'rescue-sunrise');
   STATE.simAutoPlay = false;
   STATE.simManualMode = true;
   $$('[data-sim-step]').forEach(btn => btn.classList.remove('gauge-running'));
@@ -6961,17 +7221,10 @@ function renderProposal() {
 }
 
 function bindSimulatorEvents() {
-  // 스마트폰 프레임 내 터치·클릭 시 강제 자동 넘김 타이머 즉시 일시정지 (Smart Pause)
-  const phoneShell = $('#sim-phone-shell');
-  if (phoneShell && typeof phoneShell.addEventListener === 'function') {
-    const pauseAutoOnTouch = () => {
-      if (STATE.simAutoPlay) switchToManualMode();
-    };
-    phoneShell.addEventListener('pointerdown', pauseAutoOnTouch, { passive: true });
-    phoneShell.addEventListener('touchstart', pauseAutoOnTouch, { passive: true });
-  }
+  // ★ V3.4 스크롤 오작동 방지: 핸드폰 목업 위 터치/스와이프/스크롤만으로는 절대 자동 시연을 멈추지 않음!
+  // 오직 하단 단계 카드·조작 버튼(커튼/설문/분기/미수신체험/캐로셀 가로 드래그) 명시 클릭 시에만 수동 모드로 전환.
 
-  // 상단 6단계 점프 스텝 바
+  // 하단 6단계 5.0초 게이지 카드 직접 클릭 시 수동 체험 모드 진입
   $$('[data-sim-step]').forEach(btn => {
     btn.onclick = () => {
       switchToManualMode();
@@ -6979,6 +7232,14 @@ function bindSimulatorEvents() {
       goSimStep(target, target >= 4);
     };
   });
+
+  // 수동 모드 진입 시 노출되는 [▶ 자동시연] 재개 토글
+  const resumeAutoBtn = $('#btn-sim-resume-auto');
+  if (resumeAutoBtn) {
+    resumeAutoBtn.onclick = () => {
+      startAutoPlayFrom(STATE.simStep || 1);
+    };
+  }
 
   // 우측 아이콘형 처음으로(↻) 버튼
   $('#btn-sim-restart').onclick = () => {
@@ -7081,41 +7342,6 @@ function bindSimulatorEvents() {
       renderKakaoStep6(false);
     }
     goSimStep(3, false);
-  };
-
-  // 폰 프레임 아래 외부 장면 이동 버튼 ([◀ 이전 장면] | [다음 발송 장면 보기 ▶])
-  $('#btn-sim-prev').onclick = () => {
-    switchToManualMode();
-    const sched = STATE.schedule || resolveCampaignSchedule(STATE.campaign);
-    if (STATE.simStep === 6 && sched.skipStep4) {
-      goSimStep(3, false);
-      return;
-    }
-    if (STATE.simStep > 1) {
-      goSimStep(STATE.simStep - 1, false);
-    }
-  };
-  $('#btn-sim-next').onclick = () => {
-    switchToManualMode();
-    dismissCoachmarkForStep(STATE.simStep);
-    const sched = STATE.schedule || resolveCampaignSchedule(STATE.campaign);
-    if (STATE.simStep >= 6) {
-      goSimStep(1, false);
-      return;
-    }
-    if (STATE.simStep === 2 && !STATE.s2Picked) {
-      STATE.s2Picked = true;
-      syncSelectedOptionState(0);
-      renderStep2Survey();
-      renderKakaoStep3(false);
-      renderKakaoStep4(false);
-      renderKakaoStep5(false);
-      renderKakaoStep6(false);
-    }
-    const nextStep = (STATE.simStep === 3 && sched.skipStep4) ? 6 : (STATE.simStep + 1);
-    STATE.rescueSimMode = false;
-    syncRescueButtonUI();
-    goSimStep(nextStep, nextStep >= 4);
   };
 }
 
@@ -7856,6 +8082,8 @@ window.PROPOSAL = {
   reload: () => loadProposalData().then(renderProposal),
   goSimStep,
   setStep1CurtainOpen,
+  LANDING_POSTER_THEMES,
+  resolveLandingPosterTheme,
   selectStep2Option,
   renderKakaoStep6,
   resolveCampaignSchedule,
